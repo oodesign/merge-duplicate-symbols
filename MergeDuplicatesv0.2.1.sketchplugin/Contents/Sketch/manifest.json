@@ -1,0 +1,24 @@
+{
+  "author" : "",
+  "commands" : [
+    {
+      "script" : "script.cocoascript",
+      "name" : "MergeDuplicatesv0.2.1",
+      "handlers" : {
+        "run" : "onRun"
+      },
+      "identifier" : "com.bohemiancoding.sketch.runscriptidentifier"
+    }
+  ],
+  "menu" : {
+    "title" : "MergeDuplicatesv0.2.1",
+    "items" : [
+      "com.bohemiancoding.sketch.runscriptidentifier"
+    ]
+  },
+  "identifier" : "com.example.sketch.f4d8a7f0-03b5-44a3-afb1-2f95fb5f090d",
+  "version" : "1.0",
+  "description" : "",
+  "authorEmail" : "",
+  "name" : "MergeDuplicatesv0.2.1"
+}
