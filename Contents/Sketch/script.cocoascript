@@ -1,0 +1,146 @@
+          var onRun = function(context) {
+          var doc = context.document;
+
+function GetSymbolsByName(name){
+    var allSymbols = context.document.documentData().allSymbols();
+    var matchingSymbols = [];
+    for(var i=0; i < allSymbols.count(); i++){
+        var symbolName = allSymbols[i].name().toString();
+        if(symbolName.localeCompare(name) == 0)
+        {
+            matchingSymbols.push(allSymbols[i]);
+        }        
+    }
+    return matchingSymbols;
+}
+
+function handleAlertResponse(window, responseCode) {
+    if (responseCode == "1000") {
+        return "OK";
+	}
+    return null;
+}
+
+function FindSymbolInstances(originalSymbol)
+{
+    var instancesOfSymbol = [];
+    for (var i = 0; i < doc.pages().count(); i++) {
+            var page = doc.pages().objectAtIndex(i);
+            for (var j = 0; j < page.children().count(); j ++) {
+                var layer = page.children().objectAtIndex(j);
+                if (layer.class() == "MSSymbolInstance") {
+                    if (String(layer.symbolID()) == String(originalSymbol.symbolID())) { 
+                        instancesOfSymbol.push(layer); 
+                    }
+                }
+            }
+    }
+    return instancesOfSymbol;
+}
+
+function CreateWindow(symbolName, duplicatedSymbolsByName, matrix){
+    var window = COSAlertWindow.new();
+    window.setMessageText("Merging symbol '"+symbolName+"'");
+    window.setInformativeText("There are "+duplicatedSymbolsByName.length+" symbols with this name. Choose the one you want to keep and press OK. The other symbols will be removed, and all of their instances will be replaced by the one you chose to keep.");
+    window.addButtonWithTitle("OK");
+	window.addButtonWithTitle("Don't merge this one");
+
+    
+    
+
+    var cells = matrix.cells();
+        
+    for(var j=0;j<duplicatedSymbolsByName.length;j++){
+        var exportRequest = MSExportRequest.exportRequestsFromExportableLayer_inRect_useIDForName_(
+            duplicatedSymbolsByName[j],
+            duplicatedSymbolsByName[j].absoluteInfluenceRect(),
+            false
+            ).firstObject()
+  
+        exportRequest.format = "png"
+        exportRequest.scale = 1.0;
+
+        var colorSpace = NSColorSpace.sRGBColorSpace()
+        var exporter = MSExporter.exporterForRequest_colorSpace_(exportRequest, colorSpace)
+        var imageRep = exporter.bitmapImageRep()
+
+        var image = NSImage.alloc().init().autorelease();
+        image.addRepresentation(imageRep);
+
+
+        cells.objectAtIndex(j).setImage(image);
+        cells.objectAtIndex(j).setTitle(""); 
+    }
+
+    window.setAccessoryView(matrix);
+    return window;
+}
+
+
+function MergeSymbols(duplicatedSymbolsByName, symbolToKeep){
+
+    
+    for(var i=0;i<duplicatedSymbolsByName.length;i++){
+        if(i==symbolToKeep)
+        {
+            log("I'm gonna keep the "+i+" symbol");
+        }
+        else
+        {
+            var instancesOfSymbol = FindSymbolInstances(duplicatedSymbolsByName[i]);
+            for(var k=0;k<instancesOfSymbol.length;k++){
+                instancesOfSymbol[k].symbolID = duplicatedSymbolsByName[symbolToKeep].symbolID();
+            }
+            duplicatedSymbolsByName[i].removeFromParent();
+        }
+    }
+}
+
+
+var symbols = context.document.documentData().allSymbols();
+var artboardNames=[];
+var duplicatedSymbols=[];
+var mergedSymbols = 0;
+
+for(var i=0; i < symbols.count(); i++){
+    if(artboardNames.indexOf(symbols[i].name())<0)
+    {
+        artboardNames.push(symbols[i].name());
+    }
+    else{  
+        if(duplicatedSymbols.indexOf(symbols[i].name())<0)      
+            duplicatedSymbols.push(symbols[i].name());
+    }
+}
+
+var cellHeight = 100;
+    
+for (var i = 0; i < duplicatedSymbols.length; i++) {
+    var duplicatedSymbolsByName = GetSymbolsByName(duplicatedSymbols[i]);
+    var buttonFormat = NSButtonCell.alloc().init();
+    var matrixHeight = (cellHeight+0)*duplicatedSymbolsByName.length;
+    var matrix = NSMatrix.alloc().initWithFrame_mode_prototype_numberOfRows_numberOfColumns(
+            NSMakeRect(0, 0, 300, matrixHeight),
+            NSListModeMatrix,
+            buttonFormat,
+            duplicatedSymbolsByName.length,
+            1
+    );
+    matrix.setCellSize(CGSizeMake(300, cellHeight));
+    
+    var window = CreateWindow(duplicatedSymbols[i], duplicatedSymbolsByName, matrix);    
+    var responseCode = handleAlertResponse(window, window.runModal());
+    var symbolToKeep = matrix.cells().indexOfObject(matrix.selectedCell());
+
+    if(responseCode == "OK"){
+        //log("I'm gonna merge the "+duplicatedSymbols[i]+" symbols (there were "+duplicatedSymbolsByName.length+" symbols with the same name). And I'm gonna keep index:"+symbolToKeep);
+        MergeSymbols(duplicatedSymbolsByName, symbolToKeep);
+        mergedSymbols++;
+    }
+}
+
+[doc showMessage: "Hey ho!: "+mergedSymbols+" symbols were merged"];
+
+   
+          };
+          
