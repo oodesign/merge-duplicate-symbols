@@ -96,25 +96,37 @@ function MergeSymbols(duplicatedSymbolsByName, symbolToKeep){
     }
 }
 
-
 var symbols = context.document.documentData().allSymbols();
 var artboardNames=[];
 var duplicatedSymbols=[];
+var checkedSymbols = [];
 var mergedSymbols = 0;
 
 for(var i=0; i < symbols.count(); i++){
-    if(artboardNames.indexOf(symbols[i].name())<0)
+    //if(artboardNames.indexOf(symbols[i].name())<0)
+    //{
+    //    artboardNames.push(symbols[i].name());
+    //}
+    //else{  
+    //    if(duplicatedSymbols.indexOf(symbols[i].name())<0)      
+    //        duplicatedSymbols.push(symbols[i].name());
+    //}
+
+    if(checkedSymbols.indexOf(symbols[i])<0)
     {
-        artboardNames.push(symbols[i].name());
-    }
-    else{  
-        if(duplicatedSymbols.indexOf(symbols[i].name())<0)      
+        var symbolsWithSameName = GetSymbolsByName(symbols[i].name());
+        if((symbolsWithSameName.length > 1)){
             duplicatedSymbols.push(symbols[i].name());
+            for(var j=0;j<symbolsWithSameName.length;j++){
+                checkedSymbols.push(symbolsWithSameName[j]);
+            }
+        }
     }
 }
 
+
+
 var cellHeight = 100;
-    
 for (var i = 0; i < duplicatedSymbols.length; i++) {
     var duplicatedSymbolsByName = GetSymbolsByName(duplicatedSymbols[i]);
     var buttonFormat = NSButtonCell.alloc().init();
@@ -133,14 +145,16 @@ for (var i = 0; i < duplicatedSymbols.length; i++) {
     var symbolToKeep = matrix.cells().indexOfObject(matrix.selectedCell());
 
     if(responseCode == "OK"){
-        //log("I'm gonna merge the "+duplicatedSymbols[i]+" symbols (there were "+duplicatedSymbolsByName.length+" symbols with the same name). And I'm gonna keep index:"+symbolToKeep);
+        log("I'm gonna merge the "+duplicatedSymbols[i]+" symbols (there were "+duplicatedSymbolsByName.length+" symbols with the same name). And I'm gonna keep index:"+symbolToKeep);
         MergeSymbols(duplicatedSymbolsByName, symbolToKeep);
         mergedSymbols++;
     }
 }
 
-[doc showMessage: "Hey ho!: "+mergedSymbols+" symbols were merged"];
-
+if(duplicatedSymbols.length>0)
+    [doc showMessage: "Hey ho! "+mergedSymbols+" symbols were merged"];
+else
+    [doc showMessage: "It seems there are no symbols (with the same name) to merge"];
    
           };
           
