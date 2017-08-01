@@ -9,7 +9,7 @@ Say you have three different cards with three different buttons in them. Each bu
 <img src="https://github.com/oodesign/merge-duplicate-symbols/blob/master/Images/SymbolsToMerge.PNG" alt="Three different cards with three different buttons in them. Each button is a symbol, and somehow those three symbol buttons have the same name. Let's merge them."/>
 <br/>
 
-Simply run the "Merge duplicates symbol plugin" from the Plugins menu.
+Simply run the "Merge duplicates symbol plugin" from the Plugins menu
 
 <br/><br/>
 <img src="https://github.com/oodesign/merge-duplicate-symbols/blob/master/Images/LaunchMergeDuplicateSymbolsPlugin.PNG" alt="Let's merge them with the Merge Duplicate Symbols Plugin. You may find it in the Plugins menu, under the Merge Duplicate Symbols action."/>
