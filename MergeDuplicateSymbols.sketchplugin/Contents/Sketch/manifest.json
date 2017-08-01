@@ -1,0 +1,26 @@
+{
+  "author" : "",
+  "commands" : [
+    {
+      "script" : "MergeDuplicateSymbols.cocoascript",
+      "name" : "Merge duplicate symbols",
+      "handlers" : {
+        "run" : "onRun"
+      },
+      "identifier" : "com.bohemiancoding.sketch.runscriptidentifier"
+    }
+  ],
+  "menu" : {
+    "title" : "Merge duplicate symbols",
+    "items" : [
+      "com.bohemiancoding.sketch.runscriptidentifier"
+    ]
+  },
+  "identifier" : "com.example.sketch.8f55e971-28b8-4d86-bc10-729e8a4e4dfc",
+  "version" : "1.0",
+  "name" : "Merge duplicate symbols",
+  "authorEmail" : "oodesignux@gmail.com",
+  "description": "Sketch.app plugin to merge symbols with the same name",
+  "author": "oodesign",
+  "homepage": "https://github.com/oodesign/merge-duplicate-symbols"
+}
