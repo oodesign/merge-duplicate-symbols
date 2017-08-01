@@ -29,4 +29,10 @@ And that's it! Symbols are merged. The discarded ones are removed, and all of th
 <br/><br/>
 <img src="https://github.com/oodesign/merge-duplicate-symbols/blob/master/Images/SymbolsMerged.PNG" alt="Symbols are merged. The discarded ones are removed, and all of their instances are replaced by the new one."/>
 
+## Manual Installation
+
+1. Download [MergeDuplicateSymbols.zip](https://github.com/oodesign/merge-duplicate-symbols/archive/master.zip) archive with the plugin.
+2. Reveal plugins folder in finder ('Sketch App Menu' -> 'Plugins' -> 'Manage Plugins...' -> 'Gear Icon' -> 'Show Plugins Folder').
+3. Delete previously installed version of the plugin (`MergeDuplicateSymbols` folder or `MergeDuplicateSymbols.sketchplugin` bundle)
+4. Un-zip downloaded archive and double-click `MergeDuplicateSymbols.sketchplugin` file inside it.
 
