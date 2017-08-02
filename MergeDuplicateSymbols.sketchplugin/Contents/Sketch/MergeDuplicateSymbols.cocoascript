@@ -38,13 +38,13 @@ function FindSymbolInstances(originalSymbol)
     return instancesOfSymbol;
 }
 
-function CreateWindow(symbolName, duplicatedSymbolsByName, matrix){
+function CreateWindow(symbolName, duplicatedSymbolsByName, matrix, cellWidth, cellHeight){
     var window = COSAlertWindow.new();
     window.setMessageText("Merging symbol '"+symbolName+"'");
-    window.setIcon(NSImage.alloc().initByReferencingFile(context.plugin.urlForResourceNamed("icon.png").path()));
+    
     window.setInformativeText("There are "+duplicatedSymbolsByName.length+" symbols with this name. Choose the one you want to keep and press OK. The other symbols will be removed, and all of their instances will be replaced by the one you chose to keep.");
     window.addButtonWithTitle("OK");
-	window.addButtonWithTitle("Don't merge this one");
+    window.addButtonWithTitle("Don't merge this one");
 
     
     
@@ -59,8 +59,15 @@ function CreateWindow(symbolName, duplicatedSymbolsByName, matrix){
             ).firstObject()
   
         exportRequest.format = "png"
-        exportRequest.scale = 1.0;
+        
+        var scaleX = cellWidth / exportRequest.rect().size.width;
+        var scaleY = cellHeight / exportRequest.rect().size.height;
 
+        if(scaleX<scaleY)
+            exportRequest.scale = scaleX;
+        else
+            exportRequest.scale = scaleY;
+            
         var colorSpace = NSColorSpace.sRGBColorSpace()
         var exporter = MSExporter.exporterForRequest_colorSpace_(exportRequest, colorSpace)
         var imageRep = exporter.bitmapImageRep()
@@ -84,7 +91,7 @@ function MergeSymbols(duplicatedSymbolsByName, symbolToKeep){
     for(var i=0;i<duplicatedSymbolsByName.length;i++){
         if(i==symbolToKeep)
         {
-            log("I'm gonna keep the "+i+" symbol");
+            log("It's keeping the "+i+" symbol");
         }
         else
         {
@@ -127,13 +134,16 @@ for(var i=0; i < symbols.count(); i++){
 
 
 
+
+var cellWidth = 300;
 var cellHeight = 100;
+
 for (var i = 0; i < duplicatedSymbols.length; i++) {
     var duplicatedSymbolsByName = GetSymbolsByName(duplicatedSymbols[i]);
     var buttonFormat = NSButtonCell.alloc().init();
     var matrixHeight = (cellHeight+0)*duplicatedSymbolsByName.length;
     var matrix = NSMatrix.alloc().initWithFrame_mode_prototype_numberOfRows_numberOfColumns(
-            NSMakeRect(0, 0, 300, matrixHeight),
+            NSMakeRect(0, 0, cellWidth, matrixHeight),
             NSListModeMatrix,
             buttonFormat,
             duplicatedSymbolsByName.length,
@@ -141,7 +151,7 @@ for (var i = 0; i < duplicatedSymbols.length; i++) {
     );
     matrix.setCellSize(CGSizeMake(300, cellHeight));
     
-    var window = CreateWindow(duplicatedSymbols[i], duplicatedSymbolsByName, matrix);    
+    var window = CreateWindow(duplicatedSymbols[i], duplicatedSymbolsByName, matrix, cellWidth, cellHeight);    
     var responseCode = handleAlertResponse(window, window.runModal());
     var symbolToKeep = matrix.cells().indexOfObject(matrix.selectedCell());
 
@@ -151,6 +161,7 @@ for (var i = 0; i < duplicatedSymbols.length; i++) {
         mergedSymbols++;
     }
 }
+
 
 if(duplicatedSymbols.length>0)
     [doc showMessage: "Hey ho! "+mergedSymbols+" symbols were merged"];
