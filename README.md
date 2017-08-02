@@ -31,6 +31,11 @@ And that's it! Symbols are merged. The discarded ones are removed, and all of th
 <br/><br/>
 <img src="https://github.com/oodesign/merge-duplicate-symbols/blob/master/Images/SymbolsMerged.PNG" alt="Symbols are merged. The discarded ones are removed, and all of their instances are replaced by the new one."/>
 
+
+<a href="https://sketchpacks.com/oodesign/merge-duplicate-symbols/install">
+  <img width="160" height="41" src="http://sketchpacks-com.s3.amazonaws.com/assets/badges/sketchpacks-badge-install.png" >
+</a>
+
 ## Manual Installation
 
 1. Download [MergeDuplicateSymbols.zip](https://github.com/oodesign/merge-duplicate-symbols/archive/master.zip) archive with the plugin.
