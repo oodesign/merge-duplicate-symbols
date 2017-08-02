@@ -6,6 +6,17 @@
     <description>Sketch.app plugin to merge symbols with the same name.</description>
     <language>en</language>
       <item>
+        <title>Version 1.0.2</title>
+        <description>
+          <![CDATA[
+            <ul>
+              <li>Fixed bug that lead plugin to error due to missing resources. </li>
+            </ul>
+          ]]>
+        </description>
+        <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/archive/master.zip" sparkle:version="1.0.2"/>
+      </item>
+      <item>
         <title>Version 1.0.1</title>
         <description>
           <![CDATA[
