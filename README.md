@@ -33,8 +33,8 @@ And that's it! Symbols are merged. The discarded ones are removed, and all of th
 
 ## Install it with Sketchpacks
 
-Let Sketchpacks do the work for you. Open Sketchpacks, search for "Merge duplicate symbols", and clicl Install.
-Or you may click the "intall it with Sketchpacks" button below.
+Let Sketchpacks do the work for you. Open Sketchpacks, search for "Merge duplicate symbols", and click "Install".
+Or you may click the "Install it with Sketchpacks" button below :)
 
 <a href="https://sketchpacks.com/oodesign/merge-duplicate-symbols/install">
   <img width="160" height="41" src="http://sketchpacks-com.s3.amazonaws.com/assets/badges/sketchpacks-badge-install.png" >
