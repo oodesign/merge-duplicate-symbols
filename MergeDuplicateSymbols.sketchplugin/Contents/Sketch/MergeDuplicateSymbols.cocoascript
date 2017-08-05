@@ -111,24 +111,19 @@ var checkedSymbols = [];
 var mergedSymbols = 0;
 
 for(var i=0; i < symbols.count(); i++){
-    //if(artboardNames.indexOf(symbols[i].name())<0)
-    //{
-    //    artboardNames.push(symbols[i].name());
-    //}
-    //else{  
-    //    if(duplicatedSymbols.indexOf(symbols[i].name())<0)      
-    //        duplicatedSymbols.push(symbols[i].name());
-    //}
+    var symbolName = symbols[i].name();    
+    var recomposedSymbolName = "";
+    for(var j=0;j<symbolName.length();j++){
+        recomposedSymbolName += symbolName.charAt(j);
+    }
 
-    if(checkedSymbols.indexOf(symbols[i])<0)
+    if(artboardNames.indexOf(recomposedSymbolName)<0)
     {
-        var symbolsWithSameName = GetSymbolsByName(symbols[i].name());
-        if((symbolsWithSameName.length > 1)){
-            duplicatedSymbols.push(symbols[i].name());
-            for(var j=0;j<symbolsWithSameName.length;j++){
-                checkedSymbols.push(symbolsWithSameName[j]);
-            }
-        }
+        artboardNames.push(recomposedSymbolName);
+    }
+    else{  
+        if(duplicatedSymbols.indexOf(recomposedSymbolName)<0)      
+            duplicatedSymbols.push(recomposedSymbolName);
     }
 }
 
