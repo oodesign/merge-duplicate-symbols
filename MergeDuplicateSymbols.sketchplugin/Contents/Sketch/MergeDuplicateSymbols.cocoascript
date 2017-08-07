@@ -138,7 +138,7 @@ function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, t
         if(instancesPerSymbol[j].length == 0)
         	title="This symbol is not being used anywhere";
     	else
-    		title=instancesPerSymbol[j].length+" instances ("+(instancesPerSymbol[j].length*100/totalInstances)+"%)";
+    		title=instancesPerSymbol[j].length+" instances ("+(instancesPerSymbol[j].length*100/totalInstances).toFixed(1)+"%)";
 
 
         cells.objectAtIndex(j).setTitle(title);
