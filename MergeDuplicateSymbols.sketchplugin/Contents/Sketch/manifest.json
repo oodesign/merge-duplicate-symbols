@@ -18,7 +18,7 @@
     ]
   },
   "identifier" : "com.example.sketch.8f55e971-28b8-4d86-bc10-729e8a4e4dfc",
-  "version" : "2.0.0",
+  "version" : "2.0.1",
   "name" : "Merge duplicate symbols",
   "authorEmail" : "oodesignux@gmail.com",
   "description": "Sketch.app plugin to merge symbols with the same name",
