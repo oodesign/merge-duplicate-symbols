@@ -4,6 +4,8 @@
 
 Sketch.app plugin to merge symbols with the same name. Choose the one you want to keep and press OK. The other symbols will be removed, and all of their instances will be replaced by the one you chose to keep.
 
+<a href="http://bit.ly/mergesymbolsinsketch">View full detail on Medium</a>
+
 ## How does it work
 
 Say you have three different cards with three different buttons in them. Each button is a symbol, and somehow those three symbol buttons have the same name. Let's merge them!
