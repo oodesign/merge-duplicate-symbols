@@ -133,7 +133,15 @@ function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, t
         
         cells.objectAtIndex(j).setImagePosition(NSImageAbove);
         cells.objectAtIndex(j).setImage(image);
-        cells.objectAtIndex(j).setTitle(instancesPerSymbol[j].length+" instances ("+(instancesPerSymbol[j].length*100/totalInstances)+"%)");
+
+        var title = "";
+        if(instancesPerSymbol[j].length == 0)
+        	title="This symbol is not being used anywhere";
+    	else
+    		title=instancesPerSymbol[j].length+" instances ("+(instancesPerSymbol[j].length*100/totalInstances)+"%)";
+
+
+        cells.objectAtIndex(j).setTitle(title);
     }
 
     window.setAccessoryView(matrix);
