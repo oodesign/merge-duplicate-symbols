@@ -51,9 +51,9 @@ Or you may click the "Install it with Sketchpacks" button below :)
 
 
 ## Considering a gift? :)
-What a great plugin - <a href="https://www.paypal.me/oodesign/1">Donate 1€</a>
+What a great plugin - <a target="_blank" href="https://www.paypal.me/oodesign/1">Donate 1€</a>
 
-Wow! That really helped me! - <a href="https://www.paypal.me/oodesign/2">Donate 2€</a>
+Wow! That really helped me! - <a target="_blank" href="https://www.paypal.me/oodesign/2">Donate 2€</a>
 
-This totally saved my life! Shut up and take my money! :) - <a href="https://www.paypal.me/oodesign/3">Donate 3€</a>
+This totally saved my life! Shut up and take my money! :) - <a target="_blank" href="https://www.paypal.me/oodesign/3">Donate 3€</a>
 
