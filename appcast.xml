@@ -6,6 +6,17 @@
     <description>Sketch.app plugin to merge symbols with the same name.</description>
     <language>en</language>
     <item>
+        <title>Version 2.0.3</title>
+        <description>
+          <![CDATA[
+            <ul>
+              <li>Added vertical scrolling in the selction panel. </li>
+            </ul>
+          ]]>
+        </description>
+        <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/archive/master.zip" sparkle:version="2.0.3"/>
+      </item>
+    <item>
         <title>Version 2.0.2</title>
         <description>
           <![CDATA[
