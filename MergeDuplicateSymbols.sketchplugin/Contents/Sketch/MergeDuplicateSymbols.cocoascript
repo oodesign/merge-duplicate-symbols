@@ -18,16 +18,16 @@ function GetSymbolsByName(name){
 function handleAlertResponse(window, responseCode) {
     if (responseCode == "1000") {
         return "OK";
-    }
+	}
     else if (responseCode == "1002") {
         return "CONTINUE LATER";
-    }
+	}
     return null;
 }
 
 
 
-function FindSymbolInstances3(originalSymbol, duplicateSymbolsByName){
+function FindSymbolInstances(originalSymbol, duplicateSymbolsByName){
     var instancesPerSymbol = [];
     for(var i=0;i<duplicateSymbolsByName.length;i++)
     {
@@ -58,44 +58,7 @@ function FindSymbolInstances3(originalSymbol, duplicateSymbolsByName){
     return instancesPerSymbol;
 }
 
-
-function FindSymbolInstances2(originalSymbol){
-    var layers = NSMutableArray.array();    
-    var pagesLoop = context.document.pages().objectEnumerator();
-
-    while (item = pagesLoop.nextObject()) {
-        layers.addObjectsFromArray(item.children())
-    }
-
-    var layersLoop = layers.objectEnumerator();
-    
-    var instancesOfSymbol = NSMutableArray.array();
-    while (item = layersLoop.nextObject()) {
-        if (item.isMemberOfClass(MSSymbolInstance) && item.symbolID().isEqualToString(originalSymbol.symbolID()))
-            instancesOfSymbol.addObject(item);
-    }
-
-    return instancesOfSymbol;
-}
-
-function FindSymbolInstances(originalSymbol)
-{
-    var instancesOfSymbol = [];
-    for (var i = 0; i < doc.pages().count(); i++) {
-            var page = doc.pages().objectAtIndex(i);
-            for (var j = 0; j < page.children().count(); j ++) {
-                var layer = page.children().objectAtIndex(j);
-                if (layer.class() == "MSSymbolInstance") {
-                    if (String(layer.symbolID()) == String(originalSymbol.symbolID())) { 
-                        instancesOfSymbol.push(layer); 
-                    }
-                }
-            }
-    }
-    return instancesOfSymbol;
-}
-
-function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, totalInstances, matrix, cellWidth, cellHeight){
+function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, totalInstances, matrix, cellWidth, cellHeight, matrixHeight){
     var window = COSAlertWindow.new();
     window.setMessageText("Merging symbol '"+symbolName+"'");
     window.setIcon(NSImage.alloc().initByReferencingFile(context.plugin.urlForResourceNamed("icon.png").path()));
@@ -133,18 +96,20 @@ function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, t
         
         cells.objectAtIndex(j).setImagePosition(NSImageAbove);
         cells.objectAtIndex(j).setImage(image);
-
-        var title = "";
-        if(instancesPerSymbol[j].length == 0)
-        	title="This symbol is not being used anywhere";
-    	else
-    		title=instancesPerSymbol[j].length+" instances ("+(instancesPerSymbol[j].length*100/totalInstances).toFixed(1)+"%)";
-
-
-        cells.objectAtIndex(j).setTitle(title);
+        cells.objectAtIndex(j).setTitle(instancesPerSymbol[j].length+" instances ("+(instancesPerSymbol[j].length*100/totalInstances)+"%)");
     }
+    var scrollHeight = matrixHeight;
+    if(matrixHeight > 400)
+        scrollHeight = 400;   
 
-    window.setAccessoryView(matrix);
+    var listContainer = [[NSScrollView alloc] initWithFrame:NSMakeRect(0,0,cellWidth,scrollHeight)];
+
+    listContainer.setDocumentView(matrix);
+
+    if(scrollHeight != matrixHeight)
+        listContainer.setHasVerticalScroller(true);
+
+    window.setAccessoryView(listContainer);
     return window;
 }
 
@@ -162,12 +127,12 @@ function MergeSymbols(duplicatedSymbolsByName, instancesPerSymbol, symbolToKeep)
 }
 
 function GetTextBasedOnCount(number){
-    if(number == 1){
-        return " symbol was ";
+    if(number!=1){
+        return " symbols were ";
     }
     else
     {
-        return " symbols were ";
+        return " symbol was ";
     }
 }
 
@@ -210,27 +175,12 @@ for (var i = 0; i < duplicatedSymbols.length; i++) {
     matrix.setCellSize(CGSizeMake(cellWidth, cellHeight));
     
     var totalInstances = 0;
-    var instancesPerSymbol = FindSymbolInstances3(duplicatedSymbolsByName[j], duplicatedSymbolsByName);
+    var instancesPerSymbol = FindSymbolInstances(duplicatedSymbolsByName[j], duplicatedSymbolsByName);
 
     for(var p = 0;p<instancesPerSymbol.length;p++)
         totalInstances+=instancesPerSymbol[p].length;
-    
-    
-    //var instancesPerSymbol = [];
-    //var totalInstances = 0;
 
-    //for(var j=0;j<duplicatedSymbolsByName.length;j++){
-    //    var instances = FindSymbolInstances2(duplicatedSymbolsByName[j]);
-    //    instancesPerSymbol[j] = NSMutableArray.array();
-    //    instancesPerSymbol[j].addObjectsFromArray(instances);
-    //    totalInstances += instances.length;
-    //}
-
-    //log(duplicatedSymbols[i]+" Instances:"+totalInstances);
-
-
-
-    var window = CreateWindow(duplicatedSymbols[i], duplicatedSymbolsByName, instancesPerSymbol, totalInstances, matrix, cellWidth, cellHeight); 
+    var window = CreateWindow(duplicatedSymbols[i], duplicatedSymbolsByName, instancesPerSymbol, totalInstances, matrix, cellWidth, cellHeight, matrixHeight); 
     var responseCode = handleAlertResponse(window, window.runModal());
     
     var symbolToKeep = matrix.cells().indexOfObject(matrix.selectedCell());
@@ -240,8 +190,8 @@ for (var i = 0; i < duplicatedSymbols.length; i++) {
         mergedSymbols++;
     }
     else if(responseCode == "CONTINUE LATER")
-    {       
-        [doc showMessage: "Cool, we'll continue later!  Meanwhile, "+mergedSymbols+GetTextBasedOnCount(mergedSymbols)+"merged"];
+    {    	
+    	[doc showMessage: "Cool, we'll continue later!  Meanwhile, "+mergedSymbols+GetTextBasedOnCount(mergedSymbols)+"merged"];
         continuous = false;
     }
 
@@ -257,10 +207,6 @@ if(continuous)
     else
         [doc showMessage: "It seems there are no symbols (with the same name) to merge"];
 }
-
-
-
-                            
-
+                   
 };
           
