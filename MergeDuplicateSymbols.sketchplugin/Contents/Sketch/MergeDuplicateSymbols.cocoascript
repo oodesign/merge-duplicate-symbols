@@ -119,7 +119,8 @@ function MergeSymbols(duplicatedSymbolsByName, instancesPerSymbol, symbolToKeep)
         {
             var instancesOfSymbol = instancesPerSymbol[i];
             for(var k=0;k<instancesOfSymbol.length;k++){
-                instancesOfSymbol[k].symbolID = duplicatedSymbolsByName[symbolToKeep].symbolID();
+                //instancesOfSymbol[k].symbolID = duplicatedSymbolsByName[symbolToKeep].symbolID();
+		instancesOfSymbol[k].changeInstanceToSymbol(duplicatedSymbolsByName[symbolToKeep]);
             }
             duplicatedSymbolsByName[i].removeFromParent();
         }
