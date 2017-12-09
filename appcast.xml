@@ -5,6 +5,18 @@
     <link>https://github.com/oodesign/merge-duplicate-symbols/blob/master/appcast.xml</link>
     <description>Sketch.app plugin to merge symbols with the same name.</description>
     <language>en</language>
+    
+    <item>
+        <title>Version 3.0.0</title>
+        <description>
+          <![CDATA[
+            <ul>
+              <li>Updates also the merged symbols overrides. </li>
+            </ul>
+          ]]>
+        </description>
+        <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/archive/master.zip" sparkle:version="3.0.0"/>
+      </item>
     <item>
         <title>Version 2.1.0</title>
         <description>
