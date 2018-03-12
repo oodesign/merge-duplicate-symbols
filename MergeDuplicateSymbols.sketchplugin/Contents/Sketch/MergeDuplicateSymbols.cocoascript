@@ -169,11 +169,11 @@ function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, o
         var image = NSImage.alloc().init().autorelease();
         image.addRepresentation(imageRep);
 
-        var title = instancesPerSymbol[j].length+" instances (and used in "+overridesPerSymbol[j].length+" overrides)";
+        var title = instancesPerSymbol[j].length+" instances -  Used in "+overridesPerSymbol[j].length+" overrides (local)";
         var foreignSymbol = IsForeign(duplicatedSymbolsByName[j]);
         if(foreignSymbol != null)
         {
-            title = foreignSymbol.sourceLibraryName()+"  -  "+instancesPerSymbol[j].length+" instances (and used in "+overridesPerSymbol[j].length+" overrides)";
+            title = instancesPerSymbol[j].length+" instances -  Used in "+overridesPerSymbol[j].length+" overrides (Library: "+foreignSymbol.sourceLibraryName()+")";
         }
         
         cells.objectAtIndex(j).setImagePosition(NSImageAbove);
