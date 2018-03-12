@@ -7,7 +7,7 @@
     <language>en</language>
     
      <item>
-        <title>Version 3.0.3</title>
+        <title>Version 3.0.4</title>
         <description>
           <![CDATA[
             <ul>
@@ -15,7 +15,7 @@
             </ul>
           ]]>
         </description>
-        <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/archive/master.zip" sparkle:version="3.0.3"/>
+        <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/archive/master.zip" sparkle:version="3.0.4"/>
       </item>
     <item>
         <title>Version 3.0.0</title>
