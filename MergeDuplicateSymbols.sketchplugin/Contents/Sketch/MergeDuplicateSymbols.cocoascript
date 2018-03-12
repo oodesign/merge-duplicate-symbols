@@ -169,8 +169,8 @@ function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, o
         image.addRepresentation(imageRep);
         
         var foreignSymbolLoop = foreignSymbols.objectEnumerator();
+	var title = instancesPerSymbol[j].length+" instances (and used in "+overridesPerSymbol[j].length+" overrides)";
 	while (foreignSymbol = foreignSymbolLoop.nextObject()) {
-	    var title = instancesPerSymbol[j].length+" instances (and used in "+overridesPerSymbol[j].length+" overrides)";
 	    if(duplicatedSymbolsByName[j].symbolID()==foreignSymbol.localShareID())){
 		title = foreignSymbol.sourceLibraryName()+"  -  "+instancesPerSymbol[j].length+" instances (and used in "+overridesPerSymbol[j].length+" overrides)";
 
