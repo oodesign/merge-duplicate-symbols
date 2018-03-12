@@ -1,5 +1,6 @@
-          var onRun = function(context) {
-          var doc = context.document;
+var onRun = function(context) {
+var doc = context.document;	  
+var foreignSymbols = doc.documentData().foreignSymbols();
 
 function GetSymbolsByName(name){
     var allSymbols = context.document.documentData().allSymbols();
@@ -167,9 +168,18 @@ function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, o
         var image = NSImage.alloc().init().autorelease();
         image.addRepresentation(imageRep);
         
+        var foreignSymbolLoop = foreignSymbols.objectEnumerator();
+	while (foreignSymbol = foreignSymbolLoop.nextObject()) {
+	    var title = instancesPerSymbol[j].length+" instances (and used in "+overridesPerSymbol[j].length+" overrides)";
+	    if(duplicatedSymbolsByName[j].symbolID()==foreignSymbol.localShareID())){
+		title = foreignSymbol.sourceLibraryName()+"  -  "+instancesPerSymbol[j].length+" instances (and used in "+overridesPerSymbol[j].length+" overrides)";
+
+	    }
+	}
+        
         cells.objectAtIndex(j).setImagePosition(NSImageAbove);
         cells.objectAtIndex(j).setImage(image);
-        cells.objectAtIndex(j).setTitle(instancesPerSymbol[j].length+" instances (and "+overridesPerSymbol[j].length+" overrides)");
+        cells.objectAtIndex(j).setTitle(title);
     }
     var scrollHeight = matrixHeight;
     if(matrixHeight > 400)
