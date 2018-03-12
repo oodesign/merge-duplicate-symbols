@@ -11,7 +11,7 @@
         <description>
           <![CDATA[
             <ul>
-              <li>Shows source library name on merge window. </li>
+              <li>Shows source library name on merge window. Also fixes issues when merging symbols coming from Libraries.</li>
             </ul>
           ]]>
         </description>
