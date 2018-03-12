@@ -1,5 +1,6 @@
 var onRun = function(context) {
-var doc = context.document;	  
+
+var doc = context.document;
 var foreignSymbols = doc.documentData().foreignSymbols();
 
 function GetSymbolsByName(name){
@@ -167,15 +168,13 @@ function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, o
 
         var image = NSImage.alloc().init().autorelease();
         image.addRepresentation(imageRep);
-        
-        var foreignSymbolLoop = foreignSymbols.objectEnumerator();
-	var title = instancesPerSymbol[j].length+" instances (and used in "+overridesPerSymbol[j].length+" overrides)";
-	while (foreignSymbol = foreignSymbolLoop.nextObject()) {
-	    if(duplicatedSymbolsByName[j].symbolID()==foreignSymbol.localShareID())){
-		title = foreignSymbol.sourceLibraryName()+"  -  "+instancesPerSymbol[j].length+" instances (and used in "+overridesPerSymbol[j].length+" overrides)";
 
-	    }
-	}
+        var title = instancesPerSymbol[j].length+" instances (and used in "+overridesPerSymbol[j].length+" overrides)";
+        var foreignSymbol = IsForeign(duplicatedSymbolsByName[j]);
+        if(foreignSymbol != null)
+        {
+            title = foreignSymbol.sourceLibraryName()+"  -  "+instancesPerSymbol[j].length+" instances (and used in "+overridesPerSymbol[j].length+" overrides)";
+        }
         
         cells.objectAtIndex(j).setImagePosition(NSImageAbove);
         cells.objectAtIndex(j).setImage(image);
@@ -196,16 +195,37 @@ function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, o
     return window;
 }
 
+function IsForeign(symbol){
+    var foreignSymbol = null;
+    var foreignSymbolLoop = foreignSymbols.objectEnumerator();
+    while (element = foreignSymbolLoop.nextObject()) {
+        if(element.localShareID().localeCompare(symbol.symbolID()) == 0){
+            foreignSymbol = element;
+        }
+    }
+
+    return foreignSymbol;
+
+}
+
 function MergeSymbols(duplicatedSymbolsByName, instancesPerSymbol, overridesPerSymbol, symbolToKeep){
+    
     for(var i=0;i<duplicatedSymbolsByName.length;i++){
         if(i!=symbolToKeep)
         {
             
             var instancesOfSymbol = instancesPerSymbol[i];
             var overridesOfSymbol = overridesPerSymbol[i];
-            log("overridesOfSymbol.length = "+overridesOfSymbol.length);
+            
+            var foreignSymbol = IsForeign(duplicatedSymbolsByName[i]);
+            if(foreignSymbol != null)
+            {
+                foreignSymbol.unlinkFromRemote();
+            }
+            
+
             for(var k=0;k<instancesOfSymbol.length;k++){
-                instancesOfSymbol[k].symbolID = duplicatedSymbolsByName[symbolToKeep].symbolID();            
+                instancesOfSymbol[k].symbolID = duplicatedSymbolsByName[symbolToKeep].symbolID();                                           
             }
             for(var k=0;k<overridesOfSymbol.length;k++){
                     
@@ -218,6 +238,7 @@ function MergeSymbols(duplicatedSymbolsByName, instancesPerSymbol, overridesPerS
                 overridesOfSymbol[k].overrides = overrides;
             }
             duplicatedSymbolsByName[i].removeFromParent();
+            
         }
     }
 }
@@ -248,6 +269,7 @@ for(var i=0; i < symbols.count(); i++){
         recomposedSymbolName += symbolName.charAt(j);
     }
 
+
     if(artboardNames.indexOf(recomposedSymbolName)<0)
     {
         artboardNames.push(recomposedSymbolName);
@@ -257,6 +279,8 @@ for(var i=0; i < symbols.count(); i++){
             duplicatedSymbols.push(recomposedSymbolName);
     }
 }
+
+
 for (var i = 0; i < duplicatedSymbols.length; i++) {
     var duplicatedSymbolsByName = GetSymbolsByName(duplicatedSymbols[i]);
     var buttonFormat = NSButtonCell.alloc().init();
@@ -308,7 +332,5 @@ if(continuous)
         [doc showMessage: "It seems there are no symbols (with the same name) to merge"];
 }
       
-	
-          
           };
           
