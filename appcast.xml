@@ -14,7 +14,7 @@
             </ul>
           ]]>
         </description>
-        <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/releases/download/v3.0.4/MergeDuplicateSymbols.sketchplugin.zip" sparkle:version="3.0.5"/>
+        <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/archive/master.zip" sparkle:version="3.0.5"/>
       </item>
      <item>
         <title>Version 3.0.4</title>
@@ -25,7 +25,7 @@
             </ul>
           ]]>
         </description>
-        <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/releases/download/v3.0.4/MergeDuplicateSymbols.sketchplugin.zip" sparkle:version="3.0.4"/>
+        <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/archive/master.zip" sparkle:version="3.0.4"/>
       </item>
     <item>
         <title>Version 3.0.0</title>
