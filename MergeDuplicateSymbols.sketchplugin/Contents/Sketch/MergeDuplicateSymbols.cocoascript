@@ -11,7 +11,7 @@ function GetSymbolsByName(name){
         if(symbolName.localeCompare(name) == 0)
         {
             matchingSymbols.push(allSymbols[i]);
-        }        
+        }
     }
     return matchingSymbols;
 }
@@ -102,14 +102,17 @@ function getSymbolOverrides(context,symbolMaster) {
 }
 
 function FindOverrideSymbolID(instance, overrides,symbolOverrides,symbolMaster, level){
-    for (var key in overrides) {    
+    for (var key in overrides) {
         var symbolID = overrides[key]["symbolID"];
         if(symbolID == null)
-        {    
+        {
             FindOverrideSymbolID(instance, overrides[key], symbolOverrides, symbolMaster, level+1);
         }
         else
         {
+            if (typeof symbolID === 'function') {
+              symbolID = symbolID();
+            }
             if (symbolID.localeCompare(symbolMaster.symbolID()) == 0) {
                 symbolOverrides.addObject(instance);
             }
@@ -141,19 +144,19 @@ function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, o
     var okbutton = window.addButtonWithTitle("OK");
     window.addButtonWithTitle("Don't merge this one");
     window.addButtonWithTitle("Continue later");
-      
+
 
     var cells = matrix.cells();
-           
+
     for(var j=0;j<duplicatedSymbolsByName.length;j++){
         var exportRequest = MSExportRequest.exportRequestsFromExportableLayer_inRect_useIDForName_(
             duplicatedSymbolsByName[j],
             duplicatedSymbolsByName[j].absoluteInfluenceRect(),
             false
             ).firstObject()
-  
+
         exportRequest.format = "png"
-        
+
         var scaleX = cellWidth / exportRequest.rect().size.width;
         var scaleY = (cellHeight-20) / exportRequest.rect().size.height;
 
@@ -161,7 +164,7 @@ function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, o
             exportRequest.scale = scaleX;
         else
             exportRequest.scale = scaleY;
-            
+
         var colorSpace = NSColorSpace.sRGBColorSpace()
         var exporter = MSExporter.exporterForRequest_colorSpace_(exportRequest, colorSpace)
         var imageRep = exporter.bitmapImageRep()
@@ -175,14 +178,14 @@ function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, o
         {
             title = instancesPerSymbol[j].length+" instances -  Used in "+overridesPerSymbol[j].length+" overrides (Library: "+foreignSymbol.sourceLibraryName()+")";
         }
-        
+
         cells.objectAtIndex(j).setImagePosition(NSImageAbove);
         cells.objectAtIndex(j).setImage(image);
         cells.objectAtIndex(j).setTitle(title);
     }
     var scrollHeight = matrixHeight;
     if(matrixHeight > 400)
-        scrollHeight = 400;   
+        scrollHeight = 400;
 
     var listContainer = [[NSScrollView alloc] initWithFrame:NSMakeRect(0,0,cellWidth,scrollHeight)];
 
@@ -209,28 +212,28 @@ function IsForeign(symbol){
 }
 
 function MergeSymbols(duplicatedSymbolsByName, instancesPerSymbol, overridesPerSymbol, symbolToKeep){
-    
+
     for(var i=0;i<duplicatedSymbolsByName.length;i++){
         if(i!=symbolToKeep)
         {
-            
+
             var instancesOfSymbol = instancesPerSymbol[i];
             var overridesOfSymbol = overridesPerSymbol[i];
-            
+
             var foreignSymbol = IsForeign(duplicatedSymbolsByName[i]);
             if(foreignSymbol != null)
             {
                 foreignSymbol.unlinkFromRemote();
             }
-            
+
 
             for(var k=0;k<instancesOfSymbol.length;k++){
-                instancesOfSymbol[k].symbolID = duplicatedSymbolsByName[symbolToKeep].symbolID();                                           
+                instancesOfSymbol[k].symbolID = duplicatedSymbolsByName[symbolToKeep].symbolID();
             }
             for(var k=0;k<overridesOfSymbol.length;k++){
-                    
+
                 var overrides = NSMutableDictionary.dictionaryWithDictionary(overridesOfSymbol[k].overrides());
-                var keys = overrides.allKeys();                
+                var keys = overrides.allKeys();
                 for (var l = 0; l < keys.count(); l++) {
                     var keyIndex = keys.objectAtIndex(l);
                     SetOverrideSymbolID(overrides[keyIndex], duplicatedSymbolsByName[symbolToKeep].symbolID(), 0);
@@ -238,7 +241,7 @@ function MergeSymbols(duplicatedSymbolsByName, instancesPerSymbol, overridesPerS
                 overridesOfSymbol[k].overrides = overrides;
             }
             duplicatedSymbolsByName[i].removeFromParent();
-            
+
         }
     }
 }
@@ -274,8 +277,8 @@ for(var i=0; i < symbols.count(); i++){
     {
         artboardNames.push(recomposedSymbolName);
     }
-    else{  
-        if(duplicatedSymbols.indexOf(recomposedSymbolName)<0)      
+    else{
+        if(duplicatedSymbols.indexOf(recomposedSymbolName)<0)
             duplicatedSymbols.push(recomposedSymbolName);
     }
 }
@@ -293,7 +296,7 @@ for (var i = 0; i < duplicatedSymbols.length; i++) {
             1
     );
     matrix.setCellSize(CGSizeMake(cellWidth, cellHeight));
-    
+
     var totalInstances = 0;
     var totalOverrides = 0;
     var instancesPerSymbol = FindSymbolInstances(duplicatedSymbolsByName[j], duplicatedSymbolsByName);
@@ -304,17 +307,17 @@ for (var i = 0; i < duplicatedSymbols.length; i++) {
     for(var p = 0;p<overridesPerSymbol.length;p++)
         totalOverrides+=overridesPerSymbol[p].length;
 
-    var window = CreateWindow(duplicatedSymbols[i], duplicatedSymbolsByName, instancesPerSymbol, overridesPerSymbol, totalInstances, totalOverrides, matrix, cellWidth, cellHeight, matrixHeight); 
+    var window = CreateWindow(duplicatedSymbols[i], duplicatedSymbolsByName, instancesPerSymbol, overridesPerSymbol, totalInstances, totalOverrides, matrix, cellWidth, cellHeight, matrixHeight);
     var responseCode = handleAlertResponse(window, window.runModal());
-    
+
     var symbolToKeep = matrix.cells().indexOfObject(matrix.selectedCell());
-        
+
     if(responseCode == "OK"){
         MergeSymbols(duplicatedSymbolsByName, instancesPerSymbol,overridesPerSymbol, symbolToKeep);
         mergedSymbols++;
     }
     else if(responseCode == "CONTINUE LATER")
-    {    	
+    {
     	[doc showMessage: "Cool, we'll continue later!  Meanwhile, "+mergedSymbols+GetTextBasedOnCount(mergedSymbols)+"merged"];
         continuous = false;
     }
@@ -331,6 +334,5 @@ if(continuous)
     else
         [doc showMessage: "It seems there are no symbols (with the same name) to merge"];
 }
-      
+
           };
-          
