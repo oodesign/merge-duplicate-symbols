@@ -33,7 +33,7 @@ And that's it! Symbols are merged. The discarded ones are removed, and all of th
 <br/><br/>
 <img src="https://github.com/oodesign/merge-duplicate-symbols/blob/master/Images/SymbolsMerged.PNG" alt="Symbols are merged. The discarded ones are removed, and all of their instances are replaced by the new one."/>
 
-## Install it with Sketchpacks
+## Automatic installation
 
 Let Sketchpacks or Runner do the work for you. Open one of them, search for "Merge duplicate symbols", and click "Install".
 
