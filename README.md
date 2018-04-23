@@ -35,11 +35,18 @@ And that's it! Symbols are merged. The discarded ones are removed, and all of th
 
 ## Install it with Sketchpacks
 
-Let Sketchpacks do the work for you. Open Sketchpacks, search for "Merge duplicate symbols", and click "Install".
-Or you may click the "Install it with Sketchpacks" button below :)
+Let Sketchpacks or Runner do the work for you. Open one of them, search for "Merge duplicate symbols", and click "Install".
+
+<a href="http://bit.ly/SketchRunnerWebsite">
+	<img width="160" height="41" src="http://bit.ly/RunnerBadgeBlue" alt="runner-badge-blue">
+</a>
 
 <a href="https://sketchpacks.com/oodesign/merge-duplicate-symbols/install">
-  <img width="160" height="41" src="http://sketchpacks-com.s3.amazonaws.com/assets/badges/sketchpacks-badge-install.png" >
+	<img width="160" height="41" src="http://sketchpacks-com.s3.amazonaws.com/assets/badges/sketchpacks-badge-install.png" >
+</a>
+
+<a href="https://www.paypal.me/oodesign">
+	<img width="160" height="41" src="https://github.com/oodesign/icon-tools/blob/master/Images/paypal-badge.png">
 </a>
 
 ## Manual Installation
