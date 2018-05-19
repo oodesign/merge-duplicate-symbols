@@ -1,4 +1,5 @@
 {
+  "compatibleVersion": 50,
   "appcast" : "https://raw.githubusercontent.com/oodesign/merge-duplicate-symbols/master/appcast.xml",
   "commands" : [
     {
@@ -18,10 +19,11 @@
     ]
   },
   "identifier" : "com.example.sketch.8f55e971-28b8-4d86-bc10-729e8a4e4dfc",
-  "version" : "3.0.6",
+  "version" : "3.0.7",
   "name" : "Merge duplicate symbols",
+	"icon" : "icon.png",
   "authorEmail" : "oodesignux@gmail.com",
-  "description": "Sketch.app plugin to merge symbols with the same name",
+  "description": "Merge symbols with the same name, replacing all instances and maintaining overrides.",
   "author": "oodesign",
   "homepage": "https://github.com/oodesign/merge-duplicate-symbols"
 }

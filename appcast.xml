@@ -3,19 +3,30 @@
   <channel>
     <title>Merge duplicate symbols</title>
     <link>https://github.com/oodesign/merge-duplicate-symbols/blob/master/appcast.xml</link>
-    <description>Sketch.app plugin to merge symbols with the same name.</description>
+    <description>Merge symbols with the same name, replacing all instances and maintaining overrides.</description>
     <language>en</language>
      <item>
-        <title>Version 3.0.6</title>
+        <title>Version 3.0.7</title>
         <description>
           <![CDATA[
             <ul>
-              <li>Fixes the bug that caused MergeDuplicateSymbols to do nothing in some situations.</li>
+              <li>Fixes to support Sketch 50+.</li>
             </ul>
           ]]>
         </description>
-        <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/archive/master.zip" sparkle:version="3.0.6"/>
+        <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/archive/master.zip" sparkle:version="3.0.7"/>
       </item>
+       <item>
+          <title>Version 3.0.6</title>
+          <description>
+            <![CDATA[
+              <ul>
+                <li>Fixes the bug that caused MergeDuplicateSymbols to do nothing in some situations.</li>
+              </ul>
+            ]]>
+          </description>
+          <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/archive/master.zip" sparkle:version="3.0.6"/>
+        </item>
        <item>
           <title>Version 3.0.4</title>
           <description>

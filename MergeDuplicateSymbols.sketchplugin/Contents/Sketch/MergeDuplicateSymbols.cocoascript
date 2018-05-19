@@ -3,6 +3,83 @@ var onRun = function(context) {
 var doc = context.document;
 var foreignSymbols = doc.documentData().foreignSymbols();
 
+function MergeSymbols(duplicatedSymbolsByName, instancesPerSymbol, overridesPerSymbol, symbolToKeep){
+
+    var symbolsIDsToRemove=[];
+
+
+    for(var i=0;i<duplicatedSymbolsByName.length;i++){
+        if(i!=symbolToKeep)
+        {
+            if(symbolsIDsToRemove.indexOf(duplicatedSymbolsByName[i].symbolID())<0)
+                symbolsIDsToRemove.push(duplicatedSymbolsByName[i].symbolID());
+        }
+    }
+
+
+
+    for(var i=0;i<duplicatedSymbolsByName.length;i++){
+        if(i!=symbolToKeep)
+        {
+            var instancesOfSymbol = instancesPerSymbol[i];
+            var overridesOfSymbol = overridesPerSymbol[i];
+
+            var foreignSymbol = IsForeign(duplicatedSymbolsByName[i]);
+            if(foreignSymbol != null)
+            {
+                foreignSymbol.unlinkFromRemote();
+            }
+
+
+            for(var k=0;k<instancesOfSymbol.length;k++){
+                instancesOfSymbol[k].changeInstanceToSymbol(duplicatedSymbolsByName[symbolToKeep]);
+            }
+
+
+            for(var k=0;k<overridesOfSymbol.length;k++){
+
+                var overridesToReplace = [];
+                var currentOverrides = NSMutableDictionary.dictionaryWithDictionary(overridesOfSymbol[k].overrides());
+                var overrideOuterKeys = currentOverrides.allKeys();
+                for (var x = 0; x < overrideOuterKeys.count(); x++) {
+                    var keyIndex = overrideOuterKeys.objectAtIndex(x);
+                    var overrideInnerKeys = currentOverrides[keyIndex].allKeys();
+                    var innerNewOverride={};
+                    for (var y = 0; y < overrideInnerKeys.count(); y++) {
+                        var innerkeyIndex = overrideInnerKeys.objectAtIndex(y);
+                        var shallbereplaced=false;
+                        for(t=0;t<symbolsIDsToRemove.length;t++){
+                            if(currentOverrides[keyIndex]["symbolID"]!=null && currentOverrides[keyIndex]["symbolID"].indexOf(symbolsIDsToRemove[t])>-1)
+                                shallbereplaced=true;
+                        }
+                        if(shallbereplaced){
+                            if(overridesToReplace.indexOf(keyIndex)<0)
+                                overridesToReplace.push(keyIndex);
+                        }
+                    }
+                }
+
+                overridesOfSymbol[k].overridePoints().forEach(function(overridePoint){
+                    if(overridePoint.toString().indexOf("symbolID")>-1)
+                    {
+                        var shallbereplaced=false;
+                        for(t=0;t<overridesToReplace.length;t++){
+                            if(overridePoint.toString().indexOf(overridesToReplace[t])>-1){
+                                shallbereplaced=true;
+                            }
+                        }
+                        if(shallbereplaced)
+                            overridesOfSymbol[k].setValue_forOverridePoint_(duplicatedSymbolsByName[symbolToKeep].symbolID(), overridePoint);
+                    }
+                 });
+            }
+            duplicatedSymbolsByName[i].removeFromParent();
+
+        }
+    }
+}
+
+
 function GetSymbolsByName(name){
     var allSymbols = context.document.documentData().allSymbols();
     var matchingSymbols = [];
@@ -122,18 +199,6 @@ function FindOverrideSymbolID(instance, overrides,symbolOverrides,symbolMaster, 
     return symbolID;
 }
 
-function SetOverrideSymbolID(override, newSymbolId, level){
-    var symbolID = override["symbolID"];
-    if(symbolID==null)
-    {
-        for (var key in override) {
-            SetOverrideSymbolID(override[key],newSymbolId, level+1);
-        }
-    }
-    else{
-        override["symbolID"] = newSymbolId;
-    }
-}
 
 
 function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, overridesPerSymbol, totalInstances, totalOverrides, matrix, cellWidth, cellHeight, matrixHeight){
@@ -211,40 +276,6 @@ function IsForeign(symbol){
 
 }
 
-function MergeSymbols(duplicatedSymbolsByName, instancesPerSymbol, overridesPerSymbol, symbolToKeep){
-
-    for(var i=0;i<duplicatedSymbolsByName.length;i++){
-        if(i!=symbolToKeep)
-        {
-
-            var instancesOfSymbol = instancesPerSymbol[i];
-            var overridesOfSymbol = overridesPerSymbol[i];
-
-            var foreignSymbol = IsForeign(duplicatedSymbolsByName[i]);
-            if(foreignSymbol != null)
-            {
-                foreignSymbol.unlinkFromRemote();
-            }
-
-
-            for(var k=0;k<instancesOfSymbol.length;k++){
-                instancesOfSymbol[k].symbolID = duplicatedSymbolsByName[symbolToKeep].symbolID();
-            }
-            for(var k=0;k<overridesOfSymbol.length;k++){
-
-                var overrides = NSMutableDictionary.dictionaryWithDictionary(overridesOfSymbol[k].overrides());
-                var keys = overrides.allKeys();
-                for (var l = 0; l < keys.count(); l++) {
-                    var keyIndex = keys.objectAtIndex(l);
-                    SetOverrideSymbolID(overrides[keyIndex], duplicatedSymbolsByName[symbolToKeep].symbolID(), 0);
-                }
-                overridesOfSymbol[k].overrides = overrides;
-            }
-            duplicatedSymbolsByName[i].removeFromParent();
-
-        }
-    }
-}
 
 function GetTextBasedOnCount(number){
     if(number!=1){
@@ -334,5 +365,6 @@ if(continuous)
     else
         [doc showMessage: "It seems there are no symbols (with the same name) to merge"];
 }
+
 
           };
