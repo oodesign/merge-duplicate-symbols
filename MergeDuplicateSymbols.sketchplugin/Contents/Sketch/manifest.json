@@ -5,21 +5,19 @@
     {
       "script" : "MergeDuplicateSymbols.cocoascript",
       "name" : "Merge duplicate symbols",
-      "handlers" : {
-        "run" : "onRun"
-      },
-      "identifier" : "com.bohemiancoding.sketch.runscriptidentifier",
+      "handler" : "onRun",
+      "identifier" : "mergeduplicatesymbols",
       "icon" : "icon-sr.png"
     }
   ],
-  "menu" : {
-    "title" : "Merge duplicate symbols",
-    "items" : [
-      "com.bohemiancoding.sketch.runscriptidentifier"
-    ]
+  "menu": {
+      "isRoot": true,
+      "items": [
+        "mergeduplicatesymbols"
+      ]
   },
-  "identifier" : "com.example.sketch.8f55e971-28b8-4d86-bc10-729e8a4e4dfc",
-  "version" : "3.0.7",
+  "identifier" : "com.oodesign.mergeduplicatesymbols",
+  "version" : "3.0.8",
   "name" : "Merge duplicate symbols",
 	"icon" : "icon.png",
   "authorEmail" : "oodesignux@gmail.com",
