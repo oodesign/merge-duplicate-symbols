@@ -35,26 +35,34 @@ function MergeSymbols(duplicatedSymbolsByName, instancesPerSymbol, overridesPerS
                 instancesOfSymbol[k].changeInstanceToSymbol(duplicatedSymbolsByName[symbolToKeep]);
             }
 
-
             for(var k=0;k<overridesOfSymbol.length;k++){
-
                 var overridesToReplace = [];
                 var currentOverrides = NSMutableDictionary.dictionaryWithDictionary(overridesOfSymbol[k].overrides());
+
                 var overrideOuterKeys = currentOverrides.allKeys();
+
                 for (var x = 0; x < overrideOuterKeys.count(); x++) {
                     var keyIndex = overrideOuterKeys.objectAtIndex(x);
-                    var overrideInnerKeys = currentOverrides[keyIndex].allKeys();
-                    var innerNewOverride={};
-                    for (var y = 0; y < overrideInnerKeys.count(); y++) {
-                        var innerkeyIndex = overrideInnerKeys.objectAtIndex(y);
-                        var shallbereplaced=false;
-                        for(t=0;t<symbolsIDsToRemove.length;t++){
-                            if(currentOverrides[keyIndex]["symbolID"]!=null && currentOverrides[keyIndex]["symbolID"].indexOf(symbolsIDsToRemove[t])>-1)
-                                shallbereplaced=true;
-                        }
-                        if(shallbereplaced){
-                            if(overridesToReplace.indexOf(keyIndex)<0)
-                                overridesToReplace.push(keyIndex);
+
+                    if(currentOverrides[keyIndex]==null || !(/\S/.test(currentOverrides[keyIndex].toString())))
+                    {
+                        //Internal overrides. Don't consider.
+                    }
+                    else
+                    {
+                        var overrideInnerKeys = currentOverrides[keyIndex].allKeys();
+                        var innerNewOverride={};
+                        for (var y = 0; y < overrideInnerKeys.count(); y++) {
+                            var innerkeyIndex = overrideInnerKeys.objectAtIndex(y);
+                            var shallbereplaced=false;
+                            for(t=0;t<symbolsIDsToRemove.length;t++){
+                                if(currentOverrides[keyIndex]["symbolID"]!=null && currentOverrides[keyIndex]["symbolID"].indexOf(symbolsIDsToRemove[t])>-1)
+                                    shallbereplaced=true;
+                            }
+                            if(shallbereplaced){
+                                if(overridesToReplace.indexOf(keyIndex)<0)
+                                    overridesToReplace.push(keyIndex);
+                            }
                         }
                     }
                 }
@@ -366,5 +374,4 @@ if(continuous)
         [doc showMessage: "It seems there are no symbols (with the same name) to merge"];
 }
 
-
-          };
+};
