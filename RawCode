@@ -1,0 +1,373 @@
+var doc = context.document;
+var foreignSymbols = doc.documentData().foreignSymbols();
+
+function MergeSymbols(duplicatedSymbolsByName, instancesPerSymbol, overridesPerSymbol, symbolToKeep){
+
+    var symbolsIDsToRemove=[];
+
+
+    for(var i=0;i<duplicatedSymbolsByName.length;i++){
+        if(i!=symbolToKeep)
+        {
+            if(symbolsIDsToRemove.indexOf(duplicatedSymbolsByName[i].symbolID())<0)
+                symbolsIDsToRemove.push(duplicatedSymbolsByName[i].symbolID());
+        }
+    }
+
+
+
+    for(var i=0;i<duplicatedSymbolsByName.length;i++){
+        if(i!=symbolToKeep)
+        {
+            var instancesOfSymbol = instancesPerSymbol[i];
+            var overridesOfSymbol = overridesPerSymbol[i];
+
+            var foreignSymbol = IsForeign(duplicatedSymbolsByName[i]);
+            if(foreignSymbol != null)
+            {
+                foreignSymbol.unlinkFromRemote();
+            }
+
+
+            for(var k=0;k<instancesOfSymbol.length;k++){
+                instancesOfSymbol[k].changeInstanceToSymbol(duplicatedSymbolsByName[symbolToKeep]);
+            }
+
+            for(var k=0;k<overridesOfSymbol.length;k++){
+                var overridesToReplace = [];
+                var currentOverrides = NSMutableDictionary.dictionaryWithDictionary(overridesOfSymbol[k].overrides());
+
+                var overrideOuterKeys = currentOverrides.allKeys();
+
+                for (var x = 0; x < overrideOuterKeys.count(); x++) {
+                    var keyIndex = overrideOuterKeys.objectAtIndex(x);
+
+                    if(currentOverrides[keyIndex]==null || !(/\S/.test(currentOverrides[keyIndex].toString())))
+                    {
+                        //Internal overrides. Don't consider.
+                    }
+                    else
+                    {
+                        var overrideInnerKeys = currentOverrides[keyIndex].allKeys();
+                        var innerNewOverride={};
+                        for (var y = 0; y < overrideInnerKeys.count(); y++) {
+                            var innerkeyIndex = overrideInnerKeys.objectAtIndex(y);
+                            var shallbereplaced=false;
+                            for(t=0;t<symbolsIDsToRemove.length;t++){
+                                if(currentOverrides[keyIndex]["symbolID"]!=null && currentOverrides[keyIndex]["symbolID"].indexOf(symbolsIDsToRemove[t])>-1)
+                                    shallbereplaced=true;
+                            }
+                            if(shallbereplaced){
+                                if(overridesToReplace.indexOf(keyIndex)<0)
+                                    overridesToReplace.push(keyIndex);
+                            }
+                        }
+                    }
+                }
+
+                overridesOfSymbol[k].overridePoints().forEach(function(overridePoint){
+                    if(overridePoint.toString().indexOf("symbolID")>-1)
+                    {
+                        var shallbereplaced=false;
+                        for(t=0;t<overridesToReplace.length;t++){
+                            if(overridePoint.toString().indexOf(overridesToReplace[t])>-1){
+                                shallbereplaced=true;
+                            }
+                        }
+                        if(shallbereplaced)
+                            overridesOfSymbol[k].setValue_forOverridePoint_(duplicatedSymbolsByName[symbolToKeep].symbolID(), overridePoint);
+                    }
+                 });
+            }
+            duplicatedSymbolsByName[i].removeFromParent();
+
+        }
+    }
+}
+
+
+function GetSymbolsByName(name){
+    var allSymbols = context.document.documentData().allSymbols();
+    var matchingSymbols = [];
+    for(var i=0; i < allSymbols.count(); i++){
+        var symbolName = allSymbols[i].name().toString();
+        if(symbolName.localeCompare(name) == 0)
+        {
+            matchingSymbols.push(allSymbols[i]);
+        }
+    }
+    return matchingSymbols;
+}
+
+function handleAlertResponse(window, responseCode) {
+    if (responseCode == "1000") {
+        return "OK";
+	}
+    else if (responseCode == "1002") {
+        return "CONTINUE LATER";
+	}
+    return null;
+}
+
+function FindSymbolInstances(originalSymbol, duplicateSymbolsByName){
+    var instancesPerSymbol = [];
+    for(var i=0;i<duplicateSymbolsByName.length;i++)
+    {
+        instancesPerSymbol[i] = NSMutableArray.array();
+    }
+
+    for(var i=0;i<duplicateSymbolsByName.length;i++)
+    {
+        var symbolInstances = getSymbolInstances(context,duplicateSymbolsByName[i]);
+        instancesPerSymbol[i] = symbolInstances;
+    }
+
+    return instancesPerSymbol;
+}
+
+function FindSymbolOverrides(originalSymbol, duplicateSymbolsByName){
+    var overridesPerSymbol = [];
+    for(var i=0;i<duplicateSymbolsByName.length;i++)
+    {
+        overridesPerSymbol[i] = NSMutableArray.array();
+    }
+
+
+    for(var i=0;i<duplicateSymbolsByName.length;i++)
+    {
+        var symbolOverrides = getSymbolOverrides(context,duplicateSymbolsByName[i]);
+        overridesPerSymbol[i] = symbolOverrides;
+    }
+
+    return overridesPerSymbol;
+}
+
+function getSymbolInstances(context,symbolMaster) {
+	var symbolInstances = NSMutableArray.array();
+
+	var pages = context.document.pages(),
+		pageLoop = pages.objectEnumerator(),
+		page;
+
+	while (page = pageLoop.nextObject()) {
+		var predicate = NSPredicate.predicateWithFormat("className == 'MSSymbolInstance' && symbolMaster == %@",symbolMaster),
+			instances = page.children().filteredArrayUsingPredicate(predicate),
+			instanceLoop = instances.objectEnumerator(),
+			instance;
+
+		while (instance = instanceLoop.nextObject()) {
+			symbolInstances.addObject(instance);
+		}
+	}
+
+	return symbolInstances;
+}
+
+function getSymbolOverrides(context,symbolMaster) {
+	var symbolOverrides = NSMutableArray.array();
+
+	var pages = context.document.pages(),
+		pageLoop = pages.objectEnumerator(),
+		page;
+
+	while (page = pageLoop.nextObject()) {
+		var predicate = NSPredicate.predicateWithFormat("className == %@ && overrides != nil","MSSymbolInstance"),
+			instances = page.children().filteredArrayUsingPredicate(predicate),
+			instanceLoop = instances.objectEnumerator(),
+			instance;
+
+		while (instance = instanceLoop.nextObject()) {
+			var overrides = instance.overrides();
+			FindOverrideSymbolID(instance, overrides, symbolOverrides, symbolMaster,0);
+		}
+	}
+    return symbolOverrides;
+}
+
+function FindOverrideSymbolID(instance, overrides,symbolOverrides,symbolMaster, level){
+    for (var key in overrides) {
+        var symbolID = overrides[key]["symbolID"];
+        if(symbolID == null)
+        {
+            FindOverrideSymbolID(instance, overrides[key], symbolOverrides, symbolMaster, level+1);
+        }
+        else
+        {
+            if (typeof symbolID === 'function') {
+              symbolID = symbolID();
+            }
+            if (symbolID.localeCompare(symbolMaster.symbolID()) == 0) {
+                symbolOverrides.addObject(instance);
+            }
+        }
+    }
+
+    return symbolID;
+}
+
+
+
+function CreateWindow(symbolName, duplicatedSymbolsByName, instancesPerSymbol, overridesPerSymbol, totalInstances, totalOverrides, matrix, cellWidth, cellHeight, matrixHeight){
+    var window = COSAlertWindow.new();
+    window.setMessageText("Merging symbol '"+symbolName+"'");
+    //window.setIcon(NSImage.alloc().initByReferencingFile(context.plugin.urlForResourceNamed("icon.png").path()));
+    window.setInformativeText("There are "+duplicatedSymbolsByName.length+" symbols with this name. Choose the one you want to keep and press OK. The other symbols will be removed, and all of their instances will be replaced by the one you chose to keep.");
+    var okbutton = window.addButtonWithTitle("OK");
+    window.addButtonWithTitle("Don't merge this one");
+    window.addButtonWithTitle("Continue later");
+
+
+    var cells = matrix.cells();
+
+    for(var j=0;j<duplicatedSymbolsByName.length;j++){
+        var exportRequest = MSExportRequest.exportRequestsFromExportableLayer_inRect_useIDForName_(
+            duplicatedSymbolsByName[j],
+            duplicatedSymbolsByName[j].absoluteInfluenceRect(),
+            false
+            ).firstObject()
+
+        exportRequest.format = "png"
+
+        var scaleX = cellWidth / exportRequest.rect().size.width;
+        var scaleY = (cellHeight-20) / exportRequest.rect().size.height;
+
+        if(scaleX<scaleY)
+            exportRequest.scale = scaleX;
+        else
+            exportRequest.scale = scaleY;
+
+        var colorSpace = NSColorSpace.sRGBColorSpace()
+        var exporter = MSExporter.exporterForRequest_colorSpace_(exportRequest, colorSpace)
+        var imageRep = exporter.bitmapImageRep()
+
+        var image = NSImage.alloc().init().autorelease();
+        image.addRepresentation(imageRep);
+
+        var title = instancesPerSymbol[j].length+" instances -  Used in "+overridesPerSymbol[j].length+" overrides (local)";
+        var foreignSymbol = IsForeign(duplicatedSymbolsByName[j]);
+        if(foreignSymbol != null)
+        {
+            title = instancesPerSymbol[j].length+" instances -  Used in "+overridesPerSymbol[j].length+" overrides (Library: "+foreignSymbol.sourceLibraryName()+")";
+        }
+
+        cells.objectAtIndex(j).setImagePosition(NSImageAbove);
+        cells.objectAtIndex(j).setImage(image);
+        cells.objectAtIndex(j).setTitle(title);
+    }
+    var scrollHeight = matrixHeight;
+    if(matrixHeight > 400)
+        scrollHeight = 400;
+
+    var listContainer = [[NSScrollView alloc] initWithFrame:NSMakeRect(0,0,cellWidth,scrollHeight)];
+
+    listContainer.setDocumentView(matrix);
+
+    if(scrollHeight != matrixHeight)
+        listContainer.setHasVerticalScroller(true);
+
+    window.setAccessoryView(listContainer);
+    return window;
+}
+
+function IsForeign(symbol){
+    var foreignSymbol = null;
+    var foreignSymbolLoop = foreignSymbols.objectEnumerator();
+    while (element = foreignSymbolLoop.nextObject()) {
+        if(element.localShareID().localeCompare(symbol.symbolID()) == 0){
+            foreignSymbol = element;
+        }
+    }
+
+    return foreignSymbol;
+
+}
+
+
+function GetTextBasedOnCount(number){
+    if(number!=1){
+        return " symbols were ";
+    }
+    else
+    {
+        return " symbol was ";
+    }
+}
+
+var symbols = context.document.documentData().allSymbols();
+var artboardNames=[];
+var duplicatedSymbols=[];
+var checkedSymbols = [];
+var mergedSymbols = 0;
+var cellWidth = 430;
+var cellHeight = 100;
+var continuous = true;
+
+for(var i=0; i < symbols.count(); i++){
+    var symbolName = symbols[i].name();
+    var recomposedSymbolName = "";
+    for(var j=0;j<symbolName.length();j++){
+        recomposedSymbolName += symbolName.charAt(j);
+    }
+
+
+    if(artboardNames.indexOf(recomposedSymbolName)<0)
+    {
+        artboardNames.push(recomposedSymbolName);
+    }
+    else{
+        if(duplicatedSymbols.indexOf(recomposedSymbolName)<0)
+            duplicatedSymbols.push(recomposedSymbolName);
+    }
+}
+
+
+for (var i = 0; i < duplicatedSymbols.length; i++) {
+    var duplicatedSymbolsByName = GetSymbolsByName(duplicatedSymbols[i]);
+    var buttonFormat = NSButtonCell.alloc().init();
+    var matrixHeight = (cellHeight+0)*duplicatedSymbolsByName.length;
+    var matrix = NSMatrix.alloc().initWithFrame_mode_prototype_numberOfRows_numberOfColumns(
+            NSMakeRect(0, 0, cellWidth, matrixHeight),
+            NSListModeMatrix,
+            buttonFormat,
+            duplicatedSymbolsByName.length,
+            1
+    );
+    matrix.setCellSize(CGSizeMake(cellWidth, cellHeight));
+
+    var totalInstances = 0;
+    var totalOverrides = 0;
+    var instancesPerSymbol = FindSymbolInstances(duplicatedSymbolsByName[j], duplicatedSymbolsByName);
+    var overridesPerSymbol = FindSymbolOverrides(duplicatedSymbolsByName[j], duplicatedSymbolsByName);
+
+    for(var p = 0;p<instancesPerSymbol.length;p++)
+        totalInstances+=instancesPerSymbol[p].length;
+    for(var p = 0;p<overridesPerSymbol.length;p++)
+        totalOverrides+=overridesPerSymbol[p].length;
+
+    var window = CreateWindow(duplicatedSymbols[i], duplicatedSymbolsByName, instancesPerSymbol, overridesPerSymbol, totalInstances, totalOverrides, matrix, cellWidth, cellHeight, matrixHeight);
+    var responseCode = handleAlertResponse(window, window.runModal());
+
+    var symbolToKeep = matrix.cells().indexOfObject(matrix.selectedCell());
+
+    if(responseCode == "OK"){
+        MergeSymbols(duplicatedSymbolsByName, instancesPerSymbol,overridesPerSymbol, symbolToKeep);
+        mergedSymbols++;
+    }
+    else if(responseCode == "CONTINUE LATER")
+    {
+    	[doc showMessage: "Cool, we'll continue later!  Meanwhile, "+mergedSymbols+GetTextBasedOnCount(mergedSymbols)+"merged"];
+        continuous = false;
+    }
+
+
+    if(!continuous)
+        break;
+}
+
+if(continuous)
+{
+    if(duplicatedSymbols.length>0)
+        [doc showMessage: "Hey ho! "+mergedSymbols+GetTextBasedOnCount(mergedSymbols)+"merged"];
+    else
+        [doc showMessage: "It seems there are no symbols (with the same name) to merge"];
+}
