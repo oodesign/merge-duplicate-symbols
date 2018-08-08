@@ -48,6 +48,9 @@ function MergeSymbols(duplicatedSymbolsByName, instancesPerSymbol, overridesPerS
                     }
                     else
                     {
+                        console.log("CurrentOverrides: "+currentOverrides);
+                        console.log("KeyIndex: "+keyIndex);
+                        console.log("currentOverrides[keyIndex]: "+currentOverrides[keyIndex]);
                         var overrideInnerKeys = currentOverrides[keyIndex].allKeys();
                         var innerNewOverride={};
                         for (var y = 0; y < overrideInnerKeys.count(); y++) {
