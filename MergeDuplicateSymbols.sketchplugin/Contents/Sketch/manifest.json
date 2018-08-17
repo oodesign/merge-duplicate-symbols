@@ -17,11 +17,11 @@
       ]
   },
   "identifier" : "com.oodesign.mergeduplicatesymbols",
-  "version" : "3.0.9",
+  "version" : "3.1.0",
   "name" : "Merge duplicate symbols",
 	"icon" : "icon.png",
   "authorEmail" : "oodesignux@gmail.com",
-  "description": "Merge symbols with the same name, replacing all instances and maintaining overrides.",
+  "description": "Merge symbols with the same name, replacing all instances and keeping overrides.",
   "author": "oodesign",
   "homepage": "https://github.com/oodesign/merge-duplicate-symbols"
 }
