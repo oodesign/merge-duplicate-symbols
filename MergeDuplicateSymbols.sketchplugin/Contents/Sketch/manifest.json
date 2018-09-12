@@ -5,7 +5,7 @@
     {
       "script" : "MergeDuplicateSymbols.cocoascript",
       "name" : "Merge duplicate symbols",
-      "handler" : "onRun",
+      "handler" : "MergeDuplicateSymbols",
       "identifier" : "mergeduplicatesymbols",
       "icon" : "icon-sr.png"
     }
@@ -17,7 +17,7 @@
       ]
   },
   "identifier" : "com.oodesign.mergeduplicatesymbols",
-  "version" : "3.1.0",
+  "version" : "3.1.2",
   "name" : "Merge duplicate symbols",
 	"icon" : "icon.png",
   "authorEmail" : "oodesignux@gmail.com",
