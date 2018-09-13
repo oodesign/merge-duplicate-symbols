@@ -9,6 +9,19 @@ function GetTextBasedOnCount(number){
     }
 }
 
+function generateUUID() {
+    var d = new Date().getTime();
+    if(Date.now){
+        d = Date.now(); //high-precision timer
+    }
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    });
+    return uuid;
+};
+
 function IsForeign(symbol, foreignSymbols){
     var foreignSymbol = null;
     var foreignSymbolLoop = foreignSymbols.objectEnumerator();
@@ -136,17 +149,26 @@ function GetSymbolsByName(name, context){
     return matchingSymbols;
 }
 
-function CreateWindow(context, matrix, symbolName, duplicatedSymbolsByName, instancesPerSymbol, overridesPerSymbol, totalInstances, totalOverrides, matrix, cellWidth, cellHeight, matrixHeight, symbolNumber, totalDuplicatesNumber, foreignSymbols){
+function CreateWindow(context, matrix, symbolName, duplicatedSymbolsByName, instancesPerSymbol, overridesPerSymbol, totalInstances, totalOverrides, matrix, cellWidth, cellHeight, matrixHeight, symbolNumber, totalDuplicatesNumber, foreignSymbols, allDocument){
     var window = COSAlertWindow.new();
     var windowTitle = "Merging symbol '"+symbolName+"'";
-    if(totalDuplicatesNumber>1) windowTitle+= " ("+symbolNumber+" of "+totalDuplicatesNumber+")");
-    window.setMessageText(windowTitle);
+    var windowInformativeText = "There are "+duplicatedSymbolsByName.length+" symbols with this name. Choose the one you want to keep and press OK. The other symbols will be removed, and all of their instances will be replaced by the one you chose to keep.";
+    if(!allDocument)
+    {
+      windowTitle = "Merging symbols with different names";
+      windowInformativeText = "You're about to merge this symbols. Choose the one you want to keep and press OK. The other symbols will be removed, and all of their instances will be replaced by the one you chose to keep.";
+    }
 
+    if(totalDuplicatesNumber>1) windowTitle+= " ("+symbolNumber+" of "+totalDuplicatesNumber+")");
+
+    window.setMessageText(windowTitle);
     window.setIcon(NSImage.alloc().initByReferencingFile(context.plugin.urlForResourceNamed("icon.png").path()));
-    window.setInformativeText("There are "+duplicatedSymbolsByName.length+" symbols with this name. Choose the one you want to keep and press OK. The other symbols will be removed, and all of their instances will be replaced by the one you chose to keep.");
+    window.setInformativeText(windowInformativeText);
     var okbutton = window.addButtonWithTitle("OK");
     window.addButtonWithTitle("Don't merge this one");
     window.addButtonWithTitle("Continue later");
+
+
 
     var cells = matrix.cells();
 
@@ -314,7 +336,7 @@ function GetAllDuplicatedSymbols(symbols){
   return duplicatedSymbols;
 }
 
-function LaunchMerging(context, duplicatedSymbols){
+function LaunchMerging(context, duplicatedSymbols, allDocument){
 
   var doc = context.document;
   var checkedSymbols = [];
@@ -323,6 +345,7 @@ function LaunchMerging(context, duplicatedSymbols){
   var cellHeight = 100;
   var continuous = true;
   var foreignSymbols = context.document.documentData().foreignSymbols();
+  var lastSymbolMerged;
 
   for (var i = 0; i < duplicatedSymbols.length; i++) {
       var duplicatedSymbolsByName = GetSymbolsByName(duplicatedSymbols[i], context);
@@ -347,10 +370,11 @@ function LaunchMerging(context, duplicatedSymbols){
       for(var p = 0;p<overridesPerSymbol.length;p++)
           totalOverrides+=overridesPerSymbol[p].length;
 
-      var window = CreateWindow(context, matrix, duplicatedSymbols[i], duplicatedSymbolsByName, instancesPerSymbol, overridesPerSymbol, totalInstances, totalOverrides, matrix, cellWidth, cellHeight, matrixHeight, (i+1), duplicatedSymbols.length, foreignSymbols);
+      var window = CreateWindow(context, matrix, duplicatedSymbols[i], duplicatedSymbolsByName, instancesPerSymbol, overridesPerSymbol, totalInstances, totalOverrides, matrix, cellWidth, cellHeight, matrixHeight, (i+1), duplicatedSymbols.length, foreignSymbols, allDocument);
       var responseCode = handleAlertResponse(window, window.runModal());
 
       var symbolToKeep = matrix.cells().indexOfObject(matrix.selectedCell());
+      lastSymbolMerged = symbolToKeep;
 
       if(responseCode == "OK"){
           MergeSymbols(duplicatedSymbolsByName, instancesPerSymbol,overridesPerSymbol, symbolToKeep,foreignSymbols);
@@ -369,39 +393,57 @@ function LaunchMerging(context, duplicatedSymbols){
   if(continuous)
   {
       if(duplicatedSymbols.length>0)
+      {
           [doc showMessage: "Hey ho! "+mergedSymbols+GetTextBasedOnCount(mergedSymbols)+"merged"];
+          return lastSymbolMerged;
+      }
       else
+      {
           [doc showMessage: "It seems there are no symbols (with the same name) to merge"];
+          return null;
+      }
   }
+
 
 }
 
 var MergeSelectedSymbols = function(context) {
   var doc = context.document;
   var selection = context.selection;
-  if(selection.count() == 0){
-      [doc showMessage: "No selected symbols"];
-  }
-  else
-  {
-      var areAllSymbols=true;
-      var duplicatedSymbols=[];
+  if(selection.count() < 2){
+    [doc showMessage: "Wop! Select at least two symbols and run the plugin again :)"];
+  }else{
+    var areAllSymbols=true;
+    var selectedSymbols=[];
+    var duplicatedSymbols=[];
+    var duplicatedSymbolsNames=[];
+    var uuid = generateUUID();
 
+    for(var i = 0; i < selection.count(); i++){
+      if(selection[i].class() != "MSSymbolMaster"){
+        areAllSymbols=false;
+      }
+    }
+    if(!areAllSymbols){
+        [doc showMessage: "Only symbols can be merged"];
+    }else{
       for(var i = 0; i < selection.count(); i++){
-        if(selection[i].class() != "MSSymbolMaster"){
-          areAllSymbols=false;
-        }
+        duplicatedSymbolsNames.push(selection[i].name());
+        selection[i].name = uuid;
       }
-
-      if(!areAllSymbols){
-          [doc showMessage: "Only symbols can be merged"];
-      }else{
         duplicatedSymbols = GetAllDuplicatedSymbols(selection);
-        console.log(duplicatedSymbols);
-      }
+        var keepSymbol = LaunchMerging(context, duplicatedSymbols, false);
+
+
+            for(var i = 0; i < selection.count(); i++){
+              if(selection[i]!=null){
+                  selection[i].name = duplicatedSymbolsNames[i];
+              }
+            }
+
+            [doc showMessage: "Merged! We kept symbol "+duplicatedSymbolsNames[keepSymbol]+" and removed the other ones."];
+    }
   }
-
-
 };
 
 
@@ -411,7 +453,7 @@ var MergeDuplicateSymbols = function(context) {
   var duplicatedSymbols = [];
 
   duplicatedSymbols = GetAllDuplicatedSymbols(context.document.documentData().allSymbols());
-  LaunchMerging(context, duplicatedSymbols);
+  LaunchMerging(context, duplicatedSymbols, true);
 
 
 };

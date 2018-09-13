@@ -4,20 +4,27 @@
   "commands" : [
     {
       "script" : "MergeDuplicateSymbols.cocoascript",
-      "name" : "Merge duplicate symbols",
+      "name" : "Merge symbols with the same name (all over the document)",
       "handler" : "MergeDuplicateSymbols",
       "identifier" : "mergeduplicatesymbols",
+      "shortcut": "ctrl shift m",
+      "icon" : "icon-sr.png"
+    },
+    {
+      "script" : "MergeDuplicateSymbols.cocoascript",
+      "name" : "Merge selected symbols (even if name doesn't match)",
+      "handler" : "MergeSelectedSymbols",
+      "identifier" : "mergeselectedsymbols",
+      "shortcut": "ctrl shift option m",
       "icon" : "icon-sr.png"
     }
   ],
-  "menu": {
-      "isRoot": true,
-      "items": [
-        "mergeduplicatesymbols"
-      ]
+  "menu" : {
+    "title" : "Merge duplicate symbols",
+    "items" : ["mergeduplicatesymbols","mergeselectedsymbols"]
   },
   "identifier" : "com.oodesign.mergeduplicatesymbols",
-  "version" : "3.1.2",
+  "version" : "4.0.0",
   "name" : "Merge duplicate symbols",
 	"icon" : "icon.png",
   "authorEmail" : "oodesignux@gmail.com",
