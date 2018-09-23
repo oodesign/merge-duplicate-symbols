@@ -1,6 +1,6 @@
 {
   "compatibleVersion": 50,
-  "appcast" : "https://raw.githubusercontent.com/oodesign/merge-duplicate-symbols/master/appcast.xml",
+  "appcast" : "https://api.sketchpacks.com/v1/plugins/com.oodesign.mergeduplicatesymbols/appcast",
   "commands" : [
     {
       "script" : "MergeDuplicateSymbols.cocoascript",
