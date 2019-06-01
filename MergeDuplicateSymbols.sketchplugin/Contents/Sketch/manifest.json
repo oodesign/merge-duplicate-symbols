@@ -33,14 +33,6 @@
       "handlers" : {
         "run" : "report_issue"
       }
-    },
-    {
-      "script" : "Help.cocoascript",
-      "name" : "Donate",
-      "identifier": "donate",
-      "handlers" : {
-        "run" : "donate"
-      }
     }
   ],
   "menu" : {
@@ -52,14 +44,13 @@
         "title": "Help",
         "items": [
           "documentation",
-          "report_issue",
-          "donate"
+          "report_issue"
         ]
       }
     ]
   },
   "identifier" : "com.oodesign.mergeduplicatesymbols",
-  "version" : "4.0.10",
+  "version" : "4.0.11",
   "name" : "Merge duplicate symbols",
 	"icon" : "icon.png",
   "authorEmail" : "oodesignux@gmail.com",

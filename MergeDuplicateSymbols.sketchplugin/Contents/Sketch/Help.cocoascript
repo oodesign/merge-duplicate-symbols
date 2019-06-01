@@ -5,7 +5,3 @@ var documentation = function(context) {
 var report_issue = function(context) {
     NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("https://github.com/oodesign/merge-duplicate-symbols/issues"));
 };
-
-var donate = function(context) {
-    NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("http://paypal.me/oodesign/10"));
-};

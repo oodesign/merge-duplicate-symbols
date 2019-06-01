@@ -6,7 +6,7 @@
     <description>Merge symbols with the same name, replacing all instances and maintaining overrides.</description>
     <language>en</language>
     <item>
-       <title>Version 4.0.10</title>
+       <title>Version 4.0.11</title>
        <description>
          <![CDATA[
            <ul>
@@ -14,7 +14,7 @@
            </ul>
          ]]>
        </description>
-       <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/archive/master.zip" sparkle:version="4.0.10"/>
+       <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/archive/master.zip" sparkle:version="4.0.11"/>
      </item>
  </channel>
 </rss>
