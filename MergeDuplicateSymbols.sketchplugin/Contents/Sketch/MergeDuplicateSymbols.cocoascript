@@ -60,7 +60,7 @@ function handleExpiredAlertResponse(window, responseCode) {
         NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("https://gumroad.com/l/mergeduplicatesymbols"));
     }
     else if (responseCode == "1001") {
-        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("http://bit.ly/mergeduplicatestyles"));
+        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("http://www.mergeduplicates.com/"));
     }
 }
 
