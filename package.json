@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/oodesign/merge-duplicates.git"
+    "url": "https://github.com/oodesign/merge-duplicate-symbols.git"
   },
   "devDependencies": {
     "@skpm/builder": "^0.7.5",
