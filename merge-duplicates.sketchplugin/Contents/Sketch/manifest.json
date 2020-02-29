@@ -171,5 +171,5 @@
   "author": "oodesign",
   "homepage": "http://bit.ly/mergesymbolsinsketch",
   "disableCocoaScriptPreprocessor": true,
-  "appcast": "https://raw.githubusercontent.com/oodesign/merge-duplicates/master/.appcast.xml"
+  "appcast": "https://raw.githubusercontent.com/oodesign/merge-duplicate-symbols/master/.appcast.xml"
 }
