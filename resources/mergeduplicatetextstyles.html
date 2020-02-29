@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Styler</title>
+  <link rel="stylesheet" href="./main.css">
+</head>
+
+<body>
+  <div class="verticalLayout">
+    <div class="rowAvailable">
+      <div class="horizontalLayout">
+        <div class="colAuto leftPanel">
+          <div class="verticalLayout leftPanelArea">
+            <div class="rowAvailable scrollable">
+              <div id="lstDuplicateStyles" class="rowAuto">
+                <!-- List of duplicates -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="colAvailable">
+          <div class="verticalLayout">
+            <div class="rowAuto">
+              <div class="horizontalLayout">
+                <div id="workZoneTitle" class="colAvailable verticalLayout movingYFadeInitialState movingYFadeIn">
+                  <div class="rowAuto mainTitle" id="resultsTitle"></div>
+                  <div class="rowAuto descriptionTitle secondaryText" id="resultsDescription"></div>
+                </div>
+                <div class="colAuto logo"></div>
+              </div>
+            </div>
+            <div class="rowAvailable listOfStyles">
+              <div id="progressLayer" class="progressCircle">
+                <div class="verticalLayout alignFullCenter">
+                  <div id="progressCircle" class="rowAuto  item progress-0">
+                    <div class="radial-inner-bg"></div>
+                  </div>
+                  <div id="loadingMessage" class="secondaryText rowAuto"></div>
+                </div>
+              </div>
+              <div class="extendHeight scrollable">
+                <div id="listOfStyles" class="scrollable movingYFadeInitialState workZone">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="rowAuto bottomBar">
+      <div class="horizontalLayout actionsRow">
+        <div class="colAvailable">
+          <div class="roundCheckbox">
+            <input type="checkbox" id="chkIncludeLibraries" checked />
+            <label for="chkIncludeLibraries">
+              <span id="lblIncludeLibraries" class="longLabel">Include all enabled libraries text styles</span>
+            </label>
+          </div>
+        </div>
+        <div class="colAuto">
+          <button id="btnCancel" class="btnSecondary">Cancel</button>
+        </div>
+        <div class="colAuto">
+          <button id="btnMerge" class="btnPrimary" disabled>Merge Styles</button>
+        </div>
+      </div>
+    </div>
+    <div class="draggableArea alignFullCenter" data-app-region="drag"><span id="windowTitle">Merge duplicate text
+        styles</span></div>
+  </div>
+  <!-- notice the "../" here. It's because webview.js will be compiled in a different folder -->
+  <script src="../resources_mergeduplicatetextstyles.js"></script>
+</body>
+
+</html>

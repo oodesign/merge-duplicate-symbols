@@ -143,12 +143,10 @@
   display: -ms-flexbox;
   display: flex;
   -webkit-box-flex: 1;
-      -ms-flex: 1 1 250px;
-          flex: 1 1 250px;
+      -ms-flex: 1 1 auto;
+          flex: 1 1 auto;
   height: 0;
   opacity: 0;
-  margin-right: 10px;
-  background-color: red;
 }
 
 .scrollXVisible {
@@ -157,10 +155,6 @@
 
 .relativePos {
   position: relative;
-}
-
-.singleArea {
-  padding: 5px 10px 0 10px;
 }
 
 html {
@@ -207,33 +201,6 @@ html, body {
 
 .leftPanelPadding {
   padding: 46px 20px 30px 20px;
-}
-
-.leftPanelArea {
-  overflow: hidden;
-  padding: 46px 0 30px 0;
-}
-
-@media (prefers-color-scheme: light) {
-  .leftPanelArea {
-    background-color: #F0F0F0;
-    border-right: 1px solid #DDDDDD;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .leftPanelArea {
-    background-color: #28282D;
-    border-right: 1px solid #4D4D4D;
-  }
-}
-
-.leftPanelArea .roundCheckbox {
-  margin-bottom: 10px;
-}
-
-.leftPanelArea .roundCheckbox span {
-  width: 180px;
 }
 
 .rightPanelPadding {
@@ -341,187 +308,35 @@ html, body {
   }
 }
 
-.mainTitle {
-  padding: 46px 20px 0 20px;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 13px;
-  font-size: 30px;
-}
-
-@media (prefers-color-scheme: light) {
-  .mainTitle {
-    color: #212124;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .mainTitle {
-    color: #ffffff;
-  }
-}
-
-.descriptionTitle {
-  padding: 5px 20px 0 20px;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 13px;
-}
-
-@media (prefers-color-scheme: light) {
-  .descriptionTitle {
-    color: #9595A8;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .descriptionTitle {
-    color: #9595A8;
-  }
-}
-
-.workZone {
-  padding-right: 10px;
-}
-
-.areaHeader {
-  padding: 10px;
-  margin: 5px 0;
-  width: 250px;
-}
-
-.areaHeader span {
+.headerText {
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 13px;
   font-size: 15px;
   font-weight: 500;
-  padding-left: 5px;
-  font-size: 16px;
 }
 
 @media (prefers-color-scheme: light) {
-  .areaHeader span {
+  .headerText {
     color: #212124;
   }
 }
 
 @media (prefers-color-scheme: dark) {
-  .areaHeader span {
+  .headerText {
     color: #ffffff;
   }
 }
 
 @media (prefers-color-scheme: light) {
-  .areaHeader span {
+  .headerText {
     color: #212124;
   }
 }
 
 @media (prefers-color-scheme: dark) {
-  .areaHeader span {
+  .headerText {
     color: #ffffff;
   }
-}
-
-.groupHeader {
-  padding: 10px;
-}
-
-@media (prefers-color-scheme: light) {
-  .groupHeader:hover {
-    background-color: #E9E9E9;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .groupHeader:hover {
-    background-color: #35353C;
-  }
-}
-
-.groupHeader:hover .expanderIcon path {
-  fill: #FF8E78;
-}
-
-.groupHeader.collapsed .expanderIcon {
-  -webkit-transform: scaleY(1);
-          transform: scaleY(1);
-}
-
-.groupHeader span {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 13px;
-  font-size: 15px;
-  font-weight: 500;
-  padding-left: 5px;
-  font-size: 16px;
-}
-
-@media (prefers-color-scheme: light) {
-  .groupHeader span {
-    color: #212124;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .groupHeader span {
-    color: #ffffff;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  .groupHeader span {
-    color: #212124;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .groupHeader span {
-    color: #ffffff;
-  }
-}
-
-.groupHeader .regularIcon {
-  width: 24px;
-  height: 24px;
-  margin-left: 6px;
-}
-
-@media (prefers-color-scheme: light) {
-  .groupHeader .regularIcon path {
-    fill: #212124;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .groupHeader .regularIcon path {
-    fill: #ffffff;
-  }
-}
-
-.groupHeader .expanderIcon {
-  width: 24px;
-  height: 24px;
-  -webkit-transition: -webkit-transform 0.2s ease-out;
-  transition: -webkit-transform 0.2s ease-out;
-  transition: transform 0.2s ease-out;
-  transition: transform 0.2s ease-out, -webkit-transform 0.2s ease-out;
-  -webkit-transform: scaleY(-1);
-          transform: scaleY(-1);
-}
-
-@media (prefers-color-scheme: light) {
-  .groupHeader .expanderIcon path {
-    fill: #212124;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .groupHeader .expanderIcon path {
-    fill: #ffffff;
-  }
-}
-
-.expanderContent {
-  margin-bottom: 20px;
 }
 
 .draggableArea {
@@ -549,10 +364,16 @@ html, body {
   }
 }
 
+.treeContent {
+  margin-top: 16px;
+  margin-left: 16px;
+  margin-bottom: 30px;
+}
+
 .leftPanel {
   width: 260px;
-  -webkit-transition: all 0.2s ease-out;
-  transition: all 0.2s ease-out;
+  -webkit-box-shadow: inset -10px 0 15px -2px rgba(0, 0, 0, 0.075);
+          box-shadow: inset -10px 0 15px -2px rgba(0, 0, 0, 0.075);
 }
 
 @media (prefers-color-scheme: light) {
@@ -565,19 +386,6 @@ html, body {
   .leftPanel {
     background-color: #28282D;
   }
-}
-
-.leftPanel .roundCheckbox {
-  margin-bottom: 10px;
-}
-
-.leftPanel .roundCheckbox span {
-  width: 180px;
-}
-
-.leftPanel.collapsed {
-  width: 0;
-  opacity: 0;
 }
 
 @media (prefers-color-scheme: light) {
@@ -617,7 +425,7 @@ html, body {
 }
 
 .progressCircle .secondaryText {
-  max-width: 420px;
+  max-width: 200px;
   margin: 20px 0 0 0;
 }
 
@@ -642,11 +450,7 @@ html, body {
   }
 }
 
-.emptyState .successIcon {
-  fill: #FF8E78;
-}
-
-.emptyState .primaryText, .emptyState .secondaryText {
+.emptyState .secondaryText {
   width: 280px;
   margin: 20px 0 0 0;
   text-align: center;
@@ -707,9 +511,8 @@ html, body {
 }
 
 .logo {
-  position: absolute;
-  top: 15px;
-  right: 23px;
+  margin-top: 15px;
+  margin-right: 23px;
   width: 39px;
   height: 36px;
   background-size: cover;
@@ -718,13 +521,13 @@ html, body {
 
 @media (prefers-color-scheme: light) {
   .logo {
-    background-image: url("images/LogoLight.png");
+    background-image: url(d6ef1b4038db17b9d78a101b3eab8918.png";);
   }
 }
 
 @media (prefers-color-scheme: dark) {
   .logo {
-    background-image: url("./images/LogoDark.png");
+    background-image: url(b56871af07932191ea66d3ced2c57ddc.png";);
   }
 }
 
@@ -797,7 +600,7 @@ html, body {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  padding: 10px 10px 10px 20px;
+  padding: 10px 10px 10px 0;
 }
 
 .btnPrimary {
@@ -1229,31 +1032,15 @@ html, body {
   transition: transform 0.3s 0.2s ease-out, opacity 0.3s 0.2s ease-out, -webkit-transform 0.3s 0.2s ease-out;
 }
 
+.styleContainer {
+  height: 200px;
+}
+
 .thumbnailContainer {
-  height: 160px;
+  height: 200px;
+  border-radius: 5px;
   padding: 10px;
   margin-right: 10px;
-}
-
-.thumbnailData {
-  padding-left: 20px;
-  padding-bottom: 5px;
-}
-
-.padded {
-  padding: 10px;
-}
-
-@media (prefers-color-scheme: light) {
-  .bgContrastMode {
-    background-color: #DFDFDF;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .bgContrastMode {
-    background-color: #474750;
-  }
 }
 
 .thumbnail {
@@ -1381,57 +1168,20 @@ html, body {
   }
 }
 
-.symbolPreview {
-  border-radius: 1px;
-  -webkit-transition: all 0.1s ease-out;
-  transition: all 0.1s ease-out;
-}
-
 @media (prefers-color-scheme: light) {
-  .symbolPreview {
-    background-color: transparent;
-    border: 1px solid transparent;
-    border-bottom: 1px solid #D0D0D0;
+  .stylePreview {
+    border: 1px solid #7D7D88;
   }
 }
 
 @media (prefers-color-scheme: dark) {
-  .symbolPreview {
-    background-color: transparent;
-    border: 1px solid transparent;
-    border-bottom: 1px solid #3A3A42;
+  .stylePreview {
+    border: 1px solid #ffffff;
   }
 }
 
-.symbolPreview.thumbnailContainer {
-  padding: 10px 20px;
-}
-
-@media (prefers-color-scheme: light) {
-  .symbolPreview:hover {
-    background-color: #f0f0f0;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .symbolPreview:hover {
-    background-color: #28282D;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  .symbolPreview.selected {
-    background-color: #dfdfdf;
-    border: 1px solid #FF8E78;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .symbolPreview.selected {
-    background-color: #35353C;
-    border-bottom: transparent;
-    border: 1px solid #FF8E78;
-  }
+.stylePreview.thumbnailContainer {
+  padding: 10px 40px;
 }
 
 .btnThumbnailNavigationLeft {
@@ -1450,104 +1200,17 @@ html, body {
   margin: auto;
 }
 
-@media (prefers-color-scheme: light) {
-  .separatorBelow {
-    border-bottom: 1px solid #DDDDDD;
-  }
+.separatorBelow {
+  margin: 10px 0 10px 0;
+  border-bottom: 1px solid blue;
 }
 
-@media (prefers-color-scheme: dark) {
-  .separatorBelow {
-    border-bottom: 1px solid #4D4D4D;
-  }
-}
-
-.filterArea {
+.resultsFilters .roundCheckbox .padder {
   width: 260px;
-  padding: 46px 0 30px 0;
-  -webkit-transition: all 0.2s ease-out;
-  transition: all 0.2s ease-out;
 }
 
-@media (prefers-color-scheme: light) {
-  .filterArea {
-    background-color: #F0F0F0;
-    border-right: 1px solid #DDDDDD;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .filterArea {
-    background-color: #28282D;
-    border-right: 1px solid #4D4D4D;
-  }
-}
-
-.filterArea .filterTitle {
-  width: 140px;
-}
-
-.filterArea .filterCounter {
-  background-color: #FF8E78;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-}
-
-.filterArea .filterCounter span {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 13px;
-  top: 1px;
-  left: 1px;
-}
-
-@media (prefers-color-scheme: light) {
-  .filterArea .filterCounter span {
-    color: #212124;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .filterArea .filterCounter span {
-    color: #ffffff;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  .filterArea .filterCounter span {
-    color: #ffffff;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .filterArea .filterCounter span {
-    color: #ffffff;
-  }
-}
-
-.filterArea .treeContent {
-  margin-top: 8px;
-}
-
-.filterArea .filterAreaPadded {
-  padding-left: 18px;
-  padding-right: 18px;
-}
-
-.filterArea .roundCheckbox {
-  margin-bottom: 10px;
-}
-
-.filterArea .roundCheckbox span {
-  width: 180px;
-}
-
-.filterArea.collapsed {
-  width: 50px;
-}
-
-.filterArea.collapsed span, .filterArea.collapsed .regularIcon, .filterArea.collapsed .treeContent, .filterArea.collapsed .btnApply, .filterArea.collapsed .filterCounter {
-  display: none;
+.resultsFilters .roundCheckbox .padder span {
+  width: 100%;
 }
 
 .roundCheckbox {
@@ -1617,10 +1280,6 @@ html, body {
   .roundCheckbox label span {
     color: #ffffff;
   }
-}
-
-.roundCheckbox label span.longLabel {
-  width: 500px;
 }
 
 .roundCheckbox label:after {
@@ -1722,10 +1381,6 @@ html, body {
   }
 }
 
-.selectRoundCheckbox label span.longLabel {
-  width: 500px;
-}
-
 .selectRoundCheckbox label:after {
   border: 2px solid white;
   border-top: none;
@@ -1751,90 +1406,6 @@ html, body {
 }
 
 .selectRoundCheckbox input[type="checkbox"]:checked + label:after {
-  opacity: 1;
-}
-
-.squareCheckbox {
-  position: relative;
-}
-
-.squareCheckbox .padder {
-  width: 160px;
-  height: 100%;
-  background-color: transparent;
-}
-
-.squareCheckbox label {
-  border-radius: 4px;
-  cursor: pointer;
-  height: 16px;
-  width: 16px;
-  left: 0;
-  position: absolute;
-  top: 0;
-  background-color: transparent;
-  border: 2px solid;
-  -webkit-transition: all 0.1s;
-  transition: all 0.1s;
-}
-
-@media (prefers-color-scheme: light) {
-  .squareCheckbox label {
-    border-color: #A9A9A9;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .squareCheckbox label {
-    border-color: #6A6A6A;
-  }
-}
-
-.squareCheckbox label span {
-  left: 25px;
-  width: 120px;
-  position: absolute;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 13px;
-}
-
-@media (prefers-color-scheme: light) {
-  .squareCheckbox label span {
-    color: #212124;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .squareCheckbox label span {
-    color: #ffffff;
-  }
-}
-
-.squareCheckbox label:after {
-  border: 2px solid white;
-  border-top: none;
-  border-right: none;
-  content: "";
-  height: 6px;
-  left: 1px;
-  opacity: 0;
-  position: absolute;
-  top: 2px;
-  -webkit-transform: rotate(-45deg);
-          transform: rotate(-45deg);
-  width: 10px;
-}
-
-.squareCheckbox input[type="checkbox"] {
-  visibility: hidden;
-}
-
-.squareCheckbox input[type="checkbox"]:checked + label {
-  background-color: #52CF67;
-  border-color: #52CF67;
-}
-
-.squareCheckbox input[type="checkbox"]:checked + label:after {
   opacity: 1;
 }
 
@@ -3407,215 +2978,3 @@ a {
   -webkit-transition: all 0.3s ease-out;
   transition: all 0.3s ease-out;
 }
-
-.leftPanelListItem {
-  height: 40px;
-  padding: 0 15px;
-  background-color: transparent;
-  -webkit-transition: all 0.1s ease-out;
-  transition: all 0.1s ease-out;
-}
-
-@media (prefers-color-scheme: light) {
-  .leftPanelListItem {
-    border-bottom: 1px solid #D0D0D0;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .leftPanelListItem {
-    border-bottom: 1px solid #3A3A42;
-  }
-}
-
-.leftPanelListItem span {
-  left: 25px;
-  width: 200px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  position: absolute;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 13px;
-}
-
-@media (prefers-color-scheme: light) {
-  .leftPanelListItem span {
-    color: #212124;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .leftPanelListItem span {
-    color: #ffffff;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  .leftPanelListItem:hover {
-    background-color: #E9E9E9;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .leftPanelListItem:hover {
-    background-color: #35353C;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  .leftPanelListItem.selected {
-    background-color: #DFDFDF;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .leftPanelListItem.selected {
-    background-color: #474750;
-  }
-}
-
-.cardsView {
-  display: -ms-grid;
-  display: grid;
-  -ms-grid-columns: (minmax(300px, 1fr))[auto-fit];
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-}
-
-.cardsView .thumbnailContainer {
-  height: 300px;
-  margin-right: 10px;
-  margin-bottom: 10px;
-}
-
-.cardsView .thumbnailContainer .roundCheckbox {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-}
-
-.cardsView .thumbnailContainer span {
-  text-align: center;
-}
-
-.cardsView .symbolPreview {
-  border-radius: 5px;
-}
-
-@media (prefers-color-scheme: light) {
-  .cardsView .symbolPreview {
-    border: 1px solid #D0D0D0;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .cardsView .symbolPreview {
-    border: 1px solid #3A3A42;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  .cardsView .symbolPreview.selected {
-    background-color: #dfdfdf;
-    border: 1px solid #FF8E78;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .cardsView .symbolPreview.selected {
-    background-color: #35353C;
-    border: 1px solid #FF8E78;
-  }
-}
-
-.viewSelector {
-  margin-right: 25px;
-  top: 5px;
-}
-
-.viewIcon {
-  width: 12px;
-  height: 12px;
-  margin-right: 5px;
-  cursor: pointer;
-  -webkit-transition: opacity 0.15s ease-out;
-  transition: opacity 0.15s ease-out;
-  opacity: 0.3;
-}
-
-@media (prefers-color-scheme: light) {
-  .viewIcon path {
-    fill: #212124;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .viewIcon path {
-    fill: #ffffff;
-  }
-}
-
-.viewIcon:hover {
-  opacity: 0.7;
-}
-
-.viewIcon.selected {
-  opacity: 1;
-}
-
-.offDownCenter .mk-spinner-wrap {
-  top: 20px;
-}
-
-.offDownCenter .secondaryText {
-  max-width: 420px;
-  margin: 10px 0 0 0;
-}
-
-.mk-spinner-wrap {
-  min-height: 100px;
-  width: 100%;
-  position: relative;
-}
-
-@-webkit-keyframes a {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(1turn);
-    transform: rotate(1turn);
-  }
-}
-
-@keyframes a {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(1turn);
-    transform: rotate(1turn);
-  }
-}
-
-.mk-spinner-ring {
-  content: "";
-  display: inline-block;
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  top: 50%;
-  margin-top: -25px;
-  left: 50%;
-  margin-left: -25px;
-  z-index: 1;
-  border-radius: 50%;
-  border: 3px solid #FF8E78;
-  border-left-color: transparent;
-  background: transparent;
-  -webkit-animation: a 1s infinite linear;
-  animation: a 0.7s infinite linear;
-}
-/*# sourceMappingURL=main.css.map */

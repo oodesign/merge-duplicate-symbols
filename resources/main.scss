@@ -42,8 +42,30 @@ html,body{
   padding: $topPadding $leftRightPadding $bottomPadding $leftRightPadding;
 }
 
+
+
+.leftPanelArea{
+  overflow: hidden;
+  padding: $topPadding 0 $bottomPadding 0;
+  @include for-theme(light){
+    background-color: $light_leftPanelBackgroundColor;
+    border-right: 1px solid $light_bottomBarBorderColor;
+  }
+  @include for-theme(dark){
+    background-color: $dark_leftPanelBackgroundColor;
+    border-right: 1px solid $dark_bottomBarBorderColor;
+  }
+
+  .roundCheckbox{
+    margin-bottom: 10px;
+    span{
+      width:180px;
+    }
+  }
+}
+
 .rightPanelPadding{
-  padding: $topPadding $leftRightPadding 0  $leftRightPadding;
+  padding: $topPadding $leftRightPadding 0 $leftRightPadding;
 }
 
 @mixin primaryText{
@@ -110,16 +132,112 @@ html,body{
   @include secondaryText;
 }
 
-.headerText{
-  @include primaryMediumText;
-  font-weight: 500;
+.mainTitle{
+  padding: $topPadding $leftRightPadding 0 $leftRightPadding;
+  @include primaryText;
+  font-size: 30px;
+}
 
-  @include for-theme(light){
-    color: $light_primaryColor;
-  }
-  @include for-theme(dark){
+.descriptionTitle{
+  padding: 5px $leftRightPadding 0 $leftRightPadding;
+  @include secondaryText;
+}
+
+.workZone{
+  padding-right: 10px;
+}
+
+.areaHeader{
+  padding: 10px;
+  margin: 5px 0;
+  width:250px;
+
+  span{
+    @include primaryMediumText;
+    font-weight: 500;
+    padding-left: 5px;
+    font-size: 16px;
+    @include for-theme(light){
+      color: $light_primaryColor;
+    }
+    @include for-theme(dark){
       color: $dark_primaryColor;
+    }
   }
+}
+
+.groupHeader{
+  padding: 10px;
+
+  &:hover{
+    @include for-theme(light){
+      background-color: $light_leftListItemHoverBackgroundColor;
+    }
+    @include for-theme(dark){
+      background-color: $dark_leftListItemHoverBackgroundColor;
+    }
+
+    .expanderIcon{
+      path{
+          fill: $accentColor;
+      }
+    }
+  }
+
+  &.collapsed{
+    .expanderIcon{
+      transform: scaleY(1);
+    }
+  }
+
+  span{
+    @include primaryMediumText;
+    font-weight: 500;
+    padding-left: 5px;
+    font-size: 16px;
+    @include for-theme(light){
+      color: $light_primaryColor;
+    }
+    @include for-theme(dark){
+      color: $dark_primaryColor;
+    }
+  }
+
+  .regularIcon{
+    width:24px;
+    height:24px;
+    margin-left: 6px;
+    
+    path{
+      @include for-theme(light){
+        fill: $light_primaryColor;
+      }
+      @include for-theme(dark){
+        fill: $dark_primaryColor;
+      }
+    }
+  }
+
+  .expanderIcon{
+    width:24px;
+    height:24px;
+    transition: transform 0.2s ease-out;
+    transform: scaleY(-1);
+
+    path{
+      @include for-theme(light){
+        fill: $light_primaryColor;
+      }
+      @include for-theme(dark){
+        fill: $dark_primaryColor;
+      }
+    }
+  }
+
+}
+
+.expanderContent{
+  margin-bottom:20px;
 }
 
 
@@ -136,21 +254,28 @@ html,body{
   }
 }
 
-.treeContent{
-  margin-top: $headerContentDistance;
-  margin-left: $headerContentDistance;
-  margin-bottom: 30px;
-}
 
 .leftPanel{
   width:260px;
+  transition: all 0.2s ease-out;
   @include for-theme(light){
     background-color: $light_leftPanelBackgroundColor;
   }
   @include for-theme(dark){
       background-color: $dark_leftPanelBackgroundColor;
   }
-  box-shadow:inset -10px 0 15px -2px rgba(0,0,0,0.075);
+
+  .roundCheckbox{
+    margin-bottom: 10px;
+    span{
+      width:180px;
+    }
+  }
+  
+  &.collapsed{
+    width:0;
+    opacity: 0;
+  }
 }
 
 .bottomBar{
@@ -188,7 +313,7 @@ html,body{
   opacity: 0;
 
   .secondaryText{
-    max-width: 200px;
+    max-width: 420px;
     margin: 20px 0 0 0;
   }
 }
@@ -214,7 +339,11 @@ html,body{
     }
   }
 
-  .secondaryText{
+  .successIcon{
+    fill:$accentColor;
+  }
+
+  .primaryText, .secondaryText{
     width:280px;
     margin: 20px 0 0 0;
     text-align: center;
@@ -248,15 +377,15 @@ html,body{
 }
 
 .logo{
-  margin-top:15px;
-  margin-right:23px;
+  position: absolute;
+  top:15px;
+  right:23px;
   width:39px;
   height:36px;
-  // background-image: url('./images/LogoDark.png');
   background-size: cover;
   background-repeat: no-repeat;
   @include for-theme(light){
-    background-image: url("./images/LogoLight.png");
+    background-image: url("images/LogoLight.png");
   }
   @include for-theme(dark){
     background-image: url("./images/LogoDark.png");
@@ -305,7 +434,7 @@ html,body{
 .actionsRow{
   @include horizontalLayout;
   @include alignVerticalCenter;
-  padding: 10px 10px 10px 0;
+  padding: 10px 10px 10px 20px;
 }
 
 
@@ -522,16 +651,29 @@ html,body{
   }
 }
 
-.styleContainer{
-  height:200px;
+.thumbnailContainer{
+  height:160px;
+  padding: 10px;
+  margin-right:10px;
 }
 
-.thumbnailContainer{
-  height:200px;
-  border-radius: 5px;
-  padding: 10px;
-  
-  margin-right:10px;
+.thumbnailData{
+  padding-left:20px;
+  padding-bottom:5px;
+}
+
+
+.padded{
+  padding:10px;
+}
+
+.bgContrastMode{
+  @include for-theme(light){
+    background-color: $light_leftListItemSelectedBackgroundColor;
+  }
+  @include for-theme(dark){
+    background-color: $dark_leftListItemSelectedBackgroundColor;
+  }
 }
 
 .thumbnail{
@@ -541,6 +683,7 @@ html,body{
   background-repeat: no-repeat;
   background-position: center center;
   position: relative;
+
 
   &.isSmallThumbnail{
     background-size: initial;
@@ -639,19 +782,49 @@ html,body{
   }
 }
 
-.stylePreview{
+.symbolPreview{
   @include for-theme(light){
-    border:1px solid $light_moreWeightBorderColor;
+    background-color: $light_symbolPreviewListItemBg;
+    border:1px solid transparent;
+    border-bottom:1px solid $light_leftListItemSeparatorColor;
   }
 
   @include for-theme(dark){
-    border:1px solid $dark_moreWeightBorderColor;
+    background-color: $dark_symbolPreviewListItemBg;
+    border:1px solid transparent;
+    border-bottom:1px solid $dark_leftListItemSeparatorColor;
   }
+
+  border-radius: 1px;
+  transition: all 0.1s ease-out;
 
   &.thumbnailContainer{
-    padding: 10px 40px;
+    padding: 10px 20px;
+
   }
 
+  &:hover{
+    @include for-theme(light){
+      background-color: $light_symbolPreviewListItemBgHover;
+    }
+  
+    @include for-theme(dark){
+      background-color: $dark_symbolPreviewListItemBgHover;
+    }
+  }
+
+  &.selected{
+    @include for-theme(light){
+      background-color: $light_symbolPreviewListItemBgSelected;
+      border:1px solid $accentColor;
+    }
+  
+    @include for-theme(dark){
+      background-color: $dark_symbolPreviewListItemBgSelected;
+      border-bottom:transparent;
+      border:1px solid $accentColor;
+    }
+  }
 }
 
 .btnThumbnailNavigationLeft{
@@ -670,17 +843,70 @@ html,body{
 }
 
 .separatorBelow{
-  margin: 10px 0 10px 0; 
-  border-bottom: 1px solid blue;
+  @include for-theme(light){
+    border-bottom: 1px solid $light_bottomBarBorderColor;
+  }
+  @include for-theme(dark){
+      border-bottom: 1px solid $dark_bottomBarBorderColor;
+  }
 }
 
-.resultsFilters{
-  .roundCheckbox{
-    .padder{
-      width:260px;
-      span{
-        width:100%;
+
+.filterArea{
+  width:260px;
+  padding: $topPadding 0 $bottomPadding 0;
+  transition: all 0.2s ease-out;
+  @include for-theme(light){
+    background-color: $light_leftPanelBackgroundColor;
+    border-right: 1px solid $light_bottomBarBorderColor;
+  }
+  @include for-theme(dark){
+    background-color: $dark_leftPanelBackgroundColor;
+    border-right: 1px solid $dark_bottomBarBorderColor;
+  }
+
+  .filterTitle{
+    width:140px;
+  }
+
+  .filterCounter{
+    background-color: $accentColor;
+    border-radius: 50%;
+    width:20px;
+    height:20px;
+    span{
+      @include primaryText;
+      @include for-theme(light){
+        color:$light_inverseColor;
       }
+      @include for-theme(dark){
+        color:$dark_inverseColor;
+      }
+      top:1px;
+      left:1px;
+    }
+  }
+
+  .treeContent{
+    margin-top: $headerTopDistance;
+  }
+
+  .filterAreaPadded{
+    padding-left: $headerSidesDistance;
+    padding-right: $headerSidesDistance;
+  }
+
+  .roundCheckbox{
+    margin-bottom: 10px;
+    span{
+      width:180px;
+    }
+  }
+
+  &.collapsed{
+    width:50px;
+    span, .regularIcon,.treeContent, .btnApply,.filterCounter{
+      display: none;
     }
   }
 }
@@ -728,6 +954,10 @@ html,body{
       width:120px;
       position: absolute;
       @include primaryText;
+
+      &.longLabel{
+        width:500px;
+      }
     }
   }
 
@@ -770,6 +1000,78 @@ html,body{
   width:30px;
   margin-left: 10px;
 }
+///////
+
+@mixin squareCheckbox($bgColor,$marginBottom){
+  position: relative;
+
+  .padder{
+    width: 160px;
+    height: 100%;
+    background-color: transparent;
+  }
+
+  label {
+    border-radius: 4px;
+    cursor: pointer;
+    height: 16px;
+    width: 16px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    background-color: transparent;
+    border: 2px solid ;
+    transition: all 0.1s;
+
+    @include for-theme(light){
+      border-color: $light_inputBorderColor;
+    }
+    @include for-theme(dark){
+      border-color: $dark_inputBorderColor;
+    }
+
+    span{
+      left:25px;
+      width:120px;
+      position: absolute;
+      @include primaryText;
+    }
+  }
+
+  label:after {
+    border: 2px solid white;
+    border-top: none;
+    border-right: none;
+    content: "";
+    height: 6px;
+    left: 1px;
+    opacity: 0;
+    position: absolute;
+    top: 2px;
+    transform: rotate(-45deg);
+    width: 10px;
+  }
+
+  input[type="checkbox"] {
+    visibility: hidden;
+  }
+
+  input[type="checkbox"]:checked + label {
+    background-color: $bgColor;
+    border-color: $bgColor;
+  }
+
+  input[type="checkbox"]:checked + label:after {
+    opacity: 1;
+  }
+
+}
+
+
+.squareCheckbox {
+  @include squareCheckbox($complementaryColor,7px);
+}
+
 
 
 
@@ -1056,5 +1358,178 @@ a{
   visibility: hidden;
   opacity:0;
   transform:translate(-50%,50px);
-  transition: all 0.3s ease-out
+  transition: all 0.3s ease-out;
+}
+
+.leftPanelListItem{
+  height: 40px;
+  padding: 0 15px;
+  @include for-theme(light){
+    border-bottom:1px solid $light_leftListItemSeparatorColor;
+  }
+  @include for-theme(dark){
+    border-bottom:1px solid $dark_leftListItemSeparatorColor;
+  }
+  background-color: transparent;
+  transition: all 0.1s ease-out;
+
+  span{
+    left:25px;
+    width:200px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    position: absolute;
+    @include primaryText;
+  }
+
+  &:hover{
+    @include for-theme(light){
+      background-color: $light_leftListItemHoverBackgroundColor;
+    }
+    @include for-theme(dark){
+      background-color: $dark_leftListItemHoverBackgroundColor;
+    }
+  }
+
+  &.selected{
+    @include for-theme(light){
+      background-color: $light_leftListItemSelectedBackgroundColor;
+    }
+    @include for-theme(dark){
+      background-color: $dark_leftListItemSelectedBackgroundColor;
+    }
+  }
+
+  
+}
+
+.cardsView{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+  .thumbnailContainer{
+    height: 300px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+
+    .roundCheckbox{
+      position: absolute;
+      top:20px;
+      left:20px;
+    }
+
+    span{
+      text-align: center;
+    }
+  }
+
+  .symbolPreview{
+    border-radius: 5px;
+    @include for-theme(light){
+      border:1px solid $light_leftListItemSeparatorColor;
+    }
+    @include for-theme(dark){
+      border:1px solid $dark_leftListItemSeparatorColor;
+    }
+
+    &.selected{
+      @include for-theme(light){
+        background-color: $light_symbolPreviewListItemBgSelected;
+        border:1px solid $accentColor;
+      }
+    
+      @include for-theme(dark){
+        background-color: $dark_symbolPreviewListItemBgSelected;
+        border:1px solid $accentColor;
+      }
+    }
+  }
+}
+
+.viewSelector{
+  margin-right: 25px;
+  top:5px;
+}
+
+.viewIcon{
+  width:12px;
+  height:12px;
+  margin-right: 5px;
+  cursor: pointer;
+  transition: opacity 0.15s ease-out;
+
+  path{
+    @include for-theme(light){
+      fill: $light_primaryColor;
+    }
+    @include for-theme(dark){
+      fill: $dark_primaryColor;
+    }
+  }
+
+  opacity: 0.3;
+
+  &:hover{
+    opacity: 0.7;
+  }
+
+  &.selected{
+    opacity: 1;
+  }
+
+}
+
+.offDownCenter{
+  .mk-spinner-wrap{
+    top:20px;
+  }
+  .secondaryText{
+    max-width: 420px;
+    margin: 10px 0 0 0;
+  }
+}
+
+.mk-spinner-wrap{
+  min-height:100px;
+  width:100%;
+  position:relative;
+}
+@-webkit-keyframes a{
+  0%{
+    -webkit-transform:rotate(0deg);
+    transform:rotate(0deg)
+  }
+  to{
+    -webkit-transform:rotate(1turn);
+    transform:rotate(1turn)
+  }
+}
+@keyframes a{
+  0%{
+    -webkit-transform:rotate(0deg);
+    transform:rotate(0deg)
+  }
+  to{
+    -webkit-transform:rotate(1turn);
+    transform:rotate(1turn)
+  }
+}
+.mk-spinner-ring{
+  content:"";
+  display:inline-block;
+  position:absolute;
+  width:50px;
+  height:50px;
+  top:50%;
+  margin-top:-25px;
+  left:50%;
+  margin-left:-25px;
+  z-index:1;
+  border-radius:50%;
+  border:3px solid $accentColor;
+  border-left-color:transparent;
+  background:transparent;
+  -webkit-animation:a 1s infinite linear;
+  animation:a 0.7s infinite linear
 }

@@ -16,7 +16,7 @@
     },
     {
       "script" : "Main.js",
-      "name" : "Merge selected symbolss",
+      "name" : "Merge selected symbols",
       "handlers": {
         "run": "MergeSelectedSymbols",
         "actions": {
@@ -132,14 +132,14 @@
     "title" : "Merge duplicate ...",
     "items" : [
       {
-        "title": "💎 Symbols",
+        "title": "Symbols ",
         "items": [
           "mergeduplicatesymbols",
           "mergeselectedsymbols"
         ]
       },
       {
-        "title": "Layer Styles",
+        "title": "Layer Styles ",
         "items": [
           "mergeduplicatelayerstyles",
           "mergeselectedlayerstyles",
@@ -147,7 +147,7 @@
         ]
       },
       {
-        "title": "Text Styles",
+        "title": "Text Styles ",
         "items": [
           "mergeduplicatetextstyles",
           "mergeselectedtextstyles",

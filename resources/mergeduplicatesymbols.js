@@ -3,39 +3,217 @@
 //   e.preventDefault()
 // })
 var globalMergeSession;
+var globalSymbolDisplayed = 0;
+var isLoadingSymbolData = false;
+var globalNumberOfSymbolsInDocument = 0;
+var globalNumberOfSymbolsInLibraries = 0;
+var globalView = 1;
 
-window.DrawDuplicateSymbols = (mergeSession) => {
-  globalMergeSession = mergeSession;
-  document.getElementById('lstDuplicateSymbols').size=mergeSession.length;
-  for(var i=0;i<mergeSession.length;i++)
-  { 
-    var opt = document.createElement("option");
-    opt.value= i;
-    opt.innerHTML = mergeSession[i].name;
-    document.getElementById('lstDuplicateSymbols').appendChild(opt);
+window.LaunchMerge = (numberOfLocalSymbols, numberOfLibrarySymbols) => {
+  globalNumberOfSymbolsInDocument = numberOfLocalSymbols;
+  globalNumberOfSymbolsInLibraries = numberOfLibrarySymbols;
+
+  if (document.readyState == 'loading') {
+    document.addEventListener('DOMContentLoaded', GetSymbols);
+  } else {
+    GetSymbols();
   }
-  document.getElementById('lstDuplicateSymbols').selectedIndex=0;
-  window.postMessage('GetSymbolData',document.getElementById('lstDuplicateSymbols').selectedIndex);
-  DrawSymbolList(0);
 }
 
-window.onSelectedSymbolChanged = () => {
+window.GetSymbols = () => {
+  setTimeout(function () {
+    var message = "We're looking for duplicates...";
+    if (globalNumberOfSymbolsInDocument > 100)
+      message = "We're looking for duplicates...<br/><br/>Wow, you have " + globalNumberOfSymbolsInDocument + " symbols here (and " + globalNumberOfSymbolsInLibraries + " in linked libraries)! 🙈<br/> This may take a while... Wanna go get a coffee?"
+    window.ShowProgress(message);
+    window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked);
+  }, 200);
+}
 
-  DrawSymbolList(document.getElementById('lstDuplicateSymbols').selectedIndex);
-  
-  //window.postMessage('GetSymbolData',document.getElementById('lstDuplicateSymbols').selectedIndex);
+
+
+window.DrawDuplicateSymbols = (mergeSession) => {
+  window.HideProgress();
+
+  globalMergeSession = mergeSession;
+
+  if (globalSymbolDisplayed >= globalMergeSession.length)
+    globalSymbolDisplayed = 0;
+  var lstDuplicateSymbols = document.getElementById('lstDuplicateSymbols');
+  var btnMerge = document.getElementById('btnMerge');
+  var inner = "";
+  var checkedCounter = 0;
+
+  if (globalMergeSession.length > 0) {
+
+    for (var i = 0; i < globalMergeSession.length; i++) {
+      var hasSelection = (globalMergeSession[i].selectedIndex >= 0);
+      var labelFor = hasSelection ? `for="duplicatedSymbolCheck${i}"` : "";
+      var checked = (hasSelection && !globalMergeSession[i].isUnchecked) ? "checked" : "";
+      var handler = hasSelection ? `onclick="onSelectedSymbolCheckChanged(${i})"` : "";
+      var isSelected = (i == globalSymbolDisplayed);
+      var selected = isSelected ? "selected" : "";
+
+      if (hasSelection && !globalMergeSession[i].isUnchecked) checkedCounter++;
+
+      var checkbox = `<div class="squareCheckbox">
+      <input type="checkbox" ${checked} id="duplicatedSymbolCheck${i}" ${handler}/>
+      <label ${labelFor}></label>
+      <span>${mergeSession[i].symbolWithDuplicates.name}</span>
+    </div>`;
+
+      inner += `<div id="duplicatedSymbol${i}" onclick="onSelectedSymbolChanged(${i})" class="leftPanelListItem alignVerticalCenter ${selected}">${checkbox} </div>`
+    }
+
+    lstDuplicateSymbols.innerHTML = inner;
+    btnMerge.disabled = (checkedCounter == 0);
+
+    document.getElementById('lblIncludeLibraries').innerHTML = (checkedCounter != 0) ? "Include all enabled libraries symbols (you may lose the current selection)" : "Include all enabled libraries symbols";
+    DrawSymbolList(globalSymbolDisplayed);
+    ShowLayout();
+  }
+  else {
+    HideLayout();
+  }
+}
+
+
+window.ShowLayout = (index) => {
+  document.getElementById('resultsPanel').className = "colAuto leftPanel";
+  document.getElementById('btnCancel').className = "btnSecondary";
+  document.getElementById('btnMerge').className = "btnPrimary";
+  document.getElementById('chkLibraries').className = "roundCheckbox";
+  document.getElementById('btnOK').className = "notDisplayed";
+}
+
+window.HideLayout = (index) => {
+
+  document.getElementById('emptyState').className = "emptyState fadeIn";
+  document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
+  document.getElementById('btnCancel').className = "notDisplayed";
+  document.getElementById('btnMerge').className = "notDisplayed";
+  document.getElementById('chkLibraries').className = "notDisplayed";
+  document.getElementById('btnOK').className = "btnPrimary";
+}
+
+window.onSelectedSymbolCheckChanged = (index) => {
+  globalMergeSession[index].isUnchecked = !globalMergeSession[index].isUnchecked;
+  DrawDuplicateSymbols(globalMergeSession);
+  DrawSymbolList(globalSymbolDisplayed);
+}
+
+window.onSelectedSymbolChanged = (index) => {
+  if (!isLoadingSymbolData) {
+    for (var i = 0; i < globalMergeSession.length; i++) {
+      var otherDiv = document.getElementById("duplicatedSymbol" + i);
+      otherDiv.className = "leftPanelListItem alignVerticalCenter";
+    }
+
+    var selectedDiv = document.getElementById("duplicatedSymbol" + index);
+    selectedDiv.className = "leftPanelListItem alignVerticalCenter selected";
+
+    if (!globalMergeSession[index].isProcessed) {
+      isLoadingSymbolData = true;
+      window.postMessage("GetSelectedSymbolData", index);
+      document.getElementById('listOfSymbols').className = "movingYFadeInitialState workZone movingYFadeOut" + (globalView == 0 ? " cardsView" : "");
+      document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeOut";
+      window.ShowProgress("");
+    }
+    else
+      DrawSymbolList(index);
+  }
+}
+
+window.ShowProgress = (message) => {
+
+  document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeIn";
+  document.getElementById('loadingMessage').innerHTML = message;
+  document.getElementById('listOfSymbols').className = "movingYFadeInitialState movingYFadeOut" + (globalView == 0 ? " cardsView" : "");
+};
+
+window.HideProgress = () => {
+  document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeOut";
+};
+
+window.ReDrawAfterGettingData = (symbolData, index) => {
+  globalMergeSession[index].isProcessed = true;
+  isLoadingSymbolData = false;
+
+  for (var i = 0; i < globalMergeSession[index].symbolWithDuplicates.duplicates.length; i++) {
+    globalMergeSession[index].symbolWithDuplicates.duplicates[i].thumbnail = symbolData.duplicates[i].thumbnail;
+    globalMergeSession[index].symbolWithDuplicates.duplicates[i].symbolInstances = symbolData.duplicates[i].symbolInstances;
+    globalMergeSession[index].symbolWithDuplicates.duplicates[i].numInstances = symbolData.duplicates[i].numInstances;
+    globalMergeSession[index].symbolWithDuplicates.duplicates[i].symbolOverrides = symbolData.duplicates[i].symbolOverrides;
+    globalMergeSession[index].symbolWithDuplicates.duplicates[i].numOverrides = symbolData.duplicates[i].numOverrides;
+  }
+
+  window.HideProgress(100);
+  DrawSymbolList(index);
+  document.getElementById('listOfSymbols').className = "movingYFadeInitialState workZone movingYFadeIn" + (globalView == 0 ? " cardsView" : "");
+  document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeIn";
+}
+
+
+
+window.onSymbolClicked = (index, selectedSymbol) => {
+  for (var i = 0; i < globalMergeSession[selectedSymbol].symbolWithDuplicates.duplicates.length; i++) {
+    var otherCheck = document.getElementById("duplicateItemCheck" + i);
+    otherCheck.checked = false;
+    var otherDiv = document.getElementById("duplicateItem" + i);
+    otherDiv.className = "thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter";
+  }
+  var selectedCheck = document.getElementById("duplicateItemCheck" + index);
+  selectedCheck.checked = true;
+  var selectedDiv = document.getElementById("duplicateItem" + index);
+  selectedDiv.className = "thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter selected";
+
+  globalMergeSession[selectedSymbol].isUnchecked = false;
+  globalMergeSession[selectedSymbol].selectedIndex = index;
+  DrawDuplicateSymbols(globalMergeSession);
 }
 
 window.DrawSymbolList = (index) => {
-  var inner="";
-  for (var i = 0; i < globalMergeSession[index].duplicatedSymbolsData.length; i++) {
-    inner += `<div class="thumbnailContainer stylePreview"><div class="thumbnail" id="duplicateSymbol${i}" style='background-image:url("${globalMergeSession[index].duplicatedSymbolsData[i].thumbnail}")'></div></div>`;
+  globalSymbolDisplayed = index;
+  var inner = "";
+  for (var i = 0; i < globalMergeSession[index].symbolWithDuplicates.duplicates.length; i++) {
+
+    var isSelected = (globalMergeSession[index].selectedIndex == i)
+    var selected = isSelected ? "selected" : "";
+    var checked = isSelected ? "checked" : "";
+
+    var checkbox = `<div class="colAuto roundCheckbox">
+      <input type="checkbox" ${checked} id="duplicateItemCheck${i}"/>
+      <label></label>
+    </div>`;
+
+
+    inner += `<div id="duplicateItem${i}" class="thumbnailContainer symbolPreview  alignVerticalCenter ${selected}" onclick="onSymbolClicked(${i}, ${index})">
+                ${checkbox}
+                <div class="colAvailable verticalLayout thumbnailData" id="duplicateItemThumbnail${i}" >
+                  <div class="rowAvailable thumbnail" style='background-image:url("${globalMergeSession[index].symbolWithDuplicates.duplicates[i].thumbnail}")'></div>
+                  <div class="rowAuto primaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].symbolWithDuplicates.duplicates[i].numInstances} instances - Used in ${globalMergeSession[index].symbolWithDuplicates.duplicates[i].numOverrides} overrides</span></div>
+                  <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].symbolWithDuplicates.duplicates[i].libraryName}</span></div>
+                </div>
+              </div>`;
   }
+
+
+  var resultsTitle = document.getElementById("resultsTitle");
+  var resultsDescription = document.getElementById("resultsDescription");
+  resultsTitle.innerHTML = globalMergeSession[index].symbolWithDuplicates.name;
+  resultsDescription.innerHTML = "There are " + globalMergeSession[index].symbolWithDuplicates.duplicates.length + " symbols with this name. Choose the one you want to keep and press OK. The other symbols will be removed, and all of their instances will be replaced by the one you chose to keep.";
+  document.getElementById("viewSelector").classList.remove("notDisplayed");
+
 
   var listOfSymbols = document.getElementById('listOfSymbols');
   listOfSymbols.innerHTML = inner;
-  listOfSymbols.className= "scrollable movingYFadeInitialState movingYFadeIn";
+  listOfSymbols.className = "movingYFadeInitialState workZone movingYFadeIn" + (globalView == 0 ? " cardsView" : "");
 }
+
+document.getElementById('chkIncludeLibraries').addEventListener("click", () => {
+  window.ShowProgress("");
+  window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked);
+});
 
 window.cancelAssignation = () => {
   window.postMessage('Cancel');
@@ -44,4 +222,32 @@ window.cancelAssignation = () => {
 document.getElementById('btnCancel').addEventListener("click", () => {
   cancelAssignation();
 });
+
+document.getElementById('btnMerge').addEventListener("click", () => {
+  window.postMessage('ExecuteMerge', globalMergeSession);
+});
+
+document.getElementById('btnOK').addEventListener("click", () => {
+  cancelAssignation();
+});
+
+document.getElementById('btnCardView').addEventListener("click", () => {
+  globalView = 0;
+  document.getElementById('listOfSymbols').classList.add("cardsView");
+  document.getElementById('btnListView').classList.remove("selected");
+  document.getElementById('btnCardView').classList.add("selected");
+});
+
+document.getElementById('btnListView').addEventListener("click", () => {
+  globalView = 1;
+  document.getElementById('listOfSymbols').classList.remove("cardsView");
+  document.getElementById('btnCardView').classList.remove("selected");
+  document.getElementById('btnListView').classList.add("selected");
+  
+});
+
+
+
+
+
 

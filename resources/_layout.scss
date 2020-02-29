@@ -4,7 +4,8 @@
 $topPadding: 46px;  
 $bottomPadding: 30px;  
 $leftRightPadding: 20px;  
-$headerContentDistance:16px;
+$headerTopDistance:8px;
+$headerSidesDistance:18px;
 
 
 
@@ -185,9 +186,11 @@ $headerContentDistance:16px;
 
 .flexGhostElement{
     @include flex;
-    flex: 1 1 auto;
+    flex: 1 1 250px;
     height: 0;
     opacity: 0;
+    margin-right: 10px;
+    background-color: red;
 }
 
 
@@ -197,4 +200,8 @@ $headerContentDistance:16px;
 
 .relativePos{
     position:relative;
+}
+
+.singleArea{
+    padding: 5px 10px 0 10px;
 }
