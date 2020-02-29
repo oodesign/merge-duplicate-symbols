@@ -1,110 +1,49 @@
-# merge-duplicates
+<img src="https://github.com/oodesign/merge-duplicate-symbols/blob/master/Images/Hero.png" alt="Merge duplicate symbols logo"/>
 
-## Installation
+# Merge duplicate symbols (Sketch plugin)
 
-- [Download](../../releases/latest/download/merge-duplicates.sketchplugin.zip) the latest release of the plugin
-- Un-zip
-- Double-click on merge-duplicates.sketchplugin
+Sketch.app plugin to merge symbols with the same name. Choose the one you want to keep and press OK. The other symbols will be removed, and all of their instances will be replaced by the one you chose to keep.
 
-## Development Guide
+Merge Duplicate Symbols is available for purchase on <a href="http://bit.ly/getmergeduplicatesymbols">Gumroad</a>.
 
-_This plugin was created using `skpm`. For a detailed explanation on how things work, checkout the [skpm Readme](https://github.com/skpm/skpm/blob/master/README.md)._
+<a href="http://bit.ly/getmergeduplicatesymbols">
+	<img width="305" height="65" src="https://github.com/oodesign/merge-duplicate-symbols/blob/master/Images/GetPlugin.png" alt="Get plugin on Gumroad">
+</a>
 
-### Usage
+<a href="http://bit.ly/mergesymbolsinsketch">View full detail on Medium</a>
+<br/><br/>
 
-Install the dependencies
+## How does it work?
 
-```bash
-npm install
-```
+Say you have three different cards with three different buttons in them. Each button is a symbol, and somehow those three symbol buttons have the same name. Let's merge them!
 
-Once the installation is done, you can run some commands inside the project folder:
+<img src="https://github.com/oodesign/merge-duplicate-symbols/blob/master/Images/SymbolsToMerge.PNG" alt="Three different cards with three different buttons in them. Each button is a symbol, and somehow those three symbol buttons have the same name. Let's merge them."/>
+<br/>
 
-```bash
-npm run build
-```
+Simply run the "Merge duplicates symbol plugin" from the Plugins menu.
 
-To watch for changes:
+<br/><br/>
+<img src="https://github.com/oodesign/merge-duplicate-symbols/blob/master/Images/LaunchMergeDuplicateSymbolsPlugin.PNG" alt="Let's merge them with the Merge Duplicate Symbols Plugin. You may find it in the Plugins menu, under the Merge Duplicate Symbols action."/>
+<br/>
 
-```bash
-npm run watch
-```
+The plugin will find automatically all symbols with the same name and ask you, for each of them, what to do with them. Choose the one you want to keep and press OK. The other symbols with the same name will be removed, and all of their instances will be replaced by the one you chose to keep.
+<br/>
 
-### Custom Configuration
+If you don't want to merge the symbols, just skip it by clicking on "Don't merge this one".
 
-#### Babel
+<br/><br/>
+<img src="https://github.com/oodesign/merge-duplicate-symbols/blob/master/Images/MergesWindow.PNG" alt="Choose the one you want to keep and press OK. The other symbols with the same name will be removed, and all of their instances will be replaced by the one you chose to keep."/>
+<br/><br/>
 
-To customize Babel, you have two options:
+And that's it! Symbols are merged. The discarded ones are removed, and all of their instances are replaced by the new one.
 
-- You may create a [`.babelrc`](https://babeljs.io/docs/usage/babelrc) file in your project's root directory. Any settings you define here will overwrite matching config-keys within skpm preset. For example, if you pass a "presets" object, it will replace & reset all Babel presets that skpm defaults to.
+<br/><br/>
+<img src="https://github.com/oodesign/merge-duplicate-symbols/blob/master/Images/SymbolsMerged.PNG" alt="Symbols are merged. The discarded ones are removed, and all of their instances are replaced by the new one."/>
 
-- If you'd like to modify or add to the existing Babel config, you must use a `webpack.skpm.config.js` file. Visit the [Webpack](#webpack) section for more info.
+## How do I get Merge Duplicate Symbols?
 
-#### Webpack
+Merge Duplicate Symbols is available for purchase on <a href="http://bit.ly/getmergeduplicatesymbols">Gumroad</a>.
 
-To customize webpack create `webpack.skpm.config.js` file which exports function that will change webpack's config.
-
-```js
-/**
- * Function that mutates original webpack config.
- * Supports asynchronous changes when promise is returned.
- *
- * @param {object} config - original webpack config.
- * @param {object} entry - entry property from webpack config
- * @param {boolean} entry.isPluginCommand - whether the config is for a plugin command or a resource
- **/
-module.exports = function(config, entry) {
-  /** you can change config here **/
-};
-```
-
-To use the polyfills or the mocks for certain Node.js globals and modules use the `node` property.
-
-Visit [the official documention](https://webpack.js.org/configuration/node/) for available options.
-
-```js
-if(entry.isPluginCommand ){
-  config.node = {
-    setImmediate: false
-  }
-} else {
-  config.node = false;
-}
-```
-
-### Debugging
-
-To view the output of your `console.log`, you have a few different options:
-
-- Use the [`sketch-dev-tools`](https://github.com/skpm/sketch-dev-tools)
-- Open `Console.app` and look for the sketch logs
-- Look at the `~/Library/Logs/com.bohemiancoding.sketch3/Plugin Output.log` file
-
-Skpm provides a convenient way to do the latter:
-
-```bash
-skpm log
-```
-
-The `-f` option causes `skpm log` to not stop when the end of logs is reached, but rather to wait for additional data to be appended to the input
-
-### Publishing your plugin
-
-```bash
-skpm publish <bump>
-```
-
-(where `bump` can be `patch`, `minor` or `major`)
-
-`skpm publish` will create a new release on your GitHub repository and create an appcast file in order for Sketch users to be notified of the update.
-
-You will need to specify a `repository` in the `package.json`:
-
-```diff
-...
-+ "repository" : {
-+   "type": "git",
-+   "url": "git+https://github.com/ORG/NAME.git"
-+  }
-...
-```
+<a href="http://bit.ly/getmergeduplicatesymbols">
+	<img width="305" height="65" src="https://github.com/oodesign/merge-duplicate-symbols/blob/master/Images/GetPlugin.png" alt="Get plugin on Gumroad">
+</a>
