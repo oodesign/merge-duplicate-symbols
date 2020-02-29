@@ -1,0 +1,19 @@
+{
+  "name": "delta-e",
+  "version": "0.0.7",
+  "homepage": "https://github.com/zschuessler/DeltaE",
+  "authors": [
+    "Zachary Schuessler <zlschuessler@gmail.com>"
+  ],
+  "description": "Color difference algorithms..in JavaScript",
+  "main": "dist/deltae.global.min.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "deltae",
+    "delta",
+    "e"
+  ],
+  "license": "Unlicensed"
+}

@@ -1,0 +1,173 @@
+{
+  "compatibleVersion": 50,
+  "commands" : [
+    {
+      "script" : "Main.js",
+      "name" : "Merge symbols with the same names",
+      "handlers": {
+        "run": "MergeDuplicateSymbols",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      },
+      "identifier" : "mergeduplicatesymbols",
+      "shortcut": "ctrl shift m",
+      "icon" : "icon-sr.png"
+    },
+    {
+      "script" : "Main.js",
+      "name" : "Merge selected symbolss",
+      "handlers": {
+        "run": "MergeSelectedSymbols",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      },
+      "identifier" : "mergeselectedsymbols",
+      "shortcut": "ctrl shift option m",
+      "icon" : "icon-sr.png"
+    },
+    {
+      "script" : "Main.js",
+      "name" : "Merge text styles (from list)",
+      "handlers": {
+        "run": "MergeSelectedTextStyles",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      },
+      "identifier" : "mergeselectedtextstyles",
+      "shortcut": "ctrl shift option t",
+      "icon" : "icon-sr.png"
+    },
+    {
+      "script" : "Main.js",
+      "name" : "Merge similar text styles (Beta)",
+      "handlers": {
+        "run": "MergeSimilarTextStyles",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      },
+      "identifier" : "mergesimilartextstyles",
+      "shortcut": "ctrl shift option command t",
+      "icon" : "icon-sr.png"
+    },
+    {
+      "script" : "Main.js",
+      "name" : "Merge similar layer styles (Beta)",
+      "handlers": {
+        "run": "MergeSimilarLayerStyles",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      },
+      "identifier" : "mergesimilarlayerstyles",
+      "shortcut": "ctrl shift option command l",
+      "icon" : "icon-sr.png"
+    },
+    {
+      "script" : "Main.js",
+      "name" : "Merge layer styles (from list)",
+      "handlers": {
+        "run": "MergeSelectedLayerStyles",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      },
+      "identifier" : "mergeselectedlayerstyles",
+      "shortcut": "ctrl shift option l",
+      "icon" : "icon-sr.png"
+    },
+    {
+      "script" : "Main.js",
+      "name" : "Merge layer styles with the same name",
+      "handlers": {
+        "run": "MergeDuplicateLayerStyles",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      },
+      "identifier" : "mergeduplicatelayerstyles",
+      "shortcut": "ctrl shift l",
+      "icon" : "icon-sr.png"
+    },
+    {
+      "script" : "Main.js",
+      "name" : "Merge text styles with the same name",
+      "handlers": {
+        "run": "MergeDuplicateTextStyles",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      },
+      "identifier" : "mergeduplicatetextstyles",
+      "shortcut": "ctrl shift t",
+      "icon" : "icon-sr.png"
+    },    
+    {
+      "script" : "Help.js",
+      "name" : "Documentation",
+      "identifier": "documentation",
+      "handlers" : {
+        "run" : "documentation",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      }
+    },
+    {
+      "script" : "Help.js",
+      "name" : "Report issue or an idea",
+      "identifier": "report_issue",
+      "handlers" : {
+        "run" : "report_issue",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      }
+    }
+  ],
+  "menu" : {
+    "title" : "Merge duplicate ...",
+    "items" : [
+      {
+        "title": "💎 Symbols",
+        "items": [
+          "mergeduplicatesymbols",
+          "mergeselectedsymbols"
+        ]
+      },
+      {
+        "title": "Layer Styles",
+        "items": [
+          "mergeduplicatelayerstyles",
+          "mergeselectedlayerstyles",
+          "mergesimilarlayerstyles"
+        ]
+      },
+      {
+        "title": "Text Styles",
+        "items": [
+          "mergeduplicatetextstyles",
+          "mergeselectedtextstyles",
+          "mergesimilartextstyles"
+        ]
+      },
+      {
+        "title": "Help & Feedback",
+        "items": [
+          "documentation",
+          "report_issue"
+        ]
+      }
+    ]
+  },
+  "identifier" : "com.oodesign.mergeduplicatesymbols",
+  "version" : "6.0.0",
+  "name" : "Merge duplicates",
+	"icon" : "icon.png",
+  "description": "Merge symbols or styles, replacing all instances and keeping overrides.",
+  "author": "oodesign",
+  "homepage": "http://bit.ly/mergesymbolsinsketch"
+}

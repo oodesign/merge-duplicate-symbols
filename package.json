@@ -1,0 +1,43 @@
+{
+  "name": "merge-duplicates",
+  "version": "6.0.0",
+  "engines": {
+    "sketch": ">=50.0"
+  },
+  "skpm": {
+    "name": "Merge Duplicates",
+    "manifest": "src/manifest.json",
+    "main": "merge-duplicates.sketchplugin",
+    "assets": [
+      "assets/**/*"
+    ],
+    "sketch-assets-file": "sketch-assets/icons.sketch"
+  },
+  "scripts": {
+    "build": "skpm-build",
+    "watch": "skpm-build --watch",
+    "start": "skpm-build --watch",
+    "postinstall": "npm run build && skpm-link"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oodesign/merge-duplicates.git"
+  },
+  "devDependencies": {
+    "@skpm/builder": "^0.7.5",
+    "@skpm/extract-loader": "^2.0.2",
+    "css-loader": "^1.0.0",
+    "html-loader": "^0.5.1"
+  },
+  "resources": [
+    "resources/**/*.js"
+  ],
+  "dependencies": {
+    "@skpm/fs": "^0.2.5",
+    "d3-color": "^1.3.0",
+    "delta-e": "0.0.7",
+    "sketch-module-google-analytics": "^0.2.1",
+    "sketch-module-web-view": "^3.0.1"
+  },
+  "author": "oodesign <oscar@oodesign.me>"
+}

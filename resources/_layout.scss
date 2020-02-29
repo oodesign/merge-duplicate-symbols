@@ -1,0 +1,200 @@
+@import "_colors"; 
+@import "_media"; 
+
+$topPadding: 46px;  
+$bottomPadding: 30px;  
+$leftRightPadding: 20px;  
+$headerContentDistance:16px;
+
+
+
+.notDisplayed{
+    display: none !important;
+}
+
+.notVisible{
+    visibility: hidden !important;
+}
+
+@mixin flex{
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.displayFlex {
+    @include flex;
+}
+
+@mixin flexDirectionRow {
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    -webkit-box-orient: horizontal;
+    -moz-box-orient: horizontal;
+    flex-direction: row;
+}
+
+.flexDirectionRow{
+    @include flexDirectionRow;
+}
+
+@mixin flexDirectionColumn {
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    flex-direction: column;
+}
+
+.flexDirectionColumn{
+    @include flex;
+    @include flexDirectionColumn;
+}
+
+@mixin horizontalLayout {
+    @include flex;
+    @include flexDirectionRow;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+}
+
+.horizontalLayout {
+    @include horizontalLayout;
+}
+
+
+@mixin verticalLayout {
+    @include flex;
+    @extend .flexDirectionColumn;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+}
+
+.verticalLayout {
+    @include verticalLayout;
+}
+
+@mixin colAuto {
+    -webkit-box-flex: 0;
+   -moz-box-flex: 0;
+   -ms-flex: 0 0 auto ;
+   -webkit-flex: 0 0 auto ;
+   flex: 0 0 auto ;
+   position: relative;
+}
+
+.colAuto {
+     @include colAuto;
+}
+
+@mixin colAvailable {
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -ms-flex: 1 1;
+    -webkit-flex: 1 1;
+    flex: 1 1;
+    position: relative;
+}
+
+.colAvailable {
+     @include colAvailable;
+}
+
+.rowAuto {
+     -webkit-box-flex: 0;
+    -moz-box-flex: 0;
+    -ms-flex: 0 0 auto ;
+    -webkit-flex: 0 0 auto ;
+    flex: 0 0 auto ;
+    position: relative;
+    width: 100%;
+}
+
+.rowAvailable {
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -ms-flex: 1 1;
+    -webkit-flex: 1 1;
+    flex: 1 1;
+    width: 100%;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+@mixin alignVerticalCenter{
+    @include flex;
+    align-content: center;
+    align-items: center;
+}
+
+.alignVerticalCenter{
+    @include alignVerticalCenter;
+}
+
+@mixin alignHorizontalCenter{
+    margin:0 auto;
+}
+
+.alignHorizontalCenter{
+    @include alignHorizontalCenter;
+}
+
+@mixin alignFullCenter{
+        display: flex; // make us of Flexbox
+        align-items: center; // does vertically center the desired content
+        justify-content: center; // horizontally centers single line items
+        text-align: center; // optional, but helps horizontally center text that breaks into multiple lines
+}
+
+.alignFullCenter{
+    @include alignFullCenter;
+}
+
+.alignFlexHorizontalCenter{
+    justify-content: center;
+}
+
+.scrollable{
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+@mixin wrapPanel{
+    @include flex;
+    flex-wrap: wrap;
+}
+
+.wrapPanel{
+    @include wrapPanel;
+}
+
+.extendHeight{
+    height: 100%;
+}
+
+.noScroll{
+    overflow: hidden !important;
+}
+
+.fullWidth{
+    width: 100%;;
+}
+
+.flexGhostElement{
+    @include flex;
+    flex: 1 1 auto;
+    height: 0;
+    opacity: 0;
+}
+
+
+.scrollXVisible{
+    overflow-x: visible !important;
+}
+
+.relativePos{
+    position:relative;
+}

@@ -1,0 +1,1060 @@
+
+@import "_media"; 
+@import "_colors"; 
+@import "_layout"; 
+
+html {
+  box-sizing: border-box;
+  background: transparent;
+  overflow: hidden;
+  cursor: default;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  padding:0;
+  margin:0;
+
+  @include for-theme(light){
+      background-color: $light_backgroundColor;
+      color: $light_primaryColor;
+  }
+  
+  @include for-theme(dark){
+      background-color: $dark_backgroundColor;
+      color: $dark_primaryColor;
+  }
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+  position: relative;
+
+  /* Prevent the content from being selectionable */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.leftPanelPadding{
+  padding: $topPadding $leftRightPadding $bottomPadding $leftRightPadding;
+}
+
+.rightPanelPadding{
+  padding: $topPadding $leftRightPadding 0  $leftRightPadding;
+}
+
+@mixin primaryText{
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  @include for-theme(light){
+    color: $light_primaryColor;
+  }
+  @include for-theme(dark){
+      color: $dark_primaryColor;
+  }
+}
+
+.contrastMode{
+  @include for-theme(light){
+    background-color: $light_contrastModeColor;
+  }
+  @include for-theme(dark){
+    background-color: $dark_contrastModeColor;
+  }
+}
+
+.primaryText{
+  @include primaryText;
+}
+
+.primaryBoldText{
+  @include primaryText;
+  font-weight: 700;
+}
+
+@mixin primaryMediumText{
+  @include primaryText;
+  font-size: 15px;
+}
+
+.primaryMediumText{
+  @include primaryMediumText;
+}
+
+@mixin primaryBigText{
+  @include primaryText;
+  font-size: 25px;
+  margin-bottom:10px;
+}
+
+.primaryBigText{
+  @include primaryBigText;
+}
+
+@mixin secondaryText{
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+
+  @include for-theme(light){
+    color: $light_secondaryColor;
+  }
+  @include for-theme(dark){
+      color: $dark_secondaryColor;
+  }
+}
+
+.secondaryText{
+  @include secondaryText;
+}
+
+.headerText{
+  @include primaryMediumText;
+  font-weight: 500;
+
+  @include for-theme(light){
+    color: $light_primaryColor;
+  }
+  @include for-theme(dark){
+      color: $dark_primaryColor;
+  }
+}
+
+
+
+.draggableArea{
+  position: absolute;
+  width:100vw;
+  height: 30px;
+  background-color: transparent;
+  z-index: 1;
+
+  span{
+    @include secondaryText();
+  }
+}
+
+.treeContent{
+  margin-top: $headerContentDistance;
+  margin-left: $headerContentDistance;
+  margin-bottom: 30px;
+}
+
+.leftPanel{
+  width:260px;
+  @include for-theme(light){
+    background-color: $light_leftPanelBackgroundColor;
+  }
+  @include for-theme(dark){
+      background-color: $dark_leftPanelBackgroundColor;
+  }
+  box-shadow:inset -10px 0 15px -2px rgba(0,0,0,0.075);
+}
+
+.bottomBar{
+  // height:60px;
+  @include for-theme(light){
+    background-color: $light_bottomBarBackgroundColor;
+    border-top: 1px solid $light_bottomBarBorderColor;
+  }
+  @include for-theme(dark){
+      background-color: $dark_bottomBarBackgroundColor;
+      border-top: 1px solid $dark_bottomBarBorderColor;
+  }
+}
+
+
+
+.separeHeader{
+  margin-top:60px;
+}
+
+.progressIndicator{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.progressCircle{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  visibility: hidden;
+  opacity: 0;
+
+  .secondaryText{
+    max-width: 200px;
+    margin: 20px 0 0 0;
+  }
+}
+
+
+
+.emptyState{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+
+  // visibility: hidden;
+  // opacity: 0;
+
+  .emptyStateIcon{
+    @include for-theme(light){
+      fill:$light_emptyStateIcon;
+    }
+    @include for-theme(dark){
+      fill:$dark_emptyStateIcon;
+    }
+  }
+
+  .secondaryText{
+    width:280px;
+    margin: 20px 0 0 0;
+    text-align: center;
+  }
+}
+
+.registerHeader{
+  @include primaryMediumText;
+  font-size: 32px;
+  text-align: center;
+}
+
+.registerText{
+  @include secondaryText;
+
+  width:400px;
+  margin: 10px 0 30px 0;
+  text-align: center;
+}
+
+.fadeIn{
+  transition: visibility 0s, opacity 0.5s linear;
+  visibility: visible;
+  opacity: 1;
+}
+
+.fadeOut{
+  transition: opacity 0.5s linear, visibility 0s 0.5s;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.logo{
+  margin-top:15px;
+  margin-right:23px;
+  width:39px;
+  height:36px;
+  // background-image: url('./images/LogoDark.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  @include for-theme(light){
+    background-image: url("./images/LogoLight.png");
+  }
+  @include for-theme(dark){
+    background-image: url("./images/LogoDark.png");
+  }
+}
+
+.btnApply{
+  width:100%;
+  margin: 0 20px;
+  height: 34px;
+  border: double 2px $accentColor;
+  border-radius: 17px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  @include alignHorizontalCenter;
+  outline: none;
+  font-weight: 700;
+  background-color: transparent;
+  transition: all 0.1s ease-out;
+
+  @include for-theme(light){
+    color:$accentColor;
+  }
+  @include for-theme(dark){
+    color:$dark_inverseColor;
+  }
+
+  &:hover {
+    background-color: $accentColor;
+    outline: none;
+    @include for-theme(light){
+      color:$light_inverseColor;
+    }
+    @include for-theme(dark){
+      color:$dark_inverseColor;
+    }
+  }
+  &:active {
+    background-color: $accentColorActive;
+    border-color: $accentColorActive;
+    outline: none;
+  }
+  
+}
+
+.actionsRow{
+  @include horizontalLayout;
+  @include alignVerticalCenter;
+  padding: 10px 10px 10px 0;
+}
+
+
+@mixin btnPrimary{
+  border:none;
+  width: 150px;
+  height: 34px;
+  border-radius: 17px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  @include alignHorizontalCenter;
+  outline: none;
+  font-weight: 700;
+  background-color: $accentColor;
+  transition: all 0.1s ease-out;
+  color:$dark_inverseColor;
+  margin-left:5px;
+
+  &:hover {
+    background-color: $accentColorHover;
+    outline: none;
+  }
+  &:active {
+    background-color: $accentColorActive;
+    border-color: $accentColorActive;
+    outline: none;
+  }
+
+  &:disabled {
+    background-color: $accentColor;
+    border-color: $accentColor;
+    outline: none;
+    opacity: 0.3;
+  }
+}
+
+.btnPrimary{
+  @include btnPrimary;
+}
+
+@mixin btnSecondary{
+  @include for-theme(light){
+    border:1px solid $light_btnSecondaryBorderColor;
+  }
+  @include for-theme(dark){
+    border:1px solid $dark_btnSecondaryBorderColor;
+  }
+  background-color: transparent;
+  width: 100px;
+  height: 34px;
+  border-radius: 17px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  @include alignHorizontalCenter;
+  outline: none;
+  font-weight: 700;
+  transition: all 0.1s ease-out;
+
+  @include for-theme(light){
+    color:$light_primaryColor;
+  }
+  @include for-theme(dark){
+    color:$dark_inverseColor;
+  }
+
+  &:hover {
+    @include for-theme(light){
+      background-color: $light_btnSecondaryBackgroundHover;
+      border-color: $accentColorHover;
+      color:$accentColorDarkText;
+    }
+    @include for-theme(dark){
+      background-color: $dark_btnSecondaryBackgroundHover;
+      border-color: $accentColorHover;
+    }
+    outline: none;
+  }
+  &:active {
+    @include for-theme(light){
+      background-color: $light_btnSecondaryBackgroundActive;
+      border-color: $accentColorActive;
+    }
+    @include for-theme(dark){
+      background-color: $dark_btnSecondaryBackgroundActive;
+      border-color: $accentColorActive;
+    }
+    outline: none;
+  }
+}
+
+.btnSecondary{
+  @include btnSecondary;
+}
+
+@mixin btnTertiary{
+  border:1px solid transparent;
+  background-color: transparent;
+  width: 100px;
+  height: 34px;
+  border-radius: 17px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  @include alignHorizontalCenter;
+  outline: none;
+  font-weight: 500;
+  transition: all 0.1s ease-out;
+
+  @include for-theme(light){
+    color:$light_secondaryColor;
+  }
+  @include for-theme(dark){
+    color:$dark_secondaryColor;
+  }
+
+  &:hover {
+    @include for-theme(light){
+      border-color: $accentColorHover;
+      color:$accentColorDarkText;
+    }
+    @include for-theme(dark){
+      border-color: $accentColorHover;
+      color:$dark_primaryColor;
+    }
+    outline: none;
+  }
+  &:active {
+    @include for-theme(light){
+      border-color: $accentColorActive;
+    }
+    @include for-theme(dark){
+      border-color: $accentColorActive;
+    }
+    outline: none;
+  }
+}
+
+.btnTertiary{
+  @include btnTertiary;
+}
+
+
+
+.btnStartTrial{
+  @include btnSecondary;
+  width:200px;
+}
+
+.btnGetItNow{
+  @include btnPrimary;
+  width:200px;
+}
+
+.btnAlreadyLicense{
+  @include btnTertiary;
+  width:200px;
+  margin-top: 30px;
+}
+
+
+.btnArrow{
+  @include for-theme(light){
+    background-color: rgba($dark_backgroundColor,0.2);
+  }
+  @include for-theme(dark){
+    background-color: rgba($light_backgroundColor,0.3);
+  }
+  width: 24px;
+  height: 24px;
+  @include alignHorizontalCenter;
+  outline: none;
+  border:none;
+  border-radius: 2px;
+  transition: all 0.1s ease-out;
+
+  &:hover {
+    @include for-theme(light){
+      background-color: rgba($dark_backgroundColor,0.3);
+    }
+    @include for-theme(dark){
+      background-color: rgba($light_backgroundColor,0.6);
+    }
+    outline: none;
+  }
+  &:active {
+    @include for-theme(light){
+      background-color: rgba($dark_backgroundColor,0.4);
+    }
+    @include for-theme(dark){
+      background-color: rgba($light_backgroundColor,0.45);
+    }
+    outline: none;
+  }
+}
+
+.registerLogo{
+  margin-bottom: 20px;
+  width:160px;
+
+  path{
+    @include for-theme(light){
+      fill: $light_primaryColor;
+    }
+    @include for-theme(dark){
+      fill: $dark_primaryColor;
+    }
+  }
+}
+
+.listOfStyles{
+  padding: 10px 20px;
+
+  .movingYFadeInitialState{
+    transition: transform 0.3s 0.2s ease-out, opacity 0.3s 0.2s ease-out;
+  }
+}
+
+.styleContainer{
+  height:200px;
+}
+
+.thumbnailContainer{
+  height:200px;
+  border-radius: 5px;
+  padding: 10px;
+  
+  margin-right:10px;
+}
+
+.thumbnail{
+  width:100%;
+  height:100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  position: relative;
+
+  &.isSmallThumbnail{
+    background-size: initial;
+    background-position: top;
+  }
+}
+
+.infoIcon{
+  top:1px;
+  margin-left: 5px;
+
+  path{
+    @include for-theme(light){
+      fill: $light_primaryColor;
+    }
+    @include for-theme(dark){
+      fill: $dark_primaryColor;
+    }
+    opacity: 0.5;
+    transition: all 0.2s ease-out;
+  }
+    
+  &:hover{
+    path{
+      opacity: 1;
+    }
+  }
+}
+
+
+.listItem{
+
+  .itemText{
+    margin-bottom: 4px;
+    max-width: 400px;
+    span{
+      width:100%;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+      overflow: hidden;
+    }
+  }
+
+  transition: all 0.8s ease-out;
+  .listItemBg{
+    background-color: transparent;
+    transition: background-color 0.2s ease-out;
+  }
+
+  .listItemHead{
+    height:7px;
+    background-color: transparent;
+    transition: background-color 0.2s ease-out;
+  }
+  .listItemFoot{
+    height:14px;
+    background-color: transparent;
+    transition: background-color 0.2s ease-out;
+  }
+
+  .listItemSeparator{
+    height:1px;
+    width:100%;
+    @include for-theme(light){
+      background-color: $light_SeparatorColor;
+    }
+    @include for-theme(dark){
+      background-color: $dark_SeparatorColor;
+    }
+    margin:0 0 10px 0;
+  }
+
+  &:hover{
+    .listItemBg, .listItemFoot, .listItemHead{
+      @include for-theme(light){
+        background-color: $light_leftPanelBackgroundColor;
+      }
+      @include for-theme(dark){
+        background-color: $dark_leftPanelBackgroundColor;
+      }
+    }
+    .listItemSeparator{
+      opacity: 0;
+    }
+  }
+}
+
+.textPreview{
+  @include for-theme(light){
+    border:1px dashed $light_lessWeightBorderColor;
+  }
+
+  @include for-theme(dark){
+    border:1px dashed $dark_lessWeightBorderColor;
+  }
+}
+
+.stylePreview{
+  @include for-theme(light){
+    border:1px solid $light_moreWeightBorderColor;
+  }
+
+  @include for-theme(dark){
+    border:1px solid $dark_moreWeightBorderColor;
+  }
+
+  &.thumbnailContainer{
+    padding: 10px 40px;
+  }
+
+}
+
+.btnThumbnailNavigationLeft{
+  position: absolute;
+  left:10px;
+  top:0;
+  bottom:0;
+  margin:auto;
+}
+.btnThumbnailNavigationRight{
+  position: absolute;
+  right:10px;
+  top:0;
+  bottom:0;
+  margin:auto;
+}
+
+.separatorBelow{
+  margin: 10px 0 10px 0; 
+  border-bottom: 1px solid blue;
+}
+
+.resultsFilters{
+  .roundCheckbox{
+    .padder{
+      width:260px;
+      span{
+        width:100%;
+      }
+    }
+  }
+}
+
+@mixin roundCheckbox($bgColor,$marginBottom){
+  position: relative;
+  margin-bottom: $marginBottom;
+
+  .padder{
+    width: 160px;
+    height: 100%;
+    background-color: transparent;
+  }
+
+  label {
+    border-radius: 50%;
+    cursor: pointer;
+    height: 20px;
+    width: 20px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    background-color: transparent;
+    border: 2px solid ;
+    transition: all 0.1s;
+
+    @include for-theme(light){
+      border-color: $light_inputBorderColor;
+    }
+    @include for-theme(dark){
+      border-color: $dark_inputBorderColor;
+    }
+
+    &:hover{
+      @include for-theme(light){
+        border-color: $light_inputBorderColorHover;
+      }
+      @include for-theme(dark){
+        border-color: $dark_inputBorderColorHover;
+      }
+    }
+
+    span{
+      left:25px;
+      width:120px;
+      position: absolute;
+      @include primaryText;
+    }
+  }
+
+  label:after {
+    border: 2px solid white;
+    border-top: none;
+    border-right: none;
+    content: "";
+    height: 6px;
+    left: 3px;
+    opacity: 0;
+    position: absolute;
+    top: 4px;
+    transform: rotate(-45deg);
+    width: 10px;
+  }
+
+  input[type="checkbox"] {
+    visibility: hidden;
+  }
+
+  input[type="checkbox"]:checked + label {
+    background-color: $bgColor;
+    border-color: $bgColor;
+  }
+
+  input[type="checkbox"]:checked + label:after {
+    opacity: 1;
+  }
+
+}
+
+
+.roundCheckbox {
+  @include roundCheckbox($accentColor,7px);
+}
+
+.selectRoundCheckbox{
+  @include roundCheckbox($complementaryColor,0);
+  width:30px;
+  margin-left: 10px;
+}
+
+
+
+div::-webkit-scrollbar-track {
+  border-radius: 8px;
+  background-color: transparent;
+}
+
+div::-webkit-scrollbar {
+  width: 8px;
+  background-color: transparent;
+}
+
+div::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  @include for-theme(light){
+    background-color: $light_scrollThumbColor;
+  }
+  @include for-theme(dark){
+    background-color: $dark_scrollThumbColor;
+  }
+
+  &:hover{
+    @include for-theme(light){
+      background-color: $light_scrollThumbColorHover;
+    }
+    @include for-theme(dark){
+      background-color: $dark_scrollThumbColorHover;
+    }
+  }
+
+  &:active{
+    @include for-theme(light){
+      background-color: $light_scrollThumbColorActive;
+    }
+    @include for-theme(dark){
+      background-color: $dark_scrollThumbColorActive;
+    }
+  }
+}
+
+.movingYFadeInitialState{
+  transition: transform 0.3s ease-out, opacity 0.3s 0.1s ease-out;
+  transform: translateY(30px);
+  opacity: 0;
+}
+
+.movingYFadeIn{
+  transform: translateY(0px) ;
+  opacity: 1;
+}
+
+.movingYFadeOut{
+  transition: opacity 0.15s ease-out, transform 0s 0.3s ease-out !important;
+  transform: translateY(30px);
+  opacity: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.item {
+	margin-bottom: 20px;
+	position: relative;
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+  @include for-theme(light){
+    border: 1px solid $light_backgroundColor;
+    background: $light_backgroundColor;
+  }
+  @include for-theme(dark){
+    border: 1px solid $dark_backgroundColor;
+    background: $dark_backgroundColor;
+  }
+  float: left;
+}
+
+.radial-inner-bg {
+	border-radius: 50%;
+	width: 72px;
+	height: 72px; 
+	top: 3px;
+  left: 3px;
+  @include for-theme(light){
+    background: $light_backgroundColor;
+  }
+  @include for-theme(dark){
+    background: $dark_backgroundColor;
+  }
+	position: absolute;
+}
+
+$step: 1; // step of % for created classes
+$loops: 100;
+$increment: (360 / $loops);
+$half: round($loops / 2);
+@for $i from 0 through $loops {
+  .progress-#{$i*$step} {
+    @if $i < 50 {
+      $nextdeg: 90deg + ( $increment * $i );
+      @include for-theme(light){
+        background-image: linear-gradient(90deg, $light_backgroundColor 50%, transparent 50%, transparent), linear-gradient($nextdeg, $accentColor 50%, $light_backgroundColor 50%, $light_backgroundColor);
+      }
+      @include for-theme(dark){
+        background-image: linear-gradient(90deg, $dark_backgroundColor 50%, transparent 50%, transparent), linear-gradient($nextdeg, $accentColor 50%, $dark_backgroundColor 50%, $dark_backgroundColor);
+      }
+    }
+    @else {
+      $nextdeg: -90deg + ( $increment * ( $i - $half ) );
+      @include for-theme(light){
+        background-image: linear-gradient($nextdeg, $accentColor 50%, transparent 50%, transparent), linear-gradient(270deg, $accentColor 50%, $light_backgroundColor 50%, $light_backgroundColor);
+      }
+      @include for-theme(dark){
+        background-image: linear-gradient($nextdeg, $accentColor 50%, transparent 50%, transparent), linear-gradient(270deg, $accentColor 50%, $dark_backgroundColor 50%, $dark_backgroundColor);
+      }
+    }
+  }
+}
+
+
+input, textarea {
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: none;
+
+  .tooltipText {
+    visibility: hidden;
+    width: 240px;
+    @include for-theme(light){
+      background-color: $light_tooltipColor;
+    }
+    @include for-theme(dark){
+      background-color: $dark_tooltipColor;
+    }
+    border-radius: 6px;
+    padding: 5px 10px;
+    position: absolute;
+    z-index: 1;
+    bottom: 150%;
+    left: 7px;
+    margin-left: -120px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    box-shadow: 0px 2px 11px rgba(0,0,0,0.2);
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      @include for-theme(light){
+        border-color: $light_tooltipColor transparent transparent transparent;
+      }
+      @include for-theme(dark){
+        border-color: $dark_tooltipColor transparent transparent transparent;
+      }
+    }
+
+    span{
+      @include primaryText;
+    }
+  }
+
+  &:hover .tooltipText {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+.warningText{
+  @include primaryText;
+  color:$warningColor !important;
+  margin:20px 0 0 0;
+  height: 0;
+  visibility: hidden;
+  opacity: 0;
+  transition:height 0.3s ease-out, opacity 0.3s ease-out, visibility 0s 0.3s;
+}
+
+.warningTextVisible{
+  transition: visibility 0s, height 0.3s ease-out, opacity 0.3s ease-out;
+  visibility: visible;
+  height:35px;
+  opacity: 1;
+}
+
+input[type=text] {
+  padding: 8px 12px;
+  width:305px;
+  height: 34px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border-radius: 3px;
+  outline: none;
+  @include primaryText;
+  @include for-theme(light){
+    background-color: $light_inputBackgroundColor;
+    border: 1px solid $light_inputBorderColor;
+  }
+  @include for-theme(dark){
+      background-color: $dark_inputBackgroundColor;
+      border: 1px solid $dark_inputBorderColor;
+  }
+}
+
+a{
+  color:inherit;
+}
+
+@mixin animatedDiv{
+
+  .yFadeIn{
+    transition: visibility 0s, transform 0.3s ease-out, opacity 0.3s ease-out !important;
+    visibility: visible !important;
+    opacity:1 !important;
+    transform: translate(-50%,0px) !important;
+  }
+
+  .yFadeOut{
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out, visibility 0s 0.3s !important;
+    visibility: hidden !important;
+    opacity:0 !important;
+    transform:translate(-50%,-50px) !important;
+  }
+}
+
+.animatedDiv{
+  @include animatedDiv;
+}
+
+#ctaForm{
+  opacity: 1;
+  //transition: all 0.3s ease-in-out;
+  transition: transform 0.3s ease-out, opacity 0.3s 0.1s ease-out;
+  position: absolute;
+  left:50%;
+  transform:translate(-50%,0);
+}
+
+#registerForm{
+  position: absolute;
+  left:50%;
+  visibility: hidden;
+  opacity:0;
+  transform:translate(-50%,50px);
+  transition: all 0.3s ease-out
+}
+
+#confirmationForm{
+  position: absolute;
+  left:50%;
+  visibility: hidden;
+  opacity:0;
+  transform:translate(-50%,50px);
+  transition: all 0.3s ease-out
+}
+
+#startTrialForm{
+  position: absolute;
+  left:50%;
+  visibility: hidden;
+  opacity:0;
+  transform:translate(-50%,50px);
+  transition: all 0.3s ease-out
+}
