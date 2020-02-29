@@ -164,12 +164,12 @@
     ]
   },
   "identifier": "com.oodesign.mergeduplicatesymbols",
-  "version": "6.0.3",
   "name": "Merge duplicates",
   "icon": "icon.png",
   "description": "Merge symbols or styles, replacing all instances and keeping overrides.",
   "author": "oodesign",
   "homepage": "http://bit.ly/mergesymbolsinsketch",
+  "version": "6.0.7",
   "disableCocoaScriptPreprocessor": true,
   "appcast": "https://raw.githubusercontent.com/oodesign/merge-duplicate-symbols/master/.appcast.xml"
 }
