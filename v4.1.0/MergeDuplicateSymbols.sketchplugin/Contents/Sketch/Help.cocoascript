@@ -1,7 +1,0 @@
-var documentation = function(context) {
-    NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("http://bit.ly/mergesymbolsinsketch"));
-};
-
-var report_issue = function(context) {
-    NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("https://github.com/oodesign/merge-duplicate-symbols/issues"));
-};
