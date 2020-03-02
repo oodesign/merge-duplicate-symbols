@@ -169,7 +169,7 @@
   "description": "Merge symbols or styles, replacing all instances and keeping overrides.",
   "author": "oodesign",
   "homepage": "http://bit.ly/mergesymbolsinsketch",
-  "version": "6.0.9",
+  "version": "6.0.10",
   "disableCocoaScriptPreprocessor": true,
   "appcast": "https://raw.githubusercontent.com/oodesign/merge-duplicate-symbols/master/.appcast.xml"
 }
