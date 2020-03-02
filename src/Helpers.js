@@ -355,6 +355,8 @@ function FindSimilarTextStyles(referenceStyle, styles, context, checkSameFont, c
       var sameSize = referenceStyle.style().textStyle().attributes().NSFont.pointSize() == style.textStyle.style().textStyle().attributes().NSFont.pointSize();
       //console.log("---FontSize? "+sameSize);
 
+      console.log("ref:" + referenceStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue());
+      console.log("style:" + style.textStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue());
       var sameColor = referenceStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue() == style.textStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue();
       //console.log("---Color? "+sameColor);
 
@@ -969,7 +971,11 @@ function getLayerStyleColor(style) {
 }
 
 function getTextStyleColor(style) {
-  return style.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue().toString();
+  if (style.style().textStyle().attributes().MSAttributedStringColorAttribute) {
+    return style.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue().toString();
+  }
+  else
+    return "000000";
 }
 
 function getOvalThumbnail(style) {
