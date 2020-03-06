@@ -1,4 +1,4 @@
-<img src="https://github.com/oodesign/merge-duplicate-symbols/blob/master/Images/Hero.png" alt="Merge duplicate symbols logo"/>
+<img src="https://github.com/oodesign/merge-duplicate-symbols/blob/master/Images/Symbols.png" alt="Merge duplicate symbols logo"/>
 
 # Merge duplicate symbols (Sketch plugin)
 
