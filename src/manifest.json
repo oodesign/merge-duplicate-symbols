@@ -1,5 +1,4 @@
 {
-  "compatibleVersion": 50,
   "commands" : [
     {
       "script" : "Main.js",
@@ -168,5 +167,6 @@
 	"icon" : "icon.png",
   "description": "Merge symbols or styles, replacing all instances and keeping overrides.",
   "author": "oodesign",
-  "homepage": "http://bit.ly/mergesymbolsinsketch"
+  "homepage": "http://bit.ly/mergesymbolsinsketch",
+  "compatibleVersion": 50
 }
