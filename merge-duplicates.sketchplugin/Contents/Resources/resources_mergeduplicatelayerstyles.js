@@ -1,1 +1,236 @@
-!function(e){var t={};function n(l){if(t[l])return t[l].exports;var a=t[l]={i:l,l:!1,exports:{}};return e[l].call(a.exports,a,a.exports,n),a.l=!0,a.exports}n.m=e,n.c=t,n.d=function(e,t,l){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:l})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var l=Object.create(null);if(n.r(l),Object.defineProperty(l,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var a in e)n.d(l,a,function(t){return e[t]}.bind(null,a));return l},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t){var n,l=0,a=!1;window.DrawStylesList=function(e){l>=(n=e).length&&(l=0);for(var t=document.getElementById("lstDuplicateStyles"),a=document.getElementById("btnMerge"),i="",c=0,o=0;o<n.length;o++){var d=n[o].selectedIndex>=0,s=d?'for="duplicatedStyleCheck'.concat(o,'"'):"",r=d&&!n[o].isUnchecked?"checked":"",u=d?'onclick="onSelectedStyleCheckChanged('.concat(o,')"'):"",y=o==l?"selected":"";d&&!n[o].isUnchecked&&c++;var m='<div class="squareCheckbox">\n      <input type="checkbox" '.concat(r,' id="duplicatedStyleCheck').concat(o,'" ').concat(u,"/>\n      <label ").concat(s,"></label>\n      <span>").concat(e[o].layerStyleWithDuplicates.name,"</span>\n    </div>");i+='<div id="duplicatedStyle'.concat(o,'" onclick="onSelectedStyleChanged(').concat(o,')" class="leftPanelListItem alignVerticalCenter ').concat(y,'">').concat(m," </div>")}t.innerHTML=i,a.disabled=0==c,document.getElementById("lblIncludeLibraries").innerHTML=0!=c?"Include all enabled libraries layer styles (you may lose the current selection)":"Include all enabled libraries layer styles",DrawStyleList(l)},window.onSelectedStyleCheckChanged=function(e){n[e].isUnchecked=!n[e].isUnchecked,DrawStylesList(n),DrawStyleList(l)},window.onSelectedStyleChanged=function(e){if(!a){for(var t=0;t<n.length;t++){document.getElementById("duplicatedStyle"+t).className="leftPanelListItem alignVerticalCenter"}document.getElementById("duplicatedStyle"+e).className="leftPanelListItem alignVerticalCenter selected",n[e].isProcessed?DrawStyleList(e):(a=!0,window.postMessage("GetSelectedStyleData",e),document.getElementById("listOfStyles").className="movingYFadeInitialState workZone movingYFadeOut",document.getElementById("workZoneTitle").className="colAvailable verticalLayout movingYFadeInitialState movingYFadeOut",window.ShowProgress(""))}},window.ShowProgress=function(e){document.getElementById("progressLayer").className="progressCircle offDownCenter fadeIn",document.getElementById("loadingMessage").innerHTML=e,document.getElementById("listOfStyles").className="movingYFadeInitialState movingYFadeOut"},window.HideProgress=function(){document.getElementById("progressLayer").className="progressCircle offDownCenter fadeOut"},window.ReDrawAfterGettingData=function(e,t){n[t].isProcessed=!0,a=!1;for(var l=0;l<n[t].layerStyleWithDuplicates.duplicates.length;l++)n[t].layerStyleWithDuplicates.duplicates[l].thumbnail=e.duplicates[l].thumbnail;window.HideProgress(100),DrawStyleList(t),document.getElementById("listOfStyles").className="movingYFadeInitialState workZone movingYFadeIn",document.getElementById("workZoneTitle").className="colAvailable verticalLayout movingYFadeInitialState movingYFadeIn"},window.onStyleClicked=function(e,t){for(var l=0;l<n[t].layerStyleWithDuplicates.duplicates.length;l++){document.getElementById("duplicateItemCheck"+l).checked=!1,document.getElementById("duplicateItem"+l).className="thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter"}document.getElementById("duplicateItemCheck"+e).checked=!0,document.getElementById("duplicateItem"+e).className="thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter selected",n[t].isUnchecked=!1,n[t].selectedIndex=e,DrawStylesList(n)},window.DrawStyleList=function(e){l=e;for(var t="",a=0;a<n[e].layerStyleWithDuplicates.duplicates.length;a++){var i=n[e].selectedIndex==a,c=i?"selected":"",o='<div class="colAuto roundCheckbox">\n      <input type="checkbox" '.concat(i?"checked":"",' id="duplicateItemCheck').concat(a,'"/>\n      <label></label>\n    </div>'),d=n[e].layerStyleWithDuplicates.duplicates[a].contrastMode?"bgContrastMode":"";t+='<div id="duplicateItem'.concat(a,'" class="thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter ').concat(c,'" onclick="onStyleClicked(').concat(a,", ").concat(e,')">\n                ').concat(o,'\n                <div class="colAvailable verticalLayout thumbnailData" id="duplicateItemThumbnail').concat(a,'" >\n                  <div class="rowAvailable padded ').concat(d,'"><div class="thumbnail" style=\'background-image:url("').concat(n[e].layerStyleWithDuplicates.duplicates[a].thumbnail,'")\'></div></div>\n                  <div class="rowAuto primaryText displayFlex"><span class="alignHorizontalCenter">').concat(n[e].layerStyleWithDuplicates.duplicates[a].name," (").concat(n[e].layerStyleWithDuplicates.duplicates[a].libraryName,')</span></div>\n                  <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">').concat(n[e].layerStyleWithDuplicates.duplicates[a].description,"</span></div>\n                </div>\n              </div>")}var s=document.getElementById("resultsTitle"),r=document.getElementById("resultsDescription");s.innerHTML=n[e].layerStyleWithDuplicates.name,r.innerHTML="There are "+n[e].layerStyleWithDuplicates.duplicates.length+" styles with this name. The style you decide to keep will be applied to all layers & overrides using any of the discarded styles, and the discarded styles will be removed from the local file.";var u=document.getElementById("listOfStyles");u.innerHTML=t,u.className="movingYFadeInitialState workZone movingYFadeIn"},window.cancelAssignation=function(){window.postMessage("Cancel")},document.getElementById("chkIncludeLibraries").addEventListener("click",(function(){window.postMessage("RecalculateDuplicates",document.getElementById("chkIncludeLibraries").checked)})),document.getElementById("btnCancel").addEventListener("click",(function(){cancelAssignation()})),document.getElementById("btnMerge").addEventListener("click",(function(){window.postMessage("ExecuteMerge",n)}))}]);
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = "./resources/mergeduplicatelayerstyles.js");
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ "./resources/mergeduplicatelayerstyles.js":
+/*!************************************************!*\
+  !*** ./resources/mergeduplicatelayerstyles.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// disable the context menu (eg. the right click menu) to have a more native feel
+// document.addEventListener('contextmenu', (e) => {
+//   e.preventDefault()
+// })
+var globalMergeSession;
+var globalStyleDisplayed = 0;
+var isLoadingStyleData = false;
+
+window.DrawStylesList = function (mergeSession) {
+  globalMergeSession = mergeSession;
+  if (globalStyleDisplayed >= globalMergeSession.length) globalStyleDisplayed = 0;
+  var lstDuplicateStyles = document.getElementById('lstDuplicateStyles');
+  var btnMerge = document.getElementById('btnMerge');
+  var inner = "";
+  var checkedCounter = 0;
+
+  for (var i = 0; i < globalMergeSession.length; i++) {
+    var hasSelection = globalMergeSession[i].selectedIndex >= 0;
+    var labelFor = hasSelection ? "for=\"duplicatedStyleCheck".concat(i, "\"") : "";
+    var checked = hasSelection && !globalMergeSession[i].isUnchecked ? "checked" : "";
+    var handler = hasSelection ? "onclick=\"onSelectedStyleCheckChanged(".concat(i, ")\"") : "";
+    var isSelected = i == globalStyleDisplayed;
+    var selected = isSelected ? "selected" : "";
+    if (hasSelection && !globalMergeSession[i].isUnchecked) checkedCounter++;
+    var checkbox = "<div class=\"squareCheckbox\">\n      <input type=\"checkbox\" ".concat(checked, " id=\"duplicatedStyleCheck").concat(i, "\" ").concat(handler, "/>\n      <label ").concat(labelFor, "></label>\n      <span>").concat(mergeSession[i].layerStyleWithDuplicates.name, "</span>\n    </div>");
+    inner += "<div id=\"duplicatedStyle".concat(i, "\" onclick=\"onSelectedStyleChanged(").concat(i, ")\" class=\"leftPanelListItem alignVerticalCenter ").concat(selected, "\">").concat(checkbox, " </div>");
+  }
+
+  lstDuplicateStyles.innerHTML = inner;
+  btnMerge.disabled = checkedCounter == 0;
+  document.getElementById('lblIncludeLibraries').innerHTML = checkedCounter != 0 ? "Include all enabled libraries layer styles (you may lose the current selection)" : "Include all enabled libraries layer styles";
+  DrawStyleList(globalStyleDisplayed);
+};
+
+window.onSelectedStyleCheckChanged = function (index) {
+  globalMergeSession[index].isUnchecked = !globalMergeSession[index].isUnchecked;
+  DrawStylesList(globalMergeSession);
+  DrawStyleList(globalStyleDisplayed);
+};
+
+window.onSelectedStyleChanged = function (index) {
+  if (!isLoadingStyleData) {
+    for (var i = 0; i < globalMergeSession.length; i++) {
+      var otherDiv = document.getElementById("duplicatedStyle" + i);
+      otherDiv.className = "leftPanelListItem alignVerticalCenter";
+    }
+
+    var selectedDiv = document.getElementById("duplicatedStyle" + index);
+    selectedDiv.className = "leftPanelListItem alignVerticalCenter selected";
+
+    if (!globalMergeSession[index].isProcessed) {
+      isLoadingStyleData = true;
+      window.postMessage("GetSelectedStyleData", index);
+      document.getElementById('listOfStyles').className = "movingYFadeInitialState workZone movingYFadeOut";
+      document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeOut";
+      window.ShowProgress("");
+    } else DrawStyleList(index);
+  }
+};
+
+window.ShowProgress = function (message) {
+  document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeIn";
+  document.getElementById('loadingMessage').innerHTML = message;
+  document.getElementById('listOfStyles').className = "movingYFadeInitialState movingYFadeOut";
+};
+
+window.HideProgress = function () {
+  document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeOut";
+};
+
+window.ReDrawAfterGettingData = function (symbolData, index) {
+  globalMergeSession[index].isProcessed = true;
+  isLoadingStyleData = false;
+
+  for (var i = 0; i < globalMergeSession[index].layerStyleWithDuplicates.duplicates.length; i++) {
+    globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].thumbnail = symbolData.duplicates[i].thumbnail;
+  }
+
+  window.HideProgress(100);
+  DrawStyleList(index);
+  document.getElementById('listOfStyles').className = "movingYFadeInitialState workZone movingYFadeIn";
+  document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeIn";
+};
+
+window.onStyleClicked = function (index, selectedStyle) {
+  for (var i = 0; i < globalMergeSession[selectedStyle].layerStyleWithDuplicates.duplicates.length; i++) {
+    var otherCheck = document.getElementById("duplicateItemCheck" + i);
+    otherCheck.checked = false;
+    var otherDiv = document.getElementById("duplicateItem" + i);
+    otherDiv.className = "thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter";
+  }
+
+  var selectedCheck = document.getElementById("duplicateItemCheck" + index);
+  selectedCheck.checked = true;
+  var selectedDiv = document.getElementById("duplicateItem" + index);
+  selectedDiv.className = "thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter selected";
+  globalMergeSession[selectedStyle].isUnchecked = false;
+  globalMergeSession[selectedStyle].selectedIndex = index;
+  DrawStylesList(globalMergeSession);
+};
+
+window.DrawStyleList = function (index) {
+  globalStyleDisplayed = index;
+  var inner = "";
+
+  for (var i = 0; i < globalMergeSession[index].layerStyleWithDuplicates.duplicates.length; i++) {
+    var isSelected = globalMergeSession[index].selectedIndex == i;
+    var selected = isSelected ? "selected" : "";
+    var checked = isSelected ? "checked" : "";
+    var checkbox = "<div class=\"colAuto roundCheckbox\">\n      <input type=\"checkbox\" ".concat(checked, " id=\"duplicateItemCheck").concat(i, "\"/>\n      <label></label>\n    </div>");
+    var contrastMode = globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].contrastMode ? "bgContrastMode" : "";
+    inner += "<div id=\"duplicateItem".concat(i, "\" class=\"thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter ").concat(selected, "\" onclick=\"onStyleClicked(").concat(i, ", ").concat(index, ")\">\n                ").concat(checkbox, "\n                <div class=\"colAvailable verticalLayout thumbnailData\" id=\"duplicateItemThumbnail").concat(i, "\" >\n                  <div class=\"rowAvailable padded ").concat(contrastMode, "\"><div class=\"thumbnail\" style='background-image:url(\"").concat(globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].thumbnail, "\")'></div></div>\n                  <div class=\"rowAuto primaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].name, " (").concat(globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].libraryName, ")</span></div>\n                  <div class=\"rowAuto secondaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].description, "</span></div>\n                </div>\n              </div>");
+  }
+
+  var resultsTitle = document.getElementById("resultsTitle");
+  var resultsDescription = document.getElementById("resultsDescription");
+  resultsTitle.innerHTML = globalMergeSession[index].layerStyleWithDuplicates.name;
+  resultsDescription.innerHTML = "There are " + globalMergeSession[index].layerStyleWithDuplicates.duplicates.length + " styles with this name. The style you decide to keep will be applied to all layers & overrides using any of the discarded styles, and the discarded styles will be removed from the local file.";
+  var listOfStyles = document.getElementById('listOfStyles');
+  listOfStyles.innerHTML = inner;
+  listOfStyles.className = "movingYFadeInitialState workZone movingYFadeIn";
+};
+
+window.cancelAssignation = function () {
+  window.postMessage('Cancel');
+};
+
+document.getElementById('chkIncludeLibraries').addEventListener("click", function () {
+  window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked);
+});
+document.getElementById('btnCancel').addEventListener("click", function () {
+  cancelAssignation();
+});
+document.getElementById('btnMerge').addEventListener("click", function () {
+  window.postMessage('ExecuteMerge', globalMergeSession);
+});
+
+/***/ })
+
+/******/ });
+//# sourceMappingURL=resources_mergeduplicatelayerstyles.js.map
