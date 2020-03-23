@@ -1,7 +1,7 @@
 // disable the context menu (eg. the right click menu) to have a more native feel
-// document.addEventListener('contextmenu', (e) => {
-//   e.preventDefault()
-// })
+document.addEventListener('contextmenu', (e) => {
+  e.preventDefault()
+})
 var globalMergeSession;
 var globalSelectedSymbol = -1;
 var globalNumberOfSymbolsInDocument = 0;

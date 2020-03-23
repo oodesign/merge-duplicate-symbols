@@ -1,7 +1,7 @@
 // disable the context menu (eg. the right click menu) to have a more native feel
-// document.addEventListener('contextmenu', (e) => {
-//   e.preventDefault()
-// })
+document.addEventListener('contextmenu', (e) => {
+  e.preventDefault()
+})
 var globalStylesWithSimilarStyles;
 var globalStyleDisplayed = 0;
 var globalFiltersAppliedNum = 2;
