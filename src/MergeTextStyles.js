@@ -218,6 +218,7 @@ export function MergeSimilarTextStyles(context) {
     width: 1200,
     height: 700,
     show: false,
+    remembersWindowFrame: true,
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(options);
@@ -284,6 +285,7 @@ export function MergeDuplicateTextStyles(context) {
     width: 1200,
     height: 700,
     show: false,
+    remembersWindowFrame: true,
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(options);
@@ -382,6 +384,7 @@ export function MergeSelectedTextStyles(context) {
     width: 1200,
     height: 700,
     show: false,
+    remembersWindowFrame: true,
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(options);

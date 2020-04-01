@@ -233,6 +233,7 @@ export function MergeSelectedSymbols(context) {
     identifier: webviewMSSIdentifier,
     width: 900,
     height: 700,
+    remembersWindowFrame: true,
     show: false,
     titleBarStyle: 'hidden'
   }
@@ -311,6 +312,7 @@ export function MergeDuplicateSymbols(context) {
     identifier: webviewIdentifier,
     width: 1200,
     height: 700,
+    remembersWindowFrame: true,
     show: false,
     titleBarStyle: 'hidden'
   }

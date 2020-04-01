@@ -209,6 +209,7 @@ export function MergeSimilarLayerStyles(context) {
     width: 1200,
     height: 700,
     show: false,
+    remembersWindowFrame: true,
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(options);
@@ -275,6 +276,7 @@ export function MergeDuplicateLayerStyles(context) {
     width: 1200,
     height: 700,
     show: false,
+    remembersWindowFrame: true,
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(options);
@@ -373,6 +375,7 @@ export function MergeSelectedLayerStyles(context) {
     width: 1200,
     height: 700,
     show: false,
+    remembersWindowFrame: true,
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(options);
