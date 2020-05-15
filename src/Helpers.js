@@ -17,7 +17,8 @@ const commands = {
   mergeduplicatetextstyles: 'mergeduplicatetextstyles',
   mergesimilarlayerstyles: 'mergesimilarlayerstyles',
   mergeselectedlayerstyles: 'mergeselectedlayerstyles',
-  mergeduplicatelayerstyles: 'mergeduplicatelayerstyles'
+  mergeduplicatelayerstyles: 'mergeduplicatelayerstyles',
+  editsettings: 'editsettings'
 }
 
 const sketchlocalfile = "   💎 This Sketch file";
@@ -49,6 +50,11 @@ function writeTextToFile(text, filePath) {
   var t = NSString.stringWithFormat("%@", text),
     f = NSString.stringWithFormat("%@", filePath);
   fs.writeFileSync(f, JSON.stringify(text), { encoding: 'utf8' });
+}
+
+function readFromFile(filePath)
+{
+  return JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8' }));
 }
 
 var jsonFromFile = function (filePath, mutable) {
@@ -1567,4 +1573,6 @@ function sortArray(array,key){
     return "" + getNSImageData(image);
   }
 
-  module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, getColorDependingOnBrightness, isString, getAlignment, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, getAllTextLayers, getAllLayers, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, sortArray };
+  
+
+  module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, getColorDependingOnBrightness, isString, getAlignment, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, getAllTextLayers, getAllLayers, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, sortArray, EditSettings, writeTextToFile, readFromFile };

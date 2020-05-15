@@ -1,7 +1,7 @@
 const MergeSymbols = require("./MergeDuplicateSymbols");
-
 const MergeLayerStyles = require("./MergeLayerStyles");
 const MergeTextStyles = require("./MergeTextStyles");
+const Settings = require("./EditSettings");
 
 const Helpers = require("./Helpers");
 import BrowserWindow from 'sketch-module-web-view';
@@ -57,6 +57,13 @@ export function MergeDuplicateLayerStyles(context) {
   onValidate(context);
 };
 
+export function EditSettings(context) {
+  globalCommand = Helpers.commands.editsettings;
+  onValidate(context);
+};
+
+
+
 //d9-01
 var _0x1647=["\x61\x70\x70","\x76\x61\x6C\x53\x74\x61\x74\x75\x73","\x6E\x6F\x43\x6F\x6E","\x6F\x76\x65\x72","\x6E\x6F\x77","\x61\x62\x73","\x66\x6C\x6F\x6F\x72"];function onValidate(_0x8a0ax2){var _0x8a0ax3=Helpers.ExiGuthrie();if((_0x8a0ax3== Helpers[_0x1647[1]][_0x1647[0]])|| (_0x8a0ax3== Helpers[_0x1647[1]][_0x1647[2]])){triggerMethod(_0x8a0ax2)}else {if(_0x8a0ax3== Helpers[_0x1647[1]][_0x1647[3]]){globalIsOver= true;showRegistration(_0x8a0ax2)}else {var _0x8a0ax4=Helpers.IsInTrial();var _0x8a0ax5= new Date(parseInt(_0x8a0ax4));if(_0x8a0ax4!= null){var _0x8a0ax6=_0x8a0ax5- Date[_0x1647[4]]();var _0x8a0ax7=Math[_0x1647[6]](Math[_0x1647[5]](_0x8a0ax6/ (1000* 3600* 24)));globalRemainingDays= 7- _0x8a0ax7;if(globalRemainingDays> 0){globalIsInTrial= true}else {globalIsExpired= true};showRegistration(_0x8a0ax2)}else {showRegistration(_0x8a0ax2)}}}}
 //d9-01
@@ -86,6 +93,9 @@ export function triggerMethod(context) {
       break;
     case Helpers.commands.mergesimilarlayerstyles:
       MergeLayerStyles.MergeSimilarLayerStyles(context);
+      break;
+    case Helpers.commands.editsettings:
+      Settings.EditSettings(context);
       break;
   }
 }

@@ -103,7 +103,18 @@
       "identifier" : "mergeduplicatetextstyles",
       "shortcut": "ctrl shift t",
       "icon" : "icon-sr.png"
-    },    
+    },        
+    {
+      "script" : "Main.js",
+      "name" : "Settings",
+      "identifier": "editsettings",
+      "handlers" : {
+        "run" : "EditSettings",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      }
+    },
     {
       "script" : "Help.js",
       "name" : "Documentation",
@@ -154,12 +165,13 @@
         ]
       },
       {
-        "title": "Help & Feedback",
+        "title": "Help & Feedback ",
         "items": [
           "documentation",
           "report_issue"
         ]
-      }
+      },
+      "editsettings"
     ]
   },
   "identifier" : "com.oodesign.mergeduplicatesymbols",
