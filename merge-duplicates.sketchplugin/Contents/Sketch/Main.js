@@ -4483,7 +4483,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/992cb7d2a70196bc1de93eb2ab09b7b1.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/b15ecfd0189be2df2f9a93bb36632413.html";
 
 /***/ }),
 
@@ -4507,16 +4507,16 @@ __webpack_require__.r(__webpack_exports__);
 
 var Helpers = __webpack_require__(/*! ./Helpers */ "./src/Helpers.js");
 
-var webviewEsIdentifier = 'merge-duplicates.webviewEditSettings';
+var webviewEsIdentifier = 'merge-duplicates.webviewSettings';
 var globalSettingsFile;
 var globalLogsEnabled = false;
 function EditSettings(context) {
   var optionss = {
     identifier: webviewEsIdentifier,
     width: 500,
-    height: 700,
+    height: 600,
     show: false,
-    // remembersWindowFrame: true,
+    remembersWindowFrame: true,
     titleBarStyle: 'hidden'
   };
   var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(optionss);
@@ -4544,9 +4544,7 @@ function EditSettings(context) {
     onShutdown(webviewEsIdentifier);
   });
   webContents.on('AcceptSettings', function (logsEnabled) {
-    // console.log("Accepted. logsEnabled:" + logsEnabled);
-    var jsonDef; // console.log("globalSettingsFile:")
-    // console.log(globalSettingsFile)
+    var jsonDef;
 
     if (globalSettingsFile != null && globalSettingsFile.licenseKey != null) {
       jsonDef = {
@@ -4558,9 +4556,7 @@ function EditSettings(context) {
         "startTime": "" + globalSettingsFile.startTime,
         "logs": logsEnabled
       };
-    } // console.log("JsonDef:")
-    // console.log(jsonDef)
-
+    }
 
     Helpers.writeTextToFile(jsonDef, MSPluginManager.mainPluginsFolderURL().path() + '/merge.json');
     onShutdown(webviewEsIdentifier);
@@ -4591,6 +4587,8 @@ var D3 = __webpack_require__(/*! d3-color */ "./node_modules/d3-color/src/index.
 
 var fs = __webpack_require__(/*! @skpm/fs */ "./node_modules/@skpm/fs/index.js");
 
+var settingsFile;
+var logsEnabled;
 var valStatus = {
   app: 'app',
   no: 'no',
@@ -6099,6 +6097,20 @@ function getBase64(element, width, height) {
   return "" + getNSImageData(image);
 }
 
+function log(message) {
+  if (logsEnabled) console.log(message);
+}
+
+function LoadSettings() {
+  try {
+    settingsFile = readFromFile(MSPluginManager.mainPluginsFolderURL().path() + '/merge.json');
+    if (settingsFile != null && settingsFile.logs != null) logsEnabled = settingsFile.logs;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+}
+
 module.exports = {
   GetTextBasedOnCount: GetTextBasedOnCount,
   getBase64: getBase64,
@@ -6142,7 +6154,9 @@ module.exports = {
   sortArray: sortArray,
   EditSettings: EditSettings,
   ["writeTextToFile"]: writeTextToFile,
-  readFromFile: readFromFile
+  readFromFile: readFromFile,
+  LoadSettings: LoadSettings,
+  log: log
 };
 
 /***/ }),
@@ -6279,6 +6293,8 @@ function onValidate(_0x8a0ax2) {
 
 
 function triggerMethod(context) {
+  Helpers.LoadSettings();
+
   switch (globalCommand) {
     case Helpers.commands.mergeduplicatesymbols:
       MergeSymbols.MergeDuplicateSymbols(context);
@@ -6738,6 +6754,7 @@ function MergeSelectedSymbols(context) {
 }
 ;
 function MergeDuplicateSymbols(context) {
+  Helpers.log("----- Merge duplicate symbols (with the same name) -----");
   var options = {
     identifier: webviewIdentifier,
     width: 1200,
@@ -6751,7 +6768,9 @@ function MergeDuplicateSymbols(context) {
   var duplicatedSymbols;
   var mergeSession = [];
   var numberOfSymbols = Helpers.countAllSymbols(context, true);
+  Helpers.log("Local symbols: " + numberOfSymbols[0] + ". Library symbols:" + numberOfSymbols[1] + ".");
   browserWindow.loadURL(__webpack_require__(/*! ../resources/mergeduplicatesymbols.html */ "./resources/mergeduplicatesymbols.html"));
+  Helpers.log("Webview called");
 
   function CalculateDuplicates(includeLibraries) {
     duplicatedSymbols = Helpers.getDuplicateSymbols(context, context.document.documentData().allSymbols(), includeLibraries, false);
@@ -6775,8 +6794,7 @@ function MergeDuplicateSymbols(context) {
     browserWindow.show();
   });
   webContents.on('did-finish-load', function () {
-    //CalculateDuplicates(true);
-    // console.log("didfinishload");
+    Helpers.log("Webview loaded");
     webContents.executeJavaScript("LaunchMerge(".concat(JSON.stringify(numberOfSymbols[0]), ",").concat(JSON.stringify(numberOfSymbols[1]), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {

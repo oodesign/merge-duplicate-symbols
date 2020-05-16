@@ -69,6 +69,9 @@ var _0x1647=["\x61\x70\x70","\x76\x61\x6C\x53\x74\x61\x74\x75\x73","\x6E\x6F\x43
 //d9-01
 
 export function triggerMethod(context) {
+
+  Helpers.LoadSettings();
+
   switch (globalCommand) {
     case Helpers.commands.mergeduplicatesymbols:
       MergeSymbols.MergeDuplicateSymbols(context);

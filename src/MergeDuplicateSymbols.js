@@ -308,6 +308,8 @@ export function MergeSelectedSymbols(context) {
 
 export function MergeDuplicateSymbols(context) {
 
+  Helpers.log("----- Merge duplicate symbols (with the same name) -----");
+
   const options = {
     identifier: webviewIdentifier,
     width: 1200,
@@ -323,7 +325,9 @@ export function MergeDuplicateSymbols(context) {
   var mergeSession = [];
 
   var numberOfSymbols = Helpers.countAllSymbols(context, true);
+  Helpers.log("Local symbols: "+numberOfSymbols[0]+". Library symbols:"+numberOfSymbols[1]+".");
   browserWindow.loadURL(require('../resources/mergeduplicatesymbols.html'));
+  Helpers.log("Webview called");
 
   function CalculateDuplicates(includeLibraries) {
     duplicatedSymbols = Helpers.getDuplicateSymbols(context, context.document.documentData().allSymbols(), includeLibraries, false);
@@ -346,8 +350,7 @@ export function MergeDuplicateSymbols(context) {
   })
 
   webContents.on('did-finish-load', () => {
-    //CalculateDuplicates(true);
-    // console.log("didfinishload");
+    Helpers.log("Webview loaded");
     webContents.executeJavaScript(`LaunchMerge(${JSON.stringify(numberOfSymbols[0])},${JSON.stringify(numberOfSymbols[1])})`).catch(console.error);
   })
 

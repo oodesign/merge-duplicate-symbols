@@ -1,7 +1,7 @@
 import BrowserWindow from 'sketch-module-web-view'
 import { getWebview } from 'sketch-module-web-view/remote'
 const Helpers = require("./Helpers");
-const webviewEsIdentifier = 'merge-duplicates.webviewEditSettings';
+const webviewEsIdentifier = 'merge-duplicates.webviewSettings';
 
 var globalSettingsFile;
 var globalLogsEnabled = false;
@@ -10,9 +10,9 @@ export function EditSettings(context) {
   const optionss = {
     identifier: webviewEsIdentifier,
     width: 500,
-    height: 700,
+    height: 600,
     show: false,
-    // remembersWindowFrame: true,
+    remembersWindowFrame: true,
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(optionss);
@@ -48,11 +48,7 @@ export function EditSettings(context) {
   });
 
   webContents.on('AcceptSettings', (logsEnabled) => {
-    // console.log("Accepted. logsEnabled:" + logsEnabled);
     var jsonDef;
-
-    // console.log("globalSettingsFile:")
-    // console.log(globalSettingsFile)
 
     if ((globalSettingsFile != null) && (globalSettingsFile.licenseKey != null)) {
       jsonDef = {
@@ -66,11 +62,7 @@ export function EditSettings(context) {
         "logs": logsEnabled
       }
     }
-
-    // console.log("JsonDef:")
-    // console.log(jsonDef)
     Helpers.writeTextToFile(jsonDef, MSPluginManager.mainPluginsFolderURL().path() + '/merge.json');
-
     onShutdown(webviewEsIdentifier);
   });
 }
