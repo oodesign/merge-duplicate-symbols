@@ -24,6 +24,8 @@ function MergeTextStyles(context, styleToKeep) {
   var layersChangedCounter = 0;
   var overridesChangedCounter = 0;
 
+  Helpers.clog("Merging styles. Keep '"+currentSelectedStyles[styleToKeep].textStyle.name+"'")
+
   var layers = Helpers.getAllTextLayers(context);
   var layersWithOtherStyles = NSMutableArray.array();
   currentSelectedStyles.forEach(function (style) {
@@ -213,6 +215,8 @@ function getDuplicateTextStyles(context, allStyles) {
 
 export function MergeSimilarTextStyles(context) {
 
+  Helpers.clog("----- Merge similar text styles -----");
+
   const options = {
     identifier: webviewMSTSIdentifier,
     width: 1200,
@@ -226,6 +230,7 @@ export function MergeSimilarTextStyles(context) {
 
   var stylesWithSimilarStyles;
 
+  Helpers.clog("Loading webview");
   browserWindow.loadURL(require('../resources/mergesimilartextstyles.html'));
 
 
@@ -234,10 +239,11 @@ export function MergeSimilarTextStyles(context) {
   })
 
   webContents.on('did-finish-load', () => {
+    Helpers.clog("Webview loaded");
   })
 
   webContents.on('nativeLog', s => {
-    console.log(s);
+    Helpers.clog(s);
   });
 
   webContents.on('Cancel', () => {
@@ -245,6 +251,7 @@ export function MergeSimilarTextStyles(context) {
   });
 
   webContents.on('ExecuteMerge', (editedStylesWithSimilarStyles) => {
+    Helpers.clog("Execute merge");
     var duplicatesSolved = 0;
     var mergedStyles = 0;
     var affectedLayers = [0, 0];
@@ -265,10 +272,14 @@ export function MergeSimilarTextStyles(context) {
     }
     onShutdown(webviewMSTSIdentifier);
 
-    if (duplicatesSolved <= 0)
+    if (duplicatesSolved <= 0) {
+      Helpers.clog("No styles were merged");
       context.document.showMessage("No styles were merged");
-    else
+    }
+    else {
+      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
       context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+    }
 
   });
 
@@ -280,6 +291,9 @@ export function MergeSimilarTextStyles(context) {
 }
 
 export function MergeDuplicateTextStyles(context) {
+
+  Helpers.clog("----- Merge duplicate text styles -----");
+
   const options = {
     identifier: webviewMDTSIdentifier,
     width: 1200,
@@ -328,7 +342,7 @@ export function MergeDuplicateTextStyles(context) {
   })
 
   webContents.on('nativeLog', s => {
-    console.log(s);
+    Helpers.clog(s);
   });
 
   webContents.on('Cancel', () => {
@@ -373,12 +387,14 @@ export function MergeDuplicateTextStyles(context) {
     if (duplicatesSolved <= 0)
       context.document.showMessage("No styles were merged");
     else
-    context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
 
   });
 };
 
 export function MergeSelectedTextStyles(context) {
+
+  Helpers.clog("----- Merge selected text styles -----");
   const options = {
     identifier: webviewMTSFLIdentifier,
     width: 1200,
@@ -411,7 +427,7 @@ export function MergeSelectedTextStyles(context) {
   })
 
   webContents.on('nativeLog', s => {
-    console.log(s);
+    Helpers.clog(s);
   });
 
   webContents.on('GetLocalStylesList', () => {

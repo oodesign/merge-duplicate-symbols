@@ -230,7 +230,7 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
 export function MergeSelectedSymbols(context) {
 
 
-  Helpers.clog("----- Merge duplicate symbols (with the same name) -----");
+  Helpers.clog("----- Merge selected symbols -----");
 
   const options = {
     identifier: webviewMSSIdentifier,

@@ -102,6 +102,7 @@ var globalStyleDisplayed = 0;
 var globalFiltersAppliedNum = 2;
 
 window.DrawResultsList = function (stylesWithSimilarStyles) {
+  window.postMessage("nativeLog", "WV - Drawing results list");
   globalStylesWithSimilarStyles = stylesWithSimilarStyles;
 
   if (globalFiltersAppliedNum > 0) {
@@ -128,11 +129,13 @@ window.DrawResultsList = function (stylesWithSimilarStyles) {
     }
 
     document.getElementById('resultsPanel').className = "colAuto leftPanel";
+    window.postMessage("nativeLog", "WV - Drawing left panel style list");
     lstResultingStyles.innerHTML = inner;
     btnMerge.disabled = checkedCounter == 0;
     document.getElementById('lblIncludeLibraries').innerHTML = checkedCounter != 0 ? "Include all enabled libraries text styles (you may lose the current selection)" : "Include all enabled libraries text styles";
     DrawStyleList(globalStyleDisplayed);
   } else {
+    window.postMessage("nativeLog", "WV - No similar styles. Drawing empty state.");
     document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
     document.getElementById('listOfStyles').className = "scrollable movingYFadeInitialState workZone movingYFadeOut";
     document.getElementById("workZoneTitle").className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeOut";
@@ -144,12 +147,15 @@ window.DrawResultsList = function (stylesWithSimilarStyles) {
 };
 
 window.onSelectedStyleCheckChanged = function (index) {
+  window.postMessage("nativeLog", "WV - Include style changed");
   globalStylesWithSimilarStyles[index].isUnchecked = !globalStylesWithSimilarStyles[index].isUnchecked;
   DrawStylesList(globalStylesWithSimilarStyles);
   DrawStyleList(globalStyleDisplayed);
 };
 
 window.onSelectedStyleChanged = function (index) {
+  window.postMessage("nativeLog", "WV - Left panel list selected style changed.");
+
   for (var i = 0; i < globalStylesWithSimilarStyles.length; i++) {
     var otherDiv = document.getElementById("resultStyle" + i);
     otherDiv.className = "leftPanelListItem alignVerticalCenter";
@@ -161,6 +167,8 @@ window.onSelectedStyleChanged = function (index) {
 };
 
 window.onStyleClicked = function (index, selectedStyle) {
+  window.postMessage("nativeLog", "WV - Style clicked. Updating selection status.");
+
   for (var i = 0; i < globalStylesWithSimilarStyles[selectedStyle].similarStyles.length; i++) {
     var otherCheck = document.getElementById("duplicateItemCheck" + i);
     otherCheck.checked = false;
@@ -177,10 +185,12 @@ window.onStyleClicked = function (index, selectedStyle) {
 };
 
 window.DrawStyleList = function (index) {
+  window.postMessage("nativeLog", "WV - Drawing styles");
   globalStyleDisplayed = index;
   var inner = "";
 
   for (var i = 0; i < globalStylesWithSimilarStyles[index].similarStyles.length; i++) {
+    window.postMessage("nativeLog", "WV --- Drawing style: " + globalStylesWithSimilarStyles[index].similarStyles[i].name);
     var isSelected = globalStylesWithSimilarStyles[index].selectedIndex == i;
     var selected = isSelected ? "selected" : "";
     var checked = isSelected ? "checked" : "";
@@ -197,6 +207,7 @@ window.DrawStyleList = function (index) {
   document.getElementById('listOfStyles').innerHTML = inner;
   document.getElementById("workZoneTitle").className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeIn";
   listOfStyles.className = "scrollable movingYFadeInitialState workZone movingYFadeIn";
+  window.postMessage("nativeLog", "WV - Completed drawing styles");
 };
 
 window.cancelAssignation = function () {
@@ -204,15 +215,19 @@ window.cancelAssignation = function () {
 };
 
 document.getElementById('btnCancel').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Cancel");
   cancelAssignation();
 });
 document.getElementById('btnMerge').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Execute merge");
   window.postMessage('ExecuteMerge', globalStylesWithSimilarStyles);
 });
 document.getElementById('filterHeader').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Show/hide filters");
   onFilterExpanderClicked();
 });
 document.getElementById('chkIncludeLibraries').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Include libraries check changed");
   onFilterChanged();
 });
 document.getElementById('btnFindMatchingStyles').addEventListener("click", function () {
@@ -223,6 +238,7 @@ document.getElementById('btnEmptyState').addEventListener("click", function () {
 });
 
 window.onFilterChanged = function () {
+  window.postMessage("nativeLog", "WV - Find matching styles");
   var includeAllLibraries = document.getElementById('chkIncludeLibraries').checked;
   var checkSameFont = document.getElementById('checkSameFont').checked;
   var checkSameWeight = document.getElementById('checkSameWeight').checked;

@@ -5039,43 +5039,47 @@ function getIndexOf(text, array) {
 function FindSimilarTextStyles(referenceStyle, styles, context, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing) {
   var similarStyles = [];
   styles.forEach(function (style) {
-    if (referenceStyle != style.textStyle) {
-      //console.log("["+referenceStyle.name()+"] and ["+style.name()+"]");
-      var sameFont = referenceStyle.style().textStyle().attributes().NSFont.familyName() == style.textStyle.style().textStyle().attributes().NSFont.familyName(); //console.log("---Font? "+sameFont);
+    try {
+      if (referenceStyle != style.textStyle) {
+        //console.log("["+referenceStyle.name()+"] and ["+style.name()+"]");
+        var sameFont = referenceStyle.style().textStyle().attributes().NSFont.familyName() == style.textStyle.style().textStyle().attributes().NSFont.familyName(); //console.log("---Font? "+sameFont);
 
-      var sameWeight = NSFontManager.sharedFontManager().weightOfFont_(referenceStyle.style().textStyle().attributes().NSFont) == NSFontManager.sharedFontManager().weightOfFont_(style.textStyle.style().textStyle().attributes().NSFont); //console.log("---FontWeight? "+sameWeight);
+        var sameWeight = NSFontManager.sharedFontManager().weightOfFont_(referenceStyle.style().textStyle().attributes().NSFont) == NSFontManager.sharedFontManager().weightOfFont_(style.textStyle.style().textStyle().attributes().NSFont); //console.log("---FontWeight? "+sameWeight);
 
-      var sameSize = referenceStyle.style().textStyle().attributes().NSFont.pointSize() == style.textStyle.style().textStyle().attributes().NSFont.pointSize(); //console.log("---FontSize? "+sameSize);
+        var sameSize = referenceStyle.style().textStyle().attributes().NSFont.pointSize() == style.textStyle.style().textStyle().attributes().NSFont.pointSize(); //console.log("---FontSize? "+sameSize);
+        // console.log("ref:" + referenceStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue());
+        // console.log("style:" + style.textStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue());
 
-      console.log("ref:" + referenceStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue());
-      console.log("style:" + style.textStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue());
-      var sameColor = referenceStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue() == style.textStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue(); //console.log("---Color? "+sameColor);
+        var sameColor = referenceStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue() == style.textStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue(); //console.log("---Color? "+sameColor);
 
-      var sameParagraphSpacing = referenceStyle.style().textStyle().attributes().NSParagraphStyle.paragraphSpacing() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.paragraphSpacing(); //console.log("---Paragraph Spacing? "+sameParagraphSpacing);
+        var sameParagraphSpacing = referenceStyle.style().textStyle().attributes().NSParagraphStyle.paragraphSpacing() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.paragraphSpacing(); //console.log("---Paragraph Spacing? "+sameParagraphSpacing);
 
-      var sameLineHeight = referenceStyle.style().textStyle().attributes().NSParagraphStyle.minimumLineHeight() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.minimumLineHeight(); //console.log("---Line height? "+sameLineHeight);
+        var sameLineHeight = referenceStyle.style().textStyle().attributes().NSParagraphStyle.minimumLineHeight() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.minimumLineHeight(); //console.log("---Line height? "+sameLineHeight);
 
-      var sameAlignment = referenceStyle.style().textStyle().attributes().NSParagraphStyle.alignment() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.alignment(); //console.log("---Alignment? "+sameAlignment);
+        var sameAlignment = referenceStyle.style().textStyle().attributes().NSParagraphStyle.alignment() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.alignment(); //console.log("---Alignment? "+sameAlignment);
 
-      var sameCharacterSpacing = false;
+        var sameCharacterSpacing = false;
 
-      try {
-        sameCharacterSpacing = referenceStyle.style().textStyle().attributes().NSKern.toString() == style.textStyle.style().textStyle().attributes().NSKern.toString();
-      } catch (_unused2) {
-        sameCharacterSpacing = referenceStyle.style().textStyle().attributes().NSKern == style.textStyle.style().textStyle().attributes().NSKern;
-      } //console.log("---Character Spacing? "+sameCharacterSpacing + "-  Comparing ["+referenceStyle.style().textStyle().attributes().NSKern+"] with ["+style.textStyle.style().textStyle().attributes().NSKern+"]" );
+        try {
+          sameCharacterSpacing = referenceStyle.style().textStyle().attributes().NSKern.toString() == style.textStyle.style().textStyle().attributes().NSKern.toString();
+        } catch (_unused2) {
+          sameCharacterSpacing = referenceStyle.style().textStyle().attributes().NSKern == style.textStyle.style().textStyle().attributes().NSKern;
+        } //console.log("---Character Spacing? "+sameCharacterSpacing + "-  Comparing ["+referenceStyle.style().textStyle().attributes().NSKern+"] with ["+style.textStyle.style().textStyle().attributes().NSKern+"]" );
 
 
-      var isSimilar = true;
-      if (checkSameFont) isSimilar = isSimilar && sameFont;
-      if (checkSameWeight) isSimilar = isSimilar && sameWeight;
-      if (checkSameSize) isSimilar = isSimilar && sameSize;
-      if (checkSameColor) isSimilar = isSimilar && sameColor;
-      if (checkSameParagraphSpacing) isSimilar = isSimilar && sameParagraphSpacing;
-      if (checkSameLineHeight) isSimilar = isSimilar && sameLineHeight;
-      if (checkSameAlignment) isSimilar = isSimilar && sameAlignment;
-      if (checkSameCharacterSpacing) isSimilar = isSimilar && sameCharacterSpacing;
-      if (isSimilar) similarStyles.push(style);
+        var isSimilar = true;
+        if (checkSameFont) isSimilar = isSimilar && sameFont;
+        if (checkSameWeight) isSimilar = isSimilar && sameWeight;
+        if (checkSameSize) isSimilar = isSimilar && sameSize;
+        if (checkSameColor) isSimilar = isSimilar && sameColor;
+        if (checkSameParagraphSpacing) isSimilar = isSimilar && sameParagraphSpacing;
+        if (checkSameLineHeight) isSimilar = isSimilar && sameLineHeight;
+        if (checkSameAlignment) isSimilar = isSimilar && sameAlignment;
+        if (checkSameCharacterSpacing) isSimilar = isSimilar && sameCharacterSpacing;
+        if (isSimilar) similarStyles.push(style);
+      }
+    } catch (e) {
+      clog("There was an issue finding similar text styles");
     }
   });
   return similarStyles;
@@ -5087,6 +5091,8 @@ function FindAllSimilarTextStyles(context, includeAllStylesFromExternalLibraries
   var definedTextStyles = getDefinedTextStyles(context, includeAllStylesFromExternalLibraries, null);
 
   for (var i = 0; i < definedTextStyles.length; i++) {
+    clog("Finding similar styles to '" + definedTextStyles[i].name + "'");
+
     if (definedTextStyles[i].libraryName.localeCompare(sketchlocalfile) == 0) {
       if (stylesAlreadyProcessed.indexOf(definedTextStyles[i]) == -1) {
         var thisStyleSimilarStyles = FindSimilarTextStyles(definedTextStyles[i].textStyle, definedTextStyles, context, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing);
@@ -6711,7 +6717,7 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
 }
 
 function MergeSelectedSymbols(context) {
-  Helpers.clog("----- Merge duplicate symbols (with the same name) -----");
+  Helpers.clog("----- Merge selected symbols -----");
   var options = {
     identifier: webviewMSSIdentifier,
     width: 900,
@@ -7337,6 +7343,7 @@ function getTextPredicate(style) {
 function MergeTextStyles(context, styleToKeep) {
   var layersChangedCounter = 0;
   var overridesChangedCounter = 0;
+  Helpers.clog("Merging styles. Keep '" + currentSelectedStyles[styleToKeep].textStyle.name + "'");
   var layers = Helpers.getAllTextLayers(context);
   var layersWithOtherStyles = NSMutableArray.array();
   currentSelectedStyles.forEach(function (style) {
@@ -7494,6 +7501,7 @@ function getDuplicateTextStyles(context, allStyles) {
 }
 
 function MergeSimilarTextStyles(context) {
+  Helpers.clog("----- Merge similar text styles -----");
   var options = {
     identifier: webviewMSTSIdentifier,
     width: 1200,
@@ -7505,18 +7513,22 @@ function MergeSimilarTextStyles(context) {
   var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
   var webContents = browserWindow.webContents;
   var stylesWithSimilarStyles;
+  Helpers.clog("Loading webview");
   browserWindow.loadURL(__webpack_require__(/*! ../resources/mergesimilartextstyles.html */ "./resources/mergesimilartextstyles.html"));
   browserWindow.once('ready-to-show', function () {
     browserWindow.show();
   });
-  webContents.on('did-finish-load', function () {});
+  webContents.on('did-finish-load', function () {
+    Helpers.clog("Webview loaded");
+  });
   webContents.on('nativeLog', function (s) {
-    console.log(s);
+    Helpers.clog(s);
   });
   webContents.on('Cancel', function () {
     onShutdown(webviewMSTSIdentifier);
   });
   webContents.on('ExecuteMerge', function (editedStylesWithSimilarStyles) {
+    Helpers.clog("Execute merge");
     var duplicatesSolved = 0;
     var mergedStyles = 0;
     var affectedLayers = [0, 0];
@@ -7538,7 +7550,14 @@ function MergeSimilarTextStyles(context) {
     }
 
     onShutdown(webviewMSTSIdentifier);
-    if (duplicatesSolved <= 0) context.document.showMessage("No styles were merged");else context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+
+    if (duplicatesSolved <= 0) {
+      Helpers.clog("No styles were merged");
+      context.document.showMessage("No styles were merged");
+    } else {
+      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+    }
   });
   webContents.on('RecalculateStyles', function (includeAllLibraries, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing) {
     stylesWithSimilarStyles = Helpers.FindAllSimilarTextStyles(context, includeAllLibraries, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing);
@@ -7546,6 +7565,7 @@ function MergeSimilarTextStyles(context) {
   });
 }
 function MergeDuplicateTextStyles(context) {
+  Helpers.clog("----- Merge duplicate text styles -----");
   var options = {
     identifier: webviewMDTSIdentifier,
     width: 1200,
@@ -7592,7 +7612,7 @@ function MergeDuplicateTextStyles(context) {
     webContents.executeJavaScript("DrawStylesList(".concat(JSON.stringify(mergeSession), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
-    console.log(s);
+    Helpers.clog(s);
   });
   webContents.on('Cancel', function () {
     onShutdown(webviewMDTSIdentifier);
@@ -7633,6 +7653,7 @@ function MergeDuplicateTextStyles(context) {
 }
 ;
 function MergeSelectedTextStyles(context) {
+  Helpers.clog("----- Merge selected text styles -----");
   var options = {
     identifier: webviewMTSFLIdentifier,
     width: 1200,
@@ -7657,7 +7678,7 @@ function MergeSelectedTextStyles(context) {
     webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedTextStyles), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
-    console.log(s);
+    Helpers.clog(s);
   });
   webContents.on('GetLocalStylesList', function () {
     checkingAlsoLibraries = false;
