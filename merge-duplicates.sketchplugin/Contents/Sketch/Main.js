@@ -5558,7 +5558,8 @@ function GetSpecificLayerStyleData(context, layerStyles, index) {
 }
 
 function GetSpecificTextStyleData(context, textStyles, index) {
-  // console.time("GetSpecificLayerStyleData");
+  clog("Processing text style metadata for: " + textStyles[index].name); // console.time("GetSpecificLayerStyleData");
+
   for (var i = 0; i < textStyles[index].duplicates.length; i++) {
     textStyles[index].duplicates[i].thumbnail = getTextThumbnail(textStyles[index].duplicates[i].textStyle);
   } // console.timeEnd("GetSpecificLayerStyleData");
@@ -7343,7 +7344,7 @@ function getTextPredicate(style) {
 function MergeTextStyles(context, styleToKeep) {
   var layersChangedCounter = 0;
   var overridesChangedCounter = 0;
-  Helpers.clog("Merging styles. Keep '" + currentSelectedStyles[styleToKeep].textStyle.name + "'");
+  Helpers.clog("Merging styles. Keep '" + currentSelectedStyles[styleToKeep].name + "'");
   var layers = Helpers.getAllTextLayers(context);
   var layersWithOtherStyles = NSMutableArray.array();
   currentSelectedStyles.forEach(function (style) {
@@ -7588,6 +7589,7 @@ function MergeDuplicateTextStyles(context) {
   }
 
   function CalculateDuplicates(includeLibraries) {
+    Helpers.clog("Finding duplicate text style. Including libraries:" + includeLibraries);
     onlyDuplicatedTextStyles = Helpers.getDuplicateTextStyles(context, includeLibraries);
 
     if (onlyDuplicatedTextStyles.length > 0) {
@@ -7609,6 +7611,7 @@ function MergeDuplicateTextStyles(context) {
     browserWindow.show();
   });
   webContents.on('did-finish-load', function () {
+    Helpers.clog("Webview loaded");
     webContents.executeJavaScript("DrawStylesList(".concat(JSON.stringify(mergeSession), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
@@ -7618,6 +7621,7 @@ function MergeDuplicateTextStyles(context) {
     onShutdown(webviewMDTSIdentifier);
   });
   webContents.on('RecalculateDuplicates', function (includeLibraries) {
+    Helpers.clog("Recalculating duplicates");
     CalculateDuplicates(includeLibraries);
     webContents.executeJavaScript("DrawStylesList(".concat(JSON.stringify(mergeSession), ")")).catch(console.error);
   });
@@ -7626,11 +7630,14 @@ function MergeDuplicateTextStyles(context) {
     webContents.executeJavaScript("ReDrawAfterGettingData(".concat(JSON.stringify(mergeSession[index].textStyleWithDuplicates), ",").concat(index, ")")).catch(console.error);
   });
   webContents.on('ExecuteMerge', function (editedMergeSession) {
+    Helpers.clog("Executing Merge");
     var duplicatesSolved = 0;
     var mergedStyles = 0;
     var affectedLayers = [0, 0];
 
     for (var i = 0; i < editedMergeSession.length; i++) {
+      Helpers.clog("-- Merging " + mergeSession[i].textStyleWithDuplicates.name);
+
       if (!editedMergeSession[i].isUnchecked && editedMergeSession[i].selectedIndex >= 0) {
         mergeSession[i].selectedIndex = editedMergeSession[i].selectedIndex;
         currentSelectedStyles = [];
@@ -7648,7 +7655,14 @@ function MergeDuplicateTextStyles(context) {
     }
 
     onShutdown(webviewMDTSIdentifier);
-    if (duplicatesSolved <= 0) context.document.showMessage("No styles were merged");else context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+
+    if (duplicatesSolved <= 0) {
+      Helpers.clog("No styles were merged");
+      context.document.showMessage("No styles were merged");
+    } else {
+      Helpers.clog("Wpdated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+    }
   });
 }
 ;

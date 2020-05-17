@@ -126,7 +126,7 @@ window.GetSymbols = function () {
 };
 
 window.DrawDuplicateSymbols = function (mergeSession) {
-  window.postMessage("nativeLog", "WV - Drawing duplicate symbols");
+  window.postMessage("nativeLog", "WV - Drawing duplicate symbols list");
   window.HideProgress();
   globalMergeSession = mergeSession;
   if (globalSymbolDisplayed >= globalMergeSession.length) globalSymbolDisplayed = 0;

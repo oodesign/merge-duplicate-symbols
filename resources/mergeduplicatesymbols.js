@@ -34,7 +34,7 @@ window.GetSymbols = () => {
 
 
 window.DrawDuplicateSymbols = (mergeSession) => {
-  window.postMessage("nativeLog", "WV - Drawing duplicate symbols");
+  window.postMessage("nativeLog", "WV - Drawing duplicate symbols list");
   window.HideProgress();
 
   globalMergeSession = mergeSession;

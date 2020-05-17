@@ -940,6 +940,7 @@ function GetSpecificLayerStyleData(context, layerStyles, index) {
 
 function GetSpecificTextStyleData(context, textStyles, index) {
 
+  clog("Processing text style metadata for: " + textStyles[index].name);
   // console.time("GetSpecificLayerStyleData");
   for (var i = 0; i < textStyles[index].duplicates.length; i++) {
     textStyles[index].duplicates[i].thumbnail = getTextThumbnail(textStyles[index].duplicates[i].textStyle);
