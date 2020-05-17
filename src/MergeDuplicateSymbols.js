@@ -306,7 +306,7 @@ export function MergeSelectedSymbols(context) {
       replacedStuff = ".";
 
 
-    Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff + ".");
+    Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff);
 
     context.document.showMessage("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
 
@@ -421,7 +421,7 @@ export function MergeDuplicateSymbols(context) {
 
     if (duplicatesSolved > 0)
     {
-      Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff + ".");
+      Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff);
       context.document.showMessage("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
     }
     else

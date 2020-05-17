@@ -124,7 +124,7 @@ export function showRegistration(context) {
   //d9-02
 
   webContentsReg.on('nativeLog', s => {
-    console.log(s);
+    Helpers.cog(s);
   })
 
   webContentsReg.on('OpenPluginWeb', s => {

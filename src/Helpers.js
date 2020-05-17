@@ -864,8 +864,8 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
       try {
         alreadyAddedIDs.push("" + symbol.symbolID());
       } catch{
-        console.log("Trying to merge a component that is not a symbol.");
-        console.log(symbol);
+        clog("Trying to merge a component that is not a symbol.");
+        clog(symbol);
       }
     }
 

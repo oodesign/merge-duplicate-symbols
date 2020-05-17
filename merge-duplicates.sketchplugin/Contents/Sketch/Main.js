@@ -4529,7 +4529,7 @@ function EditSettings(context) {
     webContents.executeJavaScript("AssignSettings(".concat(Helpers.getLogsEnabled(), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
-    console.log(s);
+    Helpers.clog(s);
   });
   webContents.on('Cancel', function () {
     onShutdown(webviewEsIdentifier);
@@ -5496,8 +5496,8 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
       try {
         alreadyAddedIDs.push("" + symbol.symbolID());
       } catch (_unused3) {
-        console.log("Trying to merge a component that is not a symbol.");
-        console.log(symbol);
+        clog("Trying to merge a component that is not a symbol.");
+        clog(symbol);
       }
     }
 
@@ -6474,7 +6474,7 @@ function showRegistration(context) {
 
 
   webContentsReg.on('nativeLog', function (s) {
-    console.log(s);
+    Helpers.cog(s);
   });
   webContentsReg.on('OpenPluginWeb', function (s) {
     NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("http://www.mergeduplicates.com"));
@@ -6788,7 +6788,7 @@ function MergeSelectedSymbols(context) {
     mergeResults = MergeSymbols(mssmergeSession[0], selectedIndex);
     var replacedStuff = "";
     if (mergeResults[1] > 0 && mergeResults[2]) replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";else if (mergeResults[1] > 0) replacedStuff = " and replaced " + mergeResults[1] + " instances.";else if (mergeResults[2] > 0) replacedStuff = " and updated " + mergeResults[2] + " overrides.";else replacedStuff = ".";
-    Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff + ".");
+    Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff);
     context.document.showMessage("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
     onShutdown(webviewMSSIdentifier);
   });
@@ -6886,7 +6886,7 @@ function MergeDuplicateSymbols(context) {
     if (mergeResults[1] > 0 && mergeResults[2]) replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";else if (mergeResults[1] > 0) replacedStuff = " and replaced " + mergeResults[1] + " instances.";else if (mergeResults[2] > 0) replacedStuff = " and updated " + mergeResults[2] + " overrides.";else replacedStuff = ".";
 
     if (duplicatesSolved > 0) {
-      Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff + ".");
+      Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff);
       context.document.showMessage("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
     } else {
       Helpers.clog("Completed merge. No symbols were merged.");

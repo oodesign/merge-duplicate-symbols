@@ -30,7 +30,7 @@ export function EditSettings(context) {
   })
 
   webContents.on('nativeLog', s => {
-    console.log(s);
+    Helpers.clog(s);
   });
 
   webContents.on('Cancel', () => {
