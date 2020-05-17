@@ -7,6 +7,7 @@ var globalStyleDisplayed = 0;
 var isLoadingStyleData = false;
 
 window.DrawStylesList = (mergeSession) => {
+  window.postMessage("nativeLog", "WV - Drawing duplicate styles list");
   globalMergeSession = mergeSession;
   if (globalStyleDisplayed >= globalMergeSession.length)
     globalStyleDisplayed = 0;
@@ -34,6 +35,7 @@ window.DrawStylesList = (mergeSession) => {
     inner += `<div id="duplicatedStyle${i}" onclick="onSelectedStyleChanged(${i})" class="leftPanelListItem alignVerticalCenter ${selected}">${checkbox} </div>`
   }
 
+  window.postMessage("nativeLog", "WV - Drawing left panel style list");
   lstDuplicateStyles.innerHTML = inner;
   btnMerge.disabled = (checkedCounter == 0);
 
@@ -45,12 +47,14 @@ window.DrawStylesList = (mergeSession) => {
 
 window.onSelectedStyleCheckChanged = (index) => {
 
+  window.postMessage("nativeLog", "WV - Include style changed");
   globalMergeSession[index].isUnchecked = !globalMergeSession[index].isUnchecked;
   DrawStylesList(globalMergeSession);
   DrawStyleList(globalStyleDisplayed);
 }
 
 window.onSelectedStyleChanged = (index) => {
+  window.postMessage("nativeLog", "WV - Left panel list selected style changed");
   if (!isLoadingStyleData) {
     for (var i = 0; i < globalMergeSession.length; i++) {
       var otherDiv = document.getElementById("duplicatedStyle" + i);
@@ -74,16 +78,19 @@ window.onSelectedStyleChanged = (index) => {
 
 window.ShowProgress = (message) => {
 
+  window.postMessage("nativeLog", "WV - Show progress");
   document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeIn";
   document.getElementById('loadingMessage').innerHTML = message;
   document.getElementById('listOfStyles').className = "movingYFadeInitialState movingYFadeOut";
 };
 
 window.HideProgress = () => {
+  window.postMessage("nativeLog", "WV - Hide progress");
   document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeOut";
 };
 
 window.ReDrawAfterGettingData = (symbolData, index) => {
+  window.postMessage("nativeLog", "WV - Redraw after getting style data");
   globalMergeSession[index].isProcessed = true;
   isLoadingStyleData = false;
 
@@ -98,6 +105,7 @@ window.ReDrawAfterGettingData = (symbolData, index) => {
 }
 
 window.onStyleClicked = (index, selectedStyle) => {
+  window.postMessage("nativeLog", "WV - Style clicked. Updating selection status.");
   for (var i = 0; i < globalMergeSession[selectedStyle].textStyleWithDuplicates.duplicates.length; i++) {
     var otherCheck = document.getElementById("duplicateItemCheck" + i);
     otherCheck.checked = false;
@@ -115,9 +123,11 @@ window.onStyleClicked = (index, selectedStyle) => {
 }
 
 window.DrawStyleList = (index) => {
+  window.postMessage("nativeLog", "WV - Drawing styles");
   globalStyleDisplayed = index;
   var inner = "";
   for (var i = 0; i < globalMergeSession[index].textStyleWithDuplicates.duplicates.length; i++) {
+    window.postMessage("nativeLog", "WV --- Drawing style: "+globalMergeSession[index].textStyleWithDuplicates.duplicates[i].name);
 
     var isSelected = (globalMergeSession[index].selectedIndex == i)
     var selected = isSelected ? "selected" : "";
@@ -149,6 +159,8 @@ window.DrawStyleList = (index) => {
   var listOfStyles = document.getElementById('listOfStyles');
   listOfStyles.innerHTML = inner;
   listOfStyles.className = "scrollable movingYFadeInitialState workZone movingYFadeIn";
+
+  window.postMessage("nativeLog", "WV - Completed drawing styles");
 }
 
 window.cancelAssignation = () => {
@@ -156,14 +168,17 @@ window.cancelAssignation = () => {
 }
 
 document.getElementById('chkIncludeLibraries').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Include libraries changed");
   window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked);
 });
 
 document.getElementById('btnCancel').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Cancel");
   cancelAssignation();
 });
 
 document.getElementById('btnMerge').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Execute merge");
   window.postMessage('ExecuteMerge', globalMergeSession);
 });
 

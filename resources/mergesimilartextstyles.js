@@ -7,6 +7,8 @@ var globalStyleDisplayed = 0;
 var globalFiltersAppliedNum = 2;
 
 window.DrawResultsList = (stylesWithSimilarStyles) => {
+
+  window.postMessage("nativeLog", "WV - Drawing results list");
   globalStylesWithSimilarStyles = stylesWithSimilarStyles;
 
   if (globalFiltersAppliedNum > 0) {
@@ -42,6 +44,7 @@ window.DrawResultsList = (stylesWithSimilarStyles) => {
 
     document.getElementById('resultsPanel').className = "colAuto leftPanel";
 
+    window.postMessage("nativeLog", "WV - Drawing left panel style list");
     lstResultingStyles.innerHTML = inner;
 
     btnMerge.disabled = (checkedCounter == 0);
@@ -50,6 +53,7 @@ window.DrawResultsList = (stylesWithSimilarStyles) => {
     DrawStyleList(globalStyleDisplayed);
   }
   else {
+    window.postMessage("nativeLog", "WV - No similar styles. Drawing empty state.");
     document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
     document.getElementById('listOfStyles').className = "scrollable movingYFadeInitialState workZone movingYFadeOut";
     document.getElementById("workZoneTitle").className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeOut";
@@ -62,12 +66,14 @@ window.DrawResultsList = (stylesWithSimilarStyles) => {
 }
 
 window.onSelectedStyleCheckChanged = (index) => {
+  window.postMessage("nativeLog", "WV - Include style changed");
   globalStylesWithSimilarStyles[index].isUnchecked = !globalStylesWithSimilarStyles[index].isUnchecked;
   DrawStylesList(globalStylesWithSimilarStyles);
   DrawStyleList(globalStyleDisplayed);
 }
 
 window.onSelectedStyleChanged = (index) => {
+  window.postMessage("nativeLog", "WV - Left panel list selected style changed.");
   for (var i = 0; i < globalStylesWithSimilarStyles.length; i++) {
     var otherDiv = document.getElementById("resultStyle" + i);
     otherDiv.className = "leftPanelListItem alignVerticalCenter";
@@ -80,6 +86,7 @@ window.onSelectedStyleChanged = (index) => {
 }
 
 window.onStyleClicked = (index, selectedStyle) => {
+  window.postMessage("nativeLog", "WV - Style clicked. Updating selection status.");
   for (var i = 0; i < globalStylesWithSimilarStyles[selectedStyle].similarStyles.length; i++) {
     var otherCheck = document.getElementById("duplicateItemCheck" + i);
     otherCheck.checked = false;
@@ -97,9 +104,12 @@ window.onStyleClicked = (index, selectedStyle) => {
 }
 
 window.DrawStyleList = (index) => {
+  window.postMessage("nativeLog", "WV - Drawing styles");
   globalStyleDisplayed = index;
   var inner = "";
   for (var i = 0; i < globalStylesWithSimilarStyles[index].similarStyles.length; i++) {
+    window.postMessage("nativeLog", "WV --- Drawing style: "+globalStylesWithSimilarStyles[index].similarStyles[i].name);
+
     var isSelected = (globalStylesWithSimilarStyles[index].selectedIndex == i)
     var selected = isSelected ? "selected" : "";
     var checked = isSelected ? "checked" : "";
@@ -132,6 +142,7 @@ window.DrawStyleList = (index) => {
   document.getElementById("workZoneTitle").className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeIn";
   listOfStyles.className = "scrollable movingYFadeInitialState workZone movingYFadeIn";
 
+  window.postMessage("nativeLog", "WV - Completed drawing styles");
 }
 
 window.cancelAssignation = () => {
@@ -139,18 +150,22 @@ window.cancelAssignation = () => {
 }
 
 document.getElementById('btnCancel').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Cancel");
   cancelAssignation();
 });
 
 document.getElementById('btnMerge').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Execute merge");
   window.postMessage('ExecuteMerge', globalStylesWithSimilarStyles);
 });
 
 document.getElementById('filterHeader').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Show/hide filters");
   onFilterExpanderClicked();
 });
 
 document.getElementById('chkIncludeLibraries').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Include libraries check changed");
   onFilterChanged();
 });
 
@@ -166,6 +181,7 @@ document.getElementById('btnEmptyState').addEventListener("click", () => {
 
 
 window.onFilterChanged = () => {
+  window.postMessage("nativeLog", "WV - Find matching styles");
   var includeAllLibraries = document.getElementById('chkIncludeLibraries').checked;
   var checkSameFont = document.getElementById('checkSameFont').checked;
   var checkSameWeight = document.getElementById('checkSameWeight').checked;

@@ -39,13 +39,16 @@ window.BuildMapping = () => {
 }
 
 window.DrawStyleList = (layerStyles) => {
+  window.postMessage("nativeLog", "WV - Drawing styles grouped list");
   globalLayerStyles = layerStyles;
 
   const groupByLibraryName = groupBy('libraryName');
   var groupedLayerStyles = groupByLibraryName(layerStyles);
   groupedLayerStyles = sortOnKeys(groupedLayerStyles);
   globalGroupedLayerStyles = groupedLayerStyles;
+  window.postMessage("nativeLog", "WV - Grouped styles");
   BuildMapping();
+  window.postMessage("nativeLog", "WV - Built mapping");
   var inner = "";
   var groupnum = 0;
   var stylenum = 0;
@@ -86,6 +89,7 @@ window.DrawStyleList = (layerStyles) => {
 
   });
 
+  window.postMessage("nativeLog", "WV - Drawing left panel style list");
   var lstLayerStyles = document.getElementById('lstLayerStyles');
   lstLayerStyles.innerHTML = inner;
 
@@ -93,6 +97,7 @@ window.DrawStyleList = (layerStyles) => {
 }
 
 window.onExpanderClicked = (index) => {
+  window.postMessage("nativeLog", "WV - Expanding "+index);
   var groupStyleHeader = document.getElementById("groupStyleHeader" + index);
   var groupStyleList = document.getElementById("groupStyleList" + index);
   if (groupStyleHeader.className.toString().indexOf("collapsed") >= 0) {
@@ -106,6 +111,7 @@ window.onExpanderClicked = (index) => {
 }
 
 window.onLayerStyleItemChanged = (index) => {
+  window.postMessage("nativeLog", "WV - Layer style item changed");
   var realIndex = mapping[index];
   globalLayerStyles[realIndex].isSelected = !globalLayerStyles[realIndex].isSelected;
   var selectedDiv = document.getElementById("layerStyleItem" + index);
@@ -122,6 +128,7 @@ window.onLayerStyleItemChanged = (index) => {
 }
 
 window.clearWorkzone = () => {
+  window.postMessage("nativeLog", "WV - Clear workzone");
   document.getElementById('emptyState').className = "emptyState fadeIn";
   document.getElementById("workZoneTitle").className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeOut";
   listOfStyles.className = "scrollable movingYFadeInitialState workZone movingYFadeOut";
@@ -129,6 +136,7 @@ window.clearWorkzone = () => {
 }
 
 window.onStyleClicked = (index) => {
+  window.postMessage("nativeLog", "WV - Layer style changed");
   var realIndex = mapping[index];
 
   var stylenum = 0;
@@ -157,6 +165,7 @@ window.onStyleClicked = (index) => {
 }
 
 window.DrawSelectedStylesList = () => {
+  window.postMessage("nativeLog", "WV - Draw layer styles");
   var inner = "";
   var counter = 0;
 
@@ -212,14 +221,17 @@ window.cancelAssignation = () => {
 }
 
 document.getElementById('btnCancel').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Cancel");
   cancelAssignation();
 });
 
 document.getElementById('btnMerge').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Execute merge");
   window.postMessage('ExecuteMerge', globalLayerStyles);
 });
 
 document.getElementById('chkIncludeLibraries').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Include libraries check changed");
   var check = document.getElementById('chkIncludeLibraries');
   if (check.checked)
     window.postMessage('GetAllStylesList');

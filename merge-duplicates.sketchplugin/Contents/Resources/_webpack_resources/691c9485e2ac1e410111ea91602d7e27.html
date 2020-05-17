@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Merge Duplicates</title>
+  <link rel="stylesheet" href="97645b6d73bc078ad616043b909ce01d.css";">
+</head>
+
+<body>
+  <div class="verticalLayout">
+
+    <div class="rowAuto settingsLogo alignHorizontalCenter">
+      <svg viewBox="0 0 54 50" version="1.1" xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <defs>
+          <path
+            d="M46.5,12 C48.9852814,12 51,9.98528137 51,7.5 C51,5.01471863 48.9852814,3 46.5,3 C44.0147186,3 42,5.01471863 42,7.5 C42,9.98528137 44.0147186,12 46.5,12 Z M46.5,15 C42.3578644,15 39,11.6421356 39,7.5 C39,3.35786438 42.3578644,0 46.5,0 C50.6421356,0 54,3.35786438 54,7.5 C54,11.6421356 50.6421356,15 46.5,15 Z M20,47 C29.3888407,47 37,39.3888407 37,30 C37,20.6111593 29.3888407,13 20,13 C10.6111593,13 3,20.6111593 3,30 C3,39.3888407 10.6111593,47 20,47 Z M20,50 C8.954305,50 0,41.045695 0,30 C0,18.954305 8.954305,10 20,10 C31.045695,10 40,18.954305 40,30 C40,41.045695 31.045695,50 20,50 Z"
+            id="path-1"></path>
+        </defs>
+        <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+          <g id="Logo">
+            <mask id="mask-2" fill="white">
+              <use xlink:href="#path-1"></use>
+            </mask>
+            <use id="Mask" fill="#383838" fill-rule="nonzero" xlink:href="#path-1"></use>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div class="rowAuto">
+      <div class="horizontalLayout">
+        <div class="colAvailable"></div>
+        <div class="colAuto">
+          <label class="switch">
+            <input type="checkbox" id="checkLogs">
+            <span class="slider"> </span>
+          </label>
+        </div>
+        <div class="colAvailable alignVerticalCenter">
+          <span class="primaryText" id="txtLogs">Logs are disabled</span>
+        </div>
+        <div class="colAvailable"></div>
+      </div>
+    </div>
+    <div class="rowAuto settingsDescription">
+      <span class="secondaryText">
+        Logs are stored in your local Sketch Plugins folder, and not sent anywhere. 
+        <br/>
+        <br/>
+        They do not contain any information related with your design file. They're just related to the plugin processing, and may be used to identify issues.
+        <br/>
+        <br/>
+        You may get to them by using the Sketch menu "Plugins > Manage plugins... > ⚙️ > Reveal plugins folder", opening the "Plugins" folder, and looking for the <b>mergeduplicates.log</b> file.
+      </span>
+    </div>
+
+
+    <div class="rowAvailable" id="row2"></div>
+
+    <div class="rowAuto bottomBar">
+      <div class="horizontalLayout actionsRow">
+        <div class="colAvailable">
+        </div>
+        <div class="colAuto">
+          <button id="btnCancel" class="btnSecondary">Cancel</button>
+        </div>
+        <div class="colAuto">
+          <button id="btnAccept" class="btnPrimary" style="width:100px">Accept</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="draggableArea alignFullCenter" data-app-region="drag"><span id="windowTitle">Merge Duplicates</span>
+    </div>
+  </div>
+  </div>
+  <!-- notice the "../" here. It's because webview.js will be compiled in a different folder -->
+  <script src="../resources_settings.js"></script>
+</body>
+
+</html>

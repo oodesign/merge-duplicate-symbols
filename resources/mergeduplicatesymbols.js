@@ -21,6 +21,7 @@ window.LaunchMerge = (numberOfLocalSymbols, numberOfLibrarySymbols) => {
 }
 
 window.GetSymbols = () => {
+  window.postMessage("nativeLog", "WV - Get symbols");
   setTimeout(function () {
     var message = "We're looking for duplicates...";
     if (globalNumberOfSymbolsInDocument > 100)
@@ -33,6 +34,7 @@ window.GetSymbols = () => {
 
 
 window.DrawDuplicateSymbols = (mergeSession) => {
+  window.postMessage("nativeLog", "WV - Drawing duplicate symbols list");
   window.HideProgress();
 
   globalMergeSession = mergeSession;
@@ -65,8 +67,10 @@ window.DrawDuplicateSymbols = (mergeSession) => {
       inner += `<div id="duplicatedSymbol${i}" onclick="onSelectedSymbolChanged(${i})" class="leftPanelListItem alignVerticalCenter ${selected}">${checkbox} </div>`
     }
 
+    window.postMessage("nativeLog", "WV - Drawing left panel symbol list");
     lstDuplicateSymbols.innerHTML = inner;
     btnMerge.disabled = (checkedCounter == 0);
+    
 
     document.getElementById('lblIncludeLibraries').innerHTML = (checkedCounter != 0) ? "Include all enabled libraries symbols (you may lose the current selection)" : "Include all enabled libraries symbols";
     DrawSymbolList(globalSymbolDisplayed);
@@ -79,6 +83,7 @@ window.DrawDuplicateSymbols = (mergeSession) => {
 
 
 window.ShowLayout = (index) => {
+  window.postMessage("nativeLog", "WV - Show layout");
   document.getElementById('resultsPanel').className = "colAuto leftPanel";
   document.getElementById('btnCancel').className = "btnSecondary";
   document.getElementById('btnMerge').className = "btnPrimary";
@@ -87,7 +92,7 @@ window.ShowLayout = (index) => {
 }
 
 window.HideLayout = (index) => {
-
+  window.postMessage("nativeLog", "WV - Hide layout");
   document.getElementById('emptyState').className = "emptyState fadeIn";
   document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
   document.getElementById('btnCancel').className = "notDisplayed";
@@ -97,12 +102,14 @@ window.HideLayout = (index) => {
 }
 
 window.onSelectedSymbolCheckChanged = (index) => {
+  window.postMessage("nativeLog", "WV - Include symbol changed");
   globalMergeSession[index].isUnchecked = !globalMergeSession[index].isUnchecked;
   DrawDuplicateSymbols(globalMergeSession);
   DrawSymbolList(globalSymbolDisplayed);
 }
 
 window.onSelectedSymbolChanged = (index) => {
+  window.postMessage("nativeLog", "WV - Left panel list selected symbol changed");
   if (!isLoadingSymbolData) {
     for (var i = 0; i < globalMergeSession.length; i++) {
       var otherDiv = document.getElementById("duplicatedSymbol" + i);
@@ -125,17 +132,20 @@ window.onSelectedSymbolChanged = (index) => {
 }
 
 window.ShowProgress = (message) => {
-
+  window.postMessage("nativeLog", "WV - Show progress");
   document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeIn";
   document.getElementById('loadingMessage').innerHTML = message;
   document.getElementById('listOfSymbols').className = "movingYFadeInitialState movingYFadeOut" + (globalView == 0 ? " cardsView" : "");
 };
 
 window.HideProgress = () => {
+  window.postMessage("nativeLog", "WV - Hide progress");
   document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeOut";
 };
 
 window.ReDrawAfterGettingData = (symbolData, index) => {
+
+  window.postMessage("nativeLog", "WV - Redraw after getting symbol data");
   globalMergeSession[index].isProcessed = true;
   isLoadingSymbolData = false;
 
@@ -156,6 +166,7 @@ window.ReDrawAfterGettingData = (symbolData, index) => {
 
 
 window.onSymbolClicked = (index, selectedSymbol) => {
+  window.postMessage("nativeLog", "WV - Symbol clicked. Updating selection status.");
   for (var i = 0; i < globalMergeSession[selectedSymbol].symbolWithDuplicates.duplicates.length; i++) {
     var otherCheck = document.getElementById("duplicateItemCheck" + i);
     otherCheck.checked = false;
@@ -173,9 +184,13 @@ window.onSymbolClicked = (index, selectedSymbol) => {
 }
 
 window.DrawSymbolList = (index) => {
+  window.postMessage("nativeLog", "WV - Drawing symbols");
   globalSymbolDisplayed = index;
   var inner = "";
   for (var i = 0; i < globalMergeSession[index].symbolWithDuplicates.duplicates.length; i++) {
+
+    
+    window.postMessage("nativeLog", "WV --- Drawing symbol: "+globalMergeSession[index].symbolWithDuplicates.duplicates[i].name);
 
     var isSelected = (globalMergeSession[index].selectedIndex == i)
     var selected = isSelected ? "selected" : "";
@@ -208,9 +223,12 @@ window.DrawSymbolList = (index) => {
   var listOfSymbols = document.getElementById('listOfSymbols');
   listOfSymbols.innerHTML = inner;
   listOfSymbols.className = "movingYFadeInitialState workZone movingYFadeIn" + (globalView == 0 ? " cardsView" : "");
+
+  window.postMessage("nativeLog", "WV - Completed drawing symbols");
 }
 
 document.getElementById('chkIncludeLibraries').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Include libraries check changed");
   window.ShowProgress("");
   window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked);
 });
@@ -220,18 +238,22 @@ window.cancelAssignation = () => {
 }
 
 document.getElementById('btnCancel').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Cancel");
   cancelAssignation();
 });
 
 document.getElementById('btnMerge').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Execute merge");
   window.postMessage('ExecuteMerge', globalMergeSession);
 });
 
 document.getElementById('btnOK').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - OK-Close");
   cancelAssignation();
 });
 
 document.getElementById('btnCardView').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Changed to cards view");
   globalView = 0;
   document.getElementById('listOfSymbols').classList.add("cardsView");
   document.getElementById('btnListView').classList.remove("selected");
@@ -239,6 +261,7 @@ document.getElementById('btnCardView').addEventListener("click", () => {
 });
 
 document.getElementById('btnListView').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Change to list view");
   globalView = 1;
   document.getElementById('listOfSymbols').classList.remove("cardsView");
   document.getElementById('btnCardView').classList.remove("selected");

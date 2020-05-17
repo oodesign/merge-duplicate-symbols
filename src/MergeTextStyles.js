@@ -24,6 +24,8 @@ function MergeTextStyles(context, styleToKeep) {
   var layersChangedCounter = 0;
   var overridesChangedCounter = 0;
 
+  Helpers.clog("Merging styles. Keep '"+currentSelectedStyles[styleToKeep].name+"'");
+
   var layers = Helpers.getAllTextLayers(context);
   var layersWithOtherStyles = NSMutableArray.array();
   currentSelectedStyles.forEach(function (style) {
@@ -213,6 +215,8 @@ function getDuplicateTextStyles(context, allStyles) {
 
 export function MergeSimilarTextStyles(context) {
 
+  Helpers.clog("----- Merge similar text styles -----");
+
   const options = {
     identifier: webviewMSTSIdentifier,
     width: 1200,
@@ -226,6 +230,7 @@ export function MergeSimilarTextStyles(context) {
 
   var stylesWithSimilarStyles;
 
+  Helpers.clog("Loading webview");
   browserWindow.loadURL(require('../resources/mergesimilartextstyles.html'));
 
 
@@ -234,10 +239,11 @@ export function MergeSimilarTextStyles(context) {
   })
 
   webContents.on('did-finish-load', () => {
+    Helpers.clog("Webview loaded");
   })
 
   webContents.on('nativeLog', s => {
-    console.log(s);
+    Helpers.clog(s);
   });
 
   webContents.on('Cancel', () => {
@@ -245,6 +251,7 @@ export function MergeSimilarTextStyles(context) {
   });
 
   webContents.on('ExecuteMerge', (editedStylesWithSimilarStyles) => {
+    Helpers.clog("Execute merge");
     var duplicatesSolved = 0;
     var mergedStyles = 0;
     var affectedLayers = [0, 0];
@@ -265,14 +272,19 @@ export function MergeSimilarTextStyles(context) {
     }
     onShutdown(webviewMSTSIdentifier);
 
-    if (duplicatesSolved <= 0)
+    if (duplicatesSolved <= 0) {
+      Helpers.clog("No styles were merged");
       context.document.showMessage("No styles were merged");
-    else
+    }
+    else {
+      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
       context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+    }
 
   });
 
   webContents.on('RecalculateStyles', (includeAllLibraries, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing) => {
+    Helpers.clog("RecalculateStyles");
     stylesWithSimilarStyles = Helpers.FindAllSimilarTextStyles(context, includeAllLibraries, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing);
     webContents.executeJavaScript(`DrawResultsList(${JSON.stringify(stylesWithSimilarStyles)})`).catch(console.error);
   });
@@ -280,6 +292,9 @@ export function MergeSimilarTextStyles(context) {
 }
 
 export function MergeDuplicateTextStyles(context) {
+
+  Helpers.clog("----- Merge duplicate text styles -----");
+
   const options = {
     identifier: webviewMDTSIdentifier,
     width: 1200,
@@ -293,6 +308,8 @@ export function MergeDuplicateTextStyles(context) {
 
   var onlyDuplicatedTextStyles;
   var mergeSession = [];
+
+
   CalculateDuplicates(true);
 
   if (onlyDuplicatedTextStyles.length > 0) {
@@ -304,8 +321,11 @@ export function MergeDuplicateTextStyles(context) {
   }
 
   function CalculateDuplicates(includeLibraries) {
+    Helpers.clog("Finding duplicate text styles. Including libraries:"+includeLibraries);
+
     onlyDuplicatedTextStyles = Helpers.getDuplicateTextStyles(context, includeLibraries);
     if (onlyDuplicatedTextStyles.length > 0) {
+
       Helpers.GetSpecificTextStyleData(context, onlyDuplicatedTextStyles, 0);
       mergeSession = [];
       for (var i = 0; i < onlyDuplicatedTextStyles.length; i++) {
@@ -324,11 +344,12 @@ export function MergeDuplicateTextStyles(context) {
   })
 
   webContents.on('did-finish-load', () => {
+    Helpers.clog("Webview loaded");
     webContents.executeJavaScript(`DrawStylesList(${JSON.stringify(mergeSession)})`).catch(console.error);
   })
 
   webContents.on('nativeLog', s => {
-    console.log(s);
+    Helpers.clog(s);
   });
 
   webContents.on('Cancel', () => {
@@ -338,6 +359,7 @@ export function MergeDuplicateTextStyles(context) {
 
 
   webContents.on('RecalculateDuplicates', (includeLibraries) => {
+    Helpers.clog("Recalculating duplicates");
     CalculateDuplicates(includeLibraries);
     webContents.executeJavaScript(`DrawStylesList(${JSON.stringify(mergeSession)})`).catch(console.error);
   });
@@ -348,11 +370,13 @@ export function MergeDuplicateTextStyles(context) {
   });
 
   webContents.on('ExecuteMerge', (editedMergeSession) => {
+    Helpers.clog("Executing Merge");
     var duplicatesSolved = 0;
     var mergedStyles = 0;
     var affectedLayers = [0, 0];
 
     for (var i = 0; i < editedMergeSession.length; i++) {
+      Helpers.clog("-- Merging "+mergeSession[i].textStyleWithDuplicates.name);
       if (!editedMergeSession[i].isUnchecked && editedMergeSession[i].selectedIndex >= 0) {
         mergeSession[i].selectedIndex = editedMergeSession[i].selectedIndex;
         currentSelectedStyles = [];
@@ -371,14 +395,23 @@ export function MergeDuplicateTextStyles(context) {
 
     onShutdown(webviewMDTSIdentifier);
     if (duplicatesSolved <= 0)
+    {
+      Helpers.clog("No styles were merged");
       context.document.showMessage("No styles were merged");
+    }
     else
-    context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+    {
+      Helpers.clog("Wpdated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+    }
 
   });
 };
 
 export function MergeSelectedTextStyles(context) {
+
+  Helpers.clog("----- Merge selected text styles -----");
+  
   const options = {
     identifier: webviewMTSFLIdentifier,
     width: 1200,
@@ -391,6 +424,7 @@ export function MergeSelectedTextStyles(context) {
   const webContents = browserWindow.webContents;
 
 
+  Helpers.clog("Get defined text styles");
   var definedTextStyles = Helpers.getDefinedTextStyles(context, false, null);
   var definedAllTextStyles;
 
@@ -407,19 +441,22 @@ export function MergeSelectedTextStyles(context) {
   })
 
   webContents.on('did-finish-load', () => {
+    Helpers.clog("Webview loaded");
     webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedTextStyles)})`).catch(console.error);
   })
 
   webContents.on('nativeLog', s => {
-    console.log(s);
+    Helpers.clog(s);
   });
 
   webContents.on('GetLocalStylesList', () => {
+    Helpers.clog("Get local styles list");
     checkingAlsoLibraries = false;
     webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedTextStyles)})`).catch(console.error);
   });
 
   webContents.on('GetAllStylesList', () => {
+    Helpers.clog("Get all (including libraries) styles list");
     if (definedAllTextStyles == null)
       definedAllTextStyles = Helpers.getDefinedTextStyles(context, true, null);
 
@@ -432,6 +469,7 @@ export function MergeSelectedTextStyles(context) {
   });
 
   webContents.on('ExecuteMerge', (editedGlobalTextStyles) => {
+    Helpers.clog("Executing Merge");
     currentSelectedStyles = [];
     var selectedIndex = -1;
     var counter = 0;
@@ -460,6 +498,7 @@ export function MergeSelectedTextStyles(context) {
 
     var affectedLayers = MergeTextStyles(context, selectedIndex);
 
+    Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
     context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
 
     onShutdown(webviewMTSFLIdentifier);
