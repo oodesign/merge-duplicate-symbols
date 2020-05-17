@@ -7678,6 +7678,7 @@ function MergeSelectedTextStyles(context) {
   };
   var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
   var webContents = browserWindow.webContents;
+  Helpers.clog("Get defined styles");
   var definedTextStyles = Helpers.getDefinedTextStyles(context, false, null);
   var definedAllTextStyles;
 
@@ -7689,16 +7690,19 @@ function MergeSelectedTextStyles(context) {
     browserWindow.show();
   });
   webContents.on('did-finish-load', function () {
+    Helpers.clog("Webview loaded");
     webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedTextStyles), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
     Helpers.clog(s);
   });
   webContents.on('GetLocalStylesList', function () {
+    Helpers.clog("Get local styles list");
     checkingAlsoLibraries = false;
     webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedTextStyles), ")")).catch(console.error);
   });
   webContents.on('GetAllStylesList', function () {
+    Helpers.clog("Get all (including libraries) styles list");
     if (definedAllTextStyles == null) definedAllTextStyles = Helpers.getDefinedTextStyles(context, true, null);
     checkingAlsoLibraries = true;
     webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedAllTextStyles), ")")).catch(console.error);
@@ -7707,6 +7711,7 @@ function MergeSelectedTextStyles(context) {
     onShutdown(webviewMTSFLIdentifier);
   });
   webContents.on('ExecuteMerge', function (editedGlobalTextStyles) {
+    Helpers.clog("Executing Merge");
     currentSelectedStyles = [];
     var selectedIndex = -1;
     var counter = 0;
@@ -7736,6 +7741,7 @@ function MergeSelectedTextStyles(context) {
     }
 
     var affectedLayers = MergeTextStyles(context, selectedIndex);
+    Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
     context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
     onShutdown(webviewMTSFLIdentifier);
   });

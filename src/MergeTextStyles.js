@@ -422,6 +422,7 @@ export function MergeSelectedTextStyles(context) {
   const webContents = browserWindow.webContents;
 
 
+  Helpers.clog("Get defined styles");
   var definedTextStyles = Helpers.getDefinedTextStyles(context, false, null);
   var definedAllTextStyles;
 
@@ -438,6 +439,7 @@ export function MergeSelectedTextStyles(context) {
   })
 
   webContents.on('did-finish-load', () => {
+    Helpers.clog("Webview loaded");
     webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedTextStyles)})`).catch(console.error);
   })
 
@@ -446,11 +448,13 @@ export function MergeSelectedTextStyles(context) {
   });
 
   webContents.on('GetLocalStylesList', () => {
+    Helpers.clog("Get local styles list");
     checkingAlsoLibraries = false;
     webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedTextStyles)})`).catch(console.error);
   });
 
   webContents.on('GetAllStylesList', () => {
+    Helpers.clog("Get all (including libraries) styles list");
     if (definedAllTextStyles == null)
       definedAllTextStyles = Helpers.getDefinedTextStyles(context, true, null);
 
@@ -463,6 +467,7 @@ export function MergeSelectedTextStyles(context) {
   });
 
   webContents.on('ExecuteMerge', (editedGlobalTextStyles) => {
+    Helpers.clog("Executing Merge");
     currentSelectedStyles = [];
     var selectedIndex = -1;
     var counter = 0;
@@ -491,6 +496,7 @@ export function MergeSelectedTextStyles(context) {
 
     var affectedLayers = MergeTextStyles(context, selectedIndex);
 
+    Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.")
     context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
 
     onShutdown(webviewMTSFLIdentifier);

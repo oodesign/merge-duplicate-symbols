@@ -39,12 +39,15 @@ window.BuildMapping = () => {
 }
 
 window.DrawStyleList = (textStyles) => {
+  window.postMessage("nativeLog", "WV - Drawing styles grouped list");
   globalTextStyles = textStyles;
   const groupByLibraryName = groupBy('libraryName');
   var groupedTextStyles = groupByLibraryName(textStyles);
   groupedTextStyles = sortOnKeys(groupedTextStyles);
   globalGroupedTextStyles = groupedTextStyles;
+  window.postMessage("nativeLog", "WV - Grouped styles");
   BuildMapping();
+  window.postMessage("nativeLog", "WV - Built mapping");
   var inner = "";
   var groupnum = 0;
   var stylenum = 0;
@@ -87,6 +90,7 @@ window.DrawStyleList = (textStyles) => {
 
   });
 
+  window.postMessage("nativeLog", "WV - Drawing left panel style list");
   var lstTextStyles = document.getElementById('lstTextStyles');
   lstTextStyles.innerHTML = inner;
 
@@ -94,6 +98,7 @@ window.DrawStyleList = (textStyles) => {
 }
 
 window.onExpanderClicked = (index) => {
+  window.postMessage("nativeLog", "WV - Expanding "+index);
   var groupStyleHeader = document.getElementById("groupStyleHeader" + index);
   var groupStyleList = document.getElementById("groupStyleList" + index);
   if (groupStyleHeader.className.toString().indexOf("collapsed") >= 0) {
@@ -107,6 +112,7 @@ window.onExpanderClicked = (index) => {
 }
 
 window.onTextStyleItemChanged = (index) => {
+  window.postMessage("nativeLog", "WV - Text style item changed");
   var realIndex = mapping[index];
   globalTextStyles[realIndex].isSelected = !globalTextStyles[realIndex].isSelected;
   var selectedDiv = document.getElementById("textStyleItem" + index);
@@ -123,6 +129,7 @@ window.onTextStyleItemChanged = (index) => {
 }
 
 window.clearWorkzone = () => {
+  window.postMessage("nativeLog", "WV - Clear workzone");
   document.getElementById('emptyState').className = "emptyState fadeIn";
   document.getElementById("workZoneTitle").className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeOut";
   listOfStyles.className = "scrollable movingYFadeInitialState workZone movingYFadeOut";
@@ -130,6 +137,7 @@ window.clearWorkzone = () => {
 }
 
 window.onStyleClicked = (index) => {
+  window.postMessage("nativeLog", "WV - Text style changed");
   var realIndex = mapping[index];
 
   var stylenum = 0;
@@ -158,6 +166,7 @@ window.onStyleClicked = (index) => {
 }
 
 window.DrawSelectedStylesList = () => {
+  window.postMessage("nativeLog", "WV - Draw text styles");
   var inner = "";
   var counter = 0;
 
@@ -213,14 +222,17 @@ window.cancelAssignation = () => {
 }
 
 document.getElementById('btnCancel').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Cancel");
   cancelAssignation();
 });
 
 document.getElementById('btnMerge').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Execute merge");
   window.postMessage('ExecuteMerge', globalTextStyles);
 });
 
 document.getElementById('chkIncludeLibraries').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Include libraries check changed");
   var check = document.getElementById('chkIncludeLibraries');
   if (check.checked)
     window.postMessage('GetAllStylesList');
