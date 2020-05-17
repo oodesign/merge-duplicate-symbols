@@ -17,6 +17,7 @@ window.LaunchMerge = (numberOfSymbols) => {
 }
 
 window.GetSymbols = () => {
+  window.postMessage("nativeLog", "WV - Get symbols");
   setTimeout(function () {
     var message = "We're loading thumbnails...";
     if (globalNumberOfSymbolsInDocument > 10)
@@ -29,17 +30,20 @@ window.GetSymbols = () => {
 
 window.ShowProgress = (message) => {
 
+  window.postMessage("nativeLog", "WV - Show progress");
   document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeIn";
   document.getElementById('loadingMessage').innerHTML = message;
   document.getElementById('listOfSymbols').className = "movingYFadeInitialState movingYFadeOut" + (globalView == 0 ? " cardsView" : "");
 };
 
 window.HideProgress = () => {
+  window.postMessage("nativeLog", "WV - Hide progress");
   document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeOut";
 };
 
 window.onSymbolClicked = (index) => {
 
+  window.postMessage("nativeLog", "WV - Symbol clicked. Updating selection status.");
   var symbolWithDuplicates = globalMergeSession[0];
   var btnMerge = document.getElementById('btnMerge');
   for (var i = 0; i < symbolWithDuplicates.duplicates.length; i++) {
@@ -64,6 +68,7 @@ window.onSymbolClicked = (index) => {
 
 
 window.DrawSymbolList = (mergeSession) => {
+  window.postMessage("nativeLog", "WV - Drawing symbols");
 
   window.HideProgress();
   globalMergeSession = mergeSession;
@@ -71,6 +76,9 @@ window.DrawSymbolList = (mergeSession) => {
 
   var inner = "";
   for (var i = 0; i < symbolWithDuplicates.duplicates.length; i++) {
+
+    
+    window.postMessage("nativeLog", "WV --- Drawing symbol: "+symbolWithDuplicates.duplicates[i].name);
 
     var selected = symbolWithDuplicates.duplicates[i].isSelected ? "selected" : "";
     var checked = symbolWithDuplicates.duplicates[i].isSelected ? "checked" : "";
@@ -101,6 +109,8 @@ window.DrawSymbolList = (mergeSession) => {
   var listOfSymbols = document.getElementById('listOfSymbols');
   listOfSymbols.innerHTML = inner;
   listOfSymbols.className = "scrollable movingYFadeInitialState workZone movingYFadeIn" + (globalView == 0 ? " cardsView" : "");
+
+  window.postMessage("nativeLog", "WV - Completed drawing symbols");
 }
 
 window.cancelAssignation = () => {
@@ -108,14 +118,17 @@ window.cancelAssignation = () => {
 }
 
 document.getElementById('btnCancel').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Cancel");
   cancelAssignation();
 });
 
 document.getElementById('btnMerge').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Execute merge");
   window.postMessage('ExecuteMerge', globalMergeSession, globalSelectedSymbol);
 });
 
 document.getElementById('btnCardView').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Changed to cards view");
   globalView = 0;
   document.getElementById('listOfSymbols').classList.add("cardsView");
   document.getElementById('btnListView').classList.remove("selected");
@@ -123,6 +136,7 @@ document.getElementById('btnCardView').addEventListener("click", () => {
 });
 
 document.getElementById('btnListView').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Change to list view");
   globalView = 1;
   document.getElementById('listOfSymbols').classList.remove("cardsView");
   document.getElementById('btnCardView').classList.remove("selected");

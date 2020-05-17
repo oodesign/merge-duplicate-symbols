@@ -6711,6 +6711,7 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
 }
 
 function MergeSelectedSymbols(context) {
+  Helpers.clog("----- Merge duplicate symbols (with the same name) -----");
   var options = {
     identifier: webviewMSSIdentifier,
     width: 900,
@@ -6739,6 +6740,7 @@ function MergeSelectedSymbols(context) {
     if (!areAllSymbols) {
       context.document.showMessage("Only symbols can be merged");
     } else {
+      Helpers.clog("Loading webview");
       browserWindow.loadURL(__webpack_require__(/*! ../resources/mergeselectedsymbols.html */ "./resources/mergeselectedsymbols.html"));
     }
   }
@@ -6747,6 +6749,7 @@ function MergeSelectedSymbols(context) {
     browserWindow.show();
   });
   webContents.on('did-finish-load', function () {
+    Helpers.clog("Webview loaded");
     webContents.executeJavaScript("LaunchMerge(".concat(JSON.stringify(selection.count()), ")")).catch(console.error);
   });
   webContents.on('GetSymbolData', function () {
@@ -6766,10 +6769,12 @@ function MergeSelectedSymbols(context) {
     onShutdown(webviewMSSIdentifier);
   });
   webContents.on('ExecuteMerge', function (editedMergeSession, selectedIndex) {
+    Helpers.clog("Execute merge. Selected symbol: " + mssmergeSession[0].duplicates[selectedIndex].name);
     var mergeResults = [0, 0, 0];
     mergeResults = MergeSymbols(mssmergeSession[0], selectedIndex);
     var replacedStuff = "";
     if (mergeResults[1] > 0 && mergeResults[2]) replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";else if (mergeResults[1] > 0) replacedStuff = " and replaced " + mergeResults[1] + " instances.";else if (mergeResults[2] > 0) replacedStuff = " and updated " + mergeResults[2] + " overrides.";else replacedStuff = ".";
+    Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff + ".");
     context.document.showMessage("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
     onShutdown(webviewMSSIdentifier);
   });
@@ -6824,7 +6829,7 @@ function MergeDuplicateSymbols(context) {
     webContents.executeJavaScript("LaunchMerge(".concat(JSON.stringify(numberOfSymbols[0]), ",").concat(JSON.stringify(numberOfSymbols[1]), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
-    console.log(s);
+    Helpers.clog(s);
   });
   webContents.on('Cancel', function () {
     onShutdown(webviewIdentifier);
@@ -6842,8 +6847,11 @@ function MergeDuplicateSymbols(context) {
     var duplicatesSolved = 0;
     var mergedSymbols = 0;
     var mergeResults = [0, 0, 0];
+    Helpers.clog("Executing Merge");
 
     for (var i = 0; i < editedMergeSession.length; i++) {
+      Helpers.clog("-- Merging " + mergeSession[i].symbolWithDuplicates.name);
+
       if (!editedMergeSession[i].isUnchecked && editedMergeSession[i].selectedIndex >= 0) {
         mergeSession[i].selectedIndex = editedMergeSession[i].selectedIndex;
 
@@ -6862,7 +6870,14 @@ function MergeDuplicateSymbols(context) {
     onShutdown(webviewIdentifier);
     var replacedStuff = "";
     if (mergeResults[1] > 0 && mergeResults[2]) replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";else if (mergeResults[1] > 0) replacedStuff = " and replaced " + mergeResults[1] + " instances.";else if (mergeResults[2] > 0) replacedStuff = " and updated " + mergeResults[2] + " overrides.";else replacedStuff = ".";
-    if (duplicatesSolved > 0) context.document.showMessage("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");else context.document.showMessage("No symbols were merged.");
+
+    if (duplicatesSolved > 0) {
+      Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff + ".");
+      context.document.showMessage("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
+    } else {
+      Helpers.clog("Completed merge. No symbols were merged.");
+      context.document.showMessage("No symbols were merged.");
+    }
   });
 }
 ;
