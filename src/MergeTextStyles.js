@@ -24,7 +24,7 @@ function MergeTextStyles(context, styleToKeep) {
   var layersChangedCounter = 0;
   var overridesChangedCounter = 0;
 
-  Helpers.clog("Merging styles. Keep '"+currentSelectedStyles[styleToKeep].name+"'")
+  Helpers.clog("Merging styles. Keep '"+currentSelectedStyles[styleToKeep].name+"'");
 
   var layers = Helpers.getAllTextLayers(context);
   var layersWithOtherStyles = NSMutableArray.array();
@@ -284,6 +284,7 @@ export function MergeSimilarTextStyles(context) {
   });
 
   webContents.on('RecalculateStyles', (includeAllLibraries, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing) => {
+    Helpers.clog("RecalculateStyles");
     stylesWithSimilarStyles = Helpers.FindAllSimilarTextStyles(context, includeAllLibraries, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing);
     webContents.executeJavaScript(`DrawResultsList(${JSON.stringify(stylesWithSimilarStyles)})`).catch(console.error);
   });
@@ -320,7 +321,7 @@ export function MergeDuplicateTextStyles(context) {
   }
 
   function CalculateDuplicates(includeLibraries) {
-    Helpers.clog("Finding duplicate text style. Including libraries:"+includeLibraries);
+    Helpers.clog("Finding duplicate text styles. Including libraries:"+includeLibraries);
 
     onlyDuplicatedTextStyles = Helpers.getDuplicateTextStyles(context, includeLibraries);
     if (onlyDuplicatedTextStyles.length > 0) {
@@ -410,6 +411,7 @@ export function MergeDuplicateTextStyles(context) {
 export function MergeSelectedTextStyles(context) {
 
   Helpers.clog("----- Merge selected text styles -----");
+  
   const options = {
     identifier: webviewMTSFLIdentifier,
     width: 1200,
@@ -422,7 +424,7 @@ export function MergeSelectedTextStyles(context) {
   const webContents = browserWindow.webContents;
 
 
-  Helpers.clog("Get defined styles");
+  Helpers.clog("Get defined text styles");
   var definedTextStyles = Helpers.getDefinedTextStyles(context, false, null);
   var definedAllTextStyles;
 
@@ -496,7 +498,7 @@ export function MergeSelectedTextStyles(context) {
 
     var affectedLayers = MergeTextStyles(context, selectedIndex);
 
-    Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.")
+    Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
     context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
 
     onShutdown(webviewMTSFLIdentifier);

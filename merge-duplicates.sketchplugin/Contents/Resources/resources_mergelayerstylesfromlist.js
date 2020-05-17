@@ -140,12 +140,15 @@ window.BuildMapping = function () {
 };
 
 window.DrawStyleList = function (layerStyles) {
+  window.postMessage("nativeLog", "WV - Drawing styles grouped list");
   globalLayerStyles = layerStyles;
   var groupByLibraryName = groupBy('libraryName');
   var groupedLayerStyles = groupByLibraryName(layerStyles);
   groupedLayerStyles = sortOnKeys(groupedLayerStyles);
   globalGroupedLayerStyles = groupedLayerStyles;
+  window.postMessage("nativeLog", "WV - Grouped styles");
   BuildMapping();
+  window.postMessage("nativeLog", "WV - Built mapping");
   var inner = "";
   var groupnum = 0;
   var stylenum = 0;
@@ -164,12 +167,14 @@ window.DrawStyleList = function (layerStyles) {
     inner += "</div>";
     groupnum++;
   });
+  window.postMessage("nativeLog", "WV - Drawing left panel style list");
   var lstLayerStyles = document.getElementById('lstLayerStyles');
   lstLayerStyles.innerHTML = inner;
   clearWorkzone();
 };
 
 window.onExpanderClicked = function (index) {
+  window.postMessage("nativeLog", "WV - Expanding " + index);
   var groupStyleHeader = document.getElementById("groupStyleHeader" + index);
   var groupStyleList = document.getElementById("groupStyleList" + index);
 
@@ -183,6 +188,7 @@ window.onExpanderClicked = function (index) {
 };
 
 window.onLayerStyleItemChanged = function (index) {
+  window.postMessage("nativeLog", "WV - Layer style item changed");
   var realIndex = mapping[index];
   globalLayerStyles[realIndex].isSelected = !globalLayerStyles[realIndex].isSelected;
   var selectedDiv = document.getElementById("layerStyleItem" + index);
@@ -199,6 +205,7 @@ window.onLayerStyleItemChanged = function (index) {
 };
 
 window.clearWorkzone = function () {
+  window.postMessage("nativeLog", "WV - Clear workzone");
   document.getElementById('emptyState').className = "emptyState fadeIn";
   document.getElementById("workZoneTitle").className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeOut";
   listOfStyles.className = "scrollable movingYFadeInitialState workZone movingYFadeOut";
@@ -206,6 +213,7 @@ window.clearWorkzone = function () {
 };
 
 window.onStyleClicked = function (index) {
+  window.postMessage("nativeLog", "WV - Layer style changed");
   var realIndex = mapping[index];
   var stylenum = 0;
   Object.keys(globalGroupedLayerStyles).forEach(function (key) {
@@ -233,6 +241,7 @@ window.onStyleClicked = function (index) {
 };
 
 window.DrawSelectedStylesList = function () {
+  window.postMessage("nativeLog", "WV - Draw layer styles");
   var inner = "";
   var counter = 0;
   var stylenum = 0;
@@ -271,12 +280,15 @@ window.cancelAssignation = function () {
 };
 
 document.getElementById('btnCancel').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Cancel");
   cancelAssignation();
 });
 document.getElementById('btnMerge').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Execute merge");
   window.postMessage('ExecuteMerge', globalLayerStyles);
 });
 document.getElementById('chkIncludeLibraries').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Include libraries check changed");
   var check = document.getElementById('chkIncludeLibraries');
   if (check.checked) window.postMessage('GetAllStylesList');else window.postMessage('GetLocalStylesList');
 });

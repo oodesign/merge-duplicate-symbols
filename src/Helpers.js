@@ -429,7 +429,7 @@ function FindAllSimilarTextStyles(context, includeAllStylesFromExternalLibraries
 
   var definedTextStyles = getDefinedTextStyles(context, includeAllStylesFromExternalLibraries, null);
   for (var i = 0; i < definedTextStyles.length; i++) {
-    clog("Finding similar styles to '"+definedTextStyles[i].name+"'");
+    clog("Finding similar styles to '" + definedTextStyles[i].name + "'");
     if (definedTextStyles[i].libraryName.localeCompare(sketchlocalfile) == 0) {
 
       if (stylesAlreadyProcessed.indexOf(definedTextStyles[i]) == -1) {
@@ -462,48 +462,53 @@ function FindSimilarLayerStyles(referenceStyle, styles, context, checkSameFillCo
   var similarStyles = [];
 
   styles.forEach(function (style) {
-    if (referenceStyle != style.layerStyle) {
-      //console.log("["+referenceStyle.name()+"] and ["+style.layerStyle.name()+"]");
+    try{
+      if (referenceStyle != style.layerStyle) {
+        //console.log("["+referenceStyle.name()+"] and ["+style.layerStyle.name()+"]");
 
-      var sameFillColor = false;
-      if (referenceStyle.style().firstEnabledFill() != null && style.layerStyle.style().firstEnabledFill() != null) {
-        sameFillColor = referenceStyle.style().firstEnabledFill().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledFill().color().immutableModelObject().hexValue().toString();
+        var sameFillColor = false;
+        if (referenceStyle.style().firstEnabledFill() != null && style.layerStyle.style().firstEnabledFill() != null) {
+          sameFillColor = referenceStyle.style().firstEnabledFill().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledFill().color().immutableModelObject().hexValue().toString();
+        }
+        //console.log("---Fill? "+sameFillColor);
+
+        var sameBorderColor = false;
+        if (referenceStyle.style().firstEnabledBorder() != null && style.layerStyle.style().firstEnabledBorder() != null) {
+          sameBorderColor = referenceStyle.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString();
+        }
+        //console.log("---BorderColor? "+sameBorderColor);
+
+        var sameBorderThickness = false;
+        if (referenceStyle.style().firstEnabledBorder() != null && style.layerStyle.style().firstEnabledBorder() != null) {
+          sameBorderThickness = referenceStyle.style().firstEnabledBorder().thickness() == style.layerStyle.style().firstEnabledBorder().thickness();
+        }
+        //console.log("---BorderThickness? "+sameBorderThickness);
+
+
+        var sameShadowColor = false;
+        if (referenceStyle.style().firstEnabledShadow() != null && style.layerStyle.style().firstEnabledShadow() != null) {
+          sameShadowColor = referenceStyle.style().firstEnabledShadow().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledShadow().color().immutableModelObject().hexValue().toString();
+        }
+        //console.log("---ShadowColor? "+sameShadowColor);
+
+        var sameShadowParams = false;
+        if (referenceStyle.style().firstEnabledShadow() != null && style.layerStyle.style().firstEnabledShadow() != null) {
+          sameShadowParams = (referenceStyle.style().firstEnabledShadow().offsetX() == style.layerStyle.style().firstEnabledShadow().offsetX()) && (referenceStyle.style().firstEnabledShadow().offsetY() == style.layerStyle.style().firstEnabledShadow().offsetY()) && (referenceStyle.style().firstEnabledShadow().blurRadius() == style.layerStyle.style().firstEnabledShadow().blurRadius()) && (referenceStyle.style().firstEnabledShadow().spread() == style.layerStyle.style().firstEnabledShadow().spread());
+        }
+        //console.log("---ShadowParams? "+sameShadowParams);
+
+        var isSimilar = true;
+        if (checkSameFillColor) isSimilar = isSimilar && sameFillColor;
+        if (checkSameBorderColor) isSimilar = isSimilar && sameBorderColor;
+        if (checkSameBorderThickness) isSimilar = isSimilar && sameBorderThickness;
+        if (checkSameShadowColor) isSimilar = isSimilar && sameShadowColor;
+        if (checkSameShadowParams) isSimilar = isSimilar && sameShadowParams;
+
+        if (isSimilar) similarStyles.push(style);
       }
-      //console.log("---Fill? "+sameFillColor);
-
-      var sameBorderColor = false;
-      if (referenceStyle.style().firstEnabledBorder() != null && style.layerStyle.style().firstEnabledBorder() != null) {
-        sameBorderColor = referenceStyle.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString();
-      }
-      //console.log("---BorderColor? "+sameBorderColor);
-
-      var sameBorderThickness = false;
-      if (referenceStyle.style().firstEnabledBorder() != null && style.layerStyle.style().firstEnabledBorder() != null) {
-        sameBorderThickness = referenceStyle.style().firstEnabledBorder().thickness() == style.layerStyle.style().firstEnabledBorder().thickness();
-      }
-      //console.log("---BorderThickness? "+sameBorderThickness);
-
-
-      var sameShadowColor = false;
-      if (referenceStyle.style().firstEnabledShadow() != null && style.layerStyle.style().firstEnabledShadow() != null) {
-        sameShadowColor = referenceStyle.style().firstEnabledShadow().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledShadow().color().immutableModelObject().hexValue().toString();
-      }
-      //console.log("---ShadowColor? "+sameShadowColor);
-
-      var sameShadowParams = false;
-      if (referenceStyle.style().firstEnabledShadow() != null && style.layerStyle.style().firstEnabledShadow() != null) {
-        sameShadowParams = (referenceStyle.style().firstEnabledShadow().offsetX() == style.layerStyle.style().firstEnabledShadow().offsetX()) && (referenceStyle.style().firstEnabledShadow().offsetY() == style.layerStyle.style().firstEnabledShadow().offsetY()) && (referenceStyle.style().firstEnabledShadow().blurRadius() == style.layerStyle.style().firstEnabledShadow().blurRadius()) && (referenceStyle.style().firstEnabledShadow().spread() == style.layerStyle.style().firstEnabledShadow().spread());
-      }
-      //console.log("---ShadowParams? "+sameShadowParams);
-
-      var isSimilar = true;
-      if (checkSameFillColor) isSimilar = isSimilar && sameFillColor;
-      if (checkSameBorderColor) isSimilar = isSimilar && sameBorderColor;
-      if (checkSameBorderThickness) isSimilar = isSimilar && sameBorderThickness;
-      if (checkSameShadowColor) isSimilar = isSimilar && sameShadowColor;
-      if (checkSameShadowParams) isSimilar = isSimilar && sameShadowParams;
-
-      if (isSimilar) similarStyles.push(style);
+    }
+    catch (e) {
+      clog("There was an issue finding similar layer styles");
     }
 
   });
@@ -517,6 +522,8 @@ function FindAllSimilarLayerStyles(context, includeAllStylesFromExternalLibrarie
 
   var definedLayerStyles = getDefinedLayerStyles(context, includeAllStylesFromExternalLibraries, null);
   for (var i = 0; i < definedLayerStyles.length; i++) {
+
+    clog("Finding similar styles to '" + definedLayerStyles[i].name + "'");
     if (definedLayerStyles[i].libraryName.localeCompare(sketchlocalfile) == 0) {
       if (stylesAlreadyProcessed.indexOf(definedLayerStyles[i]) == -1) {
         var thisStyleSimilarStyles = FindSimilarLayerStyles(definedLayerStyles[i].layerStyle, definedLayerStyles, context, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowParams);
@@ -931,6 +938,7 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
 
 function GetSpecificLayerStyleData(context, layerStyles, index) {
 
+  clog("Processing text style metadata for: " + layerStyles[index].name);
   // console.time("GetSpecificLayerStyleData");
   for (var i = 0; i < layerStyles[index].duplicates.length; i++) {
     layerStyles[index].duplicates[i].thumbnail = getOvalThumbnail(layerStyles[index].duplicates[i].layerStyle);

@@ -168,6 +168,7 @@ window.cancelAssignation = () => {
 }
 
 document.getElementById('chkIncludeLibraries').addEventListener("click", () => {
+  window.postMessage("nativeLog", "WV - Include libraries changed");
   window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked);
 });
 

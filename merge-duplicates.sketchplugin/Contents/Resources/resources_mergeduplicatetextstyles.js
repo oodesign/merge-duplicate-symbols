@@ -234,6 +234,7 @@ window.cancelAssignation = function () {
 };
 
 document.getElementById('chkIncludeLibraries').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Include libraries changed");
   window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked);
 });
 document.getElementById('btnCancel').addEventListener("click", function () {

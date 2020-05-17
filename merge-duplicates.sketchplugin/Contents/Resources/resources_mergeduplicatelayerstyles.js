@@ -102,6 +102,7 @@ var globalStyleDisplayed = 0;
 var isLoadingStyleData = false;
 
 window.DrawStylesList = function (mergeSession) {
+  window.postMessage("nativeLog", "WV - Drawing duplicate styles list");
   globalMergeSession = mergeSession;
   if (globalStyleDisplayed >= globalMergeSession.length) globalStyleDisplayed = 0;
   var lstDuplicateStyles = document.getElementById('lstDuplicateStyles');
@@ -121,6 +122,7 @@ window.DrawStylesList = function (mergeSession) {
     inner += "<div id=\"duplicatedStyle".concat(i, "\" onclick=\"onSelectedStyleChanged(").concat(i, ")\" class=\"leftPanelListItem alignVerticalCenter ").concat(selected, "\">").concat(checkbox, " </div>");
   }
 
+  window.postMessage("nativeLog", "WV - Drawing left panel style list");
   lstDuplicateStyles.innerHTML = inner;
   btnMerge.disabled = checkedCounter == 0;
   document.getElementById('lblIncludeLibraries').innerHTML = checkedCounter != 0 ? "Include all enabled libraries layer styles (you may lose the current selection)" : "Include all enabled libraries layer styles";
@@ -128,12 +130,15 @@ window.DrawStylesList = function (mergeSession) {
 };
 
 window.onSelectedStyleCheckChanged = function (index) {
+  window.postMessage("nativeLog", "WV - Include style changed");
   globalMergeSession[index].isUnchecked = !globalMergeSession[index].isUnchecked;
   DrawStylesList(globalMergeSession);
   DrawStyleList(globalStyleDisplayed);
 };
 
 window.onSelectedStyleChanged = function (index) {
+  window.postMessage("nativeLog", "WV - Left panel list selected style changed");
+
   if (!isLoadingStyleData) {
     for (var i = 0; i < globalMergeSession.length; i++) {
       var otherDiv = document.getElementById("duplicatedStyle" + i);
@@ -154,16 +159,19 @@ window.onSelectedStyleChanged = function (index) {
 };
 
 window.ShowProgress = function (message) {
+  window.postMessage("nativeLog", "WV - Show progress");
   document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeIn";
   document.getElementById('loadingMessage').innerHTML = message;
   document.getElementById('listOfStyles').className = "movingYFadeInitialState movingYFadeOut";
 };
 
 window.HideProgress = function () {
+  window.postMessage("nativeLog", "WV - Hide progress");
   document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeOut";
 };
 
 window.ReDrawAfterGettingData = function (symbolData, index) {
+  window.postMessage("nativeLog", "WV - Redraw after getting style data");
   globalMergeSession[index].isProcessed = true;
   isLoadingStyleData = false;
 
@@ -178,6 +186,8 @@ window.ReDrawAfterGettingData = function (symbolData, index) {
 };
 
 window.onStyleClicked = function (index, selectedStyle) {
+  window.postMessage("nativeLog", "WV - Style clicked. Updating selection status.");
+
   for (var i = 0; i < globalMergeSession[selectedStyle].layerStyleWithDuplicates.duplicates.length; i++) {
     var otherCheck = document.getElementById("duplicateItemCheck" + i);
     otherCheck.checked = false;
@@ -195,10 +205,12 @@ window.onStyleClicked = function (index, selectedStyle) {
 };
 
 window.DrawStyleList = function (index) {
+  window.postMessage("nativeLog", "WV - Drawing styles");
   globalStyleDisplayed = index;
   var inner = "";
 
   for (var i = 0; i < globalMergeSession[index].layerStyleWithDuplicates.duplicates.length; i++) {
+    window.postMessage("nativeLog", "WV --- Drawing style: " + globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].name);
     var isSelected = globalMergeSession[index].selectedIndex == i;
     var selected = isSelected ? "selected" : "";
     var checked = isSelected ? "checked" : "";
@@ -214,6 +226,7 @@ window.DrawStyleList = function (index) {
   var listOfStyles = document.getElementById('listOfStyles');
   listOfStyles.innerHTML = inner;
   listOfStyles.className = "movingYFadeInitialState workZone movingYFadeIn";
+  window.postMessage("nativeLog", "WV - Completed drawing styles");
 };
 
 window.cancelAssignation = function () {
@@ -221,12 +234,15 @@ window.cancelAssignation = function () {
 };
 
 document.getElementById('chkIncludeLibraries').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Include libraries changed");
   window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked);
 });
 document.getElementById('btnCancel').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Cancel");
   cancelAssignation();
 });
 document.getElementById('btnMerge').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Execute merge");
   window.postMessage('ExecuteMerge', globalMergeSession);
 });
 

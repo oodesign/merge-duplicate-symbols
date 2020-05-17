@@ -5120,50 +5120,54 @@ function FindAllSimilarTextStyles(context, includeAllStylesFromExternalLibraries
 function FindSimilarLayerStyles(referenceStyle, styles, context, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowParams) {
   var similarStyles = [];
   styles.forEach(function (style) {
-    if (referenceStyle != style.layerStyle) {
-      //console.log("["+referenceStyle.name()+"] and ["+style.layerStyle.name()+"]");
-      var sameFillColor = false;
+    try {
+      if (referenceStyle != style.layerStyle) {
+        //console.log("["+referenceStyle.name()+"] and ["+style.layerStyle.name()+"]");
+        var sameFillColor = false;
 
-      if (referenceStyle.style().firstEnabledFill() != null && style.layerStyle.style().firstEnabledFill() != null) {
-        sameFillColor = referenceStyle.style().firstEnabledFill().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledFill().color().immutableModelObject().hexValue().toString();
-      } //console.log("---Fill? "+sameFillColor);
-
-
-      var sameBorderColor = false;
-
-      if (referenceStyle.style().firstEnabledBorder() != null && style.layerStyle.style().firstEnabledBorder() != null) {
-        sameBorderColor = referenceStyle.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString();
-      } //console.log("---BorderColor? "+sameBorderColor);
+        if (referenceStyle.style().firstEnabledFill() != null && style.layerStyle.style().firstEnabledFill() != null) {
+          sameFillColor = referenceStyle.style().firstEnabledFill().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledFill().color().immutableModelObject().hexValue().toString();
+        } //console.log("---Fill? "+sameFillColor);
 
 
-      var sameBorderThickness = false;
+        var sameBorderColor = false;
 
-      if (referenceStyle.style().firstEnabledBorder() != null && style.layerStyle.style().firstEnabledBorder() != null) {
-        sameBorderThickness = referenceStyle.style().firstEnabledBorder().thickness() == style.layerStyle.style().firstEnabledBorder().thickness();
-      } //console.log("---BorderThickness? "+sameBorderThickness);
-
-
-      var sameShadowColor = false;
-
-      if (referenceStyle.style().firstEnabledShadow() != null && style.layerStyle.style().firstEnabledShadow() != null) {
-        sameShadowColor = referenceStyle.style().firstEnabledShadow().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledShadow().color().immutableModelObject().hexValue().toString();
-      } //console.log("---ShadowColor? "+sameShadowColor);
+        if (referenceStyle.style().firstEnabledBorder() != null && style.layerStyle.style().firstEnabledBorder() != null) {
+          sameBorderColor = referenceStyle.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString();
+        } //console.log("---BorderColor? "+sameBorderColor);
 
 
-      var sameShadowParams = false;
+        var sameBorderThickness = false;
 
-      if (referenceStyle.style().firstEnabledShadow() != null && style.layerStyle.style().firstEnabledShadow() != null) {
-        sameShadowParams = referenceStyle.style().firstEnabledShadow().offsetX() == style.layerStyle.style().firstEnabledShadow().offsetX() && referenceStyle.style().firstEnabledShadow().offsetY() == style.layerStyle.style().firstEnabledShadow().offsetY() && referenceStyle.style().firstEnabledShadow().blurRadius() == style.layerStyle.style().firstEnabledShadow().blurRadius() && referenceStyle.style().firstEnabledShadow().spread() == style.layerStyle.style().firstEnabledShadow().spread();
-      } //console.log("---ShadowParams? "+sameShadowParams);
+        if (referenceStyle.style().firstEnabledBorder() != null && style.layerStyle.style().firstEnabledBorder() != null) {
+          sameBorderThickness = referenceStyle.style().firstEnabledBorder().thickness() == style.layerStyle.style().firstEnabledBorder().thickness();
+        } //console.log("---BorderThickness? "+sameBorderThickness);
 
 
-      var isSimilar = true;
-      if (checkSameFillColor) isSimilar = isSimilar && sameFillColor;
-      if (checkSameBorderColor) isSimilar = isSimilar && sameBorderColor;
-      if (checkSameBorderThickness) isSimilar = isSimilar && sameBorderThickness;
-      if (checkSameShadowColor) isSimilar = isSimilar && sameShadowColor;
-      if (checkSameShadowParams) isSimilar = isSimilar && sameShadowParams;
-      if (isSimilar) similarStyles.push(style);
+        var sameShadowColor = false;
+
+        if (referenceStyle.style().firstEnabledShadow() != null && style.layerStyle.style().firstEnabledShadow() != null) {
+          sameShadowColor = referenceStyle.style().firstEnabledShadow().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledShadow().color().immutableModelObject().hexValue().toString();
+        } //console.log("---ShadowColor? "+sameShadowColor);
+
+
+        var sameShadowParams = false;
+
+        if (referenceStyle.style().firstEnabledShadow() != null && style.layerStyle.style().firstEnabledShadow() != null) {
+          sameShadowParams = referenceStyle.style().firstEnabledShadow().offsetX() == style.layerStyle.style().firstEnabledShadow().offsetX() && referenceStyle.style().firstEnabledShadow().offsetY() == style.layerStyle.style().firstEnabledShadow().offsetY() && referenceStyle.style().firstEnabledShadow().blurRadius() == style.layerStyle.style().firstEnabledShadow().blurRadius() && referenceStyle.style().firstEnabledShadow().spread() == style.layerStyle.style().firstEnabledShadow().spread();
+        } //console.log("---ShadowParams? "+sameShadowParams);
+
+
+        var isSimilar = true;
+        if (checkSameFillColor) isSimilar = isSimilar && sameFillColor;
+        if (checkSameBorderColor) isSimilar = isSimilar && sameBorderColor;
+        if (checkSameBorderThickness) isSimilar = isSimilar && sameBorderThickness;
+        if (checkSameShadowColor) isSimilar = isSimilar && sameShadowColor;
+        if (checkSameShadowParams) isSimilar = isSimilar && sameShadowParams;
+        if (isSimilar) similarStyles.push(style);
+      }
+    } catch (e) {
+      clog("There was an issue finding similar layer styles");
     }
   });
   return similarStyles;
@@ -5175,6 +5179,8 @@ function FindAllSimilarLayerStyles(context, includeAllStylesFromExternalLibrarie
   var definedLayerStyles = getDefinedLayerStyles(context, includeAllStylesFromExternalLibraries, null);
 
   for (var i = 0; i < definedLayerStyles.length; i++) {
+    clog("Finding similar styles to '" + definedLayerStyles[i].name + "'");
+
     if (definedLayerStyles[i].libraryName.localeCompare(sketchlocalfile) == 0) {
       if (stylesAlreadyProcessed.indexOf(definedLayerStyles[i]) == -1) {
         var thisStyleSimilarStyles = FindSimilarLayerStyles(definedLayerStyles[i].layerStyle, definedLayerStyles, context, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowParams);
@@ -5550,7 +5556,8 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
 }
 
 function GetSpecificLayerStyleData(context, layerStyles, index) {
-  // console.time("GetSpecificLayerStyleData");
+  clog("Processing text style metadata for: " + layerStyles[index].name); // console.time("GetSpecificLayerStyleData");
+
   for (var i = 0; i < layerStyles[index].duplicates.length; i++) {
     layerStyles[index].duplicates[i].thumbnail = getOvalThumbnail(layerStyles[index].duplicates[i].layerStyle);
   } // console.timeEnd("GetSpecificLayerStyleData");
@@ -6934,6 +6941,7 @@ function getLayerPredicate(style) {
 function MergeLayerStyles(context, styleToKeep) {
   var layersChangedCounter = 0;
   var overridesChangedCounter = 0;
+  Helpers.clog("Merging styles. Keep '" + currentSelectedStyles[styleToKeep].name + "'");
   var layers = Helpers.getAllLayers(context);
   var layersWithOtherStyles = NSMutableArray.array();
   currentSelectedStyles.forEach(function (style) {
@@ -7090,6 +7098,7 @@ function getDuplicateLayerStyles(context, allStyles) {
 }
 
 function MergeSimilarLayerStyles(context) {
+  Helpers.clog("----- Merge similar layer styles -----");
   var options = {
     identifier: webviewMSLSIdentifier,
     width: 1200,
@@ -7101,18 +7110,22 @@ function MergeSimilarLayerStyles(context) {
   var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
   var webContents = browserWindow.webContents;
   var stylesWithSimilarStyles;
+  Helpers.clog("Loading webview");
   browserWindow.loadURL(__webpack_require__(/*! ../resources/mergesimilarlayerstyles.html */ "./resources/mergesimilarlayerstyles.html"));
   browserWindow.once('ready-to-show', function () {
     browserWindow.show();
   });
-  webContents.on('did-finish-load', function () {});
+  webContents.on('did-finish-load', function () {
+    Helpers.clog("Webview loaded");
+  });
   webContents.on('nativeLog', function (s) {
-    console.log(s);
+    Helpers.clog(s);
   });
   webContents.on('Cancel', function () {
     onShutdown(webviewMSLSIdentifier);
   });
   webContents.on('ExecuteMerge', function (editedStylesWithSimilarStyles) {
+    Helpers.clog("Execute merge");
     var duplicatesSolved = 0;
     var mergedStyles = 0;
     var affectedLayers = [0, 0];
@@ -7134,14 +7147,23 @@ function MergeSimilarLayerStyles(context) {
     }
 
     onShutdown(webviewMSLSIdentifier);
-    if (duplicatesSolved <= 0) context.document.showMessage("No styles were merged");else context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+
+    if (duplicatesSolved <= 0) {
+      Helpers.clog("No styles were merged");
+      context.document.showMessage("No styles were merged");
+    } else {
+      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+    }
   });
   webContents.on('RecalculateStyles', function (includeAllLibraries, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowXYBlurSpread) {
+    Helpers.clog("RecalculateStyles");
     stylesWithSimilarStyles = Helpers.FindAllSimilarLayerStyles(context, includeAllLibraries, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowXYBlurSpread);
     webContents.executeJavaScript("DrawResultsList(".concat(JSON.stringify(stylesWithSimilarStyles), ")")).catch(console.error);
   });
 }
 function MergeDuplicateLayerStyles(context) {
+  Helpers.clog("----- Merge duplicate layer styles -----");
   var options = {
     identifier: webviewMDLSIdentifier,
     width: 1200,
@@ -7164,6 +7186,7 @@ function MergeDuplicateLayerStyles(context) {
   }
 
   function CalculateDuplicates(includeLibraries) {
+    Helpers.clog("Finding duplicate layer styles. Including libraries:" + includeLibraries);
     onlyDuplicatedLayerStyles = Helpers.getDuplicateLayerStyles(context, includeLibraries);
 
     if (onlyDuplicatedLayerStyles.length > 0) {
@@ -7185,15 +7208,17 @@ function MergeDuplicateLayerStyles(context) {
     browserWindow.show();
   });
   webContents.on('did-finish-load', function () {
+    Helpers.clog("Webview loaded");
     webContents.executeJavaScript("DrawStylesList(".concat(JSON.stringify(mergeSession), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
-    console.log(s);
+    Helpers.clog(s);
   });
   webContents.on('Cancel', function () {
     onShutdown(webviewMDLSIdentifier);
   });
   webContents.on('RecalculateDuplicates', function (includeLibraries) {
+    Helpers.clog("Recalculating duplicates");
     CalculateDuplicates(includeLibraries);
     webContents.executeJavaScript("DrawStylesList(".concat(JSON.stringify(mergeSession), ")")).catch(console.error);
   });
@@ -7202,11 +7227,14 @@ function MergeDuplicateLayerStyles(context) {
     webContents.executeJavaScript("ReDrawAfterGettingData(".concat(JSON.stringify(mergeSession[index].layerStyleWithDuplicates), ",").concat(index, ")")).catch(console.error);
   });
   webContents.on('ExecuteMerge', function (editedMergeSession) {
+    Helpers.clog("Executing Merge");
     var duplicatesSolved = 0;
     var mergedStyles = 0;
     var affectedLayers = [0, 0];
 
     for (var i = 0; i < editedMergeSession.length; i++) {
+      Helpers.clog("-- Merging " + mergeSession[i].layerStyleWithDuplicates.name);
+
       if (!editedMergeSession[i].isUnchecked && editedMergeSession[i].selectedIndex >= 0) {
         mergeSession[i].selectedIndex = editedMergeSession[i].selectedIndex;
         currentSelectedStyles = [];
@@ -7224,11 +7252,19 @@ function MergeDuplicateLayerStyles(context) {
     }
 
     onShutdown(webviewMDLSIdentifier);
-    if (duplicatesSolved <= 0) context.document.showMessage("No styles were merged");else context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+
+    if (duplicatesSolved <= 0) {
+      Helpers.clog("No styles were merged");
+      context.document.showMessage("No styles were merged");
+    } else {
+      Helpers.clog("Wpdated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+    }
   });
 }
 ;
 function MergeSelectedLayerStyles(context) {
+  Helpers.clog("----- Merge selected text styles -----");
   var options = {
     identifier: webviewMLSFLIdentifier,
     width: 1200,
@@ -7239,6 +7275,7 @@ function MergeSelectedLayerStyles(context) {
   };
   var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
   var webContents = browserWindow.webContents;
+  Helpers.clog("Get defined layer styles");
   var definedLayerStyles = Helpers.getDefinedLayerStyles(context, false, null);
   var definedAllLayerStyles;
 
@@ -7253,16 +7290,19 @@ function MergeSelectedLayerStyles(context) {
     browserWindow.show();
   });
   webContents.on('did-finish-load', function () {
+    Helpers.clog("Webview loaded");
     webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedLayerStyles), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
-    console.log(s);
+    Helpers.clog(s);
   });
   webContents.on('GetLocalStylesList', function () {
+    Helpers.clog("Get local styles list");
     checkingAlsoLibraries = false;
     webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedLayerStyles), ")")).catch(console.error);
   });
   webContents.on('GetAllStylesList', function () {
+    Helpers.clog("Get all (including libraries) styles list");
     if (definedAllLayerStyles == null) definedAllLayerStyles = Helpers.getDefinedLayerStyles(context, true, null);
     checkingAlsoLibraries = true;
     webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedAllLayerStyles), ")")).catch(console.error);
@@ -7271,6 +7311,7 @@ function MergeSelectedLayerStyles(context) {
     onShutdown(webviewMLSFLIdentifier);
   });
   webContents.on('ExecuteMerge', function (editedGlobalLayerStyles) {
+    Helpers.clog("Executing Merge");
     currentSelectedStyles = [];
     var selectedIndex = -1;
     var counter = 0;
@@ -7300,6 +7341,7 @@ function MergeSelectedLayerStyles(context) {
     }
 
     var affectedLayers = MergeLayerStyles(context, selectedIndex);
+    Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
     context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
     onShutdown(webviewMLSFLIdentifier);
   });
@@ -7561,6 +7603,7 @@ function MergeSimilarTextStyles(context) {
     }
   });
   webContents.on('RecalculateStyles', function (includeAllLibraries, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing) {
+    Helpers.clog("RecalculateStyles");
     stylesWithSimilarStyles = Helpers.FindAllSimilarTextStyles(context, includeAllLibraries, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing);
     webContents.executeJavaScript("DrawResultsList(".concat(JSON.stringify(stylesWithSimilarStyles), ")")).catch(console.error);
   });
@@ -7589,7 +7632,7 @@ function MergeDuplicateTextStyles(context) {
   }
 
   function CalculateDuplicates(includeLibraries) {
-    Helpers.clog("Finding duplicate text style. Including libraries:" + includeLibraries);
+    Helpers.clog("Finding duplicate text styles. Including libraries:" + includeLibraries);
     onlyDuplicatedTextStyles = Helpers.getDuplicateTextStyles(context, includeLibraries);
 
     if (onlyDuplicatedTextStyles.length > 0) {
@@ -7678,7 +7721,7 @@ function MergeSelectedTextStyles(context) {
   };
   var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
   var webContents = browserWindow.webContents;
-  Helpers.clog("Get defined styles");
+  Helpers.clog("Get defined text styles");
   var definedTextStyles = Helpers.getDefinedTextStyles(context, false, null);
   var definedAllTextStyles;
 
