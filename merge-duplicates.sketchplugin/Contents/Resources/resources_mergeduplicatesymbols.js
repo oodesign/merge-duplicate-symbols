@@ -116,6 +116,7 @@ window.LaunchMerge = function (numberOfLocalSymbols, numberOfLibrarySymbols) {
 };
 
 window.GetSymbols = function () {
+  window.postMessage("nativeLog", "WV - Get symbols");
   setTimeout(function () {
     var message = "We're looking for duplicates...";
     if (globalNumberOfSymbolsInDocument > 100) message = "We're looking for duplicates...<br/><br/>Wow, you have " + globalNumberOfSymbolsInDocument + " symbols here (and " + globalNumberOfSymbolsInLibraries + " in linked libraries)! 🙈<br/> This may take a while... Wanna go get a coffee?";
@@ -125,6 +126,7 @@ window.GetSymbols = function () {
 };
 
 window.DrawDuplicateSymbols = function (mergeSession) {
+  window.postMessage("nativeLog", "WV - Drawing duplicate symbols");
   window.HideProgress();
   globalMergeSession = mergeSession;
   if (globalSymbolDisplayed >= globalMergeSession.length) globalSymbolDisplayed = 0;
@@ -146,6 +148,7 @@ window.DrawDuplicateSymbols = function (mergeSession) {
       inner += "<div id=\"duplicatedSymbol".concat(i, "\" onclick=\"onSelectedSymbolChanged(").concat(i, ")\" class=\"leftPanelListItem alignVerticalCenter ").concat(selected, "\">").concat(checkbox, " </div>");
     }
 
+    window.postMessage("nativeLog", "WV - Drawing left panel symbol list");
     lstDuplicateSymbols.innerHTML = inner;
     btnMerge.disabled = checkedCounter == 0;
     document.getElementById('lblIncludeLibraries').innerHTML = checkedCounter != 0 ? "Include all enabled libraries symbols (you may lose the current selection)" : "Include all enabled libraries symbols";
@@ -157,6 +160,7 @@ window.DrawDuplicateSymbols = function (mergeSession) {
 };
 
 window.ShowLayout = function (index) {
+  window.postMessage("nativeLog", "WV - Show layout");
   document.getElementById('resultsPanel').className = "colAuto leftPanel";
   document.getElementById('btnCancel').className = "btnSecondary";
   document.getElementById('btnMerge').className = "btnPrimary";
@@ -165,6 +169,7 @@ window.ShowLayout = function (index) {
 };
 
 window.HideLayout = function (index) {
+  window.postMessage("nativeLog", "WV - Hide layout");
   document.getElementById('emptyState').className = "emptyState fadeIn";
   document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
   document.getElementById('btnCancel').className = "notDisplayed";
@@ -174,12 +179,15 @@ window.HideLayout = function (index) {
 };
 
 window.onSelectedSymbolCheckChanged = function (index) {
+  window.postMessage("nativeLog", "WV - Include symbol changed");
   globalMergeSession[index].isUnchecked = !globalMergeSession[index].isUnchecked;
   DrawDuplicateSymbols(globalMergeSession);
   DrawSymbolList(globalSymbolDisplayed);
 };
 
 window.onSelectedSymbolChanged = function (index) {
+  window.postMessage("nativeLog", "WV - Left panel list selected symbol changed");
+
   if (!isLoadingSymbolData) {
     for (var i = 0; i < globalMergeSession.length; i++) {
       var otherDiv = document.getElementById("duplicatedSymbol" + i);
@@ -200,16 +208,19 @@ window.onSelectedSymbolChanged = function (index) {
 };
 
 window.ShowProgress = function (message) {
+  window.postMessage("nativeLog", "WV - Show progress");
   document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeIn";
   document.getElementById('loadingMessage').innerHTML = message;
   document.getElementById('listOfSymbols').className = "movingYFadeInitialState movingYFadeOut" + (globalView == 0 ? " cardsView" : "");
 };
 
 window.HideProgress = function () {
+  window.postMessage("nativeLog", "WV - Hide progress");
   document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeOut";
 };
 
 window.ReDrawAfterGettingData = function (symbolData, index) {
+  window.postMessage("nativeLog", "WV - Redraw after getting symbol data");
   globalMergeSession[index].isProcessed = true;
   isLoadingSymbolData = false;
 
@@ -228,6 +239,8 @@ window.ReDrawAfterGettingData = function (symbolData, index) {
 };
 
 window.onSymbolClicked = function (index, selectedSymbol) {
+  window.postMessage("nativeLog", "WV - Symbol clicked. Updating selection status.");
+
   for (var i = 0; i < globalMergeSession[selectedSymbol].symbolWithDuplicates.duplicates.length; i++) {
     var otherCheck = document.getElementById("duplicateItemCheck" + i);
     otherCheck.checked = false;
@@ -245,10 +258,12 @@ window.onSymbolClicked = function (index, selectedSymbol) {
 };
 
 window.DrawSymbolList = function (index) {
+  window.postMessage("nativeLog", "WV - Drawing symbols");
   globalSymbolDisplayed = index;
   var inner = "";
 
   for (var i = 0; i < globalMergeSession[index].symbolWithDuplicates.duplicates.length; i++) {
+    window.postMessage("nativeLog", "WV --- Drawing symbol: " + globalMergeSession[index].symbolWithDuplicates.duplicates[i].name);
     var isSelected = globalMergeSession[index].selectedIndex == i;
     var selected = isSelected ? "selected" : "";
     var checked = isSelected ? "checked" : "";
@@ -264,9 +279,11 @@ window.DrawSymbolList = function (index) {
   var listOfSymbols = document.getElementById('listOfSymbols');
   listOfSymbols.innerHTML = inner;
   listOfSymbols.className = "movingYFadeInitialState workZone movingYFadeIn" + (globalView == 0 ? " cardsView" : "");
+  window.postMessage("nativeLog", "WV - Completed drawing symbols");
 };
 
 document.getElementById('chkIncludeLibraries').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Include libraries check changed");
   window.ShowProgress("");
   window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked);
 });
@@ -276,21 +293,26 @@ window.cancelAssignation = function () {
 };
 
 document.getElementById('btnCancel').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Cancel");
   cancelAssignation();
 });
 document.getElementById('btnMerge').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Execute merge");
   window.postMessage('ExecuteMerge', globalMergeSession);
 });
 document.getElementById('btnOK').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - OK-Close");
   cancelAssignation();
 });
 document.getElementById('btnCardView').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Changed to cards view");
   globalView = 0;
   document.getElementById('listOfSymbols').classList.add("cardsView");
   document.getElementById('btnListView').classList.remove("selected");
   document.getElementById('btnCardView').classList.add("selected");
 });
 document.getElementById('btnListView').addEventListener("click", function () {
+  window.postMessage("nativeLog", "WV - Change to list view");
   globalView = 1;
   document.getElementById('listOfSymbols').classList.remove("cardsView");
   document.getElementById('btnCardView').classList.remove("selected");

@@ -942,7 +942,9 @@ function GetSpecificTextStyleData(context, textStyles, index) {
 }
 
 function GetSpecificSymbolData(context, symbols, index) {
-
+  var totalInstances = 0;
+  var totalOverrides = 0;
+  clog("Processing symbol metadata for: "+symbols[index].name);
   // console.time("GetSpecificSymbolData");
   for (var i = 0; i < symbols[index].duplicates.length; i++) {
     var instances = getSymbolInstances(context, symbols[index].duplicates[i].symbol);
@@ -954,7 +956,11 @@ function GetSpecificSymbolData(context, symbols, index) {
     symbols[index].duplicates[i].numInstances = instances.length;
     symbols[index].duplicates[i].symbolOverrides = overrides;
     symbols[index].duplicates[i].numOverrides = overrides.length;
+
+    totalInstances+= instances.length;
+    totalOverrides+= overrides.length;
   }
+  clog("-- Found "+totalInstances+" instances, "+totalOverrides+" overrides, and created "+symbols[index].duplicates.length+" thumbnails");
   // console.timeEnd("GetSpecificSymbolData");
 }
 
@@ -1575,7 +1581,7 @@ function getBase64(element, width, height) {
   return "" + getNSImageData(image);
 }
 
-function log(message) {
+function clog(message) {
   if (logsEnabled)
     console.log(message);
 }
@@ -1592,4 +1598,4 @@ function getSettings(){
 var _0x13f9=["\x70\x61\x74\x68","\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C","\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E","\x6C\x6F\x67\x73","\x6C\x6F\x67"];function LoadSettings(){try{settingsFile= readFromFile(MSPluginManager[_0x13f9[1]]()[_0x13f9[0]]()+ _0x13f9[2]);if((settingsFile!= null)&& (settingsFile[_0x13f9[3]]!= null)){logsEnabled= settingsFile[_0x13f9[3]]}}catch(e){console[_0x13f9[4]](e);return null}}
 //d9-05
 
-module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, getColorDependingOnBrightness, isString, getAlignment, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, getAllTextLayers, getAllLayers, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, sortArray, EditSettings, writeTextToFile, readFromFile, LoadSettings, log, getLogsEnabled, getSettings};
+module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, getColorDependingOnBrightness, isString, getAlignment, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, getAllTextLayers, getAllLayers, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, sortArray, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings};

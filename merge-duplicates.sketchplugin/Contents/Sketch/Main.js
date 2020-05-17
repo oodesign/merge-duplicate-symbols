@@ -5560,7 +5560,10 @@ function GetSpecificTextStyleData(context, textStyles, index) {
 }
 
 function GetSpecificSymbolData(context, symbols, index) {
-  // console.time("GetSpecificSymbolData");
+  var totalInstances = 0;
+  var totalOverrides = 0;
+  clog("Processing symbol metadata for: " + symbols[index].name); // console.time("GetSpecificSymbolData");
+
   for (var i = 0; i < symbols[index].duplicates.length; i++) {
     var instances = getSymbolInstances(context, symbols[index].duplicates[i].symbol);
     var overrides = getSymbolOverrides(context, symbols[index].duplicates[i].symbol);
@@ -5571,8 +5574,11 @@ function GetSpecificSymbolData(context, symbols, index) {
     symbols[index].duplicates[i].numInstances = instances.length;
     symbols[index].duplicates[i].symbolOverrides = overrides;
     symbols[index].duplicates[i].numOverrides = overrides.length;
-  } // console.timeEnd("GetSpecificSymbolData");
+    totalInstances += instances.length;
+    totalOverrides += overrides.length;
+  }
 
+  clog("-- Found " + totalInstances + " instances, " + totalOverrides + " overrides, and created " + symbols[index].duplicates.length + " thumbnails"); // console.timeEnd("GetSpecificSymbolData");
 }
 
 function getTextStyleDescription(attributes) {
@@ -6095,7 +6101,7 @@ function getBase64(element, width, height) {
   return "" + getNSImageData(image);
 }
 
-function log(message) {
+function clog(message) {
   if (logsEnabled) console.log(message);
 }
 
@@ -6170,7 +6176,7 @@ module.exports = {
   ["writeTextToFile"]: writeTextToFile,
   readFromFile: readFromFile,
   LoadSettings: LoadSettings,
-  log: log,
+  clog: clog,
   getLogsEnabled: getLogsEnabled,
   getSettings: getSettings
 };
@@ -6754,7 +6760,7 @@ function MergeSelectedSymbols(context) {
     webContents.executeJavaScript("DrawSymbolList(".concat(JSON.stringify(mssmergeSession), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
-    console.log(s);
+    Helpers.clog(s);
   });
   webContents.on('Cancel', function () {
     onShutdown(webviewMSSIdentifier);
@@ -6770,7 +6776,7 @@ function MergeSelectedSymbols(context) {
 }
 ;
 function MergeDuplicateSymbols(context) {
-  Helpers.log("----- Merge duplicate symbols (with the same name) -----");
+  Helpers.clog("----- Merge duplicate symbols (with the same name) -----");
   var options = {
     identifier: webviewIdentifier,
     width: 1200,
@@ -6784,12 +6790,14 @@ function MergeDuplicateSymbols(context) {
   var duplicatedSymbols;
   var mergeSession = [];
   var numberOfSymbols = Helpers.countAllSymbols(context, true);
-  Helpers.log("Local symbols: " + numberOfSymbols[0] + ". Library symbols:" + numberOfSymbols[1] + ".");
+  Helpers.clog("Local symbols: " + numberOfSymbols[0] + ". Library symbols:" + numberOfSymbols[1] + ".");
   browserWindow.loadURL(__webpack_require__(/*! ../resources/mergeduplicatesymbols.html */ "./resources/mergeduplicatesymbols.html"));
-  Helpers.log("Webview called");
+  Helpers.clog("Webview called");
 
   function CalculateDuplicates(includeLibraries) {
+    Helpers.clog("Processing duplicates. Include libraries: " + includeLibraries);
     duplicatedSymbols = Helpers.getDuplicateSymbols(context, context.document.documentData().allSymbols(), includeLibraries, false);
+    Helpers.clog("-- Found " + duplicatedSymbols.length + " duplicates");
 
     if (duplicatedSymbols.length > 0) {
       Helpers.GetSpecificSymbolData(context, duplicatedSymbols, 0);
@@ -6804,13 +6812,15 @@ function MergeDuplicateSymbols(context) {
         });
       }
     }
+
+    Helpers.clog("End of processing duplicates");
   }
 
   browserWindow.once('ready-to-show', function () {
     browserWindow.show();
   });
   webContents.on('did-finish-load', function () {
-    Helpers.log("Webview loaded");
+    Helpers.clog("Webview loaded");
     webContents.executeJavaScript("LaunchMerge(".concat(JSON.stringify(numberOfSymbols[0]), ",").concat(JSON.stringify(numberOfSymbols[1]), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
@@ -6825,6 +6835,7 @@ function MergeDuplicateSymbols(context) {
   });
   webContents.on('RecalculateDuplicates', function (includeLibraries) {
     CalculateDuplicates(includeLibraries);
+    Helpers.clog("Drawing duplicates to webview");
     webContents.executeJavaScript("DrawDuplicateSymbols(".concat(JSON.stringify(mergeSession), ")")).catch(console.error);
   });
   webContents.on('ExecuteMerge', function (editedMergeSession) {

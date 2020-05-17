@@ -278,7 +278,7 @@ export function MergeSelectedSymbols(context) {
   })
 
   webContents.on('nativeLog', s => {
-    console.log(s);
+    Helpers.clog(s);
   })
 
   webContents.on('Cancel', () => {
@@ -308,7 +308,7 @@ export function MergeSelectedSymbols(context) {
 
 export function MergeDuplicateSymbols(context) {
 
-  Helpers.log("----- Merge duplicate symbols (with the same name) -----");
+  Helpers.clog("----- Merge duplicate symbols (with the same name) -----");
 
   const options = {
     identifier: webviewIdentifier,
@@ -325,12 +325,15 @@ export function MergeDuplicateSymbols(context) {
   var mergeSession = [];
 
   var numberOfSymbols = Helpers.countAllSymbols(context, true);
-  Helpers.log("Local symbols: "+numberOfSymbols[0]+". Library symbols:"+numberOfSymbols[1]+".");
+  Helpers.clog("Local symbols: "+numberOfSymbols[0]+". Library symbols:"+numberOfSymbols[1]+".");
   browserWindow.loadURL(require('../resources/mergeduplicatesymbols.html'));
-  Helpers.log("Webview called");
+  Helpers.clog("Webview called");
 
   function CalculateDuplicates(includeLibraries) {
+
+    Helpers.clog("Processing duplicates. Include libraries: "+includeLibraries);
     duplicatedSymbols = Helpers.getDuplicateSymbols(context, context.document.documentData().allSymbols(), includeLibraries, false);
+    Helpers.clog("-- Found "+duplicatedSymbols.length+" duplicates");
     if (duplicatedSymbols.length > 0) {
       Helpers.GetSpecificSymbolData(context, duplicatedSymbols, 0);
       mergeSession = [];
@@ -343,6 +346,7 @@ export function MergeDuplicateSymbols(context) {
         });
       }
     }
+    Helpers.clog("End of processing duplicates");
   }
 
   browserWindow.once('ready-to-show', () => {
@@ -350,7 +354,7 @@ export function MergeDuplicateSymbols(context) {
   })
 
   webContents.on('did-finish-load', () => {
-    Helpers.log("Webview loaded");
+    Helpers.clog("Webview loaded");
     webContents.executeJavaScript(`LaunchMerge(${JSON.stringify(numberOfSymbols[0])},${JSON.stringify(numberOfSymbols[1])})`).catch(console.error);
   })
 
@@ -369,6 +373,7 @@ export function MergeDuplicateSymbols(context) {
 
   webContents.on('RecalculateDuplicates', (includeLibraries) => {
     CalculateDuplicates(includeLibraries);
+    Helpers.clog("Drawing duplicates to webview");
     webContents.executeJavaScript(`DrawDuplicateSymbols(${JSON.stringify(mergeSession)})`).catch(console.error);
   });
 
