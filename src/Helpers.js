@@ -367,28 +367,63 @@ function FindSimilarTextStyles(referenceStyle, styles, context, checkSameFont, c
       if (referenceStyle != style.textStyle) {
         //console.log("["+referenceStyle.name()+"] and ["+style.name()+"]");
 
-        var sameFont = referenceStyle.style().textStyle().attributes().NSFont.familyName() == style.textStyle.style().textStyle().attributes().NSFont.familyName();
+        var sameFont = false;
+        try {
+          sameFont = referenceStyle.style().textStyle().attributes().NSFont.familyName() == style.textStyle.style().textStyle().attributes().NSFont.familyName();
+        } catch (e) {
+          clog("Finding similar text styles - Couldn't disclose font");
+        }
         //console.log("---Font? "+sameFont);
 
-        var sameWeight = NSFontManager.sharedFontManager().weightOfFont_(referenceStyle.style().textStyle().attributes().NSFont) == NSFontManager.sharedFontManager().weightOfFont_(style.textStyle.style().textStyle().attributes().NSFont);
+        var sameWeight = false;
+        try {
+          sameWeight = NSFontManager.sharedFontManager().weightOfFont_(referenceStyle.style().textStyle().attributes().NSFont) == NSFontManager.sharedFontManager().weightOfFont_(style.textStyle.style().textStyle().attributes().NSFont);
+        } catch (e) {
+          clog("Finding similar text styles - Couldn't disclose weight");
+        }
         //console.log("---FontWeight? "+sameWeight);
 
-        var sameSize = referenceStyle.style().textStyle().attributes().NSFont.pointSize() == style.textStyle.style().textStyle().attributes().NSFont.pointSize();
+        var sameSize = false;
+        try {
+          sameSize = referenceStyle.style().textStyle().attributes().NSFont.pointSize() == style.textStyle.style().textStyle().attributes().NSFont.pointSize();
+        } catch (e) {
+          clog("Finding similar text styles - Couldn't disclose size");
+        }
         //console.log("---FontSize? "+sameSize);
 
         // console.log("ref:" + referenceStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue());
         // console.log("style:" + style.textStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue());
 
-        var sameColor = referenceStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue() == style.textStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue();
+        var sameColor = false;
+        try {
+          sameColor = referenceStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue() == style.textStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue();
+        } catch (e) {
+          clog("Finding similar text styles - Couldn't disclose color");
+        }
         //console.log("---Color? "+sameColor);
 
-        var sameParagraphSpacing = referenceStyle.style().textStyle().attributes().NSParagraphStyle.paragraphSpacing() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.paragraphSpacing();
+        var sameParagraphSpacing = false;
+        try {
+          sameParagraphSpacing = referenceStyle.style().textStyle().attributes().NSParagraphStyle.paragraphSpacing() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.paragraphSpacing();
+        } catch (e) {
+          clog("Finding similar text styles - Couldn't disclose paragraph spacing");
+        }
         //console.log("---Paragraph Spacing? "+sameParagraphSpacing);
 
-        var sameLineHeight = referenceStyle.style().textStyle().attributes().NSParagraphStyle.minimumLineHeight() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.minimumLineHeight();
+        var sameLineHeight = false;
+        try {
+          sameLineHeight = referenceStyle.style().textStyle().attributes().NSParagraphStyle.minimumLineHeight() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.minimumLineHeight();
+        } catch (e) {
+          clog("Finding similar text styles - Couldn't disclose line height");
+        }
         //console.log("---Line height? "+sameLineHeight);
 
-        var sameAlignment = referenceStyle.style().textStyle().attributes().NSParagraphStyle.alignment() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.alignment();
+        var sameAlignment = false;
+        try {
+          sameAlignment = referenceStyle.style().textStyle().attributes().NSParagraphStyle.alignment() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.alignment();
+        } catch (e) {
+          clog("Finding similar text styles - Couldn't disclose alignment");
+        }
         //console.log("---Alignment? "+sameAlignment);
 
         var sameCharacterSpacing = false;
@@ -462,7 +497,7 @@ function FindSimilarLayerStyles(referenceStyle, styles, context, checkSameFillCo
   var similarStyles = [];
 
   styles.forEach(function (style) {
-    try{
+    try {
       if (referenceStyle != style.layerStyle) {
         //console.log("["+referenceStyle.name()+"] and ["+style.layerStyle.name()+"]");
 
@@ -984,8 +1019,14 @@ function getTextStyleDescription(attributes) {
   var fontString = String(attributes.NSFont);
   var font = fontString.substring(1, fontString.indexOf("pt."));
   var formatInfo = "" + font + "pt";
-  var alignment = getAlignment(attributes.NSParagraphStyle.alignment());
-  textInfo = formatInfo + " - " + alignment;
+  var alignment = "";
+  try {
+    alignment = getAlignment(attributes.NSParagraphStyle.alignment());
+    textInfo = formatInfo + " - " + alignment;
+  } catch (e) {
+    clog("Get text style description - Couldn't disclose alignment");
+    textInfo = formatInfo;
+  }
   return textInfo;
 }
 

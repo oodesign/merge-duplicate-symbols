@@ -120,10 +120,7 @@
       "name" : "Documentation",
       "identifier": "documentation",
       "handlers" : {
-        "run" : "documentation",
-        "actions": {
-          "Shutdown": "onShutdown"
-        }
+        "run" : "documentation"
       }
     },
     {
@@ -131,10 +128,7 @@
       "name" : "Report issue or an idea",
       "identifier": "report_issue",
       "handlers" : {
-        "run" : "report_issue",
-        "actions": {
-          "Shutdown": "onShutdown"
-        }
+        "run" : "report_issue"
       }
     }
   ],
