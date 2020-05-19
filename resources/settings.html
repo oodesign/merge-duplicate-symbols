@@ -29,25 +29,37 @@
       </svg>
     </div>
     <div class="rowAuto">
-      <div class="horizontalLayout">
-        <div class="colAvailable"></div>
+      <div class="horizontalLayout alignHorizontalCenter settingsRow">
+        <div class="colAuto">
+          <label class="switch">
+            <input type="checkbox" id="checkEnableLibraries">
+            <span class="slider"> </span>
+          </label>
+        </div>
+        <div class="colAvailable alignVerticalCenter">
+          <span class="primaryText">Include libraries as default</span>
+        </div>
+      </div>
+    </div>
+    <div class="rowAuto">
+      <div class="horizontalLayout alignHorizontalCenter settingsRow">
         <div class="colAuto">
           <label class="switch">
             <input type="checkbox" id="checkLogs">
             <span class="slider"> </span>
           </label>
         </div>
-        <div class="colAvailable alignVerticalCenter">
-          <span class="primaryText" id="txtLogs">Logs are disabled</span>
+        <div class="colAvailable verticalLayout detailsRow">
+          <div class="rowAuto detailsTitle">
+            <span class="primaryText" id="txtLogs">Logs are disabled</span>
+          </div>
+          <div class="rowAuto">
+            <span class="secondaryText">Enabling logs may slow down a bit Merge Duplicates.You may find them in:
+              <br/><br/>
+              ~/Library/Logs/com.bohemiancoding.sketch3/Plugin Log.log</span>
+          </div>
         </div>
-        <div class="colAvailable"></div>
       </div>
-    </div>
-    <div class="rowAuto settingsDescription">
-      <span class="secondaryText">
-        Enabling logs may slow down a bit Merge Duplicates. 
-        You may find them in ~/Library/Logs/com.bohemiancoding.sketch3/Plugin Log.log
-      </span>
     </div>
 
 

@@ -1552,8 +1552,8 @@ a{
 .switch {
   position: relative;
   display: inline-block;
-  width: 50px;
-  height: 32px;
+  width: 46px;
+  height: 28px;
   margin-right: 10px;
   
   input { 
@@ -1578,8 +1578,8 @@ a{
   &:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 26px;
+    height: 22px;
+    width: 22px;
     left: 3px;
     bottom: 3px;
     background-color: white;
@@ -1603,6 +1603,19 @@ input:checked + .slider:before {
   transform: translateX(18px);
 }
 
+.settingsRow{
+  width:320px;
+  margin-bottom: 10px;
+}
+
+.detailsRow
+{
+  .detailsTitle{
+    margin-top: 4px;
+    margin-bottom: 5px;
+  }
+}
+
 .settingsDescription{
-  padding: 25px 50px 15px 50px;
+  padding: 0 50px 15px 50px;
 }
