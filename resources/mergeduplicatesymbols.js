@@ -8,10 +8,12 @@ var isLoadingSymbolData = false;
 var globalNumberOfSymbolsInDocument = 0;
 var globalNumberOfSymbolsInLibraries = 0;
 var globalView = 1;
+var includeLibrariesSetting = false;
 
-window.LaunchMerge = (numberOfLocalSymbols, numberOfLibrarySymbols) => {
+window.LaunchMerge = (numberOfLocalSymbols, numberOfLibrarySymbols, includeLibraries) => {
   globalNumberOfSymbolsInDocument = numberOfLocalSymbols;
   globalNumberOfSymbolsInLibraries = numberOfLibrarySymbols;
+  includeLibrariesSetting = includeLibraries;
 
   if (document.readyState == 'loading') {
     document.addEventListener('DOMContentLoaded', GetSymbols);
@@ -22,12 +24,15 @@ window.LaunchMerge = (numberOfLocalSymbols, numberOfLibrarySymbols) => {
 
 window.GetSymbols = () => {
   window.postMessage("nativeLog", "WV - Get symbols");
+
+  document.getElementById('chkIncludeLibraries').checked = includeLibrariesSetting;
+
   setTimeout(function () {
     var message = "We're looking for duplicates...";
     if (globalNumberOfSymbolsInDocument > 100)
       message = "We're looking for duplicates...<br/><br/>Wow, you have " + globalNumberOfSymbolsInDocument + " symbols here (and " + globalNumberOfSymbolsInLibraries + " in linked libraries)! 🙈<br/> This may take a while... Wanna go get a coffee?"
     window.ShowProgress(message);
-    window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked);
+    window.postMessage('RecalculateDuplicates');
   }, 200);
 }
 

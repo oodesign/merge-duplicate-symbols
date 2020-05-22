@@ -6864,8 +6864,8 @@ function MergeDuplicateSymbols(context) {
   var webContents = browserWindow.webContents;
   var duplicatedSymbols;
   var mergeSession = [];
-  var numberOfSymbols = Helpers.countAllSymbols(context, true);
-  Helpers.clog("Local symbols: " + numberOfSymbols[0] + ". Library symbols:" + numberOfSymbols[1] + ".");
+  var numberOfSymbols = Helpers.countAllSymbols(context, Helpers.getLibrariesEnabled());
+  Helpers.clog("Local symbols: " + numberOfSymbols[0] + ". Library symbols:" + numberOfSymbols[1] + ". Libraries enabled:" + Helpers.getLibrariesEnabled());
   browserWindow.loadURL(__webpack_require__(/*! ../resources/mergeduplicatesymbols.html */ "./resources/mergeduplicatesymbols.html"));
   Helpers.clog("Webview called");
 
@@ -6896,7 +6896,7 @@ function MergeDuplicateSymbols(context) {
   });
   webContents.on('did-finish-load', function () {
     Helpers.clog("Webview loaded");
-    webContents.executeJavaScript("LaunchMerge(".concat(JSON.stringify(numberOfSymbols[0]), ",").concat(JSON.stringify(numberOfSymbols[1]), ")")).catch(console.error);
+    webContents.executeJavaScript("LaunchMerge(".concat(JSON.stringify(numberOfSymbols[0]), ",").concat(JSON.stringify(numberOfSymbols[1]), ",").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
     Helpers.clog(s);
@@ -6909,7 +6909,7 @@ function MergeDuplicateSymbols(context) {
     webContents.executeJavaScript("ReDrawAfterGettingData(".concat(JSON.stringify(duplicatedSymbols[index]), ",").concat(index, ")")).catch(console.error);
   });
   webContents.on('RecalculateDuplicates', function (includeLibraries) {
-    CalculateDuplicates(includeLibraries);
+    if (includeLibraries != null) CalculateDuplicates(includeLibraries);else CalculateDuplicates(Helpers.getLibrariesEnabled());
     Helpers.clog("Drawing duplicates to webview");
     webContents.executeJavaScript("DrawDuplicateSymbols(".concat(JSON.stringify(mergeSession), ")")).catch(console.error);
   });

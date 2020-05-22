@@ -290,7 +290,7 @@ export function MergeSelectedSymbols(context) {
   });
 
   webContents.on('ExecuteMerge', (editedMergeSession, selectedIndex) => {
-    Helpers.clog("Execute merge. Selected symbol: "+mssmergeSession[0].duplicates[selectedIndex].name);
+    Helpers.clog("Execute merge. Selected symbol: " + mssmergeSession[0].duplicates[selectedIndex].name);
     var mergeResults = [0, 0, 0];
 
     mergeResults = MergeSymbols(mssmergeSession[0], selectedIndex);
@@ -332,8 +332,8 @@ export function MergeDuplicateSymbols(context) {
   var duplicatedSymbols;
   var mergeSession = [];
 
-  var numberOfSymbols = Helpers.countAllSymbols(context, true);
-  Helpers.clog("Local symbols: " + numberOfSymbols[0] + ". Library symbols:" + numberOfSymbols[1] + ".");
+  var numberOfSymbols = Helpers.countAllSymbols(context, Helpers.getLibrariesEnabled());
+  Helpers.clog("Local symbols: " + numberOfSymbols[0] + ". Library symbols:" + numberOfSymbols[1] + ". Libraries enabled:" + Helpers.getLibrariesEnabled());
   browserWindow.loadURL(require('../resources/mergeduplicatesymbols.html'));
   Helpers.clog("Webview called");
 
@@ -363,7 +363,7 @@ export function MergeDuplicateSymbols(context) {
 
   webContents.on('did-finish-load', () => {
     Helpers.clog("Webview loaded");
-    webContents.executeJavaScript(`LaunchMerge(${JSON.stringify(numberOfSymbols[0])},${JSON.stringify(numberOfSymbols[1])})`).catch(console.error);
+    webContents.executeJavaScript(`LaunchMerge(${JSON.stringify(numberOfSymbols[0])},${JSON.stringify(numberOfSymbols[1])},${Helpers.getLibrariesEnabled()})`).catch(console.error);
   })
 
   webContents.on('nativeLog', s => {
@@ -380,7 +380,11 @@ export function MergeDuplicateSymbols(context) {
   });
 
   webContents.on('RecalculateDuplicates', (includeLibraries) => {
-    CalculateDuplicates(includeLibraries);
+    if (includeLibraries != null)
+      CalculateDuplicates(includeLibraries);
+    else
+      CalculateDuplicates(Helpers.getLibrariesEnabled());
+
     Helpers.clog("Drawing duplicates to webview");
     webContents.executeJavaScript(`DrawDuplicateSymbols(${JSON.stringify(mergeSession)})`).catch(console.error);
   });
@@ -391,7 +395,7 @@ export function MergeDuplicateSymbols(context) {
     var mergeResults = [0, 0, 0];
     Helpers.clog("Executing Merge");
     for (var i = 0; i < editedMergeSession.length; i++) {
-      Helpers.clog("-- Merging "+mergeSession[i].symbolWithDuplicates.name);
+      Helpers.clog("-- Merging " + mergeSession[i].symbolWithDuplicates.name);
       if (!editedMergeSession[i].isUnchecked && editedMergeSession[i].selectedIndex >= 0) {
         mergeSession[i].selectedIndex = editedMergeSession[i].selectedIndex;
         for (var j = 0; j < mergeSession[i].symbolWithDuplicates.duplicates.length; j++) {
@@ -419,13 +423,11 @@ export function MergeDuplicateSymbols(context) {
     else
       replacedStuff = ".";
 
-    if (duplicatesSolved > 0)
-    {
+    if (duplicatesSolved > 0) {
       Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff);
       context.document.showMessage("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
     }
-    else
-    {
+    else {
       Helpers.clog("Completed merge. No symbols were merged.");
       context.document.showMessage("No symbols were merged.");
     }
