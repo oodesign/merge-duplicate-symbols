@@ -97,8 +97,9 @@
 document.addEventListener('contextmenu', function (e) {//e.preventDefault()
 });
 
-window.AssignSettings = function (logs) {
+window.AssignSettings = function (logs, libraries) {
   document.getElementById('checkLogs').checked = logs;
+  document.getElementById('checkEnableLibraries').checked = libraries;
   UpdateSettings();
 };
 
@@ -117,7 +118,7 @@ document.getElementById('btnCancel').addEventListener("click", function () {
   cancelAssignation();
 });
 document.getElementById('btnAccept').addEventListener("click", function () {
-  window.postMessage('AcceptSettings', document.getElementById('checkLogs').checked);
+  window.postMessage('AcceptSettings', document.getElementById('checkLogs').checked, document.getElementById('checkEnableLibraries').checked);
 });
 
 /***/ })

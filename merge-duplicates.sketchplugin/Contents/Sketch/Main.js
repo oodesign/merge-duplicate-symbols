@@ -4384,7 +4384,7 @@ module.exports.sendToWebview = function sendToWebview(identifier, evalString) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/e2f4bf56eea230c319f0dd9744039eed.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/fa4bee1194debaef9ef224fe06b3053c.html";
 
 /***/ }),
 
@@ -4395,7 +4395,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/f801b989e8119d04d4bddfb66e9d1a71.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/01e49844551a9879f21264f7d05e2363.html";
 
 /***/ }),
 
@@ -4406,7 +4406,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/8a599d90371bf542444721e807a4cd58.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/3e3a6a06320955443557f7abc7fb92be.html";
 
 /***/ }),
 
@@ -4417,7 +4417,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/dd6e8efa1d21626e210df9a91911c7a9.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/df51bc19ac8f6dc17e869fc98a45545f.html";
 
 /***/ }),
 
@@ -4428,7 +4428,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/5934b3f75497053134a1e54e18bced8f.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/16948639fdef51e50a3dd45251fbaa1f.html";
 
 /***/ }),
 
@@ -4439,7 +4439,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/f2ae34eff2ac6817b28fcaa2c9dbcf47.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/413c0fb3a3dbad590faa4ec8d201f25b.html";
 
 /***/ }),
 
@@ -4450,7 +4450,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/ad5b2b8512a135647552584405dc0840.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/dde2ede005c583d62d83c0c92e497c1b.html";
 
 /***/ }),
 
@@ -4461,7 +4461,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/469fcda6036e42a2a098db1219135243.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/5d8809d23ebcd7f6d64a940997b4f42b.html";
 
 /***/ }),
 
@@ -4472,7 +4472,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/cf99b4fd33b34dccb803152846639553.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/3abb53f56294c909c723914c0c08a5a2.html";
 
 /***/ }),
 
@@ -4483,7 +4483,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/c24882d3cfcc9a502b8a96c713522113.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/a2c8f96e9048ca31c47d0fa422b26812.html";
 
 /***/ }),
 
@@ -4526,7 +4526,7 @@ function EditSettings(context) {
     browserWindow.show();
   });
   webContents.on('did-finish-load', function () {
-    webContents.executeJavaScript("AssignSettings(".concat(Helpers.getLogsEnabled(), ")")).catch(console.error);
+    webContents.executeJavaScript("AssignSettings(".concat(Helpers.getLogsEnabled(), ",").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
     Helpers.clog(s);
@@ -4534,30 +4534,27 @@ function EditSettings(context) {
   webContents.on('Cancel', function () {
     onShutdown(webviewEsIdentifier);
   });
-  webContents.on('AcceptSettings', function (logsEnabled) {
+  webContents.on('AcceptSettings', function (logsEnabled, librariesEnabledByDefault) {
     //d9-06
-    var _0xbcac = ["\x6C\x69\x63\x65\x6E\x73\x65\x4B\x65\x79", "", "\x73\x74\x61\x72\x74\x54\x69\x6D\x65", "\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x77\x72\x69\x74\x65\x54\x65\x78\x74\x54\x6F\x46\x69\x6C\x65"];
     var jsonDef;
 
-    if (globalSettingsFile != null && globalSettingsFile[_0xbcac[0]] != null) {
+    if (globalSettingsFile != null && globalSettingsFile.licenseKey != null) {
       jsonDef = {
-        "\x6C\x69\x63\x65\x6E\x73\x65\x4B\x65\x79": _0xbcac[1] + globalSettingsFile[_0xbcac[0]],
-        "\x6C\x6F\x67\x73": logsEnabled
+        "licenseKey": "" + globalSettingsFile.licenseKey,
+        "logs": logsEnabled,
+        "librariesEnabledByDefault": librariesEnabledByDefault
       };
-    } else {
-      if (globalSettingsFile != null && globalSettingsFile[_0xbcac[2]] != null) {
-        jsonDef = {
-          "\x73\x74\x61\x72\x74\x54\x69\x6D\x65": _0xbcac[1] + globalSettingsFile[_0xbcac[2]],
-          "\x6C\x6F\x67\x73": logsEnabled
-        };
-      }
+    } else if (globalSettingsFile != null && globalSettingsFile.startTime != null) {
+      jsonDef = {
+        "startTime": "" + globalSettingsFile.startTime,
+        "logs": logsEnabled,
+        "librariesEnabledByDefault": librariesEnabledByDefault
+      };
     }
 
-    ;
-
-    Helpers[_0xbcac[6]](jsonDef, MSPluginManager[_0xbcac[4]]()[_0xbcac[3]]() + _0xbcac[5]);
-
-    onShutdown(webviewEsIdentifier); //d9-06
+    Helpers.writeTextToFile(jsonDef, MSPluginManager.mainPluginsFolderURL().path() + '/merge.json');
+    onShutdown(webviewEsIdentifier); // var _0xbcac=["\x6C\x69\x63\x65\x6E\x73\x65\x4B\x65\x79","","\x73\x74\x61\x72\x74\x54\x69\x6D\x65","\x70\x61\x74\x68","\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C","\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E","\x77\x72\x69\x74\x65\x54\x65\x78\x74\x54\x6F\x46\x69\x6C\x65"];var jsonDef;if((globalSettingsFile!= null)&& (globalSettingsFile[_0xbcac[0]]!= null)){jsonDef= {"\x6C\x69\x63\x65\x6E\x73\x65\x4B\x65\x79":_0xbcac[1]+ globalSettingsFile[_0xbcac[0]],"\x6C\x6F\x67\x73":logsEnabled}}else {if((globalSettingsFile!= null)&& (globalSettingsFile[_0xbcac[2]]!= null)){jsonDef= {"\x73\x74\x61\x72\x74\x54\x69\x6D\x65":_0xbcac[1]+ globalSettingsFile[_0xbcac[2]],"\x6C\x6F\x67\x73":logsEnabled}}};Helpers[_0xbcac[6]](jsonDef,MSPluginManager[_0xbcac[4]]()[_0xbcac[3]]()+ _0xbcac[5]);onShutdown(webviewEsIdentifier)
+    //d9-06
   });
 }
 function onShutdown(webviewID) {
@@ -4587,6 +4584,7 @@ var fs = __webpack_require__(/*! @skpm/fs */ "./node_modules/@skpm/fs/index.js")
 
 var settingsFile;
 var logsEnabled;
+var librariesEnabledByDefault;
 var valStatus = {
   app: 'app',
   no: 'no',
@@ -6180,26 +6178,26 @@ function getLogsEnabled() {
   return logsEnabled;
 }
 
+function getLibrariesEnabled() {
+  return librariesEnabledByDefault;
+}
+
 function getSettings() {
   return settingsFile;
 } //d9-05
 
 
-var _0x13f9 = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x6F\x67"];
-
 function LoadSettings() {
   try {
-    settingsFile = readFromFile(MSPluginManager[_0x13f9[1]]()[_0x13f9[0]]() + _0x13f9[2]);
-
-    if (settingsFile != null && settingsFile[_0x13f9[3]] != null) {
-      logsEnabled = settingsFile[_0x13f9[3]];
-    }
+    settingsFile = readFromFile(MSPluginManager.mainPluginsFolderURL().path() + '/merge.json');
+    if (settingsFile != null && settingsFile.logs != null) logsEnabled = settingsFile.logs;
+    if (settingsFile != null && settingsFile.librariesEnabledByDefault != null) librariesEnabledByDefault = settingsFile.librariesEnabledByDefault;
   } catch (e) {
-    console[_0x13f9[4]](e);
-
+    console.log(e);
     return null;
   }
-} //d9-05
+} // var _0x13f9 = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x13f9[1]]()[_0x13f9[0]]() + _0x13f9[2]); if ((settingsFile != null) && (settingsFile[_0x13f9[3]] != null)) { logsEnabled = settingsFile[_0x13f9[3]] } } catch (e) { console[_0x13f9[4]](e); return null } }
+//d9-05
 
 
 module.exports = {
@@ -6249,7 +6247,8 @@ module.exports = {
   LoadSettings: LoadSettings,
   clog: clog,
   getLogsEnabled: getLogsEnabled,
-  getSettings: getSettings
+  getSettings: getSettings,
+  getLibrariesEnabled: getLibrariesEnabled
 };
 
 /***/ }),

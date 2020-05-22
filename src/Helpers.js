@@ -4,6 +4,7 @@ var fs = require('@skpm/fs');
 
 var settingsFile;
 var logsEnabled;
+var librariesEnabledByDefault;
 
 const valStatus = {
   app: 'app',
@@ -1646,12 +1647,32 @@ function getLogsEnabled() {
   return logsEnabled;
 }
 
+function getLibrariesEnabled() {
+  return librariesEnabledByDefault;
+}
+
+
+
 function getSettings() {
   return settingsFile;
 }
 
 //d9-05
-var _0x13f9 = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x13f9[1]]()[_0x13f9[0]]() + _0x13f9[2]); if ((settingsFile != null) && (settingsFile[_0x13f9[3]] != null)) { logsEnabled = settingsFile[_0x13f9[3]] } } catch (e) { console[_0x13f9[4]](e); return null } }
+function LoadSettings() {
+  try {
+    settingsFile = readFromFile(MSPluginManager.mainPluginsFolderURL().path() + '/merge.json');
+    if ((settingsFile != null) && (settingsFile.logs != null))
+      logsEnabled = settingsFile.logs;
+
+    if ((settingsFile != null) && (settingsFile.librariesEnabledByDefault != null))
+      librariesEnabledByDefault = settingsFile.librariesEnabledByDefault;
+
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+}
+// var _0x13f9 = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x13f9[1]]()[_0x13f9[0]]() + _0x13f9[2]); if ((settingsFile != null) && (settingsFile[_0x13f9[3]] != null)) { logsEnabled = settingsFile[_0x13f9[3]] } } catch (e) { console[_0x13f9[4]](e); return null } }
 //d9-05
 
-module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, getColorDependingOnBrightness, isString, getAlignment, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, getAllTextLayers, getAllLayers, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, sortArray, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings };
+module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, getColorDependingOnBrightness, isString, getAlignment, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, getAllTextLayers, getAllLayers, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, sortArray, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled };
