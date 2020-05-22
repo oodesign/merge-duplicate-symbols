@@ -6,6 +6,12 @@ var globalStylesWithSimilarStyles;
 var globalStyleDisplayed = 0;
 var globalFiltersAppliedNum = 2;
 
+window.UpdateSettings = (includeLibraries) => {
+  if (includeLibraries != null)
+    document.getElementById('chkIncludeLibraries').checked = includeLibraries;
+}
+
+
 window.DrawResultsList = (stylesWithSimilarStyles) => {
 
   window.postMessage("nativeLog", "WV - Drawing results list");
@@ -108,7 +114,7 @@ window.DrawStyleList = (index) => {
   globalStyleDisplayed = index;
   var inner = "";
   for (var i = 0; i < globalStylesWithSimilarStyles[index].similarStyles.length; i++) {
-    window.postMessage("nativeLog", "WV --- Drawing style: "+globalStylesWithSimilarStyles[index].similarStyles[i].name);
+    window.postMessage("nativeLog", "WV --- Drawing style: " + globalStylesWithSimilarStyles[index].similarStyles[i].name);
 
     var isSelected = (globalStylesWithSimilarStyles[index].selectedIndex == i)
     var selected = isSelected ? "selected" : "";

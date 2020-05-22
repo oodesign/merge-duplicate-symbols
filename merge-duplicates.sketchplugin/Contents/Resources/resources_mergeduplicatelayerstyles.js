@@ -100,10 +100,13 @@ document.addEventListener('contextmenu', function (e) {
 var globalMergeSession;
 var globalStyleDisplayed = 0;
 var isLoadingStyleData = false;
+var includeLibrariesSetting = false;
 
-window.DrawStylesList = function (mergeSession) {
+window.DrawStylesList = function (mergeSession, includeLibraries) {
   window.postMessage("nativeLog", "WV - Drawing duplicate styles list");
   globalMergeSession = mergeSession;
+  includeLibrariesSetting = includeLibraries;
+  if (includeLibraries != null) document.getElementById('chkIncludeLibraries').checked = includeLibrariesSetting;
   if (globalStyleDisplayed >= globalMergeSession.length) globalStyleDisplayed = 0;
   var lstDuplicateStyles = document.getElementById('lstDuplicateStyles');
   var btnMerge = document.getElementById('btnMerge');

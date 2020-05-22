@@ -7173,6 +7173,7 @@ function MergeSimilarLayerStyles(context) {
   });
   webContents.on('did-finish-load', function () {
     Helpers.clog("Webview loaded");
+    webContents.executeJavaScript("UpdateSettings(".concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
     Helpers.clog(s);
@@ -7232,7 +7233,7 @@ function MergeDuplicateLayerStyles(context) {
   var webContents = browserWindow.webContents;
   var onlyDuplicatedLayerStyles;
   var mergeSession = [];
-  CalculateDuplicates(true);
+  CalculateDuplicates(Helpers.getLibrariesEnabled());
 
   if (onlyDuplicatedLayerStyles.length > 0) {
     browserWindow.loadURL(__webpack_require__(/*! ../resources/mergeduplicatelayerstyles.html */ "./resources/mergeduplicatelayerstyles.html"));
@@ -7265,7 +7266,7 @@ function MergeDuplicateLayerStyles(context) {
   });
   webContents.on('did-finish-load', function () {
     Helpers.clog("Webview loaded");
-    webContents.executeJavaScript("DrawStylesList(".concat(JSON.stringify(mergeSession), ")")).catch(console.error);
+    webContents.executeJavaScript("DrawStylesList(".concat(JSON.stringify(mergeSession), ", ").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
     Helpers.clog(s);
@@ -7331,14 +7332,26 @@ function MergeSelectedLayerStyles(context) {
   };
   var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
   var webContents = browserWindow.webContents;
-  Helpers.clog("Get defined layer styles");
-  var definedLayerStyles = Helpers.getDefinedLayerStyles(context, false, null);
+  var definedLayerStyles;
   var definedAllLayerStyles;
+  var styleCounter = 0;
 
-  if (definedLayerStyles.length > 1) {
+  if (!Helpers.getLibrariesEnabled()) {
+    Helpers.clog("Get local styles list");
+    definedLayerStyles = Helpers.getDefinedLayerStyles(context, false, null);
+    styleCounter = definedLayerStyles.length;
+  }
+
+  if (Helpers.getLibrariesEnabled()) {
+    Helpers.clog("Get all (including libraries) styles list");
+    definedAllLayerStyles = Helpers.getDefinedLayerStyles(context, true, null);
+    styleCounter = definedAllLayerStyles.length;
+  }
+
+  if (styleCounter > 1) {
     browserWindow.loadURL(__webpack_require__(/*! ../resources/mergelayerstylesfromlist.html */ "./resources/mergelayerstylesfromlist.html"));
   } else {
-    if (definedLayerStyles.length == 1) context.document.showMessage("There's only 1 layer style. No need to merge.");else context.document.showMessage("Looks like there are no layer styles.");
+    if (styleCounter == 1) context.document.showMessage("There's only 1 layer style. No need to merge.");else context.document.showMessage("Looks like there are no layer styles.");
     onShutdown(webviewMLSFLIdentifier);
   }
 
@@ -7347,13 +7360,14 @@ function MergeSelectedLayerStyles(context) {
   });
   webContents.on('did-finish-load', function () {
     Helpers.clog("Webview loaded");
-    webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedLayerStyles), ")")).catch(console.error);
+    if (!Helpers.getLibrariesEnabled()) webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedLayerStyles), ",").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);else webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedAllLayerStyles), ",").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
     Helpers.clog(s);
   });
   webContents.on('GetLocalStylesList', function () {
     Helpers.clog("Get local styles list");
+    if (definedLayerStyles == null) definedLayerStyles = Helpers.getDefinedLayerStyles(context, false, null);
     checkingAlsoLibraries = false;
     webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedLayerStyles), ")")).catch(console.error);
   });

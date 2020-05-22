@@ -5,6 +5,7 @@ document.addEventListener('contextmenu', (e) => {
 var globalLayerStyles;
 var globalGroupedLayerStyles;
 var mapping = [];
+var includeLibrariesSetting = false;
 
 
 function sortOnKeys(dict) {
@@ -38,9 +39,13 @@ window.BuildMapping = () => {
   });
 }
 
-window.DrawStyleList = (layerStyles) => {
+window.DrawStyleList = (layerStyles, includeLibraries) => {
   window.postMessage("nativeLog", "WV - Drawing styles grouped list");
   globalLayerStyles = layerStyles;
+  includeLibrariesSetting = includeLibraries;
+
+  if(includeLibraries!=null)
+    document.getElementById('chkIncludeLibraries').checked = includeLibrariesSetting;
 
   const groupByLibraryName = groupBy('libraryName');
   var groupedLayerStyles = groupByLibraryName(layerStyles);
