@@ -6,6 +6,11 @@ var globalStylesWithSimilarStyles;
 var globalStyleDisplayed = 0;
 var globalFiltersAppliedNum = 2;
 
+window.UpdateSettings = (includeLibraries) => {
+  if (includeLibraries != null)
+    document.getElementById('chkIncludeLibraries').checked = includeLibraries;
+}
+
 window.DrawResultsList = (stylesWithSimilarStyles) => {
 
   window.postMessage("nativeLog", "WV - Drawing results list");

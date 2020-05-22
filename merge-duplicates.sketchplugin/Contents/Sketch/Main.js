@@ -4583,8 +4583,8 @@ var D3 = __webpack_require__(/*! d3-color */ "./node_modules/d3-color/src/index.
 var fs = __webpack_require__(/*! @skpm/fs */ "./node_modules/@skpm/fs/index.js");
 
 var settingsFile;
-var logsEnabled;
-var librariesEnabledByDefault;
+var logsEnabled = false;
+var librariesEnabledByDefault = true;
 var valStatus = {
   app: 'app',
   no: 'no',
@@ -7633,6 +7633,7 @@ function MergeSimilarTextStyles(context) {
   });
   webContents.on('did-finish-load', function () {
     Helpers.clog("Webview loaded");
+    webContents.executeJavaScript("UpdateSettings(".concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
     Helpers.clog(s);
@@ -7692,7 +7693,7 @@ function MergeDuplicateTextStyles(context) {
   var webContents = browserWindow.webContents;
   var onlyDuplicatedTextStyles;
   var mergeSession = [];
-  CalculateDuplicates(true);
+  CalculateDuplicates(Helpers.getLibrariesEnabled());
 
   if (onlyDuplicatedTextStyles.length > 0) {
     browserWindow.loadURL(__webpack_require__(/*! ../resources/mergeduplicatetextstyles.html */ "./resources/mergeduplicatetextstyles.html"));
@@ -7725,7 +7726,7 @@ function MergeDuplicateTextStyles(context) {
   });
   webContents.on('did-finish-load', function () {
     Helpers.clog("Webview loaded");
-    webContents.executeJavaScript("DrawStylesList(".concat(JSON.stringify(mergeSession), ")")).catch(console.error);
+    webContents.executeJavaScript("DrawStylesList(".concat(JSON.stringify(mergeSession), ", ").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
     Helpers.clog(s);
@@ -7791,26 +7792,42 @@ function MergeSelectedTextStyles(context) {
   };
   var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
   var webContents = browserWindow.webContents;
-  Helpers.clog("Get defined text styles");
-  var definedTextStyles = Helpers.getDefinedTextStyles(context, false, null);
+  var definedTextStyles;
   var definedAllTextStyles;
+  var styleCounter = 0;
 
-  if (definedTextStyles.length > 1) {
+  if (!Helpers.getLibrariesEnabled()) {
+    Helpers.clog("Get local styles list");
+    definedTextStyles = Helpers.getDefinedTextStyles(context, false, null);
+    styleCounter = definedTextStyles.length;
+  }
+
+  if (Helpers.getLibrariesEnabled()) {
+    Helpers.clog("Get all (including libraries) styles list");
+    definedAllTextStyles = Helpers.getDefinedTextStyles(context, true, null);
+    styleCounter = definedAllTextStyles.length;
+  }
+
+  if (styleCounter > 1) {
     browserWindow.loadURL(__webpack_require__(/*! ../resources/mergetextstylesfromlist.html */ "./resources/mergetextstylesfromlist.html"));
-  } else if (definedTextStyles.length == 1) context.document.showMessage("There's only 1 text style. No need to merge.");else context.document.showMessage("Looks like there are no layer styles.");
+  } else {
+    if (styleCounter == 1) context.document.showMessage("There's only 1 text style. No need to merge.");else context.document.showMessage("Looks like there are no text styles.");
+    onShutdown(webviewMTSFLIdentifier);
+  }
 
   browserWindow.once('ready-to-show', function () {
     browserWindow.show();
   });
   webContents.on('did-finish-load', function () {
     Helpers.clog("Webview loaded");
-    webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedTextStyles), ")")).catch(console.error);
+    if (!Helpers.getLibrariesEnabled()) webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedTextStyles), ",").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);else webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedAllTextStyles), ",").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
     Helpers.clog(s);
   });
   webContents.on('GetLocalStylesList', function () {
     Helpers.clog("Get local styles list");
+    if (definedTextStyles == null) definedTextStyles = Helpers.getDefinedTextStyles(context, false, null);
     checkingAlsoLibraries = false;
     webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedTextStyles), ")")).catch(console.error);
   });

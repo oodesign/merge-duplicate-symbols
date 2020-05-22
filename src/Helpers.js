@@ -3,8 +3,8 @@ var D3 = require('d3-color');
 var fs = require('@skpm/fs');
 
 var settingsFile;
-var logsEnabled;
-var librariesEnabledByDefault;
+var logsEnabled = false;
+var librariesEnabledByDefault = true;
 
 const valStatus = {
   app: 'app',

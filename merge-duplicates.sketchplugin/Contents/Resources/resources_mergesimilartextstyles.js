@@ -101,6 +101,10 @@ var globalStylesWithSimilarStyles;
 var globalStyleDisplayed = 0;
 var globalFiltersAppliedNum = 2;
 
+window.UpdateSettings = function (includeLibraries) {
+  if (includeLibraries != null) document.getElementById('chkIncludeLibraries').checked = includeLibraries;
+};
+
 window.DrawResultsList = function (stylesWithSimilarStyles) {
   window.postMessage("nativeLog", "WV - Drawing results list");
   globalStylesWithSimilarStyles = stylesWithSimilarStyles;

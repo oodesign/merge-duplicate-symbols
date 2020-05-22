@@ -100,6 +100,7 @@ document.addEventListener('contextmenu', function (e) {
 var globalTextStyles;
 var globalGroupedTextStyles;
 var mapping = [];
+var includeLibrariesSetting = false;
 
 function sortOnKeys(dict) {
   var sorted = [];
@@ -139,9 +140,11 @@ window.BuildMapping = function () {
   });
 };
 
-window.DrawStyleList = function (textStyles) {
+window.DrawStyleList = function (textStyles, includeLibraries) {
   window.postMessage("nativeLog", "WV - Drawing styles grouped list");
   globalTextStyles = textStyles;
+  includeLibrariesSetting = includeLibraries;
+  if (includeLibraries != null) document.getElementById('chkIncludeLibraries').checked = includeLibrariesSetting;
   var groupByLibraryName = groupBy('libraryName');
   var groupedTextStyles = groupByLibraryName(textStyles);
   groupedTextStyles = sortOnKeys(groupedTextStyles);
