@@ -39,25 +39,7 @@ export function EditSettings(context) {
 
   webContents.on('AcceptSettings', (logsEnabled, librariesEnabledByDefault) => {
     //d9-06
-    var jsonDef;
-
-    if ((globalSettingsFile != null) && (globalSettingsFile.licenseKey != null)) {
-      jsonDef = {
-        "licenseKey": "" + globalSettingsFile.licenseKey,
-        "logs": logsEnabled,
-        "librariesEnabledByDefault": librariesEnabledByDefault
-      }
-    }
-    else if ((globalSettingsFile != null) && (globalSettingsFile.startTime != null)) {
-      jsonDef = {
-        "startTime": "" + globalSettingsFile.startTime,
-        "logs": logsEnabled,
-        "librariesEnabledByDefault": librariesEnabledByDefault
-      }
-    }
-    Helpers.writeTextToFile(jsonDef, MSPluginManager.mainPluginsFolderURL().path() + '/merge.json');
-    onShutdown(webviewEsIdentifier);
-    // var _0xbcac=["\x6C\x69\x63\x65\x6E\x73\x65\x4B\x65\x79","","\x73\x74\x61\x72\x74\x54\x69\x6D\x65","\x70\x61\x74\x68","\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C","\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E","\x77\x72\x69\x74\x65\x54\x65\x78\x74\x54\x6F\x46\x69\x6C\x65"];var jsonDef;if((globalSettingsFile!= null)&& (globalSettingsFile[_0xbcac[0]]!= null)){jsonDef= {"\x6C\x69\x63\x65\x6E\x73\x65\x4B\x65\x79":_0xbcac[1]+ globalSettingsFile[_0xbcac[0]],"\x6C\x6F\x67\x73":logsEnabled}}else {if((globalSettingsFile!= null)&& (globalSettingsFile[_0xbcac[2]]!= null)){jsonDef= {"\x73\x74\x61\x72\x74\x54\x69\x6D\x65":_0xbcac[1]+ globalSettingsFile[_0xbcac[2]],"\x6C\x6F\x67\x73":logsEnabled}}};Helpers[_0xbcac[6]](jsonDef,MSPluginManager[_0xbcac[4]]()[_0xbcac[3]]()+ _0xbcac[5]);onShutdown(webviewEsIdentifier)
+    var _0x238c=["\x6C\x69\x63\x65\x6E\x73\x65\x4B\x65\x79","","\x73\x74\x61\x72\x74\x54\x69\x6D\x65","\x70\x61\x74\x68","\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C","\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E","\x77\x72\x69\x74\x65\x54\x65\x78\x74\x54\x6F\x46\x69\x6C\x65"];var jsonDef;if((globalSettingsFile!= null)&& (globalSettingsFile[_0x238c[0]]!= null)){jsonDef= {"\x6C\x69\x63\x65\x6E\x73\x65\x4B\x65\x79":_0x238c[1]+ globalSettingsFile[_0x238c[0]],"\x6C\x6F\x67\x73":logsEnabled,"\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74":librariesEnabledByDefault}}else {if((globalSettingsFile!= null)&& (globalSettingsFile[_0x238c[2]]!= null)){jsonDef= {"\x73\x74\x61\x72\x74\x54\x69\x6D\x65":_0x238c[1]+ globalSettingsFile[_0x238c[2]],"\x6C\x6F\x67\x73":logsEnabled,"\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74":librariesEnabledByDefault}}};Helpers[_0x238c[6]](jsonDef,MSPluginManager[_0x238c[4]]()[_0x238c[3]]()+ _0x238c[5]);onShutdown(webviewEsIdentifier)
     //d9-06
   });
 }
