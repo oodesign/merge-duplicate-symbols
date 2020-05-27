@@ -257,6 +257,10 @@ html,body{
 
 .leftPanel{
   width:260px;
+  resize: horizontal;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  max-width: 450px;
   transition: all 0.2s ease-out;
   @include for-theme(light){
     background-color: $light_leftPanelBackgroundColor;
@@ -1019,6 +1023,7 @@ html,body{
 
 @mixin squareCheckbox($bgColor,$marginBottom){
   position: relative;
+  width:100%;
 
   .padder{
     width: 160px;
@@ -1390,7 +1395,8 @@ a{
 
   span{
     left:25px;
-    width:200px;
+    min-width:200px;
+    width:90%;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -1618,4 +1624,9 @@ input:checked + .slider:before {
 
 .settingsDescription{
   padding: 0 50px 15px 50px;
+}
+
+::-webkit-resizer {
+  background-image: url('./images/resizer.png');
+  background-size: contain;
 }
