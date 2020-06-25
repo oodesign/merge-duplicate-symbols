@@ -1033,23 +1033,45 @@ function getTextStyleDescription(attributes) {
 
 function getLayerStyleDescription(style) {
   var textInfo = "";
-  if (style.style().firstEnabledFill() != null)
-    textInfo += "Fill: #" + style.style().firstEnabledFill().color().immutableModelObject().hexValue().toString();
+  try {
+    if (style.style().firstEnabledFill() != null)
+      textInfo += "Fill: #" + style.style().firstEnabledFill().color().immutableModelObject().hexValue().toString();
+  } catch (e) {
+    textInfo += "Fill: No fill";
+  }
 
-  if (style.style().firstEnabledFill() != null && style.style().firstEnabledBorder() != null)
-    textInfo += " - ";
+  try {
+    if (style.style().firstEnabledFill() != null && style.style().firstEnabledBorder() != null)
+      textInfo += " - ";
+  } catch (e) {
+    textInfo += " ";
+  }
 
-  if (style.style().firstEnabledBorder() != null)
-    textInfo += "Border: #" + style.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString();
+  try {
+    if (style.style().firstEnabledBorder() != null)
+      textInfo += "Border: #" + style.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString();
+  } catch (e) {
+    textInfo += "Border: No border";
+  }
 
   return textInfo;
 }
 
 function getLayerStyleColor(style) {
-  if (style.style().firstEnabledFill() != null)
-    return style.style().firstEnabledFill().color().immutableModelObject().hexValue().toString();
-  else if (style.style().firstEnabledBorder() != null)
-    return style.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString();
+  if (style.style().firstEnabledFill() != null) {
+    try {
+      return style.style().firstEnabledFill().color().immutableModelObject().hexValue().toString();
+    } catch (e) {
+      return "FFFFFF";
+    }
+  }
+  else if (style.style().firstEnabledBorder() != null) {
+    try {
+      return style.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString();
+    } catch (e) {
+      return "FFFFFF";
+    }
+  }
 }
 
 function getTextStyleColor(style) {
@@ -1658,7 +1680,7 @@ function getSettings() {
 }
 
 //d9-05
-var _0x684b=["\x70\x61\x74\x68","\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C","\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E","\x6C\x6F\x67\x73","\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74","\x6C\x6F\x67"];function LoadSettings(){try{settingsFile= readFromFile(MSPluginManager[_0x684b[1]]()[_0x684b[0]]()+ _0x684b[2]);if((settingsFile!= null)&& (settingsFile[_0x684b[3]]!= null)){logsEnabled= settingsFile[_0x684b[3]]};if((settingsFile!= null)&& (settingsFile[_0x684b[4]]!= null)){librariesEnabledByDefault= settingsFile[_0x684b[4]]}}catch(e){console[_0x684b[5]](e);return null}}
+var _0x684b = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x684b[1]]()[_0x684b[0]]() + _0x684b[2]); if ((settingsFile != null) && (settingsFile[_0x684b[3]] != null)) { logsEnabled = settingsFile[_0x684b[3]] }; if ((settingsFile != null) && (settingsFile[_0x684b[4]] != null)) { librariesEnabledByDefault = settingsFile[_0x684b[4]] } } catch (e) { console[_0x684b[5]](e); return null } }
 //d9-05
 
 module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, getColorDependingOnBrightness, isString, getAlignment, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, getAllTextLayers, getAllLayers, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, sortArray, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled };
