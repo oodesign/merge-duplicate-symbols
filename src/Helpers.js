@@ -996,12 +996,13 @@ function GetSpecificSymbolData(context, symbols, index) {
   var totalInstances = 0;
   var totalOverrides = 0;
   clog("Processing symbol metadata for: " + symbols[index].name);
-  // console.time("GetSpecificSymbolData");
   for (var i = 0; i < symbols[index].duplicates.length; i++) {
+    clog("-- Processing symbol instances for duplicate: " + symbols[index].duplicates[i].name);
     var instances = getSymbolInstances(context, symbols[index].duplicates[i].symbol);
+    clog("-- Processing symbol overrides for duplicate: " + symbols[index].duplicates[i].name);
     var overrides = getSymbolOverrides(context, symbols[index].duplicates[i].symbol);
     var width = (300 / symbols[index].duplicates[i].symbol.frame().height()) * symbols[index].duplicates[i].symbol.frame().width();
-    //console.log("It was:"+symbols[index].duplicates[i].symbol.frame().width()+"x"+symbols[index].duplicates[i].symbol.frame().height()+", but generating thumbnail at "+width+"x300");
+    clog("-- Processing thumbnail overrides for duplicate: " + symbols[index].duplicates[i].name);
     symbols[index].duplicates[i].thumbnail = getBase64(symbols[index].duplicates[i].symbol, width, 300);
     symbols[index].duplicates[i].symbolInstances = instances;
     symbols[index].duplicates[i].numInstances = instances.length;
