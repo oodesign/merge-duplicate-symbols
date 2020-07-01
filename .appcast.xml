@@ -2,6 +2,9 @@
 <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
   <channel>
     <item>
+      <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/releases/download/v6.3.3/merge-duplicates.sketchplugin.zip" sparkle:version="6.3.3"/>
+    </item>
+    <item>
       <enclosure url="https://github.com/oodesign/merge-duplicate-symbols/releases/download/v6.3.2/merge-duplicates.sketchplugin.zip" sparkle:version="6.3.2"/>
     </item>
     <item>
