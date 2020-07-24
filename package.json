@@ -1,6 +1,6 @@
 {
   "name": "merge-duplicates",
-  "version": "6.3.3",
+  "version": "6.4.0",
   "engines": {
     "sketch": ">=50.0"
   },
