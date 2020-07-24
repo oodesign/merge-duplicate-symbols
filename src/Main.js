@@ -74,7 +74,8 @@ export function triggerMethod(context) {
   Helpers.LoadSettings();
 
   Helpers.clog("Sketch version:" +sketch.version.sketch);
-  Helpers.clog("Merge Duplicates version: 6.3.3");
+  Helpers.clog("Merge Duplicates version: 6.4.0");
+  Helpers.clog("License: "+Helpers.getAcquiredLicense());
 
   switch (globalCommand) {
     case Helpers.commands.mergeduplicatesymbols:
@@ -128,7 +129,7 @@ export function showRegistration(context) {
   //d9-02
 
   webContentsReg.on('nativeLog', s => {
-    Helpers.cog(s);
+    Helpers.clog(s);
   })
 
   webContentsReg.on('OpenPluginWeb', s => {
