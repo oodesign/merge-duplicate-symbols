@@ -431,12 +431,14 @@ export function MergeSelectedTextStyles(context) {
     Helpers.clog("Get local styles list");
     definedTextStyles = Helpers.getDefinedTextStyles(context, false, null);
     styleCounter = definedTextStyles.length;
+    checkingAlsoLibraries = false;
   }
 
   if (Helpers.getLibrariesEnabled()) {
     Helpers.clog("Get all (including libraries) styles list");
     definedAllTextStyles = Helpers.getDefinedTextStyles(context, true, null);
     styleCounter = definedAllTextStyles.length;
+    checkingAlsoLibraries = true;
   }
 
   if (styleCounter > 1) {
@@ -497,6 +499,7 @@ export function MergeSelectedTextStyles(context) {
     currentSelectedStyles = [];
     var selectedIndex = -1;
     var counter = 0;
+
     if (!checkingAlsoLibraries) {
       for (var i = 0; i < definedTextStyles.length; i++) {
         definedTextStyles[i].isSelected = editedGlobalTextStyles[i].isSelected;
