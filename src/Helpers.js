@@ -814,7 +814,7 @@ function getSymbolOverrides(context, symbolMaster) {
     //       var overrides = page.children()[i].overrides();
     //   }
     //   catch (e) {
-    //     clog("------ This is an exception ------" + page.children()[i].name());
+    //     clog("------ This is an exception ------" + page.children()[i].name() + "in Artboard "+page.children()[i].parentArtboard().name());
     //     //clog(e);
     //   }
     // }
@@ -823,7 +823,7 @@ function getSymbolOverrides(context, symbolMaster) {
 }
 
 function FindOverrideSymbolID(instance, overrides, symbolOverrides, symbolMaster, level) {
-  clog("---- Deepdiving overrides (level " + level + ")");
+  // clog("---- Deepdiving overrides (level " + level + ")");
   for (var key in overrides) {
     var symbolID = overrides[key]["symbolID"];
     if (symbolID == null) {
