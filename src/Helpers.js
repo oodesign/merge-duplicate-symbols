@@ -1,11 +1,20 @@
+
+const sketch = require('sketch');
+const dom = require('sketch/dom');
 var DeltaE = require('delta-e');
 var D3 = require('d3-color');
 var fs = require('@skpm/fs');
+
+const document = sketch.getSelectedDocument();
+var symbols = document.getSymbols();
+var libraries = dom.getLibraries();
 
 var settingsFile;
 var logsEnabled = false;
 var librariesEnabledByDefault = true;
 var acquiredLicense = "Single";
+
+const debugLogEnabled = true;
 
 const valStatus = {
   app: 'app',
@@ -30,7 +39,7 @@ const sketchlocalfile = "   💎 This Sketch file";
 const libraryPrefix = "🔸 ";
 
 //d9-03
-var _0x3c15=["\x69\x6E\x69\x74","\x61\x6C\x6C\x6F\x63","\x2F\x75\x73\x72\x2F\x62\x69\x6E\x2F\x63\x75\x72\x6C","\x73\x65\x74\x4C\x61\x75\x6E\x63\x68\x50\x61\x74\x68","\x73\x65\x74\x41\x72\x67\x75\x6D\x65\x6E\x74\x73","\x70\x69\x70\x65","\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x4F\x75\x74\x70\x75\x74","\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x45\x72\x72\x6F\x72","\x6C\x61\x75\x6E\x63\x68","\x77\x61\x69\x74\x55\x6E\x74\x69\x6C\x45\x78\x69\x74","\x74\x65\x72\x6D\x69\x6E\x61\x74\x69\x6F\x6E\x53\x74\x61\x74\x75\x73","\x72\x65\x61\x64\x44\x61\x74\x61\x54\x6F\x45\x6E\x64\x4F\x66\x46\x69\x6C\x65","\x66\x69\x6C\x65\x48\x61\x6E\x64\x6C\x65\x46\x6F\x72\x52\x65\x61\x64\x69\x6E\x67","\x69\x6E\x69\x74\x57\x69\x74\x68\x44\x61\x74\x61\x5F\x65\x6E\x63\x6F\x64\x69\x6E\x67","\x73\x75\x63\x63\x65\x73\x73","\x70\x75\x72\x63\x68\x61\x73\x65","\x54\x65\x61\x6D","\x69\x6E\x64\x65\x78\x4F\x66","\x76\x61\x72\x69\x61\x6E\x74\x73","\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65","\x53\x69\x6E\x67\x6C\x65","\x61\x70\x70","\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65","\x6C\x6F\x67","\x75\x73\x65\x73","\x71\x75\x61\x6E\x74\x69\x74\x79","\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x53\x69\x6E\x67\x6C\x65\x20\x2D\x20\x53\x65\x61\x74\x73\x20\x65\x78\x63\x65\x65\x64\x65\x64\x2E","\x6F\x76\x65\x72","\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x53\x69\x6E\x67\x6C\x65","\x6E\x6F","\x6E\x6F\x43\x6F\x6E"];function curl_async(_0x5275x2,_0x5275x3){var _0x5275x4=NSTask[_0x3c15[1]]()[_0x3c15[0]]();_0x5275x4[_0x3c15[3]](_0x3c15[2]);_0x5275x4[_0x3c15[4]](_0x5275x2);var _0x5275x5=NSPipe[_0x3c15[5]]();var _0x5275x6=NSPipe[_0x3c15[5]]();_0x5275x4[_0x3c15[6]](_0x5275x5);_0x5275x4[_0x3c15[7]](_0x5275x6);_0x5275x4[_0x3c15[8]]();_0x5275x4[_0x3c15[9]]();var _0x5275x7=_0x5275x4[_0x3c15[10]]();var _0x5275x8=_0x5275x6[_0x3c15[12]]()[_0x3c15[11]]();var _0x5275x9=NSString[_0x3c15[1]]()[_0x3c15[13]](_0x5275x8,NSUTF8StringEncoding);if(_0x5275x7== 0){var _0x5275xa=_0x5275x5[_0x3c15[12]]()[_0x3c15[11]]();var _0x5275xb=NSString[_0x3c15[1]]()[_0x3c15[13]](_0x5275xa,NSUTF8StringEncoding);var _0x5275xc=tryParseJSON(_0x5275xb);if(_0x5275xc[_0x3c15[14]]){if(!_0x5275x3){if(_0x5275xc[_0x3c15[15]]!= null){if(_0x5275xc[_0x3c15[15]][_0x3c15[18]][_0x3c15[17]](_0x3c15[16])> 0){acquiredLicense= _0x3c15[19]}else {acquiredLicense= _0x3c15[20]}};return valStatus[_0x3c15[21]]}else {if(_0x5275xc[_0x3c15[15]]!= null){if(_0x5275xc[_0x3c15[15]][_0x3c15[18]][_0x3c15[17]](_0x3c15[16])> 0){console[_0x3c15[23]](_0x3c15[22]);return valStatus[_0x3c15[21]]}else {if(_0x5275xc[_0x3c15[24]]> _0x5275xc[_0x3c15[15]][_0x3c15[25]]){console[_0x3c15[23]](_0x3c15[26]);return valStatus[_0x3c15[27]]}else {console[_0x3c15[23]](_0x3c15[28]);return valStatus[_0x3c15[21]]}}}else {return valStatus[_0x3c15[21]]}}}else {return valStatus[_0x3c15[29]]}}else {return valStatus[_0x3c15[30]]}}
+var _0x3c15 = ["\x69\x6E\x69\x74", "\x61\x6C\x6C\x6F\x63", "\x2F\x75\x73\x72\x2F\x62\x69\x6E\x2F\x63\x75\x72\x6C", "\x73\x65\x74\x4C\x61\x75\x6E\x63\x68\x50\x61\x74\x68", "\x73\x65\x74\x41\x72\x67\x75\x6D\x65\x6E\x74\x73", "\x70\x69\x70\x65", "\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x4F\x75\x74\x70\x75\x74", "\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x45\x72\x72\x6F\x72", "\x6C\x61\x75\x6E\x63\x68", "\x77\x61\x69\x74\x55\x6E\x74\x69\x6C\x45\x78\x69\x74", "\x74\x65\x72\x6D\x69\x6E\x61\x74\x69\x6F\x6E\x53\x74\x61\x74\x75\x73", "\x72\x65\x61\x64\x44\x61\x74\x61\x54\x6F\x45\x6E\x64\x4F\x66\x46\x69\x6C\x65", "\x66\x69\x6C\x65\x48\x61\x6E\x64\x6C\x65\x46\x6F\x72\x52\x65\x61\x64\x69\x6E\x67", "\x69\x6E\x69\x74\x57\x69\x74\x68\x44\x61\x74\x61\x5F\x65\x6E\x63\x6F\x64\x69\x6E\x67", "\x73\x75\x63\x63\x65\x73\x73", "\x70\x75\x72\x63\x68\x61\x73\x65", "\x54\x65\x61\x6D", "\x69\x6E\x64\x65\x78\x4F\x66", "\x76\x61\x72\x69\x61\x6E\x74\x73", "\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65", "\x53\x69\x6E\x67\x6C\x65", "\x61\x70\x70", "\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65", "\x6C\x6F\x67", "\x75\x73\x65\x73", "\x71\x75\x61\x6E\x74\x69\x74\x79", "\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x53\x69\x6E\x67\x6C\x65\x20\x2D\x20\x53\x65\x61\x74\x73\x20\x65\x78\x63\x65\x65\x64\x65\x64\x2E", "\x6F\x76\x65\x72", "\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x53\x69\x6E\x67\x6C\x65", "\x6E\x6F", "\x6E\x6F\x43\x6F\x6E"]; function curl_async(_0x5275x2, _0x5275x3) { var _0x5275x4 = NSTask[_0x3c15[1]]()[_0x3c15[0]](); _0x5275x4[_0x3c15[3]](_0x3c15[2]); _0x5275x4[_0x3c15[4]](_0x5275x2); var _0x5275x5 = NSPipe[_0x3c15[5]](); var _0x5275x6 = NSPipe[_0x3c15[5]](); _0x5275x4[_0x3c15[6]](_0x5275x5); _0x5275x4[_0x3c15[7]](_0x5275x6); _0x5275x4[_0x3c15[8]](); _0x5275x4[_0x3c15[9]](); var _0x5275x7 = _0x5275x4[_0x3c15[10]](); var _0x5275x8 = _0x5275x6[_0x3c15[12]]()[_0x3c15[11]](); var _0x5275x9 = NSString[_0x3c15[1]]()[_0x3c15[13]](_0x5275x8, NSUTF8StringEncoding); if (_0x5275x7 == 0) { var _0x5275xa = _0x5275x5[_0x3c15[12]]()[_0x3c15[11]](); var _0x5275xb = NSString[_0x3c15[1]]()[_0x3c15[13]](_0x5275xa, NSUTF8StringEncoding); var _0x5275xc = tryParseJSON(_0x5275xb); if (_0x5275xc[_0x3c15[14]]) { if (!_0x5275x3) { if (_0x5275xc[_0x3c15[15]] != null) { if (_0x5275xc[_0x3c15[15]][_0x3c15[18]][_0x3c15[17]](_0x3c15[16]) > 0) { acquiredLicense = _0x3c15[19] } else { acquiredLicense = _0x3c15[20] } }; return valStatus[_0x3c15[21]] } else { if (_0x5275xc[_0x3c15[15]] != null) { if (_0x5275xc[_0x3c15[15]][_0x3c15[18]][_0x3c15[17]](_0x3c15[16]) > 0) { console[_0x3c15[23]](_0x3c15[22]); return valStatus[_0x3c15[21]] } else { if (_0x5275xc[_0x3c15[24]] > _0x5275xc[_0x3c15[15]][_0x3c15[25]]) { console[_0x3c15[23]](_0x3c15[26]); return valStatus[_0x3c15[27]] } else { console[_0x3c15[23]](_0x3c15[28]); return valStatus[_0x3c15[21]] } } } else { return valStatus[_0x3c15[21]] } } } else { return valStatus[_0x3c15[29]] } } else { return valStatus[_0x3c15[30]] } }
 //d9-03
 
 
@@ -113,7 +122,7 @@ function brightnessByColor(color) {
   if (typeof r != "undefined") return ((r * 299) + (g * 587) + (b * 114)) / 1000;
 }
 
-function getAcquiredLicense(){
+function getAcquiredLicense() {
   return acquiredLicense;
 }
 
@@ -227,7 +236,7 @@ function getColorDependingOnBrightness(colorBrightness) {
 function isString(obj) {
   try {
     return obj.isKindOfClass(NSString) == 1;
-  } catch{
+  } catch {
     return false;
   }
 }
@@ -435,7 +444,7 @@ function FindSimilarTextStyles(referenceStyle, styles, context, checkSameFont, c
         var sameCharacterSpacing = false;
         try {
           sameCharacterSpacing = referenceStyle.style().textStyle().attributes().NSKern.toString() == style.textStyle.style().textStyle().attributes().NSKern.toString();
-        } catch{
+        } catch {
           sameCharacterSpacing = referenceStyle.style().textStyle().attributes().NSKern == style.textStyle.style().textStyle().attributes().NSKern;
         }
         //console.log("---Character Spacing? "+sameCharacterSpacing + "-  Comparing ["+referenceStyle.style().textStyle().attributes().NSKern+"] with ["+style.textStyle.style().textStyle().attributes().NSKern+"]" );
@@ -852,17 +861,23 @@ function IsForeign(context, refSymbol) {
 
 function countAllSymbols(context, includeAllSymbolsFromExternalLibraries) {
   var counter = [0, 0];
-  counter[0] = context.document.documentData().allSymbols().length;
+
+  counter[0] = symbols.length;
 
   if (includeAllSymbolsFromExternalLibraries) {
-    var libraries = NSApp.delegate().librariesController().libraries();
     libraries.forEach(function (lib) {
-      if (lib && lib.libraryID() && lib.enabled() && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.libraryID().toString()) != 0) {
-        counter[1] += lib.document().allSymbols().length;
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        counter[1] += lib.getDocument().getSymbols().length;
       }
     });
   }
+
+  debugLog("Counter:" + counter);
   return counter;
+}
+
+function debugLog(message) {
+  if (debugLogEnabled) console.log(message);
 }
 
 function sortArray(array, key) {
@@ -920,7 +935,7 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
     else {
       try {
         alreadyAddedIDs.push("" + symbol.symbolID());
-      } catch{
+      } catch {
         clog("Trying to merge a component that is not a symbol.");
         clog(symbol);
       }
