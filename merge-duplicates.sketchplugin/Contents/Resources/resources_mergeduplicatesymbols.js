@@ -94,8 +94,7 @@
 /***/ (function(module, exports) {
 
 // disable the context menu (eg. the right click menu) to have a more native feel
-document.addEventListener('contextmenu', function (e) {
-  e.preventDefault();
+document.addEventListener('contextmenu', function (e) {//e.preventDefault()
 });
 var globalMergeSession;
 var globalSymbolDisplayed = 0;
@@ -271,7 +270,7 @@ window.DrawSymbolList = function (index) {
     var selected = isSelected ? "selected" : "";
     var checked = isSelected ? "checked" : "";
     var checkbox = "<div class=\"colAuto roundCheckbox\">\n      <input type=\"checkbox\" ".concat(checked, " id=\"duplicateItemCheck").concat(i, "\"/>\n      <label></label>\n    </div>");
-    inner += "<div id=\"duplicateItem".concat(i, "\" class=\"thumbnailContainer symbolPreview  alignVerticalCenter ").concat(selected, "\" onclick=\"onSymbolClicked(").concat(i, ", ").concat(index, ")\">\n                ").concat(checkbox, "\n                <div class=\"colAvailable verticalLayout thumbnailData\" id=\"duplicateItemThumbnail").concat(i, "\" >\n                  <div class=\"rowAvailable thumbnail\" style='background-image:url(\"").concat(globalMergeSession[index].symbolWithDuplicates.duplicates[i].thumbnail, "\")'></div>\n                  <div class=\"rowAuto primaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(globalMergeSession[index].symbolWithDuplicates.duplicates[i].numInstances, " instances - Used in ").concat(globalMergeSession[index].symbolWithDuplicates.duplicates[i].numOverrides, " overrides</span></div>\n                  <div class=\"rowAuto secondaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(globalMergeSession[index].symbolWithDuplicates.duplicates[i].libraryName, "</span></div>\n                </div>\n              </div>");
+    inner += "<div id=\"duplicateItem".concat(i, "\" class=\"thumbnailContainer symbolPreview  alignVerticalCenter ").concat(selected, "\" onclick=\"onSymbolClicked(").concat(i, ", ").concat(index, ")\">\n                ").concat(checkbox, "\n                <div class=\"colAvailable verticalLayout thumbnailData\" id=\"duplicateItemThumbnail").concat(i, "\" >\n                  <div class=\"rowAvailable thumbnail\" style='background-image:url(\"data:image/png;base64,").concat(globalMergeSession[index].symbolWithDuplicates.duplicates[i].thumbnail, "\")'></div>\n                  <div class=\"rowAuto primaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(globalMergeSession[index].symbolWithDuplicates.duplicates[i].numInstances, " instances - Used in ").concat(globalMergeSession[index].symbolWithDuplicates.duplicates[i].numOverrides, " overrides</span></div>\n                  <div class=\"rowAuto secondaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(globalMergeSession[index].symbolWithDuplicates.duplicates[i].libraryName, "</span></div>\n                </div>\n              </div>");
   }
 
   var resultsTitle = document.getElementById("resultsTitle");

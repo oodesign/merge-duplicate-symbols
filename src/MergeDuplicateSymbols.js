@@ -5,6 +5,7 @@ const Helpers = require("./Helpers");
 const webviewIdentifier = 'merge-duplicates.webview'
 const webviewMSSIdentifier = 'merge-selected-symbols.webview'
 
+
 function generateUUID() {
   var d = new Date().getTime();
   if (Date.now) {
@@ -330,6 +331,7 @@ export function MergeDuplicateSymbols(context) {
   const webContents = browserWindow.webContents;
 
   var duplicatedSymbols;
+  var documentSymbols = Helpers.getDocumentSymbols(context);
   var mergeSession = [];
 
   var numberOfSymbols = Helpers.countAllSymbols(context, Helpers.getLibrariesEnabled());
@@ -338,9 +340,9 @@ export function MergeDuplicateSymbols(context) {
   Helpers.clog("Webview called");
 
   function CalculateDuplicates(includeLibraries) {
-
     Helpers.clog("Processing duplicates. Include libraries: " + includeLibraries);
-    duplicatedSymbols = Helpers.getDuplicateSymbols(context, context.document.documentData().allSymbols(), includeLibraries, false);
+    duplicatedSymbols = Helpers.getDuplicateSymbols(context, documentSymbols, includeLibraries, false);
+    Helpers.debugLog("Found " + duplicatedSymbols.length + " duplicates");
     Helpers.clog("-- Found " + duplicatedSymbols.length + " duplicates");
     if (duplicatedSymbols.length > 0) {
       Helpers.GetSpecificSymbolData(context, duplicatedSymbols, 0);

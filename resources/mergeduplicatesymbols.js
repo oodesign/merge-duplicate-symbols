@@ -1,6 +1,6 @@
 // disable the context menu (eg. the right click menu) to have a more native feel
 document.addEventListener('contextmenu', (e) => {
-  e.preventDefault()
+  //e.preventDefault()
 })
 var globalMergeSession;
 var globalSymbolDisplayed = 0;
@@ -210,7 +210,7 @@ window.DrawSymbolList = (index) => {
     inner += `<div id="duplicateItem${i}" class="thumbnailContainer symbolPreview  alignVerticalCenter ${selected}" onclick="onSymbolClicked(${i}, ${index})">
                 ${checkbox}
                 <div class="colAvailable verticalLayout thumbnailData" id="duplicateItemThumbnail${i}" >
-                  <div class="rowAvailable thumbnail" style='background-image:url("${globalMergeSession[index].symbolWithDuplicates.duplicates[i].thumbnail}")'></div>
+                  <div class="rowAvailable thumbnail" style='background-image:url("data:image/png;base64,${globalMergeSession[index].symbolWithDuplicates.duplicates[i].thumbnail}")'></div>
                   <div class="rowAuto primaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].symbolWithDuplicates.duplicates[i].numInstances} instances - Used in ${globalMergeSession[index].symbolWithDuplicates.duplicates[i].numOverrides} overrides</span></div>
                   <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].symbolWithDuplicates.duplicates[i].libraryName}</span></div>
                 </div>
