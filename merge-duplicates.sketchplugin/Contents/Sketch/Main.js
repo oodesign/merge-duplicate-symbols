@@ -6304,13 +6304,17 @@ function getNSImageData(nsImage) {
 }
 
 function getThumbnail(element) {
-  var options = {
-    formats: 'png',
-    output: false
-  };
-  var buffer = sketch.export(element, options);
-  var image64 = buffer.toString('base64');
-  return image64;
+  try {
+    var options = {
+      formats: 'png',
+      output: false
+    };
+    var buffer = sketch.export(element, options);
+    var image64 = buffer.toString('base64');
+    return image64;
+  } catch (e) {
+    return "";
+  }
 }
 
 function getBase64(element, width, height) {
@@ -6732,6 +6736,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var sketch_module_web_view_remote__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sketch-module-web-view/remote */ "./node_modules/sketch-module-web-view/remote.js");
 /* harmony import */ var sketch_module_web_view_remote__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sketch_module_web_view_remote__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Helpers */ "./src/Helpers.js");
+/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_Helpers__WEBPACK_IMPORTED_MODULE_2__);
+
 
 
 
@@ -6831,6 +6838,48 @@ function FindSymbolOverrides(context, originalSymbol, duplicateSymbolsByName) {
 }
 
 function MergeSymbols(symbolToMerge, symbolToKeep) {
+  Object(_Helpers__WEBPACK_IMPORTED_MODULE_2__["debugLog"])("SymbolToMerge:" + symbolToMerge.name);
+  Object(_Helpers__WEBPACK_IMPORTED_MODULE_2__["debugLog"])("symbolToKeep:" + symbolToKeep);
+  var symbolsToRemove = [];
+  var symbolToApply;
+  var instancesChanged = 0;
+  var overridesChanged = 0;
+  var symbolsRemoved = 0;
+  symbolToApply = symbolToMerge.duplicates[symbolToKeep].symbol;
+
+  for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
+    if (i != symbolToKeep) {
+      symbolsToRemove.push(symbolToMerge.duplicates[i].symbol);
+    }
+  }
+
+  for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
+    if (i != symbolToKeep) {
+      if (!symbolToMerge.duplicates[i].isForeign) symbolsRemoved++;
+      var instancesOfSymbol = symbolToMerge.duplicates[i].symbolInstances;
+      var overridesOfSymbol = symbolToMerge.duplicates[i].symbolOverrides;
+      var wasUnlinked = false;
+
+      if (symbolToMerge.duplicates[i].isForeign && symbolToMerge.duplicates[i].externalLibrary == null) {
+        symbolToMerge.duplicates[i].symbol.unlinkFromLibrary();
+        wasUnlinked = true;
+      }
+
+      for (var k = 0; k < instancesOfSymbol.length; k++) {
+        Object(_Helpers__WEBPACK_IMPORTED_MODULE_2__["debugLog"])("We would change " + instancesOfSymbol[k].name + " to " + symbolToApply.name);
+        instancesOfSymbol[k].master = symbolToApply;
+        instancesChanged++;
+      }
+
+      symbolToMerge.duplicates[i].symbol.remove(); //context.document.documentData().foreignSymbols().removeObject(symbolToMerge.duplicates[i].symbol);
+      //console.log("Removed foreign from foreignSymbols (" + symbolToMerge.duplicates[i].name + ")");
+    }
+  }
+
+  return [symbolsRemoved, instancesChanged, overridesChanged];
+}
+
+function MergeSymbols2(symbolToMerge, symbolToKeep) {
   var symbolsIDsToRemove = [];
   var symbolToApply;
   var instancesChanged = 0;

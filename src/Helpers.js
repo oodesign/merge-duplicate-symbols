@@ -1741,10 +1741,14 @@ function getNSImageData(nsImage) {
 }
 
 function getThumbnail(element) {
-  const options = { formats: 'png', output: false };
-  var buffer = sketch.export(element, options);
-  var image64 = buffer.toString('base64');
-  return image64;
+  try {
+    const options = { formats: 'png', output: false };
+    var buffer = sketch.export(element, options);
+    var image64 = buffer.toString('base64');
+    return image64;
+  } catch (e) {
+    return "";
+  }
 }
 
 function getBase64(element, width, height) {

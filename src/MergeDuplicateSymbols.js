@@ -1,5 +1,6 @@
 import BrowserWindow from 'sketch-module-web-view'
 import { getWebview } from 'sketch-module-web-view/remote'
+import { debugLog } from './Helpers';
 const Helpers = require("./Helpers");
 
 const webviewIdentifier = 'merge-duplicates.webview'
@@ -102,6 +103,53 @@ function FindSymbolOverrides(context, originalSymbol, duplicateSymbolsByName) {
 
 
 function MergeSymbols(symbolToMerge, symbolToKeep) {
+  debugLog("SymbolToMerge:" + symbolToMerge.name);
+  debugLog("symbolToKeep:" + symbolToKeep);
+
+  var symbolsToRemove = [];
+  var symbolToApply;
+  var instancesChanged = 0;
+  var overridesChanged = 0;
+  var symbolsRemoved = 0;
+
+  symbolToApply = symbolToMerge.duplicates[symbolToKeep].symbol;
+  for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
+    if (i != symbolToKeep) {
+      symbolsToRemove.push(symbolToMerge.duplicates[i].symbol);
+    }
+  }
+
+  for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
+    if (i != symbolToKeep) {
+      if (!symbolToMerge.duplicates[i].isForeign)
+        symbolsRemoved++;
+
+      var instancesOfSymbol = symbolToMerge.duplicates[i].symbolInstances;
+      var overridesOfSymbol = symbolToMerge.duplicates[i].symbolOverrides;
+      var wasUnlinked = false;
+
+      if (symbolToMerge.duplicates[i].isForeign && (symbolToMerge.duplicates[i].externalLibrary == null)) {
+        symbolToMerge.duplicates[i].symbol.unlinkFromLibrary();
+        wasUnlinked = true;
+      }
+
+      for (var k = 0; k < instancesOfSymbol.length; k++) {
+        debugLog("We would change " + instancesOfSymbol[k].name + " to " + symbolToApply.name)
+        instancesOfSymbol[k].master = symbolToApply;
+        instancesChanged++;
+      }
+
+      symbolToMerge.duplicates[i].symbol.remove();
+
+      //context.document.documentData().foreignSymbols().removeObject(symbolToMerge.duplicates[i].symbol);
+      //console.log("Removed foreign from foreignSymbols (" + symbolToMerge.duplicates[i].name + ")");
+    }
+  }
+
+  return [symbolsRemoved, instancesChanged, overridesChanged];
+}
+
+function MergeSymbols2(symbolToMerge, symbolToKeep) {
 
   var symbolsIDsToRemove = [];
   var symbolToApply;
