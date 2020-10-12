@@ -10,7 +10,7 @@ const webviewMSSIdentifier = 'merge-selected-symbols.webview'
 function MergeSymbols(symbolToMerge, symbolToKeep) {
 
 
-  Helpers.clog("Starting Merge Symbols");
+  Helpers.clog("-- Starting Merge Symbols");
 
   var symbolsToRemove = [];
   var symbolToApply;
@@ -19,7 +19,7 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
   var symbolsRemoved = 0;
 
 
-  Helpers.clog("-- Processing symbols to remove");
+  Helpers.clog("---- Processing symbols to remove");
   symbolToApply = symbolToMerge.duplicates[symbolToKeep].symbol;
   for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
     if (i != symbolToKeep) {
@@ -27,7 +27,7 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
     }
   }
 
-  Helpers.clog("-- Processing instances and overrides to update");
+  Helpers.clog("---- Processing instances and overrides to update");
   for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
     if (i != symbolToKeep) {
       if (!symbolToMerge.duplicates[i].isForeign)
@@ -38,24 +38,24 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
       var wasUnlinked = false;
 
 
-      Helpers.clog("---- Checking if symbol to merge is foreign");
+      Helpers.clog("------ Checking if symbol to merge is foreign");
       if (symbolToMerge.duplicates[i].isForeign && (symbolToMerge.duplicates[i].externalLibrary == null)) {
         symbolToMerge.duplicates[i].symbol.unlinkFromLibrary();
         wasUnlinked = true;
       }
 
 
-      Helpers.clog("-- Updating instances");
+      Helpers.clog("---- Updating instances");
       instancesOfSymbol.forEach(function (instance) {
-        Helpers.clog("---- Updating instance "+instance.name+", in artboard "+instance.getParentArtboard().name);
+        Helpers.clog("------ Updating instance "+instance.name+", in artboard "+instance.getParentArtboard().name);
         instance.master = symbolToApply;
         instancesChanged++;
       });
 
-      Helpers.clog("-- Updating overrides");
+      Helpers.clog("---- Updating overrides");
       overridesOfSymbol.forEach(function (override) {
         var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
-        Helpers.clog("---- Updating override for "+instanceLayer.name+", in artboard "+instanceLayer.getParentArtboard().name);
+        Helpers.clog("------ Updating override for "+instanceLayer.name+", in artboard "+instanceLayer.getParentArtboard().name);
         instanceLayer.setOverrideValue(instanceLayer.overrides[0], symbolToApply.symbolId.toString());
       });
 
