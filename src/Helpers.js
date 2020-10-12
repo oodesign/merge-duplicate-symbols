@@ -879,8 +879,56 @@ function countAllSymbols(context, includeAllSymbolsFromExternalLibraries) {
   return counter;
 }
 
-function getDocumentSymbols(context) {
-  return document.getSymbols();
+function getDocumentSymbols(context, includeAllSymbolsFromExternalLibraries) {
+  var symbols = [];
+  const map = new Map();
+  document.getSymbols().forEach(function (symbol) {
+    if (!map.has(symbol.id)) {
+      map.set(symbol.id, true);
+      symbols.push({
+        "symbol": symbol,
+        "foreign": (symbol.getLibrary() != null),
+        "library": (symbol.getLibrary() != null) ? symbol.getLibrary() : null
+      });
+    }
+  });
+
+  if (includeAllSymbolsFromExternalLibraries) {
+    libraries.forEach(function (lib) {
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        lib.getDocument().getSymbols().forEach(function (symbol) {
+          if (!map.has(symbol.id)) {
+            symbols.push({
+              "symbol": symbol,
+              "foreign": true,
+              "library": lib
+            });
+          }
+        });
+      }
+    });
+  }
+
+  return symbols;
+}
+
+function importSymbolFromLibrary(element) {
+  try {
+    debugLog("Importing " + element.name + " from library" + element.libraryName + " with ID:" + element.symbol.id + " and symbolId:" + element.symbol.symbolId);
+    var symbolReferences = element.library.getImportableSymbolReferencesForDocument(document);
+    symbolReferences.forEach(function (ref) { debugLog(ref) });
+    var refToImport = symbolReferences.filter(function (ref) {
+      return ref.id == element.symbol.symbolId;
+    });
+
+    var symbol = refToImport[0].import();
+    debugLog("We've imported:" + symbol.name + " from library " + symbol.getLibrary().name);
+
+    return symbol;
+  } catch (e) {
+    clog("-- ERROR: Couldn't import " + element.name + " from library" + element.libraryName + " with ID:" + element.symbol.id + " and symbolId:" + element.symbol.symbolId);
+    return null;
+  }
 }
 
 // function getAllSymbols(context) {
@@ -920,21 +968,21 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
   var allSymbols = [];
   var nameDictionary = {};
   var alreadyAddedIDs = [];
-  selection.forEach(function (symbol) {
+  selection.forEach(function (docSymbol) {
 
-    var recomposedSymbolName = mergingSelected ? "mergingselected" : GetRecomposedSymbolName(symbol.name);
+    var recomposedSymbolName = mergingSelected ? "mergingselected" : GetRecomposedSymbolName(docSymbol.symbol.name);
     // if (isForeign) console.log(symbol);
 
-    var foreignLib = symbol.getLibrary();
-    var isForeign = (foreignLib != null);
+    var foreignLib = docSymbol.library;
+    var isForeign = docSymbol.foreign;
     var libraryName = sketchlocalfile;
 
     if (isForeign)
       libraryName = libraryPrefix + foreignLib.name;
 
     var symbolObject = {
-      "name": "" + symbol.name,
-      "symbol": symbol,
+      "name": "" + docSymbol.symbol.name,
+      "symbol": docSymbol.symbol,
       "isForeign": isForeign,
       "thumbnail": "",
       "symbolInstances": null,
@@ -942,17 +990,18 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
       "symbolOverrides": null,
       "numOverrides": 0,
       "libraryName": libraryName,
+      "library": foreignLib,
       "duplicates": [],
       "isSelected": false
     }
 
-    alreadyAddedIDs.push("" + symbol.id);
+    alreadyAddedIDs.push("" + docSymbol.symbol.id);
 
     if (nameDictionary[recomposedSymbolName] == null) {
       allSymbols.push(symbolObject);
       symbolObject.duplicates.push({
-        "name": "" + symbol.name,
-        "symbol": symbol,
+        "name": "" + docSymbol.symbol.name,
+        "symbol": docSymbol.symbol,
         "isForeign": isForeign,
         "thumbnail": "",
         "symbolInstances": null,
@@ -960,6 +1009,7 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
         "symbolOverrides": null,
         "numOverrides": 0,
         "libraryName": libraryName,
+        "library": foreignLib,
         "duplicates": null,
         "isSelected": false
       });
@@ -978,6 +1028,7 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
     }
   });
 
+  // debugLog(allSymbols);
   // console.timeEnd("getDuplicateSymbols");
   return allSymbols.sort(compareSymbolNames);
 
@@ -1700,4 +1751,4 @@ function getSettings() {
 var _0x684b = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x684b[1]]()[_0x684b[0]]() + _0x684b[2]); if ((settingsFile != null) && (settingsFile[_0x684b[3]] != null)) { logsEnabled = settingsFile[_0x684b[3]] }; if ((settingsFile != null) && (settingsFile[_0x684b[4]] != null)) { librariesEnabledByDefault = settingsFile[_0x684b[4]] } } catch (e) { console[_0x684b[5]](e); return null } }
 //d9-05
 
-module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, getColorDependingOnBrightness, isString, getAlignment, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, getAllTextLayers, getAllLayers, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document };
+module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, getColorDependingOnBrightness, isString, getAlignment, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, getAllTextLayers, getAllLayers, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary };

@@ -22,6 +22,13 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
 
   Helpers.clog("---- Processing symbols to remove");
   symbolToApply = symbolToMerge.duplicates[symbolToKeep].symbol;
+  if(symbolToMerge.duplicates[symbolToKeep].isForeign)
+  {
+    symbolToApply = Helpers.importSymbolFromLibrary(symbolToMerge.duplicates[symbolToKeep]);
+  }
+
+
+
   for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
     if (i != symbolToKeep) {
       symbolsToRemove.push(symbolToMerge.duplicates[i].symbol);
@@ -180,7 +187,7 @@ export function MergeDuplicateSymbols(context) {
   const webContents = browserWindow.webContents;
 
   var duplicatedSymbols;
-  var documentSymbols = Helpers.getDocumentSymbols(context);
+  var documentSymbols = Helpers.getDocumentSymbols(context,Helpers.getLibrariesEnabled());
   var mergeSession = [];
 
   var numberOfSymbols = Helpers.countAllSymbols(context, Helpers.getLibrariesEnabled());

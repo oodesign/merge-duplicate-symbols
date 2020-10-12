@@ -5547,8 +5547,56 @@ function countAllSymbols(context, includeAllSymbolsFromExternalLibraries) {
   return counter;
 }
 
-function getDocumentSymbols(context) {
-  return document.getSymbols();
+function getDocumentSymbols(context, includeAllSymbolsFromExternalLibraries) {
+  var symbols = [];
+  var map = new Map();
+  document.getSymbols().forEach(function (symbol) {
+    if (!map.has(symbol.id)) {
+      map.set(symbol.id, true);
+      symbols.push({
+        "symbol": symbol,
+        "foreign": symbol.getLibrary() != null,
+        "library": symbol.getLibrary() != null ? symbol.getLibrary() : null
+      });
+    }
+  });
+
+  if (includeAllSymbolsFromExternalLibraries) {
+    libraries.forEach(function (lib) {
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        lib.getDocument().getSymbols().forEach(function (symbol) {
+          if (!map.has(symbol.id)) {
+            symbols.push({
+              "symbol": symbol,
+              "foreign": true,
+              "library": lib
+            });
+          }
+        });
+      }
+    });
+  }
+
+  return symbols;
+}
+
+function importSymbolFromLibrary(element) {
+  try {
+    debugLog("Importing " + element.name + " from library" + element.libraryName + " with ID:" + element.symbol.id + " and symbolId:" + element.symbol.symbolId);
+    var symbolReferences = element.library.getImportableSymbolReferencesForDocument(document);
+    symbolReferences.forEach(function (ref) {
+      debugLog(ref);
+    });
+    var refToImport = symbolReferences.filter(function (ref) {
+      return ref.id == element.symbol.symbolId;
+    });
+    var symbol = refToImport[0].import();
+    debugLog("We've imported:" + symbol.name + " from library " + symbol.getLibrary().name);
+    return symbol;
+  } catch (e) {
+    clog("-- ERROR: Couldn't import " + element.name + " from library" + element.libraryName + " with ID:" + element.symbol.id + " and symbolId:" + element.symbol.symbolId);
+    return null;
+  }
 } // function getAllSymbols(context) {
 //   var symbols = [];
 //   document.getSymbols().forEach(function (symbol) {
@@ -5584,16 +5632,16 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
   var allSymbols = [];
   var nameDictionary = {};
   var alreadyAddedIDs = [];
-  selection.forEach(function (symbol) {
-    var recomposedSymbolName = mergingSelected ? "mergingselected" : GetRecomposedSymbolName(symbol.name); // if (isForeign) console.log(symbol);
+  selection.forEach(function (docSymbol) {
+    var recomposedSymbolName = mergingSelected ? "mergingselected" : GetRecomposedSymbolName(docSymbol.symbol.name); // if (isForeign) console.log(symbol);
 
-    var foreignLib = symbol.getLibrary();
-    var isForeign = foreignLib != null;
+    var foreignLib = docSymbol.library;
+    var isForeign = docSymbol.foreign;
     var libraryName = sketchlocalfile;
     if (isForeign) libraryName = libraryPrefix + foreignLib.name;
     var symbolObject = {
-      "name": "" + symbol.name,
-      "symbol": symbol,
+      "name": "" + docSymbol.symbol.name,
+      "symbol": docSymbol.symbol,
       "isForeign": isForeign,
       "thumbnail": "",
       "symbolInstances": null,
@@ -5601,16 +5649,17 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
       "symbolOverrides": null,
       "numOverrides": 0,
       "libraryName": libraryName,
+      "library": foreignLib,
       "duplicates": [],
       "isSelected": false
     };
-    alreadyAddedIDs.push("" + symbol.id);
+    alreadyAddedIDs.push("" + docSymbol.symbol.id);
 
     if (nameDictionary[recomposedSymbolName] == null) {
       allSymbols.push(symbolObject);
       symbolObject.duplicates.push({
-        "name": "" + symbol.name,
-        "symbol": symbol,
+        "name": "" + docSymbol.symbol.name,
+        "symbol": docSymbol.symbol,
         "isForeign": isForeign,
         "thumbnail": "",
         "symbolInstances": null,
@@ -5618,6 +5667,7 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
         "symbolOverrides": null,
         "numOverrides": 0,
         "libraryName": libraryName,
+        "library": foreignLib,
         "duplicates": null,
         "isSelected": false
       });
@@ -5632,7 +5682,8 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
       if (index > -1) allSymbols.splice(index, 1);
       nameDictionary[key] = null;
     }
-  }); // console.timeEnd("getDuplicateSymbols");
+  }); // debugLog(allSymbols);
+  // console.timeEnd("getDuplicateSymbols");
 
   return allSymbols.sort(compareSymbolNames);
 }
@@ -6349,7 +6400,8 @@ module.exports = {
   getAcquiredLicense: getAcquiredLicense,
   getDocumentSymbols: getDocumentSymbols,
   debugLog: debugLog,
-  document: document
+  document: document,
+  importSymbolFromLibrary: importSymbolFromLibrary
 };
 
 /***/ }),
@@ -6490,7 +6542,7 @@ function onValidate(_0x8a0ax2) {
 function triggerMethod(context) {
   Helpers.LoadSettings();
   Helpers.clog("Sketch version:" + sketch.version.sketch);
-  Helpers.clog("Merge Duplicates version: 6.4.2");
+  Helpers.clog("Merge Duplicates version: 7.0.0");
   Helpers.clog("License: " + Helpers.getAcquiredLicense());
 
   switch (globalCommand) {
@@ -6693,6 +6745,10 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
   Helpers.clog("---- Processing symbols to remove");
   symbolToApply = symbolToMerge.duplicates[symbolToKeep].symbol;
 
+  if (symbolToMerge.duplicates[symbolToKeep].isForeign) {
+    symbolToApply = Helpers.importSymbolFromLibrary(symbolToMerge.duplicates[symbolToKeep]);
+  }
+
   for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
     if (i != symbolToKeep) {
       symbolsToRemove.push(symbolToMerge.duplicates[i].symbol);
@@ -6826,7 +6882,7 @@ function MergeDuplicateSymbols(context) {
   var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
   var webContents = browserWindow.webContents;
   var duplicatedSymbols;
-  var documentSymbols = Helpers.getDocumentSymbols(context);
+  var documentSymbols = Helpers.getDocumentSymbols(context, Helpers.getLibrariesEnabled());
   var mergeSession = [];
   var numberOfSymbols = Helpers.countAllSymbols(context, Helpers.getLibrariesEnabled());
   Helpers.clog("Local symbols: " + numberOfSymbols[0] + ". Library symbols:" + numberOfSymbols[1] + ". Libraries enabled:" + Helpers.getLibrariesEnabled());
