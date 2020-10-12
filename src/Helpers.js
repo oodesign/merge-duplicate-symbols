@@ -1644,13 +1644,26 @@ function getNSImageData(nsImage) {
 function getThumbnail(element) {
   var component = element.symbol;
   if (element.isForeign) {
-    var originLibrary = element.symbol.getLibrary();
-    var libDocument = originLibrary.getDocument();
-    component = libDocument.getLayerWithID(element.symbol.id);
+    try {
+
+      var instances = element.symbol.getAllInstances();
+      if (instances.length > 0) {
+        clog("---- Foreign. Getting image using first instance.");
+        component = instances[0];
+      }
+      else {
+        clog("---- Foreign. Getting image using library reference.");
+        var originLibrary = element.symbol.getLibrary();
+        var libDocument = originLibrary.getDocument();
+        component = libDocument.getLayerWithID(element.symbol.id);
+      }
+    } catch (e) {
+      clog("---- ERROR: Couldn't load (foreign symbol) " + element.symbol.name + " library document.")
+    }
   }
 
   try {
-    const options = { formats: 'png', output: false };
+    const options = { scales: '3', formats: 'png', output: false };
     var buffer = sketch.export(component, options);
     var image64 = buffer.toString('base64');
     return image64;

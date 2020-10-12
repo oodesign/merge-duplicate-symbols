@@ -6222,13 +6222,26 @@ function getThumbnail(element) {
   var component = element.symbol;
 
   if (element.isForeign) {
-    var originLibrary = element.symbol.getLibrary();
-    var libDocument = originLibrary.getDocument();
-    component = libDocument.getLayerWithID(element.symbol.id);
+    try {
+      var instances = element.symbol.getAllInstances();
+
+      if (instances.length > 0) {
+        clog("---- Foreign. Getting image using first instance.");
+        component = instances[0];
+      } else {
+        clog("---- Foreign. Getting image using library reference.");
+        var originLibrary = element.symbol.getLibrary();
+        var libDocument = originLibrary.getDocument();
+        component = libDocument.getLayerWithID(element.symbol.id);
+      }
+    } catch (e) {
+      clog("---- ERROR: Couldn't load (foreign symbol) " + element.symbol.name + " library document.");
+    }
   }
 
   try {
     var options = {
+      scales: '3',
       formats: 'png',
       output: false
     };
@@ -6659,6 +6672,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var sketch_module_web_view_remote__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sketch-module-web-view/remote */ "./node_modules/sketch-module-web-view/remote.js");
 /* harmony import */ var sketch_module_web_view_remote__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sketch_module_web_view_remote__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Helpers */ "./src/Helpers.js");
+/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_Helpers__WEBPACK_IMPORTED_MODULE_2__);
+
 
 
 
@@ -6707,13 +6723,23 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
       Helpers.clog("---- Updating overrides");
       overridesOfSymbol.forEach(function (override) {
         var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
-        Helpers.clog("------ Updating override for " + instanceLayer.name + ", in artboard " + instanceLayer.getParentArtboard().name);
-        instanceLayer.setOverrideValue(instanceLayer.overrides[0], symbolToApply.symbolId.toString());
+        var instanceOverride = instanceLayer.overrides.filter(function (ov) {
+          return ov.id == override.override.id;
+        });
+
+        try {
+          Helpers.clog("------ Updating override for " + instanceLayer.name + ", in artboard " + instanceLayer.getParentArtboard().name);
+          instanceLayer.setOverrideValue(instanceOverride[0], symbolToApply.symbolId.toString());
+        } catch (e) {
+          Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name + ", in artboard " + instanceLayer.getParentArtboard().name);
+        }
       });
-      symbolToMerge.duplicates[i].symbol.remove();
     }
   }
 
+  symbolsToRemove.forEach(function (symbolToRemove) {
+    symbolToRemove.remove();
+  });
   return [symbolsRemoved, instancesChanged, overridesChanged];
 }
 

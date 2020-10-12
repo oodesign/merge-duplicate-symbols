@@ -1,5 +1,6 @@
 import BrowserWindow from 'sketch-module-web-view'
 import { getWebview } from 'sketch-module-web-view/remote'
+import { debugLog } from './Helpers';
 const Helpers = require("./Helpers");
 
 const webviewIdentifier = 'merge-duplicates.webview'
@@ -47,7 +48,7 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
 
       Helpers.clog("---- Updating instances");
       instancesOfSymbol.forEach(function (instance) {
-        Helpers.clog("------ Updating instance "+instance.name+", in artboard "+instance.getParentArtboard().name);
+        Helpers.clog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name);
         instance.master = symbolToApply;
         instancesChanged++;
       });
@@ -55,13 +56,23 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
       Helpers.clog("---- Updating overrides");
       overridesOfSymbol.forEach(function (override) {
         var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
-        Helpers.clog("------ Updating override for "+instanceLayer.name+", in artboard "+instanceLayer.getParentArtboard().name);
-        instanceLayer.setOverrideValue(instanceLayer.overrides[0], symbolToApply.symbolId.toString());
+        var instanceOverride = instanceLayer.overrides.filter(function (ov) {
+          return ov.id == override.override.id;
+        });
+        try {
+          Helpers.clog("------ Updating override for " + instanceLayer.name + ", in artboard " + instanceLayer.getParentArtboard().name);
+          instanceLayer.setOverrideValue(instanceOverride[0], symbolToApply.symbolId.toString());
+        } catch (e) {
+          Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name + ", in artboard " + instanceLayer.getParentArtboard().name);
+        }
       });
 
-      symbolToMerge.duplicates[i].symbol.remove();
     }
   }
+
+  symbolsToRemove.forEach(function (symbolToRemove) {
+    symbolToRemove.remove();
+  });
 
   return [symbolsRemoved, instancesChanged, overridesChanged];
 }
