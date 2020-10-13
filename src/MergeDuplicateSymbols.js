@@ -40,8 +40,8 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
       if (!symbolToMerge.duplicates[i].isForeign)
         symbolsRemoved++;
 
-      var instancesOfSymbol = symbolToMerge.duplicates[i].symbolInstances;
-      var overridesOfSymbol = symbolToMerge.duplicates[i].symbolOverrides;
+      var instancesOfSymbol = Helpers.getSymbolInstances(context, symbolToMerge.duplicates[i].symbol);
+      var overridesOfSymbol = Helpers.getSymbolOverrides(context, symbolToMerge.duplicates[i].symbol);
       var wasUnlinked = false;
 
 

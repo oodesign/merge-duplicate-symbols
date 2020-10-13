@@ -5582,16 +5582,13 @@ function getDocumentSymbols(context, includeAllSymbolsFromExternalLibraries) {
 
 function importSymbolFromLibrary(element) {
   try {
-    debugLog("Importing " + element.name + " from library" + element.libraryName + " with ID:" + element.symbol.id + " and symbolId:" + element.symbol.symbolId);
+    clog("-- Importing " + element.name + " from library" + element.libraryName + " with ID:" + element.symbol.id + " and symbolId:" + element.symbol.symbolId);
     var symbolReferences = element.library.getImportableSymbolReferencesForDocument(document);
-    symbolReferences.forEach(function (ref) {
-      debugLog(ref);
-    });
     var refToImport = symbolReferences.filter(function (ref) {
       return ref.id == element.symbol.symbolId;
     });
     var symbol = refToImport[0].import();
-    debugLog("We've imported:" + symbol.name + " from library " + symbol.getLibrary().name);
+    clog("-- We've imported:" + symbol.name + " from library " + symbol.getLibrary().name);
     return symbol;
   } catch (e) {
     clog("-- ERROR: Couldn't import " + element.name + " from library" + element.libraryName + " with ID:" + element.symbol.id + " and symbolId:" + element.symbol.symbolId);
@@ -6401,7 +6398,9 @@ module.exports = {
   getDocumentSymbols: getDocumentSymbols,
   debugLog: debugLog,
   document: document,
-  importSymbolFromLibrary: importSymbolFromLibrary
+  importSymbolFromLibrary: importSymbolFromLibrary,
+  getSymbolOverrides: getSymbolOverrides,
+  ["getSymbolInstances"]: getSymbolInstances
 };
 
 /***/ }),
@@ -6760,8 +6759,8 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
   for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
     if (i != symbolToKeep) {
       if (!symbolToMerge.duplicates[i].isForeign) symbolsRemoved++;
-      var instancesOfSymbol = symbolToMerge.duplicates[i].symbolInstances;
-      var overridesOfSymbol = symbolToMerge.duplicates[i].symbolOverrides;
+      var instancesOfSymbol = Helpers.getSymbolInstances(context, symbolToMerge.duplicates[i].symbol);
+      var overridesOfSymbol = Helpers.getSymbolOverrides(context, symbolToMerge.duplicates[i].symbol);
       var wasUnlinked = false;
       Helpers.clog("------ Checking if symbol to merge is foreign");
 
