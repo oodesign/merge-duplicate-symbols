@@ -91,7 +91,7 @@ window.DrawSymbolList = (mergeSession) => {
     inner += `<div id="duplicateItem${i}" class="thumbnailContainer symbolPreview alignVerticalCenter ${selected}" onclick="onSymbolClicked(${i})">
                 ${checkbox}
                 <div class="colAvailable verticalLayout thumbnailData" id="duplicateItemThumbnail${i}" >
-                  <div class="rowAvailable thumbnail" style='background-image:url("${symbolWithDuplicates.duplicates[i].thumbnail}")'></div>
+                  <div class="rowAvailable thumbnail" style='background-image:url("data:image/png;base64,${symbolWithDuplicates.duplicates[i].thumbnail}")'></div>
                   <div class="rowAuto primaryText displayFlex"><span class="alignHorizontalCenter">${symbolWithDuplicates.duplicates[i].name} (${symbolWithDuplicates.duplicates[i].libraryName})</span></div>
                   <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${symbolWithDuplicates.duplicates[i].numInstances} instances - Used in ${symbolWithDuplicates.duplicates[i].numOverrides} overrides</span></div>
                 </div>

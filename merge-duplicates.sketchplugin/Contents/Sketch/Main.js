@@ -5706,17 +5706,13 @@ function GetSpecificTextStyleData(context, textStyles, index) {
 function GetSpecificSymbolData(context, symbols, index) {
   var totalInstances = 0;
   var totalOverrides = 0;
-  clog("Processing symbol metadata for: " + symbols[index].name);
 
   for (var i = 0; i < symbols[index].duplicates.length; i++) {
     clog("-- Processing symbol instances for duplicate: " + symbols[index].duplicates[i].name);
     var instances = getSymbolInstances(context, symbols[index].duplicates[i].symbol);
     clog("-- Processing symbol overrides for duplicate: " + symbols[index].duplicates[i].name);
     var overrides = getSymbolOverrides(context, symbols[index].duplicates[i].symbol);
-    clog("-- Processing dimensions for: " + symbols[index].duplicates[i].name); //var width = (300 / symbols[index].duplicates[i].symbol.frame().height()) * symbols[index].duplicates[i].symbol.frame().width();
-
-    clog("-- Processing thumbnail overrides for duplicate: " + symbols[index].duplicates[i].name); //symbols[index].duplicates[i].thumbnail = getBase64(symbols[index].duplicates[i].symbol, width, 300);
-
+    clog("-- Processing thumbnail overrides for duplicate: " + symbols[index].duplicates[i].name);
     symbols[index].duplicates[i].thumbnail = getThumbnail(symbols[index].duplicates[i]);
     symbols[index].duplicates[i].symbolInstances = instances;
     symbols[index].duplicates[i].numInstances = instances.length;
@@ -6723,11 +6719,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var sketch_module_web_view_remote__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sketch-module-web-view/remote */ "./node_modules/sketch-module-web-view/remote.js");
 /* harmony import */ var sketch_module_web_view_remote__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sketch_module_web_view_remote__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Helpers */ "./src/Helpers.js");
-/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_Helpers__WEBPACK_IMPORTED_MODULE_2__);
 
 
 
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
 var Helpers = __webpack_require__(/*! ./Helpers */ "./src/Helpers.js");
 
@@ -6827,24 +6822,29 @@ function MergeSelectedSymbols(context) {
   var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
   var webContents = browserWindow.webContents;
   var mssmergeSession = [];
-  var selection = context.selection;
+  var selectedLayers = Helpers.document.selectedLayers.layers;
+  var selection = [];
 
-  if (selection.count() < 2) {
-    context.document.showMessage("Wop! Select at least two symbols and run the plugin again :)");
+  if (selectedLayers.length < 2) {
+    UI.message("Wop! Select at least two symbols and run the plugin again :)");
     onShutdown(webviewMSSIdentifier);
   } else {
     var areAllSymbols = true;
-
-    for (var i = 0; i < selection.count(); i++) {
-      if (selection[i].class() != "MSSymbolMaster") {
-        areAllSymbols = false;
-      }
-    }
+    selectedLayers.forEach(function (layer) {
+      if (layer.type.localeCompare("SymbolMaster") != 0) areAllSymbols = false;
+    });
 
     if (!areAllSymbols) {
-      context.document.showMessage("Only symbols can be merged");
+      UI.message("Only symbols can be merged");
     } else {
       Helpers.clog("Loading webview");
+      selectedLayers.forEach(function (layer) {
+        selection.push({
+          "symbol": layer,
+          "foreign": false,
+          "library": null
+        });
+      });
       browserWindow.loadURL(__webpack_require__(/*! ../resources/mergeselectedsymbols.html */ "./resources/mergeselectedsymbols.html"));
     }
   }
@@ -6854,7 +6854,7 @@ function MergeSelectedSymbols(context) {
   });
   webContents.on('did-finish-load', function () {
     Helpers.clog("Webview loaded");
-    webContents.executeJavaScript("LaunchMerge(".concat(JSON.stringify(selection.count()), ")")).catch(console.error);
+    webContents.executeJavaScript("LaunchMerge(".concat(JSON.stringify(selection.length), ")")).catch(console.error);
   });
   webContents.on('GetSymbolData', function () {
     mssmergeSession = [];
@@ -6879,7 +6879,7 @@ function MergeSelectedSymbols(context) {
     var replacedStuff = "";
     if (mergeResults[1] > 0 && mergeResults[2]) replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";else if (mergeResults[1] > 0) replacedStuff = " and replaced " + mergeResults[1] + " instances.";else if (mergeResults[2] > 0) replacedStuff = " and updated " + mergeResults[2] + " overrides.";else replacedStuff = ".";
     Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff);
-    context.document.showMessage("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
+    UI.message("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
     onShutdown(webviewMSSIdentifier);
   });
 }
@@ -6978,10 +6978,10 @@ function MergeDuplicateSymbols(context) {
 
     if (duplicatesSolved > 0) {
       Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff);
-      context.document.showMessage("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
+      UI.message("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
     } else {
       Helpers.clog("Completed merge. No symbols were merged.");
-      context.document.showMessage("No symbols were merged.");
+      UI.message("No symbols were merged.");
     }
   });
 }

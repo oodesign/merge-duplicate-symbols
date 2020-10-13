@@ -1,6 +1,6 @@
 import BrowserWindow from 'sketch-module-web-view'
 import { getWebview } from 'sketch-module-web-view/remote'
-import { debugLog } from './Helpers';
+var UI = require('sketch/ui')
 const Helpers = require("./Helpers");
 
 const webviewIdentifier = 'merge-duplicates.webview'
@@ -76,9 +76,9 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
 
         try {
           Helpers.clog("------ Updating override for " + instanceLayer.name);
-          Helpers.clog("------ "+instanceLayer.name+" has "+instanceLayer.overrides.length+" overrides");
+          Helpers.clog("------ " + instanceLayer.name + " has " + instanceLayer.overrides.length + " overrides");
           instanceLayer.setOverrideValue(instanceOverride[0], symbolToApply.symbolId.toString());
-          Helpers.clog("------ After replace, "+instanceLayer.name+" has "+instanceLayer.overrides.length+" overrides");
+          Helpers.clog("------ After replace, " + instanceLayer.name + " has " + instanceLayer.overrides.length + " overrides");
 
           // overridesMap.forEach(function (override, layerName) {
           //   var overridesToTryToKeep = instanceLayer.overrides.filter(function (ov) {
@@ -121,21 +121,30 @@ export function MergeSelectedSymbols(context) {
   const webContents = browserWindow.webContents;
   var mssmergeSession = [];
 
-  var selection = context.selection;
-  if (selection.count() < 2) {
-    context.document.showMessage("Wop! Select at least two symbols and run the plugin again :)");
+  var selectedLayers = Helpers.document.selectedLayers.layers;
+  var selection = [];
+
+
+  if (selectedLayers.length < 2) {
+    UI.message("Wop! Select at least two symbols and run the plugin again :)");
     onShutdown(webviewMSSIdentifier);
   } else {
     var areAllSymbols = true;
-    for (var i = 0; i < selection.count(); i++) {
-      if (selection[i].class() != "MSSymbolMaster") {
+    selectedLayers.forEach(function (layer) {
+      if (layer.type.localeCompare("SymbolMaster") != 0)
         areAllSymbols = false;
-      }
-    }
+    });
     if (!areAllSymbols) {
-      context.document.showMessage("Only symbols can be merged");
+      UI.message("Only symbols can be merged");
     } else {
       Helpers.clog("Loading webview");
+      selectedLayers.forEach(function (layer) {
+        selection.push({
+          "symbol": layer,
+          "foreign": false,
+          "library": null
+        });
+      });
       browserWindow.loadURL(require('../resources/mergeselectedsymbols.html'));
     }
   }
@@ -146,7 +155,7 @@ export function MergeSelectedSymbols(context) {
 
   webContents.on('did-finish-load', () => {
     Helpers.clog("Webview loaded");
-    webContents.executeJavaScript(`LaunchMerge(${JSON.stringify(selection.count())})`).catch(console.error);
+    webContents.executeJavaScript(`LaunchMerge(${JSON.stringify(selection.length)})`).catch(console.error);
   })
 
   webContents.on('GetSymbolData', () => {
@@ -185,7 +194,7 @@ export function MergeSelectedSymbols(context) {
 
     Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff);
 
-    context.document.showMessage("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
+    UI.message("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
 
     onShutdown(webviewMSSIdentifier);
   });
@@ -302,11 +311,11 @@ export function MergeDuplicateSymbols(context) {
 
     if (duplicatesSolved > 0) {
       Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff);
-      context.document.showMessage("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
+      UI.message("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
     }
     else {
       Helpers.clog("Completed merge. No symbols were merged.");
-      context.document.showMessage("No symbols were merged.");
+      UI.message("No symbols were merged.");
     }
   });
 
