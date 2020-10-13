@@ -60,10 +60,8 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
       });
 
       Helpers.clog("---- Updating overrides");
-      Helpers.debugLog("---- Updating overrides:" + overridesOfSymbol.length);
       overridesOfSymbol.forEach(function (override) {
         var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
-        Helpers.debugLog("---- instanceLayer:" + instanceLayer.name);
         var instanceOverride = instanceLayer.overrides.filter(function (ov) {
           return ov.id == override.override.id;
         });
@@ -78,9 +76,9 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
 
         try {
           Helpers.clog("------ Updating override for " + instanceLayer.name);
-          Helpers.debugLog(instanceLayer.name+" has "+instanceLayer.overrides.length+" overrides");
+          Helpers.clog("------ "+instanceLayer.name+" has "+instanceLayer.overrides.length+" overrides");
           instanceLayer.setOverrideValue(instanceOverride[0], symbolToApply.symbolId.toString());
-          Helpers.debugLog("After replace, "+instanceLayer.name+" has "+instanceLayer.overrides.length+" overrides");
+          Helpers.clog("------ After replace, "+instanceLayer.name+" has "+instanceLayer.overrides.length+" overrides");
 
           // overridesMap.forEach(function (override, layerName) {
           //   var overridesToTryToKeep = instanceLayer.overrides.filter(function (ov) {
