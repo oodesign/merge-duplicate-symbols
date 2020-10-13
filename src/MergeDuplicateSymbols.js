@@ -22,8 +22,7 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
 
   Helpers.clog("---- Processing symbols to remove");
   symbolToApply = symbolToMerge.duplicates[symbolToKeep].symbol;
-  if(symbolToMerge.duplicates[symbolToKeep].isForeign)
-  {
+  if (symbolToMerge.duplicates[symbolToKeep].isForeign) {
     symbolToApply = Helpers.importSymbolFromLibrary(symbolToMerge.duplicates[symbolToKeep]);
   }
 
@@ -61,16 +60,39 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
       });
 
       Helpers.clog("---- Updating overrides");
+      Helpers.debugLog("---- Updating overrides:" + overridesOfSymbol.length);
       overridesOfSymbol.forEach(function (override) {
         var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
+        Helpers.debugLog("---- instanceLayer:" + instanceLayer.name);
         var instanceOverride = instanceLayer.overrides.filter(function (ov) {
           return ov.id == override.override.id;
         });
+
+        // var overridesMap = new Map();
+        // instanceLayer.overrides.forEach(function (override) {
+        //   Helpers.debugLog("IsDefault:" + override.isDefault);
+        //   if (!override.isDefault) {
+        //     overridesMap.set(override.affectedLayer.name.toString(), override);
+        //   }
+        // });
+
         try {
-          Helpers.clog("------ Updating override for " + instanceLayer.name + ", in artboard " + instanceLayer.getParentArtboard().name);
+          Helpers.clog("------ Updating override for " + instanceLayer.name);
+          Helpers.debugLog(instanceLayer.name+" has "+instanceLayer.overrides.length+" overrides");
           instanceLayer.setOverrideValue(instanceOverride[0], symbolToApply.symbolId.toString());
+          Helpers.debugLog("After replace, "+instanceLayer.name+" has "+instanceLayer.overrides.length+" overrides");
+
+          // overridesMap.forEach(function (override, layerName) {
+          //   var overridesToTryToKeep = instanceLayer.overrides.filter(function (ov) {
+          //     return ov.layerName == layerName;
+          //   });
+          //   if (overridesToTryToKeep.length > 0) {
+          //     Helpers.debugLog("Replaced symbol had an override on layer '" + layerName + "'. Will update '" + override.value + "' to " + override.value.toString());
+          //     instanceLayer.setOverrideValue(overridesToTryToKeep[0], override.value.toString());
+          //   }
+          // });
         } catch (e) {
-          Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name + ", in artboard " + instanceLayer.getParentArtboard().name);
+          Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name);
         }
       });
 
@@ -187,7 +209,7 @@ export function MergeDuplicateSymbols(context) {
   const webContents = browserWindow.webContents;
 
   var duplicatedSymbols;
-  var documentSymbols = Helpers.getDocumentSymbols(context,Helpers.getLibrariesEnabled());
+  var documentSymbols = Helpers.getDocumentSymbols(context, Helpers.getLibrariesEnabled());
   var mergeSession = [];
 
   var numberOfSymbols = Helpers.countAllSymbols(context, Helpers.getLibrariesEnabled());
