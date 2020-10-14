@@ -1094,28 +1094,22 @@ function getTextStyleDescription(attributes) {
   return textInfo;
 }
 
-function getLayerStyleDescription(style) {
+function getLayerStyleDescription(sharedStyle) {
   var textInfo = "";
-  try {
-    if (style.style().firstEnabledFill() != null)
-      textInfo += "Fill: #" + style.style().firstEnabledFill().color().immutableModelObject().hexValue().toString();
-  } catch (e) {
-    textInfo += "Fill: No fill";
-  }
 
-  try {
-    if (style.style().firstEnabledFill() != null && style.style().firstEnabledBorder() != null)
-      textInfo += " - ";
-  } catch (e) {
-    textInfo += " ";
+  if (sharedStyle.style.fills.length > 0) {
+    textInfo += "Fill" + ((!sharedStyle.style.fills[0].enabled) ? " (disabled)" : "") + ": " + sharedStyle.style.fills[0].color.substring(0, 7).toUpperCase();
   }
+  else
+    textInfo += "No fill";
 
-  try {
-    if (style.style().firstEnabledBorder() != null)
-      textInfo += "Border: #" + style.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString();
-  } catch (e) {
-    textInfo += "Border: No border";
+  textInfo += " - ";
+
+  if (sharedStyle.style.borders.length > 0) {
+    textInfo += "Border" + ((!sharedStyle.style.borders[0].enabled) ? " (disabled)" : "") + ": " + sharedStyle.style.borders[0].color.substring(0, 7).toUpperCase();
   }
+  else
+    textInfo += "No border";
 
   return textInfo;
 }
@@ -1198,7 +1192,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
       "foreign": (library != null),
       "isSelected": false,
       "isChosen": false,
-      "description": "Missing description",//TODO getLayerStyleDescription(localLayerStyle),
+      "description": getLayerStyleDescription(sharedLayerStyle),
       "thumbnail": "",
       "duplicates": [],
       "isSelected": false,
@@ -1214,7 +1208,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
         "foreign": (library != null),
         "isSelected": false,
         "isChosen": false,
-        "description": "Missing description",//TODO getLayerStyleDescription(localLayerStyle),
+        "description": getLayerStyleDescription(sharedLayerStyle),
         "thumbnail": "",
         "duplicates": null,
         "isSelected": false,
@@ -1240,7 +1234,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
             "foreign": true,
             "isSelected": false,
             "isChosen": false,
-            "description": "Missing description",//TODO getLayerStyleDescription(localLayerStyle),
+            "description": getLayerStyleDescription(sharedLayerStyle),
             "thumbnail": "",
             "duplicates": [],
             "isSelected": false,
@@ -1256,7 +1250,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
               "foreign": true,
               "isSelected": false,
               "isChosen": false,
-              "description": "Missing description",//TODO getLayerStyleDescription(localLayerStyle),
+              "description": getLayerStyleDescription(sharedLayerStyle),
               "thumbnail": "",
               "duplicates": null,
               "isSelected": false,
