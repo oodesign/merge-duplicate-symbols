@@ -1,5 +1,6 @@
 import BrowserWindow from 'sketch-module-web-view'
 import { getWebview } from 'sketch-module-web-view/remote'
+import { debugLog } from './Helpers';
 const Helpers = require("./Helpers");
 
 const webviewMTSFLIdentifier = 'merge-textstylesfromlist.webview'
@@ -20,7 +21,54 @@ function getTextPredicate(style) {
   return predicate;
 }
 
-function MergeTextStyles(context, styleToKeep) {
+
+function MergeTextStyles(context, styleToKeepIndex) {
+  var layersChangedCounter = 0;
+  var overridesChangedCounter = 0;
+  var styleToKeep = currentSelectedStyles[styleToKeepIndex];
+  var styleToApply = styleToKeep.textStyle;
+  Helpers.clog("Merging styles. Keep '" + styleToKeep.name + "'");
+
+  if (styleToKeep.foreign) {
+    styleToApply = Helpers.importTextStyleFromLibrary(styleToKeep);
+  }
+
+  currentSelectedStyles.forEach(function (style) {
+    var instances = style.textStyle.getAllInstancesLayers();
+
+    Helpers.clog("-- Updating "+ instances.length + "instances to " + styleToKeep.name);
+    instances.forEach(function (instance) {
+
+      debugLog(styleToApply);
+
+      instance.sharedStyle = styleToApply;
+      instance.style.syncWithSharedStyle(styleToApply);
+      layersChangedCounter++;
+    });
+
+    var relatedOverrides = Helpers.getRelatedOverrides(context, style.textStyle.id, "textStyle");
+    Helpers.clog("-- Updating "+ relatedOverrides.length + "related overrides to " + styleToKeep.name);
+    relatedOverrides.forEach(function (override) {
+      var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
+      var instanceOverride = instanceLayer.overrides.filter(function (ov) {
+        return ov.id == override.override.id;
+      });
+
+      try {
+        Helpers.clog("------ Updating override for " + instanceLayer.name);
+        instanceLayer.setOverrideValue(instanceOverride[0], styleToApply.id.toString());
+        overridesChangedCounter++;
+      } catch (e) {
+        Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name);
+      }
+    });
+  });
+
+
+  return [layersChangedCounter, overridesChangedCounter];
+}
+
+function MergeTextStyles2(context, styleToKeep) {
   var layersChangedCounter = 0;
   var overridesChangedCounter = 0;
 
