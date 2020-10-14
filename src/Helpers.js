@@ -1145,12 +1145,13 @@ function getTextStyleColor(style) {
     return "000000";
 }
 
-function getOvalThumbnail(style) {
+function getOvalThumbnail(sharedStyle) {
+  debugLog(sharedStyle.name);
   const oval = new ShapePath({
     shapeType: ShapePath.ShapeType.Oval,
     frame: new sketch.Rectangle(0, 0, 300, 300),
-    style: { fills: ['#E11919'] },
-    parent:document.selectedPage
+    style: sharedStyle.style,
+    parent: document.selectedPage
   });
   try {
     const options = { scales: '1', formats: 'png', output: false };
@@ -1185,147 +1186,87 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
   var allStyles = [];
   var nameDictionary = {};
 
+  document.sharedLayerStyles.forEach(function (sharedLayerStyle) {
 
-  context.document.documentData().layerStyles().objects().forEach(function (localLayerStyle) {
+    var library = sharedLayerStyle.getLibrary();
 
     var layerStyleObject = {
-      "layerStyle": localLayerStyle,
-      "name": "" + localLayerStyle.name(),
-      "libraryName": sketchlocalfile,
-      "foreign": false,
+      "layerStyle": sharedLayerStyle,
+      "name": "" + sharedLayerStyle.name,
+      "libraryName": (library != null) ? library.name : sketchlocalfile,
+      "library": library,
+      "foreign": (library != null),
       "isSelected": false,
       "isChosen": false,
-      "description": getLayerStyleDescription(localLayerStyle),
-      "thumbnail": "",//getOvalThumbnail(localLayerStyle),
+      "description": "Missing description",//TODO getLayerStyleDescription(localLayerStyle),
+      "thumbnail": "",
       "duplicates": [],
       "isSelected": false,
-      "contrastMode": shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
+      "contrastMode": false //TODO shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
     }
-    layerStyleObject.duplicates.push({
-      "layerStyle": localLayerStyle,
-      "name": "" + localLayerStyle.name(),
-      "libraryName": sketchlocalfile,
-      "foreign": false,
-      "isSelected": false,
-      "isChosen": false,
-      "description": getLayerStyleDescription(localLayerStyle),
-      "thumbnail": "",//getOvalThumbnail(localLayerStyle),
-      "duplicates": null,
-      "isSelected": false,
-      "contrastMode": shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
-    });
 
-    if (nameDictionary[localLayerStyle.name()] == null) {
-      allStyles.push(layerStyleObject);
-      nameDictionary[localLayerStyle.name()] = layerStyleObject;
-    }
-    else {
-      nameDictionary[localLayerStyle.name()].duplicates.push(layerStyleObject);
-    }
-  });
-
-
-
-
-  context.document.documentData().foreignLayerStyles().forEach(foreignStyle => {
-
-    var indexOfForeign = indexOfForeignStyle(allStyles, foreignStyle);
-    var foreignLib = getLibraryByID(foreignStyle.libraryID());
-    if (indexOfForeign == -1) {
-      var layerStyleObject = {
-        "originalStyle": foreignStyle,
-        "layerStyle": foreignStyle.localObject(),
-        "name": "" + foreignStyle.localObject().name(),
-        "libraryName": libraryPrefix + ((foreignLib != null) ? foreignLib.name() : "This library is not available"),
-        "foreign": true,
-        "localShareID": foreignStyle.localShareID(),
-        "remoteShareID": foreignStyle.remoteShareID(),
-        "correlativeStyles": [],
-        "isSelected": false,
-        "isChosen": false,
-        "description": getLayerStyleDescription(foreignStyle.localObject()),
-        "thumbnail": "",//getOvalThumbnail(foreignStyle.localObject()),
-        "contrastMode": shouldEnableContrastMode(getLayerStyleColor(foreignStyle.localObject())),
-        "duplicates": [],
-        "isSelected": false
-      }
+    if (nameDictionary[sharedLayerStyle.name] == null) {
       layerStyleObject.duplicates.push({
-        "originalStyle": foreignStyle,
-        "layerStyle": foreignStyle.localObject(),
-        "name": "" + foreignStyle.localObject().name(),
-        "libraryName": libraryPrefix + ((foreignLib != null) ? foreignLib.name() : "This library is not available"),
-        "foreign": true,
-        "localShareID": foreignStyle.localShareID(),
-        "remoteShareID": foreignStyle.remoteShareID(),
-        "correlativeStyles": [],
-        "isTakenOver": false,
+        "layerStyle": sharedLayerStyle,
+        "name": "" + sharedLayerStyle.name,
+        "libraryName": (library != null) ? library.name : sketchlocalfile,
+        "library": library,
+        "foreign": (library != null),
         "isSelected": false,
         "isChosen": false,
-        "description": getLayerStyleDescription(foreignStyle.localObject()),
-        "thumbnail": "",//getOvalThumbnail(foreignStyle.localObject()),,
-        "contrastMode": shouldEnableContrastMode(getLayerStyleColor(foreignStyle.localObject())),
+        "description": "Missing description",//TODO getLayerStyleDescription(localLayerStyle),
+        "thumbnail": "",
         "duplicates": null,
-        "isSelected": false
+        "isSelected": false,
+        "contrastMode": false //TODO shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
       });
-
-      if (nameDictionary[foreignStyle.localObject().name()] == null) {
-        allStyles.push(layerStyleObject);
-        nameDictionary[foreignStyle.localObject().name()] = layerStyleObject;
-      }
-      else {
-        nameDictionary[foreignStyle.localObject().name()].duplicates.push(layerStyleObject);
-      }
+      allStyles.push(layerStyleObject);
+      nameDictionary[sharedLayerStyle.name] = layerStyleObject;
     }
     else {
-      if (typeof (indexOfForeign) === 'number')
-        allStyles[indexOfForeign].correlativeStyles.push(foreignStyle);
-      else
-        allStyles[indexOfForeign[0]].duplicates[indexOfForeign[1]].correlativeStyles.push(foreignStyle);
-
-      // console.log("indexOfForeign: "+indexOfForeign +" , while allStyles.length is: "+allStyles.length);
-      // console.log(allStyles[indexOfForeign]);
-      // console.log(indexOfForeign);
-      //allStyles[indexOfForeign[0]].duplicates[indexOfForeign[1]].correlativeStyles.push(style);
+      nameDictionary[sharedLayerStyle.name].duplicates.push(layerStyleObject);
     }
-
   });
-
-
-
-
-
-  // console.time("getDuplicateExternalSymbols");
 
   if (includeAllStylesFromExternalLibraries) {
-    var libraries = NSApp.delegate().librariesController().libraries();
     libraries.forEach(function (lib) {
-      if (lib && lib.libraryID() && lib.enabled() && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.libraryID().toString()) != 0) {
-
-        lib.document().layerStyles().objects().forEach(function (libraryStyle) {
-
-          var indexOfForeign = indexOfForeignStyle2(allStyles, libraryStyle);
-          if ((indexOfForeign != null) && (indexOfForeign != -1)) {
-            if (indexOfForeign[1] == 0)
-              allStyles.splice([indexOfForeign[0]], 1);
-            else
-              allStyles[indexOfForeign[0]].duplicates.splice(indexOfForeign[1], 1);
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        lib.getDocument().sharedLayerStyles.forEach(function (sharedLayerStyle) {
+          var layerStyleObject = {
+            "layerStyle": sharedLayerStyle,
+            "name": "" + sharedLayerStyle.name,
+            "libraryName": lib.name,
+            "library": lib,
+            "foreign": true,
+            "isSelected": false,
+            "isChosen": false,
+            "description": "Missing description",//TODO getLayerStyleDescription(localLayerStyle),
+            "thumbnail": "",
+            "duplicates": [],
+            "isSelected": false,
+            "contrastMode": false //TODO shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
           }
 
-          if (nameDictionary[libraryStyle.name()] != null) {
-            nameDictionary[libraryStyle.name()].duplicates.push({
-              "layerStyle": libraryStyle,
-              "name": "" + libraryStyle.name(),
-              "libraryName": libraryPrefix + lib.name(),
-              "foreign": true,
+          if (nameDictionary[sharedLayerStyle.name] == null) {
+            layerStyleObject.duplicates.push({
+              "layerStyle": sharedLayerStyle,
+              "name": "" + sharedLayerStyle.name,
+              "libraryName": lib.name,
               "library": lib,
+              "foreign": true,
               "isSelected": false,
               "isChosen": false,
-              "description": getLayerStyleDescription(libraryStyle),
-              "thumbnail": "",//getOvalThumbnail(libraryStyle),
-              "contrastMode": shouldEnableContrastMode(getLayerStyleColor(libraryStyle)),
-              "duplicates": [],
-              "isSelected": false
+              "description": "Missing description",//TODO getLayerStyleDescription(localLayerStyle),
+              "thumbnail": "",
+              "duplicates": null,
+              "isSelected": false,
+              "contrastMode": false //TODO shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
             });
+            allStyles.push(layerStyleObject);
+            nameDictionary[sharedLayerStyle.name] = layerStyleObject;
+          }
+          else {
+            nameDictionary[sharedLayerStyle.name].duplicates.push(layerStyleObject);
           }
         });
       }
