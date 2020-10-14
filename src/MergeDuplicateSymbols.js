@@ -66,27 +66,9 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
           return ov.id == override.override.id;
         });
 
-        // var overridesMap = new Map();
-        // instanceLayer.overrides.forEach(function (override) {
-        //   Helpers.debugLog("IsDefault:" + override.isDefault);
-        //   if (!override.isDefault) {
-        //     overridesMap.set(override.affectedLayer.name.toString(), override);
-        //   }
-        // });
-
         try {
           Helpers.clog("------ Updating override for " + instanceLayer.name);
           instanceLayer.setOverrideValue(instanceOverride[0], symbolToApply.symbolId.toString());
-
-          // overridesMap.forEach(function (override, layerName) {
-          //   var overridesToTryToKeep = instanceLayer.overrides.filter(function (ov) {
-          //     return ov.layerName == layerName;
-          //   });
-          //   if (overridesToTryToKeep.length > 0) {
-          //     Helpers.debugLog("Replaced symbol had an override on layer '" + layerName + "'. Will update '" + override.value + "' to " + override.value.toString());
-          //     instanceLayer.setOverrideValue(overridesToTryToKeep[0], override.value.toString());
-          //   }
-          // });
         } catch (e) {
           Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name);
         }

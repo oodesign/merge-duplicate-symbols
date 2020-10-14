@@ -1211,6 +1211,59 @@ function getTextThumbnail(style) {
   return base64;
 }
 
+function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
+  var allStyles = [];
+
+  document.sharedLayerStyles.forEach(function (sharedLayerStyle) {
+
+    var library = sharedLayerStyle.getLibrary();
+
+    var layerStyleObject = {
+      "layerStyle": sharedLayerStyle,
+      "name": "" + sharedLayerStyle.name,
+      "libraryName": (library != null) ? library.name : sketchlocalfile,
+      "library": library,
+      "foreign": (library != null),
+      "isSelected": false,
+      "isChosen": false,
+      "description": getLayerStyleDescription(sharedLayerStyle),
+      "thumbnail": getOvalThumbnail(sharedLayerStyle),
+      "duplicates": [],
+      "isSelected": false,
+      "contrastMode": false //TODO shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
+    }
+
+    allStyles.push(layerStyleObject);
+  });
+
+  if (includeAllStylesFromExternalLibraries) {
+    libraries.forEach(function (lib) {
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        lib.getDocument().sharedLayerStyles.forEach(function (sharedLayerStyle) {
+          var layerStyleObject = {
+            "layerStyle": sharedLayerStyle,
+            "name": "" + sharedLayerStyle.name,
+            "libraryName": lib.name,
+            "library": lib,
+            "foreign": true,
+            "isSelected": false,
+            "isChosen": false,
+            "description": getLayerStyleDescription(sharedLayerStyle),
+            "thumbnail": getOvalThumbnail(sharedLayerStyle),
+            "duplicates": [],
+            "isSelected": false,
+            "contrastMode": false //TODO shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
+          }
+          allStyles.push(layerStyleObject);
+        });
+      }
+    });
+  }
+
+  return allStyles;
+
+}
+
 function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries) {
 
   var allStyles = [];
@@ -1510,144 +1563,9 @@ function getLibraryByID(libID) {
 }
 
 
-function getDefinedLayerStyles(context, includeAllStylesFromExternalLibraries, styleName) {
-  var layerStyles = [];
-  var localLayerStyles = context.document.documentData().layerStyles().objects();
-
-  for (var i = 0; i < localLayerStyles.count(); i++) {
-    var style = localLayerStyles.objectAtIndex(i);
-
-    if (styleName != null) {
-      if (styleName.localeCompare(style.name()) == 0) {
-        layerStyles.push({
-          "layerStyle": style,
-          "name": "" + style.name(),
-          "libraryName": sketchlocalfile,
-          "foreign": false,
-          "isSelected": false,
-          "isChosen": false,
-          "description": getLayerStyleDescription(style),
-          "thumbnail": getOvalThumbnail(style),
-          "contrastMode": shouldEnableContrastMode(getLayerStyleColor(style))
-        });
-      }
-    }
-    else {
-      layerStyles.push({
-        "layerStyle": style,
-        "name": "" + style.name(),
-        "libraryName": sketchlocalfile,
-        "foreign": false,
-        "isSelected": false,
-        "isChosen": false,
-        "description": getLayerStyleDescription(style),
-        "thumbnail": getOvalThumbnail(style),
-        "contrastMode": shouldEnableContrastMode(getLayerStyleColor(style))
-      });
-    }
-
-  }
-
-  context.document.documentData().foreignLayerStyles().forEach(style => {
-
-    var indexOfForeign = indexOfForeignStyle(layerStyles, style);
-    var foreignLib = getLibraryByID(style.libraryID());
-
-    if (indexOfForeign == -1) {
-      if (styleName != null) {
-        if (styleName.localeCompare(style.localObject().name()) == 0) {
-          layerStyles.push({
-            "originalStyle": style,
-            "layerStyle": style.localObject(),
-            "name": "" + style.localObject().name(),
-            "libraryName": libraryPrefix + ((foreignLib != null) ? foreignLib.name() : "This library is not available"),
-            "foreign": true,
-            "localShareID": style.localShareID(),
-            "remoteShareID": style.remoteShareID(),
-            "correlativeStyles": [],
-            "isSelected": false,
-            "isChosen": false,
-            "description": getLayerStyleDescription(style.localObject()),
-            "thumbnail": getOvalThumbnail(style.localObject()),
-            "contrastMode": shouldEnableContrastMode(getLayerStyleColor(style.localObject()))
-          });
-        }
-      }
-      else {
-        layerStyles.push({
-          "originalStyle": style,
-          "layerStyle": style.localObject(),
-          "name": "" + style.localObject().name(),
-          "libraryName": libraryPrefix + ((foreignLib != null) ? foreignLib.name() : "This library is not available"),
-          "foreign": true,
-          "localShareID": style.localShareID(),
-          "remoteShareID": style.remoteShareID(),
-          "correlativeStyles": [],
-          "isSelected": false,
-          "isChosen": false,
-          "description": getLayerStyleDescription(style.localObject()),
-          "thumbnail": getOvalThumbnail(style.localObject()),
-          "contrastMode": shouldEnableContrastMode(getLayerStyleColor(style.localObject()))
-        });
-      }
-    }
-    else {
-      layerStyles[indexOfForeign].correlativeStyles.push(style);
-    }
-
-  });
-
-  if (includeAllStylesFromExternalLibraries) {
-
-    //console.log("Libraries--------");
-
-    var libraries = NSApp.delegate().librariesController().libraries();
-
-    libraries.forEach(function (lib) {
-
-      if (lib && lib.libraryID() && lib.enabled() && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.libraryID().toString()) != 0) {
-
-        lib.document().layerStyles().objects().forEach(function (libraryStyle) {
-          //console.log("----Library:"+libraryStyle.objectID());
-          if (!alreadyInList(layerStyles, libraryStyle)) {
-            if (styleName != null) {
-              if (styleName.localeCompare(libraryStyle.name()) == 0) {
-                layerStyles.push({
-                  "layerStyle": libraryStyle,
-                  "name": "" + libraryStyle.name(),
-                  "libraryName": libraryPrefix + lib.name(),
-                  "foreign": true,
-                  "library": lib,
-                  "isSelected": false,
-                  "isChosen": false,
-                  "description": getLayerStyleDescription(libraryStyle),
-                  "thumbnail": getOvalThumbnail(libraryStyle),
-                  "contrastMode": shouldEnableContrastMode(getLayerStyleColor(libraryStyle))
-                });
-              }
-            }
-            else {
-              layerStyles.push({
-                "layerStyle": libraryStyle,
-                "name": "" + libraryStyle.name(),
-                "libraryName": libraryPrefix + lib.name(),
-                "foreign": true,
-                "library": lib,
-                "isSelected": false,
-                "isChosen": false,
-                "description": getLayerStyleDescription(libraryStyle),
-                "thumbnail": getOvalThumbnail(libraryStyle),
-                "contrastMode": shouldEnableContrastMode(getLayerStyleColor(libraryStyle))
-              });
-            }
-          }
-        });
-      }
-    });
-  }
-
-  layerStyles = layerStyles.sort(compareStyleArrays);
-  return layerStyles = layerStyles.sort(compareStyleArrays);
+function getDefinedLayerStyles(context, includeAllStylesFromExternalLibraries) {
+  var layerStyles = getAllLayerStyles(includeAllStylesFromExternalLibraries);
+  return layerStyles.sort(compareStyleArrays);
   ;
 }
 
@@ -1729,4 +1647,4 @@ function getSettings() {
 var _0x684b = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x684b[1]]()[_0x684b[0]]() + _0x684b[2]); if ((settingsFile != null) && (settingsFile[_0x684b[3]] != null)) { logsEnabled = settingsFile[_0x684b[3]] }; if ((settingsFile != null) && (settingsFile[_0x684b[4]] != null)) { librariesEnabledByDefault = settingsFile[_0x684b[4]] } } catch (e) { console[_0x684b[5]](e); return null } }
 //d9-05
 
-module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, getColorDependingOnBrightness, isString, getAlignment, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, getAllTextLayers, getAllLayers, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary,importLayerStyleFromLibrary,  getSymbolOverrides, getSymbolInstances ,getRelatedOverrides};
+module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, getColorDependingOnBrightness, isString, getAlignment, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, getAllTextLayers, getAllLayers, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, getRelatedOverrides };

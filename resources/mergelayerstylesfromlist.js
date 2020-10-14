@@ -193,7 +193,7 @@ window.DrawSelectedStylesList = () => {
         inner += `<div id="workZoneStyle${stylenum}" class="thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter ${selected}" onclick="onStyleClicked(${stylenum})">
                   ${checkbox}
                   <div class="colAvailable verticalLayout thumbnailData" id="workZoneStyleThumbnail${stylenum}" >
-                    <div class="rowAvailable padded ${contrastMode}"><div class="thumbnail" style='background-image:url("${groupOfStyles[i].thumbnail}")'></div></div>
+                    <div class="rowAvailable padded ${contrastMode}"><div class="thumbnail" style='background-image:url("data:image/png;base64,${groupOfStyles[i].thumbnail}")'></div></div>
                     <div class="rowAuto primaryText displayFlex"><span class="alignHorizontalCenter">${groupOfStyles[i].name} (${groupOfStyles[i].libraryName})</span></div>
                     <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${groupOfStyles[i].description}</span></div>
                   </div>
