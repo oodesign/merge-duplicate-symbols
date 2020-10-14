@@ -1,5 +1,6 @@
 import BrowserWindow from 'sketch-module-web-view'
 import { getWebview } from 'sketch-module-web-view/remote'
+import { debugLog } from './Helpers';
 var UI = require('sketch/ui')
 const Helpers = require("./Helpers");
 
@@ -21,7 +22,50 @@ function getLayerPredicate(style) {
   return predicate;
 }
 
-function MergeLayerStyles(context, styleToKeep) {
+function MergeLayerStyles(context, styleToKeepIndex) {
+  var layersChangedCounter = 0;
+  var overridesChangedCounter = 0;
+  var styleToKeep = currentSelectedStyles[styleToKeepIndex];
+  var styleToApply = styleToKeep.layerStyle;
+  Helpers.clog("Merging styles. Keep '" + styleToKeep.name + "'");
+
+  if (styleToKeep.foreign) {
+    styleToApply = Helpers.importLayerStyleFromLibrary(styleToKeep);
+  }
+
+  currentSelectedStyles.forEach(function (style) {
+    var instances = style.layerStyle.getAllInstancesLayers();
+
+    Helpers.clog("-- Updating "+ instances.length + "instances to " + styleToKeep.name);
+    instances.forEach(function (instance) {
+      instance.sharedStyle = styleToApply;
+      instance.style.syncWithSharedStyle(styleToApply);
+      layersChangedCounter++;
+    });
+
+    var relatedOverrides = Helpers.getRelatedOverrides(context, style.layerStyle.id, "layerStyle");
+    Helpers.clog("-- Updating "+ relatedOverrides.length + "related overrides to " + styleToKeep.name);
+    relatedOverrides.forEach(function (override) {
+      var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
+      var instanceOverride = instanceLayer.overrides.filter(function (ov) {
+        return ov.id == override.override.id;
+      });
+
+      try {
+        Helpers.clog("------ Updating override for " + instanceLayer.name);
+        instanceLayer.setOverrideValue(instanceOverride[0], styleToApply.id.toString());
+        overridesChangedCounter++;
+      } catch (e) {
+        Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name);
+      }
+    });
+  });
+
+
+  return [layersChangedCounter, overridesChangedCounter];
+}
+
+function MergeLayerStyles2(context, styleToKeep) {
   var layersChangedCounter = 0;
   var overridesChangedCounter = 0;
 

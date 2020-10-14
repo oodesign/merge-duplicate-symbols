@@ -802,6 +802,25 @@ function getSymbolOverrides(context, symbolMaster) {
   return symbolOverrides;
 }
 
+function getRelatedOverrides(context, id, property) {
+  var overrides = NSMutableArray.array();
+  var instances = sketch.find("[type='SymbolInstance']", document);
+  instances.forEach(function (instance) {
+    instance.overrides.forEach(function (override) {
+      if ((override.property.localeCompare(property) == 0) && (override.isDefault == 0)) {
+        if (override.value.localeCompare(id) == 0) {
+          overrides.push({
+            "instance": instance,
+            "override": override
+          });
+        }
+      }
+    });
+  });
+
+  return overrides;
+}
+
 function getSymbolOverrides2(context, symbolMaster) {
   var symbolOverrides = NSMutableArray.array();
 
@@ -927,6 +946,24 @@ function importSymbolFromLibrary(element) {
     return symbol;
   } catch (e) {
     clog("-- ERROR: Couldn't import " + element.name + " from library" + element.libraryName + " with ID:" + element.symbol.id + " and symbolId:" + element.symbol.symbolId);
+    return null;
+  }
+}
+
+function importLayerStyleFromLibrary(layerStyle) {
+  try {
+    clog("-- Importing " + layerStyle.name + " from library " + layerStyle.libraryName + " with ID:" + layerStyle.layerStyle.id);
+    var styleReferences = layerStyle.library.getImportableLayerStyleReferencesForDocument(document);
+    var refToImport = styleReferences.filter(function (ref) {
+      return ref.id == layerStyle.layerStyle.id;
+    });
+
+    var style = refToImport[0].import();
+    clog("-- We've imported:" + style.name + " from library " + style.getLibrary().name);
+
+    return style;
+  } catch (e) {
+    clog("-- ERROR: Couldn't import " + layerStyle.name + " from library" + layerStyle.libraryName + " with ID:" + layerStyle.layerStyle.id);
     return null;
   }
 }
@@ -1140,7 +1177,6 @@ function getTextStyleColor(style) {
 }
 
 function getOvalThumbnail(sharedStyle) {
-  debugLog(sharedStyle.name);
   const oval = new ShapePath({
     shapeType: ShapePath.ShapeType.Oval,
     frame: new sketch.Rectangle(0, 0, 300, 300),
@@ -1693,4 +1729,4 @@ function getSettings() {
 var _0x684b = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x684b[1]]()[_0x684b[0]]() + _0x684b[2]); if ((settingsFile != null) && (settingsFile[_0x684b[3]] != null)) { logsEnabled = settingsFile[_0x684b[3]] }; if ((settingsFile != null) && (settingsFile[_0x684b[4]] != null)) { librariesEnabledByDefault = settingsFile[_0x684b[4]] } } catch (e) { console[_0x684b[5]](e); return null } }
 //d9-05
 
-module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, getColorDependingOnBrightness, isString, getAlignment, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, getAllTextLayers, getAllLayers, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary, getSymbolOverrides, getSymbolInstances };
+module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, getColorDependingOnBrightness, isString, getAlignment, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, getAllTextLayers, getAllLayers, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary,importLayerStyleFromLibrary,  getSymbolOverrides, getSymbolInstances ,getRelatedOverrides};

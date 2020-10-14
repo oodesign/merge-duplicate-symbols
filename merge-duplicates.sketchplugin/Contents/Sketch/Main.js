@@ -5470,6 +5470,24 @@ function getSymbolOverrides(context, symbolMaster) {
   return symbolOverrides;
 }
 
+function getRelatedOverrides(context, id, property) {
+  var overrides = NSMutableArray.array();
+  var instances = sketch.find("[type='SymbolInstance']", document);
+  instances.forEach(function (instance) {
+    instance.overrides.forEach(function (override) {
+      if (override.property.localeCompare(property) == 0 && override.isDefault == 0) {
+        if (override.value.localeCompare(id) == 0) {
+          overrides.push({
+            "instance": instance,
+            "override": override
+          });
+        }
+      }
+    });
+  });
+  return overrides;
+}
+
 function getSymbolOverrides2(context, symbolMaster) {
   var symbolOverrides = NSMutableArray.array();
   var pages = context.document.pages(),
@@ -5594,6 +5612,22 @@ function importSymbolFromLibrary(element) {
     return symbol;
   } catch (e) {
     clog("-- ERROR: Couldn't import " + element.name + " from library" + element.libraryName + " with ID:" + element.symbol.id + " and symbolId:" + element.symbol.symbolId);
+    return null;
+  }
+}
+
+function importLayerStyleFromLibrary(layerStyle) {
+  try {
+    clog("-- Importing " + layerStyle.name + " from library " + layerStyle.libraryName + " with ID:" + layerStyle.layerStyle.id);
+    var styleReferences = layerStyle.library.getImportableLayerStyleReferencesForDocument(document);
+    var refToImport = styleReferences.filter(function (ref) {
+      return ref.id == layerStyle.layerStyle.id;
+    });
+    var style = refToImport[0].import();
+    clog("-- We've imported:" + style.name + " from library " + style.getLibrary().name);
+    return style;
+  } catch (e) {
+    clog("-- ERROR: Couldn't import " + layerStyle.name + " from library" + layerStyle.libraryName + " with ID:" + layerStyle.layerStyle.id);
     return null;
   }
 } // function getAllSymbols(context) {
@@ -5784,7 +5818,6 @@ function getTextStyleColor(style) {
 }
 
 function getOvalThumbnail(sharedStyle) {
-  debugLog(sharedStyle.name);
   var oval = new ShapePath({
     shapeType: ShapePath.ShapeType.Oval,
     frame: new sketch.Rectangle(0, 0, 300, 300),
@@ -6364,8 +6397,10 @@ module.exports = {
   debugLog: debugLog,
   document: document,
   importSymbolFromLibrary: importSymbolFromLibrary,
+  importLayerStyleFromLibrary: importLayerStyleFromLibrary,
   getSymbolOverrides: getSymbolOverrides,
-  ["getSymbolInstances"]: getSymbolInstances
+  ["getSymbolInstances"]: getSymbolInstances,
+  getRelatedOverrides: getRelatedOverrides
 };
 
 /***/ }),
@@ -6754,9 +6789,7 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
 
         try {
           Helpers.clog("------ Updating override for " + instanceLayer.name);
-          Helpers.clog("------ " + instanceLayer.name + " has " + instanceLayer.overrides.length + " overrides");
-          instanceLayer.setOverrideValue(instanceOverride[0], symbolToApply.symbolId.toString());
-          Helpers.clog("------ After replace, " + instanceLayer.name + " has " + instanceLayer.overrides.length + " overrides"); // overridesMap.forEach(function (override, layerName) {
+          instanceLayer.setOverrideValue(instanceOverride[0], symbolToApply.symbolId.toString()); // overridesMap.forEach(function (override, layerName) {
           //   var overridesToTryToKeep = instanceLayer.overrides.filter(function (ov) {
           //     return ov.layerName == layerName;
           //   });
@@ -6981,6 +7014,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var sketch_module_web_view_remote__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sketch-module-web-view/remote */ "./node_modules/sketch-module-web-view/remote.js");
 /* harmony import */ var sketch_module_web_view_remote__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sketch_module_web_view_remote__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Helpers */ "./src/Helpers.js");
+/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_Helpers__WEBPACK_IMPORTED_MODULE_2__);
+
 
 
 
@@ -7000,7 +7036,46 @@ function getLayerPredicate(style) {
   return predicate;
 }
 
-function MergeLayerStyles(context, styleToKeep) {
+function MergeLayerStyles(context, styleToKeepIndex) {
+  var layersChangedCounter = 0;
+  var overridesChangedCounter = 0;
+  var styleToKeep = currentSelectedStyles[styleToKeepIndex];
+  var styleToApply = styleToKeep.layerStyle;
+  Helpers.clog("Merging styles. Keep '" + styleToKeep.name + "'");
+
+  if (styleToKeep.foreign) {
+    styleToApply = Helpers.importLayerStyleFromLibrary(styleToKeep);
+  }
+
+  currentSelectedStyles.forEach(function (style) {
+    var instances = style.layerStyle.getAllInstancesLayers();
+    Helpers.clog("-- Updating " + instances.length + "instances to " + styleToKeep.name);
+    instances.forEach(function (instance) {
+      instance.sharedStyle = styleToApply;
+      instance.style.syncWithSharedStyle(styleToApply);
+      layersChangedCounter++;
+    });
+    var relatedOverrides = Helpers.getRelatedOverrides(context, style.layerStyle.id, "layerStyle");
+    Helpers.clog("-- Updating " + relatedOverrides.length + "related overrides to " + styleToKeep.name);
+    relatedOverrides.forEach(function (override) {
+      var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
+      var instanceOverride = instanceLayer.overrides.filter(function (ov) {
+        return ov.id == override.override.id;
+      });
+
+      try {
+        Helpers.clog("------ Updating override for " + instanceLayer.name);
+        instanceLayer.setOverrideValue(instanceOverride[0], styleToApply.id.toString());
+        overridesChangedCounter++;
+      } catch (e) {
+        Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name);
+      }
+    });
+  });
+  return [layersChangedCounter, overridesChangedCounter];
+}
+
+function MergeLayerStyles2(context, styleToKeep) {
   var layersChangedCounter = 0;
   var overridesChangedCounter = 0;
   Helpers.clog("Merging styles. Keep '" + currentSelectedStyles[styleToKeep].name + "'");

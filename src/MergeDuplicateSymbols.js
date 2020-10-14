@@ -76,9 +76,7 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
 
         try {
           Helpers.clog("------ Updating override for " + instanceLayer.name);
-          Helpers.clog("------ " + instanceLayer.name + " has " + instanceLayer.overrides.length + " overrides");
           instanceLayer.setOverrideValue(instanceOverride[0], symbolToApply.symbolId.toString());
-          Helpers.clog("------ After replace, " + instanceLayer.name + " has " + instanceLayer.overrides.length + " overrides");
 
           // overridesMap.forEach(function (override, layerName) {
           //   var overridesToTryToKeep = instanceLayer.overrides.filter(function (ov) {
