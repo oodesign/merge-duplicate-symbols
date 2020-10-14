@@ -511,42 +511,41 @@ function FindAllSimilarTextStyles(context, includeAllStylesFromExternalLibraries
 function FindSimilarLayerStyles(referenceStyle, styles, context, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowParams) {
 
   var similarStyles = [];
-
   styles.forEach(function (style) {
     try {
       if (referenceStyle != style.layerStyle) {
-        //console.log("["+referenceStyle.name()+"] and ["+style.layerStyle.name()+"]");
+        //debugLog("[" + referenceStyle.name + "] and [" + style.layerStyle.name + "]");
 
         var sameFillColor = false;
-        if (referenceStyle.style().firstEnabledFill() != null && style.layerStyle.style().firstEnabledFill() != null) {
-          sameFillColor = referenceStyle.style().firstEnabledFill().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledFill().color().immutableModelObject().hexValue().toString();
+        if ((referenceStyle.style.fills.length > 0) && (style.layerStyle.style.fills.length > 0)) {
+          sameFillColor = referenceStyle.style.fills[0].color.substring(0, 7).toUpperCase() == style.layerStyle.style.fills[0].color.substring(0, 7).toUpperCase();
         }
-        //console.log("---Fill? "+sameFillColor);
+        //debugLog("---Fill? " + sameFillColor);
 
         var sameBorderColor = false;
-        if (referenceStyle.style().firstEnabledBorder() != null && style.layerStyle.style().firstEnabledBorder() != null) {
-          sameBorderColor = referenceStyle.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString();
+        if ((referenceStyle.style.borders.length > 0) && (style.layerStyle.style.borders.length > 0)) {
+          sameBorderColor = referenceStyle.style.borders[0].color.substring(0, 7).toUpperCase() == style.layerStyle.style.borders[0].color.substring(0, 7).toUpperCase();
         }
-        //console.log("---BorderColor? "+sameBorderColor);
+        //debugLog("---BorderColor? " + sameBorderColor);
 
         var sameBorderThickness = false;
-        if (referenceStyle.style().firstEnabledBorder() != null && style.layerStyle.style().firstEnabledBorder() != null) {
-          sameBorderThickness = referenceStyle.style().firstEnabledBorder().thickness() == style.layerStyle.style().firstEnabledBorder().thickness();
+        if ((referenceStyle.style.borders.length > 0) && (style.layerStyle.style.borders.length > 0)) {
+          sameBorderThickness = referenceStyle.style.borders[0].thickness == style.layerStyle.style.borders[0].thickness
         }
-        //console.log("---BorderThickness? "+sameBorderThickness);
+        //debugLog("---BorderThickness? " + sameBorderThickness);
 
 
         var sameShadowColor = false;
-        if (referenceStyle.style().firstEnabledShadow() != null && style.layerStyle.style().firstEnabledShadow() != null) {
-          sameShadowColor = referenceStyle.style().firstEnabledShadow().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledShadow().color().immutableModelObject().hexValue().toString();
+        if ((referenceStyle.style.shadows.length > 0) && (style.layerStyle.style.shadows.length > 0)) {
+          sameShadowColor = referenceStyle.style.shadows[0].color.substring(0, 7).toUpperCase() == style.layerStyle.style.shadows[0].color.substring(0, 7).toUpperCase();
         }
-        //console.log("---ShadowColor? "+sameShadowColor);
+        //debugLog("---ShadowColor? " + sameShadowColor);
 
         var sameShadowParams = false;
-        if (referenceStyle.style().firstEnabledShadow() != null && style.layerStyle.style().firstEnabledShadow() != null) {
-          sameShadowParams = (referenceStyle.style().firstEnabledShadow().offsetX() == style.layerStyle.style().firstEnabledShadow().offsetX()) && (referenceStyle.style().firstEnabledShadow().offsetY() == style.layerStyle.style().firstEnabledShadow().offsetY()) && (referenceStyle.style().firstEnabledShadow().blurRadius() == style.layerStyle.style().firstEnabledShadow().blurRadius()) && (referenceStyle.style().firstEnabledShadow().spread() == style.layerStyle.style().firstEnabledShadow().spread());
+        if ((referenceStyle.style.shadows.length > 0) && (style.layerStyle.style.shadows.length > 0)) {
+          sameShadowParams = ((referenceStyle.style.shadows[0].x == style.layerStyle.style.shadows[0].x) && (referenceStyle.style.shadows[0].y == style.layerStyle.style.shadows[0].y) && (referenceStyle.style.shadows[0].blur == style.layerStyle.style.shadows[0].blur) && (referenceStyle.style.shadows[0].spread == style.layerStyle.style.shadows[0].spread));
         }
-        //console.log("---ShadowParams? "+sameShadowParams);
+        //debugLog("---ShadowParams? " + sameShadowParams);
 
         var isSimilar = true;
         if (checkSameFillColor) isSimilar = isSimilar && sameFillColor;
@@ -571,29 +570,27 @@ function FindAllSimilarLayerStyles(context, includeAllStylesFromExternalLibrarie
   var stylesWithSimilarStyles = [];
   var stylesAlreadyProcessed = [];
 
-  var definedLayerStyles = getDefinedLayerStyles(context, includeAllStylesFromExternalLibraries, null);
+  var definedLayerStyles = getDefinedLayerStyles(context, includeAllStylesFromExternalLibraries);
   for (var i = 0; i < definedLayerStyles.length; i++) {
 
     clog("Finding similar styles to '" + definedLayerStyles[i].name + "'");
-    if (definedLayerStyles[i].libraryName.localeCompare(sketchlocalfile) == 0) {
-      if (stylesAlreadyProcessed.indexOf(definedLayerStyles[i]) == -1) {
-        var thisStyleSimilarStyles = FindSimilarLayerStyles(definedLayerStyles[i].layerStyle, definedLayerStyles, context, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowParams);
+    if (stylesAlreadyProcessed.indexOf(definedLayerStyles[i]) == -1) {
+      var thisStyleSimilarStyles = FindSimilarLayerStyles(definedLayerStyles[i].layerStyle, definedLayerStyles, context, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowParams);
 
-        stylesAlreadyProcessed.push(definedLayerStyles[i]);
-        thisStyleSimilarStyles.forEach(function (processedStyle) {
-          stylesAlreadyProcessed.push(processedStyle);
+      stylesAlreadyProcessed.push(definedLayerStyles[i]);
+      thisStyleSimilarStyles.forEach(function (processedStyle) {
+        stylesAlreadyProcessed.push(processedStyle);
+      });
+
+      thisStyleSimilarStyles.unshift(definedLayerStyles[i]);
+
+      if (thisStyleSimilarStyles.length > 1) {
+        stylesWithSimilarStyles.push({
+          "referenceStyle": definedLayerStyles[i],
+          "similarStyles": thisStyleSimilarStyles,
+          "selectedIndex": -1,
+          "isUnchecked": false,
         });
-
-        thisStyleSimilarStyles.unshift(definedLayerStyles[i]);
-
-        if (thisStyleSimilarStyles.length > 1) {
-          stylesWithSimilarStyles.push({
-            "referenceStyle": definedLayerStyles[i],
-            "similarStyles": thisStyleSimilarStyles,
-            "selectedIndex": -1,
-            "isUnchecked": false,
-          });
-        }
       }
     }
   }
@@ -821,68 +818,6 @@ function getRelatedOverrides(context, id, property) {
   return overrides;
 }
 
-function getSymbolOverrides2(context, symbolMaster) {
-  var symbolOverrides = NSMutableArray.array();
-
-  var pages = context.document.pages(), pageLoop = pages.objectEnumerator(), page;
-
-  while (page = pageLoop.nextObject()) {
-    clog("---- Processing page:" + page.name());
-    clog("---- Page children:" + page.children().count());
-    var predicate = NSPredicate.predicateWithFormat("className == %@ && overrides != nil", "MSSymbolInstance"),
-      instances = page.children().filteredArrayUsingPredicate(predicate),
-      instanceLoop = instances.objectEnumerator(),
-      instance;
-    clog("------ Acquired predicate for:" + page.name());
-
-    while (instance = instanceLoop.nextObject()) {
-      var overrides = instance.overrides();
-      FindOverrideSymbolID(instance, overrides, symbolOverrides, symbolMaster, 0);
-    }
-
-    // for (var i = 0; i < page.children().count(); i++) {
-    //   try {
-    //     var element = page.children()[i].name() + " - " + page.children()[i].className();
-    //     if(page.children()[i].className().localeCompare("MSSymbolInstance")==0)
-    //       var overrides = page.children()[i].overrides();
-    //   }
-    //   catch (e) {
-    //     clog("------ This is an exception ------" + page.children()[i].name() + "in Artboard "+page.children()[i].parentArtboard().name());
-    //     //clog(e);
-    //   }
-    // }
-  }
-  return symbolOverrides;
-}
-
-function FindOverrideSymbolID(instance, overrides, symbolOverrides, symbolMaster, level) {
-  // clog("---- Deepdiving overrides (level " + level + ")");
-  for (var key in overrides) {
-    var symbolID = overrides[key]["symbolID"];
-    if (symbolID == null) {
-      FindOverrideSymbolID(instance, overrides[key], symbolOverrides, symbolMaster, level + 1);
-    }
-    else {
-      if (typeof symbolID === 'function') {
-        symbolID = symbolID();
-      }
-      if (symbolID.localeCompare(symbolMaster.symbolID()) == 0) {
-        symbolOverrides.addObject(instance);
-      }
-    }
-  }
-
-  return symbolID;
-}
-
-function IsForeign(context, refSymbol) {
-  for (var i = 0; i < context.document.documentData().foreignSymbols().length; i++) {
-    if (context.document.documentData().foreignSymbols()[i].symbolMaster() == refSymbol)
-      return true;
-  }
-  return false;
-}
-
 function countAllSymbols(context, includeAllSymbolsFromExternalLibraries) {
   var counter = [0, 0];
 
@@ -968,33 +903,6 @@ function importLayerStyleFromLibrary(layerStyle) {
   }
 }
 
-// function getAllSymbols(context) {
-//   var symbols = [];
-//   document.getSymbols().forEach(function (symbol) {
-//     symbols.push({
-//       "symbol": symbol,
-//       "foreign": false,
-//       "library": null
-//     });
-//   });
-
-//   if (includeAllSymbolsFromExternalLibraries) {
-//     libraries.forEach(function (lib) {
-//       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
-//         lib.getDocument().getSymbols().forEach(function (symbol) {
-//           symbols.push({
-//             "symbol": symbol,
-//             "foreign": true,
-//             "library": lib
-//           });
-//         });
-//       }
-//     });
-//   }
-
-//   return symbols;
-// }
-
 function debugLog(message) {
   if (debugLogEnabled) console.log(message);
 }
@@ -1008,8 +916,6 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
   selection.forEach(function (docSymbol) {
 
     var recomposedSymbolName = mergingSelected ? "mergingselected" : GetRecomposedSymbolName(docSymbol.symbol.name);
-    // if (isForeign) console.log(symbol);
-
     var foreignLib = docSymbol.library;
     var isForeign = docSymbol.foreign;
     var libraryName = sketchlocalfile;
@@ -1065,7 +971,6 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
     }
   });
 
-  // debugLog(allSymbols);
   // console.timeEnd("getDuplicateSymbols");
   return allSymbols.sort(compareSymbolNames);
 
@@ -1149,23 +1054,6 @@ function getLayerStyleDescription(sharedStyle) {
     textInfo += "No border";
 
   return textInfo;
-}
-
-function getLayerStyleColor(style) {
-  if (style.style().firstEnabledFill() != null) {
-    try {
-      return style.style().firstEnabledFill().color().immutableModelObject().hexValue().toString();
-    } catch (e) {
-      return "FFFFFF";
-    }
-  }
-  else if (style.style().firstEnabledBorder() != null) {
-    try {
-      return style.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString();
-    } catch (e) {
-      return "FFFFFF";
-    }
-  }
 }
 
 function getTextStyleColor(style) {
