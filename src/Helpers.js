@@ -1372,8 +1372,6 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
 
   // console.timeEnd("getDuplicateExternalSymbols");
 
-  debugLog("Text styles found: " + allStyles.length);
-
   Object.keys(nameDictionary).forEach(function (key) {
     if (nameDictionary[key].duplicates.length <= 1) {
       var index = allStyles.indexOf(nameDictionary[key]);
