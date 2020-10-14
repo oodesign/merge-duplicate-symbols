@@ -4585,6 +4585,8 @@ var sketch = __webpack_require__(/*! sketch */ "sketch");
 
 var dom = __webpack_require__(/*! sketch/dom */ "sketch/dom");
 
+var ShapePath = __webpack_require__(/*! sketch/dom */ "sketch/dom").ShapePath;
+
 var DeltaE = __webpack_require__(/*! delta-e */ "./node_modules/delta-e/src/index.js");
 
 var D3 = __webpack_require__(/*! d3-color */ "./node_modules/d3-color/src/index.js");
@@ -5790,13 +5792,29 @@ function getTextStyleColor(style) {
 }
 
 function getOvalThumbnail(style) {
-  var layer = MSOvalShape.alloc().init();
-  layer.frame = MSRect.rectWithRect(NSMakeRect(0, 0, 100, 100));
-  layer.style = style.style();
-  context.document.currentPage().addLayer(layer);
-  var base64 = getBase64(layer, 300, 300);
-  layer.removeFromParent();
-  return base64;
+  var oval = new ShapePath({
+    shapeType: ShapePath.ShapeType.Oval,
+    frame: new sketch.Rectangle(0, 0, 300, 300),
+    style: {
+      fills: ['#E11919']
+    },
+    parent: document.selectedPage
+  });
+
+  try {
+    var options = {
+      scales: '1',
+      formats: 'png',
+      output: false
+    };
+    var buffer = sketch.export(oval, options);
+    var image64 = buffer.toString('base64');
+    oval.remove();
+    return image64;
+  } catch (e) {
+    oval.remove();
+    return "";
+  }
 }
 
 function importForeignSymbol(symbol, library) {
@@ -7015,6 +7033,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+
 var Helpers = __webpack_require__(/*! ./Helpers */ "./src/Helpers.js");
 
 var webviewMLSFLIdentifier = 'merge-layerstylesfromlist.webview';
@@ -7255,10 +7275,10 @@ function MergeSimilarLayerStyles(context) {
 
     if (duplicatesSolved <= 0) {
       Helpers.clog("No styles were merged");
-      context.document.showMessage("No styles were merged");
+      UI.message("No styles were merged");
     } else {
       Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-      context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+      UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
     }
   });
   webContents.on('RecalculateStyles', function (includeAllLibraries, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowXYBlurSpread) {
@@ -7286,7 +7306,7 @@ function MergeDuplicateLayerStyles(context) {
   if (onlyDuplicatedLayerStyles.length > 0) {
     browserWindow.loadURL(__webpack_require__(/*! ../resources/mergeduplicatelayerstyles.html */ "./resources/mergeduplicatelayerstyles.html"));
   } else {
-    context.document.showMessage("Looks like there are no layer styles with the same name.");
+    UI.message("Looks like there are no layer styles with the same name.");
     onShutdown(webviewMDLSIdentifier);
   }
 
@@ -7360,10 +7380,10 @@ function MergeDuplicateLayerStyles(context) {
 
     if (duplicatesSolved <= 0) {
       Helpers.clog("No styles were merged");
-      context.document.showMessage("No styles were merged");
+      UI.message("No styles were merged");
     } else {
       Helpers.clog("Wpdated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-      context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+      UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
     }
   });
 }
@@ -7399,7 +7419,7 @@ function MergeSelectedLayerStyles(context) {
   if (styleCounter > 1) {
     browserWindow.loadURL(__webpack_require__(/*! ../resources/mergelayerstylesfromlist.html */ "./resources/mergelayerstylesfromlist.html"));
   } else {
-    if (styleCounter == 1) context.document.showMessage("There's only 1 layer style. No need to merge.");else context.document.showMessage("Looks like there are no layer styles.");
+    if (styleCounter == 1) UI.message("There's only 1 layer style. No need to merge.");else UI.message("Looks like there are no layer styles.");
     onShutdown(webviewMLSFLIdentifier);
   }
 
@@ -7460,7 +7480,7 @@ function MergeSelectedLayerStyles(context) {
 
     var affectedLayers = MergeLayerStyles(context, selectedIndex);
     Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-    context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+    UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
     onShutdown(webviewMLSFLIdentifier);
   });
 }

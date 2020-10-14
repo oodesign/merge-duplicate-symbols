@@ -1,6 +1,7 @@
 
 const sketch = require('sketch');
 const dom = require('sketch/dom');
+var ShapePath = require('sketch/dom').ShapePath
 var DeltaE = require('delta-e');
 var D3 = require('d3-color');
 var fs = require('@skpm/fs');
@@ -1145,13 +1146,22 @@ function getTextStyleColor(style) {
 }
 
 function getOvalThumbnail(style) {
-  var layer = MSOvalShape.alloc().init();
-  layer.frame = MSRect.rectWithRect(NSMakeRect(0, 0, 100, 100));
-  layer.style = style.style();
-  context.document.currentPage().addLayer(layer);
-  var base64 = getBase64(layer, 300, 300);
-  layer.removeFromParent();
-  return base64;
+  const oval = new ShapePath({
+    shapeType: ShapePath.ShapeType.Oval,
+    frame: new sketch.Rectangle(0, 0, 300, 300),
+    style: { fills: ['#E11919'] },
+    parent:document.selectedPage
+  });
+  try {
+    const options = { scales: '1', formats: 'png', output: false };
+    var buffer = sketch.export(oval, options);
+    var image64 = buffer.toString('base64');
+    oval.remove();
+    return image64;
+  } catch (e) {
+    oval.remove();
+    return "";
+  }
 }
 
 function importForeignSymbol(symbol, library) {
