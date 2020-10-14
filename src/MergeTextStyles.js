@@ -272,14 +272,14 @@ export function MergeSelectedTextStyles(context) {
 
   if (!Helpers.getLibrariesEnabled()) {
     Helpers.clog("Get local styles list");
-    definedTextStyles = Helpers.getDefinedTextStyles(context, false, null);
+    definedTextStyles = Helpers.getDefinedTextStyles(context, false);
     styleCounter = definedTextStyles.length;
     checkingAlsoLibraries = false;
   }
 
   if (Helpers.getLibrariesEnabled()) {
     Helpers.clog("Get all (including libraries) styles list");
-    definedAllTextStyles = Helpers.getDefinedTextStyles(context, true, null);
+    definedAllTextStyles = Helpers.getDefinedTextStyles(context, true);
     styleCounter = definedAllTextStyles.length;
     checkingAlsoLibraries = true;
   }
@@ -318,7 +318,7 @@ export function MergeSelectedTextStyles(context) {
   webContents.on('GetLocalStylesList', () => {
     Helpers.clog("Get local styles list");
     if (definedTextStyles == null)
-      definedTextStyles = Helpers.getDefinedTextStyles(context, false, null);
+      definedTextStyles = Helpers.getDefinedTextStyles(context, false);
 
     checkingAlsoLibraries = false;
     webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedTextStyles)})`).catch(console.error);
@@ -327,7 +327,7 @@ export function MergeSelectedTextStyles(context) {
   webContents.on('GetAllStylesList', () => {
     Helpers.clog("Get all (including libraries) styles list");
     if (definedAllTextStyles == null)
-      definedAllTextStyles = Helpers.getDefinedTextStyles(context, true, null);
+      definedAllTextStyles = Helpers.getDefinedTextStyles(context, true);
 
     checkingAlsoLibraries = true;
     webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedAllTextStyles)})`).catch(console.error);

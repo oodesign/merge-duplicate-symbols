@@ -4621,7 +4621,7 @@ var commands = {
   editsettings: 'editsettings'
 };
 var sketchlocalfile = "💎 This Sketch file";
-var libraryPrefix = "🔸 "; //d9-03
+var libraryPrefix = "🔸"; //d9-03
 
 var _0x3c15 = ["\x69\x6E\x69\x74", "\x61\x6C\x6C\x6F\x63", "\x2F\x75\x73\x72\x2F\x62\x69\x6E\x2F\x63\x75\x72\x6C", "\x73\x65\x74\x4C\x61\x75\x6E\x63\x68\x50\x61\x74\x68", "\x73\x65\x74\x41\x72\x67\x75\x6D\x65\x6E\x74\x73", "\x70\x69\x70\x65", "\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x4F\x75\x74\x70\x75\x74", "\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x45\x72\x72\x6F\x72", "\x6C\x61\x75\x6E\x63\x68", "\x77\x61\x69\x74\x55\x6E\x74\x69\x6C\x45\x78\x69\x74", "\x74\x65\x72\x6D\x69\x6E\x61\x74\x69\x6F\x6E\x53\x74\x61\x74\x75\x73", "\x72\x65\x61\x64\x44\x61\x74\x61\x54\x6F\x45\x6E\x64\x4F\x66\x46\x69\x6C\x65", "\x66\x69\x6C\x65\x48\x61\x6E\x64\x6C\x65\x46\x6F\x72\x52\x65\x61\x64\x69\x6E\x67", "\x69\x6E\x69\x74\x57\x69\x74\x68\x44\x61\x74\x61\x5F\x65\x6E\x63\x6F\x64\x69\x6E\x67", "\x73\x75\x63\x63\x65\x73\x73", "\x70\x75\x72\x63\x68\x61\x73\x65", "\x54\x65\x61\x6D", "\x69\x6E\x64\x65\x78\x4F\x66", "\x76\x61\x72\x69\x61\x6E\x74\x73", "\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65", "\x53\x69\x6E\x67\x6C\x65", "\x61\x70\x70", "\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65", "\x6C\x6F\x67", "\x75\x73\x65\x73", "\x71\x75\x61\x6E\x74\x69\x74\x79", "\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x53\x69\x6E\x67\x6C\x65\x20\x2D\x20\x53\x65\x61\x74\x73\x20\x65\x78\x63\x65\x65\x64\x65\x64\x2E", "\x6F\x76\x65\x72", "\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x53\x69\x6E\x67\x6C\x65", "\x6E\x6F", "\x6E\x6F\x43\x6F\x6E"];
 
@@ -5176,7 +5176,7 @@ function FindSimilarTextStyles(referenceStyle, styles, context, checkSameFont, c
 function FindAllSimilarTextStyles(context, includeAllStylesFromExternalLibraries, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing) {
   var stylesWithSimilarStyles = [];
   var stylesAlreadyProcessed = [];
-  var definedTextStyles = getDefinedTextStyles(context, includeAllStylesFromExternalLibraries, null);
+  var definedTextStyles = getDefinedTextStyles(context, includeAllStylesFromExternalLibraries);
 
   for (var i = 0; i < definedTextStyles.length; i++) {
     clog("Finding similar styles to '" + definedTextStyles[i].name + "'");
@@ -5289,152 +5289,6 @@ function FindAllSimilarLayerStyles(context, includeAllStylesFromExternalLibrarie
   }
 
   return stylesWithSimilarStyles;
-}
-
-function getDefinedTextStyles(context, includeAllStylesFromExternalLibraries, styleName) {
-  var textStyles = [];
-  var localTextStyles = context.document.documentData().layerTextStyles().objects(); //console.log("Local text styles:"+context.document.documentData().layerTextStyles().objects().count());
-
-  for (var i = 0; i < localTextStyles.count(); i++) {
-    var style = localTextStyles.objectAtIndex(i);
-    var attributes = style.style().textStyle().attributes();
-
-    if (styleName != null) {
-      if (styleName.localeCompare(style.name()) == 0) {
-        textStyles.push({
-          "attributes": attributes,
-          "textStyle": style,
-          "name": "" + style.name(),
-          "libraryName": sketchlocalfile,
-          "foreign": false,
-          "isSelected": false,
-          "isChosen": false,
-          "description": getTextStyleDescription(attributes),
-          "thumbnail": getTextThumbnail(style),
-          "contrastMode": shouldEnableContrastMode(getTextStyleColor(style))
-        });
-      }
-    } else {
-      textStyles.push({
-        "attributes": attributes,
-        "textStyle": style,
-        "name": "" + style.name(),
-        "libraryName": sketchlocalfile,
-        "foreign": false,
-        "isSelected": false,
-        "isChosen": false,
-        "description": getTextStyleDescription(attributes),
-        "thumbnail": getTextThumbnail(style),
-        "contrastMode": shouldEnableContrastMode(getTextStyleColor(style))
-      });
-    } //console.log("--Local:"+localTextStyles.objectAtIndex(i).objectID());
-
-  } //console.log("TS:"+textStyles.length);
-  //console.log("Foreign text styles:"+context.document.documentData().foreignTextStyles().count());
-
-
-  context.document.documentData().foreignTextStyles().forEach(function (style) {
-    var attributes = style.localObject().style().textStyle().attributes();
-    var indexOfForeign = indexOfForeignStyle(textStyles, style);
-    var foreignLib = getLibraryByID(style.libraryID());
-
-    if (indexOfForeign == -1) {
-      if (styleName != null) {
-        if (styleName.localeCompare(style.localObject().name()) == 0) {
-          textStyles.push({
-            "originalStyle": style,
-            "attributes": attributes,
-            "textStyle": style.localObject(),
-            "name": "" + style.localObject().name(),
-            "libraryName": libraryPrefix + (foreignLib != null ? foreignLib.name() : "This library is not available"),
-            "foreign": true,
-            "localShareID": style.localShareID(),
-            "remoteShareID": style.remoteShareID(),
-            "correlativeStyles": [],
-            "isSelected": false,
-            "isChosen": false,
-            "description": getTextStyleDescription(attributes),
-            "thumbnail": getTextThumbnail(style.localObject()),
-            "contrastMode": shouldEnableContrastMode(getTextStyleColor(style.localObject()))
-          });
-        }
-      } else {
-        textStyles.push({
-          "originalStyle": style,
-          "attributes": attributes,
-          "textStyle": style.localObject(),
-          "name": "" + style.localObject().name(),
-          "libraryName": libraryPrefix + (foreignLib != null ? foreignLib.name() : "This library is not available"),
-          "foreign": true,
-          "localShareID": style.localShareID(),
-          "remoteShareID": style.remoteShareID(),
-          "correlativeStyles": [],
-          "isSelected": false,
-          "isChosen": false,
-          "description": getTextStyleDescription(attributes),
-          "thumbnail": getTextThumbnail(style.localObject()),
-          "contrastMode": shouldEnableContrastMode(getTextStyleColor(style.localObject()))
-        });
-      }
-    } else {
-      //console.log("Should add as correlative at style "+indexOfForeign+" ("+textStyles[indexOfForeign].name+")")
-      textStyles[indexOfForeign].correlativeStyles.push(style);
-    } //console.log("--Foreign:"+style.localObject().objectID()+"  -  "+style.localObject().name());
-    //console.log("----localShareID:"+style.localShareID())
-    //console.log("----remoteShareID:"+style.remoteShareID())
-
-  });
-
-  if (includeAllStylesFromExternalLibraries) {
-    //console.log("Libraries--------");
-    var libraries = NSApp.delegate().librariesController().availableLibraries();
-    libraries.forEach(function (lib) {
-      if (lib && lib.libraryID() && lib.enabled() && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.libraryID().toString()) != 0) {
-        //console.log("--"+lib.name()+": "+lib.document().layerTextStyles().objects().count()+" styles");
-        lib.document().layerTextStyles().objects().forEach(function (libraryStyle) {
-          //console.log("----Library:"+libraryStyle.objectID());
-          if (!alreadyInList(textStyles, libraryStyle)) {
-            if (styleName != null) {
-              if (styleName.localeCompare(libraryStyle.name()) == 0) {
-                var attributes = libraryStyle.style().textStyle().attributes();
-                textStyles.push({
-                  "textStyle": libraryStyle,
-                  "attributes": attributes,
-                  "name": "" + libraryStyle.name(),
-                  "libraryName": libraryPrefix + lib.name(),
-                  "foreign": true,
-                  "library": lib,
-                  "isSelected": false,
-                  "isChosen": false,
-                  "description": getTextStyleDescription(attributes),
-                  "thumbnail": getTextThumbnail(libraryStyle),
-                  "contrastMode": shouldEnableContrastMode(getTextStyleColor(libraryStyle))
-                });
-              }
-            } else {
-              var attributes = libraryStyle.style().textStyle().attributes();
-              textStyles.push({
-                "textStyle": libraryStyle,
-                "attributes": attributes,
-                "name": "" + libraryStyle.name(),
-                "libraryName": libraryPrefix + lib.name(),
-                "foreign": true,
-                "library": lib,
-                "isSelected": false,
-                "isChosen": false,
-                "description": getTextStyleDescription(attributes),
-                "thumbnail": getTextThumbnail(libraryStyle),
-                "contrastMode": shouldEnableContrastMode(getTextStyleColor(libraryStyle))
-              });
-            }
-          }
-        });
-      }
-    });
-  }
-
-  textStyles = textStyles.sort(compareStyleArrays);
-  return textStyles;
 }
 
 function GetRecomposedSymbolName(symbolName) {
@@ -5818,6 +5672,57 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
   return allStyles;
 }
 
+function getAllTextStyles(includeAllStylesFromExternalLibraries) {
+  var allStyles = [];
+  document.sharedTextStyles.forEach(function (sharedTextStyle) {
+    var library = sharedTextStyle.getLibrary();
+    var textStyleObject = {
+      "textStyle": sharedTextStyle,
+      "name": "" + sharedTextStyle.name,
+      "libraryName": library != null ? libraryPrefix + library.name : sketchlocalfile,
+      "library": library,
+      "foreign": false,
+      "isSelected": false,
+      "isChosen": false,
+      "description": getTextStyleDescription(sharedTextStyle),
+      "thumbnail": getTextThumbnail(sharedTextStyle),
+      "contrastMode": false,
+      //TODO shouldEnableContrastMode(getTextStyleColor(localTextStyle)),
+      "duplicates": [],
+      ["isSelected"]: false
+    };
+    allStyles.push(textStyleObject);
+  });
+
+  if (includeAllStylesFromExternalLibraries) {
+    libraries.forEach(function (lib) {
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        lib.getDocument().sharedTextStyles.forEach(function (sharedTextStyle) {
+          var textStyleObject = {
+            "textStyle": sharedTextStyle,
+            "name": "" + sharedTextStyle.name,
+            "libraryName": libraryPrefix + lib.name,
+            "library": lib,
+            "foreign": true,
+            "isSelected": false,
+            "isChosen": false,
+            "description": getTextStyleDescription(sharedTextStyle),
+            "thumbnail": getTextThumbnail(sharedTextStyle),
+            ["thumbnail"]: "",
+            "contrastMode": false,
+            //TODO shouldEnableContrastMode(getTextStyleColor(localTextStyle)),
+            "duplicates": [],
+            ["isSelected"]: false
+          };
+          allStyles.push(textStyleObject);
+        });
+      }
+    });
+  }
+
+  return allStyles;
+}
+
 function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries) {
   var allStyles = [];
   var nameDictionary = {};
@@ -6037,6 +5942,12 @@ function getLibraryByID(libID) {
 function getDefinedLayerStyles(context, includeAllStylesFromExternalLibraries) {
   var layerStyles = getAllLayerStyles(includeAllStylesFromExternalLibraries);
   return layerStyles.sort(compareStyleArrays);
+  ;
+}
+
+function getDefinedTextStyles(context, includeAllStylesFromExternalLibraries) {
+  var textStyles = getAllTextStyles(includeAllStylesFromExternalLibraries);
+  return textStyles.sort(compareStyleArrays);
   ;
 }
 
@@ -7369,14 +7280,14 @@ function MergeSelectedTextStyles(context) {
 
   if (!Helpers.getLibrariesEnabled()) {
     Helpers.clog("Get local styles list");
-    definedTextStyles = Helpers.getDefinedTextStyles(context, false, null);
+    definedTextStyles = Helpers.getDefinedTextStyles(context, false);
     styleCounter = definedTextStyles.length;
     checkingAlsoLibraries = false;
   }
 
   if (Helpers.getLibrariesEnabled()) {
     Helpers.clog("Get all (including libraries) styles list");
-    definedAllTextStyles = Helpers.getDefinedTextStyles(context, true, null);
+    definedAllTextStyles = Helpers.getDefinedTextStyles(context, true);
     styleCounter = definedAllTextStyles.length;
     checkingAlsoLibraries = true;
   }
@@ -7400,13 +7311,13 @@ function MergeSelectedTextStyles(context) {
   });
   webContents.on('GetLocalStylesList', function () {
     Helpers.clog("Get local styles list");
-    if (definedTextStyles == null) definedTextStyles = Helpers.getDefinedTextStyles(context, false, null);
+    if (definedTextStyles == null) definedTextStyles = Helpers.getDefinedTextStyles(context, false);
     checkingAlsoLibraries = false;
     webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedTextStyles), ")")).catch(console.error);
   });
   webContents.on('GetAllStylesList', function () {
     Helpers.clog("Get all (including libraries) styles list");
-    if (definedAllTextStyles == null) definedAllTextStyles = Helpers.getDefinedTextStyles(context, true, null);
+    if (definedAllTextStyles == null) definedAllTextStyles = Helpers.getDefinedTextStyles(context, true);
     checkingAlsoLibraries = true;
     webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedAllTextStyles), ")")).catch(console.error);
   });
