@@ -4778,6 +4778,8 @@ function GetTextBasedOnCount(number) {
 }
 
 function shouldEnableContrastMode(color) {
+  debugLog("Calculating shouldenablecontrast for: " + color);
+
   var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
   var theme = UI.getTheme();
@@ -5638,8 +5640,7 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
       "thumbnail": getOvalThumbnail(sharedLayerStyle),
       "duplicates": [],
       ["isSelected"]: false,
-      "contrastMode": false //TODO shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
-
+      "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
     };
     allStyles.push(layerStyleObject);
   });
@@ -5660,8 +5661,7 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
             "thumbnail": getOvalThumbnail(sharedLayerStyle),
             "duplicates": [],
             ["isSelected"]: false,
-            "contrastMode": false //TODO shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
-
+            "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
           };
           allStyles.push(layerStyleObject);
         });
@@ -5686,8 +5686,7 @@ function getAllTextStyles(includeAllStylesFromExternalLibraries) {
       "isChosen": false,
       "description": getTextStyleDescription(sharedTextStyle),
       "thumbnail": getTextThumbnail(sharedTextStyle),
-      "contrastMode": false,
-      //TODO shouldEnableContrastMode(getTextStyleColor(localTextStyle)),
+      "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
       "duplicates": [],
       ["isSelected"]: false
     };
@@ -5709,8 +5708,7 @@ function getAllTextStyles(includeAllStylesFromExternalLibraries) {
             "description": getTextStyleDescription(sharedTextStyle),
             "thumbnail": getTextThumbnail(sharedTextStyle),
             ["thumbnail"]: "",
-            "contrastMode": false,
-            //TODO shouldEnableContrastMode(getTextStyleColor(localTextStyle)),
+            "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
             "duplicates": [],
             ["isSelected"]: false
           };
@@ -5740,8 +5738,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
       "thumbnail": "",
       "duplicates": [],
       ["isSelected"]: false,
-      "contrastMode": false //TODO shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
-
+      "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
     };
 
     if (nameDictionary[sharedLayerStyle.name] == null) {
@@ -5757,8 +5754,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
         "thumbnail": "",
         "duplicates": null,
         ["isSelected"]: false,
-        "contrastMode": false //TODO shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
-
+        "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
       });
       allStyles.push(layerStyleObject);
       nameDictionary[sharedLayerStyle.name] = layerStyleObject;
@@ -5783,8 +5779,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
             "thumbnail": "",
             "duplicates": [],
             ["isSelected"]: false,
-            "contrastMode": false //TODO shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
-
+            "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
           };
 
           if (nameDictionary[sharedLayerStyle.name] == null) {
@@ -5800,8 +5795,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
               "thumbnail": "",
               "duplicates": null,
               ["isSelected"]: false,
-              "contrastMode": false //TODO shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
-
+              "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
             });
             allStyles.push(layerStyleObject);
             nameDictionary[sharedLayerStyle.name] = layerStyleObject;
@@ -5839,8 +5833,7 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
       "isChosen": false,
       "description": getTextStyleDescription(sharedTextStyle),
       "thumbnail": "",
-      "contrastMode": false,
-      //TODO shouldEnableContrastMode(getTextStyleColor(localTextStyle)),
+      "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
       "duplicates": [],
       ["isSelected"]: false
     };
@@ -5856,8 +5849,7 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
         "isChosen": false,
         "description": getTextStyleDescription(sharedTextStyle),
         "thumbnail": "",
-        "contrastMode": false,
-        //TODO shouldEnableContrastMode(getTextStyleColor(localTextStyle)),
+        "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
         "duplicates": null,
         ["isSelected"]: false
       });
@@ -5872,6 +5864,7 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
     libraries.forEach(function (lib) {
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
         lib.getDocument().sharedTextStyles.forEach(function (sharedTextStyle) {
+          debugLog(sharedTextStyle);
           var textStyleObject = {
             "textStyle": sharedTextStyle,
             "name": "" + sharedTextStyle.name,
@@ -5882,8 +5875,7 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
             "isChosen": false,
             "description": getTextStyleDescription(sharedTextStyle),
             "thumbnail": "",
-            "contrastMode": false,
-            //TODO shouldEnableContrastMode(getTextStyleColor(localTextStyle)),
+            "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
             "duplicates": [],
             ["isSelected"]: false
           };
@@ -5899,8 +5891,7 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
               "isChosen": false,
               "description": getTextStyleDescription(sharedTextStyle),
               "thumbnail": "",
-              "contrastMode": false,
-              //TODO shouldEnableContrastMode(getTextStyleColor(localTextStyle)),
+              "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
               "duplicates": null,
               ["isSelected"]: false
             });
