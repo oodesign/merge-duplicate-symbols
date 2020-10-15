@@ -4778,8 +4778,6 @@ function GetTextBasedOnCount(number) {
 }
 
 function shouldEnableContrastMode(color) {
-  debugLog("Calculating shouldenablecontrast for: " + color);
-
   var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
   var theme = UI.getTheme();
@@ -5082,79 +5080,77 @@ function FindSimilarTextStyles(referenceStyle, styles, context, checkSameFont, c
   styles.forEach(function (style) {
     try {
       if (referenceStyle != style.textStyle) {
-        //console.log("["+referenceStyle.name()+"] and ["+style.name()+"]");
+        //debugLog("["+referenceStyle.name+"] and ["+style.name+"]");
         var sameFont = false;
 
         try {
-          sameFont = referenceStyle.style().textStyle().attributes().NSFont.familyName() == style.textStyle.style().textStyle().attributes().NSFont.familyName();
+          sameFont = referenceStyle.style.fontFamily == style.textStyle.style.fontFamily;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose font");
-        } //console.log("---Font? "+sameFont);
+        } //debugLog("---Font? "+sameFont);
 
 
         var sameWeight = false;
 
         try {
-          sameWeight = NSFontManager.sharedFontManager().weightOfFont_(referenceStyle.style().textStyle().attributes().NSFont) == NSFontManager.sharedFontManager().weightOfFont_(style.textStyle.style().textStyle().attributes().NSFont);
+          sameWeight = referenceStyle.style.fontWeight == style.textStyle.style.fontWeight;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose weight");
-        } //console.log("---FontWeight? "+sameWeight);
+        } //debugLog("---FontWeight? "+sameWeight);
 
 
         var sameSize = false;
 
         try {
-          sameSize = referenceStyle.style().textStyle().attributes().NSFont.pointSize() == style.textStyle.style().textStyle().attributes().NSFont.pointSize();
+          sameSize = referenceStyle.style.fontSize == style.textStyle.style.fontSize;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose size");
-        } //console.log("---FontSize? "+sameSize);
-        // console.log("ref:" + referenceStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue());
-        // console.log("style:" + style.textStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue());
+        } //debugLog("---FontSize? "+sameSize);
 
 
         var sameColor = false;
 
         try {
-          sameColor = referenceStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue() == style.textStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue();
+          sameColor = referenceStyle.style.textColor == style.textStyle.style.textColor;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose color");
-        } //console.log("---Color? "+sameColor);
+        } //debugLog("---Color? "+sameColor);
 
 
         var sameParagraphSpacing = false;
 
         try {
-          sameParagraphSpacing = referenceStyle.style().textStyle().attributes().NSParagraphStyle.paragraphSpacing() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.paragraphSpacing();
+          sameParagraphSpacing = referenceStyle.style.paragraphSpacing == style.textStyle.style.paragraphSpacing;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose paragraph spacing");
-        } //console.log("---Paragraph Spacing? "+sameParagraphSpacing);
+        } //debugLog("---Paragraph Spacing? "+sameParagraphSpacing);
 
 
         var sameLineHeight = false;
 
         try {
-          sameLineHeight = referenceStyle.style().textStyle().attributes().NSParagraphStyle.minimumLineHeight() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.minimumLineHeight();
+          sameLineHeight = referenceStyle.style.lineHeight == style.textStyle.style.lineHeight;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose line height");
-        } //console.log("---Line height? "+sameLineHeight);
+        } //debugLog("---Line height? "+sameLineHeight);
 
 
         var sameAlignment = false;
 
         try {
-          sameAlignment = referenceStyle.style().textStyle().attributes().NSParagraphStyle.alignment() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.alignment();
+          sameAlignment = referenceStyle.style.alignment == style.textStyle.style.alignment;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose alignment");
-        } //console.log("---Alignment? "+sameAlignment);
+        } //debugLog("---Alignment? "+sameAlignment);
 
 
         var sameCharacterSpacing = false;
 
         try {
-          sameCharacterSpacing = referenceStyle.style().textStyle().attributes().NSKern.toString() == style.textStyle.style().textStyle().attributes().NSKern.toString();
+          sameCharacterSpacing = referenceStyle.style.kerning == style.textStyle.style.kerning;
         } catch (_unused2) {
-          sameCharacterSpacing = referenceStyle.style().textStyle().attributes().NSKern == style.textStyle.style().textStyle().attributes().NSKern;
-        } //console.log("---Character Spacing? "+sameCharacterSpacing + "-  Comparing ["+referenceStyle.style().textStyle().attributes().NSKern+"] with ["+style.textStyle.style().textStyle().attributes().NSKern+"]" );
+          clog("Finding similar text styles - Couldn't disclose character spacing");
+        } //debugLog("---Character Spacing? "+sameCharacterSpacing + "-  Comparing ["+referenceStyle.style().textStyle().attributes().NSKern+"] with ["+style.textStyle.style().textStyle().attributes().NSKern+"]" );
 
 
         var isSimilar = true;
