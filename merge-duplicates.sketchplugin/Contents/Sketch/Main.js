@@ -4983,35 +4983,6 @@ function createView(frame) {
   return view;
 }
 
-function getAllTextLayers(context) {
-  var layers = NSMutableArray.array();
-  context.document.pages().forEach(function (page) {
-    var predicate = NSPredicate.predicateWithFormat("className == 'MSTextLayer'"),
-        instances = page.children().filteredArrayUsingPredicate(predicate),
-        instanceLoop = instances.objectEnumerator(),
-        instance;
-
-    while (instance = instanceLoop.nextObject()) {
-      layers.addObject(instance);
-    }
-  });
-  return layers;
-}
-
-function getAllLayers(context) {
-  var layers = NSMutableArray.array();
-  context.document.pages().forEach(function (page) {
-    var instances = page.children(),
-        instanceLoop = instances.objectEnumerator(),
-        instance;
-
-    while (instance = instanceLoop.nextObject()) {
-      layers.addObject(instance);
-    }
-  });
-  return layers;
-}
-
 function createSeparator(frame) {
   var separator = NSView.alloc().initWithFrame(frame);
   separator.setWantsLayer(1);
@@ -6045,8 +6016,6 @@ module.exports = {
   containsTextStyle: containsTextStyle,
   containsLayerStyle: containsLayerStyle,
   createView: createView,
-  getAllTextLayers: getAllTextLayers,
-  getAllLayers: getAllLayers,
   createSeparator: createSeparator,
   getColorDependingOnTheme: getColorDependingOnTheme,
   compareStyleArrays: compareStyleArrays,
@@ -7037,6 +7006,8 @@ __webpack_require__.r(__webpack_exports__);
 
 var Helpers = __webpack_require__(/*! ./Helpers */ "./src/Helpers.js");
 
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+
 var webviewMTSFLIdentifier = 'merge-textstylesfromlist.webview';
 var webviewMDTSIdentifier = 'merge-duplicatetextstyles.webview';
 var webviewMSTSIdentifier = 'merge-similartextstyles.webview';
@@ -7136,10 +7107,10 @@ function MergeSimilarTextStyles(context) {
 
     if (duplicatesSolved <= 0) {
       Helpers.clog("No styles were merged");
-      context.document.showMessage("No styles were merged");
+      UI.message("No styles were merged");
     } else {
       Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-      context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      UI.message("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
     }
   });
   webContents.on('RecalculateStyles', function (includeAllLibraries, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing) {
@@ -7167,7 +7138,7 @@ function MergeDuplicateTextStyles(context) {
   if (onlyDuplicatedTextStyles.length > 0) {
     browserWindow.loadURL(__webpack_require__(/*! ../resources/mergeduplicatetextstyles.html */ "./resources/mergeduplicatetextstyles.html"));
   } else {
-    context.document.showMessage("Looks like there are no text styles with the same name.");
+    UI.message("Looks like there are no text styles with the same name.");
     onShutdown(webviewMDTSIdentifier);
   }
 
@@ -7241,10 +7212,10 @@ function MergeDuplicateTextStyles(context) {
 
     if (duplicatesSolved <= 0) {
       Helpers.clog("No styles were merged");
-      context.document.showMessage("No styles were merged");
+      UI.message("No styles were merged");
     } else {
       Helpers.clog("Wpdated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-      context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      UI.message("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
     }
   });
 }
@@ -7282,7 +7253,7 @@ function MergeSelectedTextStyles(context) {
   if (styleCounter > 1) {
     browserWindow.loadURL(__webpack_require__(/*! ../resources/mergetextstylesfromlist.html */ "./resources/mergetextstylesfromlist.html"));
   } else {
-    if (styleCounter == 1) context.document.showMessage("There's only 1 text style. No need to merge.");else context.document.showMessage("Looks like there are no text styles.");
+    if (styleCounter == 1) UI.message("There's only 1 text style. No need to merge.");else UI.message("Looks like there are no text styles.");
     onShutdown(webviewMTSFLIdentifier);
   }
 
@@ -7343,7 +7314,7 @@ function MergeSelectedTextStyles(context) {
 
     var affectedLayers = MergeTextStyles(context, selectedIndex);
     Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-    context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+    UI.message("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
     onShutdown(webviewMTSFLIdentifier);
   });
 }

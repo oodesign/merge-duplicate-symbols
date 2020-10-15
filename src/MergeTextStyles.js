@@ -2,6 +2,7 @@ import BrowserWindow from 'sketch-module-web-view'
 import { getWebview } from 'sketch-module-web-view/remote'
 import { debugLog } from './Helpers';
 const Helpers = require("./Helpers");
+var UI = require('sketch/ui')
 
 const webviewMTSFLIdentifier = 'merge-textstylesfromlist.webview'
 const webviewMDTSIdentifier = 'merge-duplicatetextstyles.webview'
@@ -118,11 +119,11 @@ export function MergeSimilarTextStyles(context) {
 
     if (duplicatesSolved <= 0) {
       Helpers.clog("No styles were merged");
-      context.document.showMessage("No styles were merged");
+      UI.message("No styles were merged");
     }
     else {
       Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-      context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      UI.message("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
     }
 
   });
@@ -160,7 +161,7 @@ export function MergeDuplicateTextStyles(context) {
     browserWindow.loadURL(require('../resources/mergeduplicatetextstyles.html'));
   }
   else {
-    context.document.showMessage("Looks like there are no text styles with the same name.");
+    UI.message("Looks like there are no text styles with the same name.");
     onShutdown(webviewMDTSIdentifier);
   }
 
@@ -240,11 +241,11 @@ export function MergeDuplicateTextStyles(context) {
     onShutdown(webviewMDTSIdentifier);
     if (duplicatesSolved <= 0) {
       Helpers.clog("No styles were merged");
-      context.document.showMessage("No styles were merged");
+      UI.message("No styles were merged");
     }
     else {
       Helpers.clog("Wpdated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-      context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      UI.message("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
     }
 
   });
@@ -289,9 +290,9 @@ export function MergeSelectedTextStyles(context) {
   }
   else {
     if (styleCounter == 1)
-      context.document.showMessage("There's only 1 text style. No need to merge.");
+      UI.message("There's only 1 text style. No need to merge.");
     else
-      context.document.showMessage("Looks like there are no text styles.");
+      UI.message("Looks like there are no text styles.");
 
     onShutdown(webviewMTSFLIdentifier);
   }
@@ -369,7 +370,7 @@ export function MergeSelectedTextStyles(context) {
     var affectedLayers = MergeTextStyles(context, selectedIndex);
 
     Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-    context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+    UI.message("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
 
     onShutdown(webviewMTSFLIdentifier);
   });
