@@ -29,8 +29,10 @@ window.GetSymbols = () => {
 
   setTimeout(function () {
     var message = "We're looking for duplicates...";
-    if (globalNumberOfSymbolsInDocument > 100)
-      message = "We're looking for duplicates...<br/><br/>Wow, you have " + globalNumberOfSymbolsInDocument + " symbols here (and " + globalNumberOfSymbolsInLibraries + " in linked libraries)! 🙈<br/> This may take a while... Wanna go get a coffee?"
+    if (globalNumberOfSymbolsInDocument > 100) {
+      var andLinkedLibraries = (globalNumberOfSymbolsInLibraries > 0) ? "(and " + globalNumberOfSymbolsInLibraries + " in linked libraries)" : ""
+      message = "We're looking for duplicates...<br/><br/>Wow, you have " + globalNumberOfSymbolsInDocument + " symbols here " + andLinkedLibraries + "! 🙈<br/> This may take a while... Wanna go get a coffee?"
+    }
     window.ShowProgress(message);
     window.postMessage('RecalculateDuplicates');
   }, 200);
@@ -75,7 +77,7 @@ window.DrawDuplicateSymbols = (mergeSession) => {
     window.postMessage("nativeLog", "WV - Drawing left panel symbol list");
     lstDuplicateSymbols.innerHTML = inner;
     btnMerge.disabled = (checkedCounter == 0);
-    
+
 
     document.getElementById('lblIncludeLibraries').innerHTML = (checkedCounter != 0) ? "Include all enabled libraries symbols (you may lose the current selection)" : "Include all enabled libraries symbols";
     DrawSymbolList(globalSymbolDisplayed);
@@ -194,8 +196,8 @@ window.DrawSymbolList = (index) => {
   var inner = "";
   for (var i = 0; i < globalMergeSession[index].symbolWithDuplicates.duplicates.length; i++) {
 
-    
-    window.postMessage("nativeLog", "WV --- Drawing symbol: "+globalMergeSession[index].symbolWithDuplicates.duplicates[i].name);
+
+    window.postMessage("nativeLog", "WV --- Drawing symbol: " + globalMergeSession[index].symbolWithDuplicates.duplicates[i].name);
 
     var isSelected = (globalMergeSession[index].selectedIndex == i)
     var selected = isSelected ? "selected" : "";
@@ -210,7 +212,7 @@ window.DrawSymbolList = (index) => {
     inner += `<div id="duplicateItem${i}" class="thumbnailContainer symbolPreview  alignVerticalCenter ${selected}" onclick="onSymbolClicked(${i}, ${index})">
                 ${checkbox}
                 <div class="colAvailable verticalLayout thumbnailData" id="duplicateItemThumbnail${i}" >
-                  <div class="rowAvailable thumbnail" style='background-image:url("${globalMergeSession[index].symbolWithDuplicates.duplicates[i].thumbnail}")'></div>
+                  <div class="rowAvailable thumbnail" style='background-image:url("data:image/png;base64,${globalMergeSession[index].symbolWithDuplicates.duplicates[i].thumbnail}")'></div>
                   <div class="rowAuto primaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].symbolWithDuplicates.duplicates[i].numInstances} instances - Used in ${globalMergeSession[index].symbolWithDuplicates.duplicates[i].numOverrides} overrides</span></div>
                   <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].symbolWithDuplicates.duplicates[i].libraryName}</span></div>
                 </div>
@@ -271,7 +273,7 @@ document.getElementById('btnListView').addEventListener("click", () => {
   document.getElementById('listOfSymbols').classList.remove("cardsView");
   document.getElementById('btnCardView').classList.remove("selected");
   document.getElementById('btnListView').classList.add("selected");
-  
+
 });
 
 

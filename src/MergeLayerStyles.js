@@ -1,5 +1,7 @@
 import BrowserWindow from 'sketch-module-web-view'
 import { getWebview } from 'sketch-module-web-view/remote'
+import { debugLog } from './Helpers';
+var UI = require('sketch/ui')
 const Helpers = require("./Helpers");
 
 const webviewMLSFLIdentifier = 'merge-layerstylesfromlist.webview'
@@ -9,217 +11,73 @@ const webviewMSLSIdentifier = 'merge-similarlayerstyles.webview'
 var checkingAlsoLibraries = false;
 var currentSelectedStyles = [];
 
-
-function getLayerPredicate(style) {
-  var predicate;
-  if (style.originalStyle != null)
-    predicate = NSPredicate.predicateWithFormat("(sharedStyle.objectID == %@) OR (sharedStyle.objectID == %@)", style.originalStyle.localShareID(), style.originalStyle.remoteShareID());
-  else
-    predicate = NSPredicate.predicateWithFormat("sharedStyle.objectID == %@", style.layerStyle.objectID());
-
-  return predicate;
-}
-
-function MergeLayerStyles(context, styleToKeep) {
+function MergeLayerStyles(context, styleToKeepIndex) {
   var layersChangedCounter = 0;
   var overridesChangedCounter = 0;
+  var styleToKeep = currentSelectedStyles[styleToKeepIndex];
+  var styleToApply = styleToKeep.layerStyle;
+  var stylesToRemove = [];
+  Helpers.clog("Merging styles. Keep '" + styleToKeep.name + "'");
+  
 
+  if (styleToKeep.foreign) {
+    var existingLs = Helpers.document.sharedLayerStyles.filter(function (ls) {
+      return ls.id == styleToKeep.layerStyle.id;
+    });
 
-  Helpers.clog("Merging styles. Keep '" + currentSelectedStyles[styleToKeep].name + "'");
-
-  var layers = Helpers.getAllLayers(context);
-  var layersWithOtherStyles = NSMutableArray.array();
-
-
-  currentSelectedStyles.forEach(function (style) {
-    if (style.layerStyle != currentSelectedStyles[styleToKeep].layerStyle) {
-      var predicate = getLayerPredicate(style),
-        layersWithSameStyle = layers.filteredArrayUsingPredicate(predicate),
-        instanceLoop = layersWithSameStyle.objectEnumerator(),
-        instance;
-
-      while (instance = instanceLoop.nextObject()) {
-        layersWithOtherStyles.addObject(instance);
-      }
-
-      if (style.correlativeStyles != null) {
-        var countercorrelative = 0;
-        for (var i = 0; i < style.correlativeStyles.length; i++) {
-          var predicateCorrelative = NSPredicate.predicateWithFormat("sharedStyle.objectID == %@", style.correlativeStyles[i].localObject().objectID()),
-            layersWithSameStyleCorrelative = layers.filteredArrayUsingPredicate(predicateCorrelative),
-            instanceLoopCorrelative = layersWithSameStyle.objectEnumerator(),
-            instanceCorrelative;
-
-          while (instanceCorrelative = instanceLoopCorrelative.nextObject()) {
-            layersWithOtherStyles.addObject(instanceCorrelative);
-            countercorrelative++;
-          }
-        }
-      }
+    if (existingLs.length <= 0) {
+      Helpers.clog("Importing style from library " + styleToKeep.libraryName);
+      styleToApply = Helpers.importLayerStyleFromLibrary(styleToKeep);
     }
-  });
-
-  Helpers.clog("Merging styles -- Found " + layersWithOtherStyles.length + " layers using the discarded styles");
-
-  var foreignStyleReference, foreignStyle;
-  if (currentSelectedStyles[styleToKeep].foreign && currentSelectedStyles[styleToKeep].library != null) {
-
-    Helpers.clog("Merging styles -- Selected style is foreign");
-    foreignStyleReference = MSShareableObjectReference.referenceForShareableObject_inLibrary(currentSelectedStyles[styleToKeep].layerStyle, currentSelectedStyles[styleToKeep].library);
-    foreignStyle = AppController.sharedInstance().librariesController().importShareableObjectReference_intoDocument(foreignStyleReference, context.document.documentData());
-    Helpers.clog("Merging styles -- Added reference to foreign style");
+    else
+      Helpers.clog("Style not imported (as it's already in document)");
   }
 
-  layersWithOtherStyles.forEach(function (layer) {
-    if (currentSelectedStyles[styleToKeep].foreign && currentSelectedStyles[styleToKeep].library != null) {
-      Helpers.clog("Merging styles -- Assigning style (foreign) to layer '" + layer.name() + "'");
-      layer.setSharedStyle(foreignStyle.localSharedStyle());
+  for (var i = 0; i < currentSelectedStyles.length; i++) {
+    if (i != styleToKeepIndex) {
+      stylesToRemove.push(currentSelectedStyles[i].layerStyle);
     }
-    else {
-      Helpers.clog("Merging styles -- Assigning style to layer '" + layer.name() + "'");
-      layer.setSharedStyle(currentSelectedStyles[styleToKeep].layerStyle);
-    }
-
-    layersChangedCounter++;
-  });
-
-  Helpers.clog("Merging styles -- Updating layer overrides");
-  overridesChangedCounter += UpdateLayerOverrides(currentSelectedStyles, styleToKeep, context, foreignStyle);
-  Helpers.clog("Merging styles -- Updated layer overrides");
+  }
 
   currentSelectedStyles.forEach(function (style) {
-    if (style.layerStyle != currentSelectedStyles[styleToKeep].layerStyle) {
+    var instances = style.layerStyle.getAllInstancesLayers();
 
-      Helpers.clog("Merging styles -- Removing style '" + style.name + "'");
-      if (style.foreign && (style.library == null)) {
-        if (context.document.documentData().foreignLayerStyles().indexOf(style.originalStyle) > -1) {
-          Helpers.clog("Merging styles -- Removing style from foreignLayerStyles");
-          context.document.documentData().foreignLayerStyles().removeObject(style.originalStyle);
-        }
+    Helpers.clog("-- Updating " + instances.length + "instances to " + styleToKeep.name);
+    instances.forEach(function (instance) {
+      instance.sharedStyle = styleToApply;
+      instance.style.syncWithSharedStyle(styleToApply);
+      layersChangedCounter++;
+    });
 
-        if (style.correlativeStyles != null) {
-          for (var i = 0; i < style.correlativeStyles.length; i++) {
-            if (context.document.documentData().foreignLayerStyles().indexOf(style.correlativeStyles[i]) > -1) {
-              Helpers.clog("Merging styles -- Removing also style '" + style.correlativeStyles[i].localObject().name() + "' from foreignLayerStyles");
-              context.document.documentData().foreignLayerStyles().removeObject(style.correlativeStyles[i]);
-            }
-          }
-        }
+    var relatedOverrides = Helpers.getRelatedOverrides(context, style.layerStyle.id, "layerStyle");
+    Helpers.clog("-- Updating " + relatedOverrides.length + "related overrides to " + styleToKeep.name);
+    relatedOverrides.forEach(function (override) {
+      var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
+      var instanceOverride = instanceLayer.overrides.filter(function (ov) {
+        return ov.id == override.override.id;
+      });
+
+      try {
+        Helpers.clog("------ Updating override for " + instanceLayer.name);
+        instanceLayer.setOverrideValue(instanceOverride[0], styleToApply.id.toString());
+        overridesChangedCounter++;
+      } catch (e) {
+        Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name);
       }
-      else {
-        Helpers.clog("Merging styles -- Removing shared style from layerStyles");
-        context.document.documentData().layerStyles().removeSharedStyle(style.layerStyle);
-      }
-    }
+    });
   });
 
-  Helpers.clog("Merging styles -- Completed");
+  stylesToRemove.forEach(function (styleToRemove) {
+    var removeAtIndex = -1;
+    for (var i = 0; i < Helpers.document.sharedLayerStyles.length; i++) {
+      if (Helpers.document.sharedLayerStyles[i].id == styleToRemove.id) removeAtIndex = i;
+    }
+    if (removeAtIndex > -1) Helpers.document.sharedLayerStyles.splice(removeAtIndex, 1);
+  });
 
   return [layersChangedCounter, overridesChangedCounter];
 }
 
-function UpdateLayerOverrides(currentSelectedStyles, styleToKeep, context, foreignStyle) {
-
-  var overridesChangedCounter = 0;
-  var allSymbolInstances = NSMutableArray.array();
-  context.document.documentData().allSymbols().forEach(function (symbolMaster) {
-    var instances = Helpers.getSymbolInstances(context, symbolMaster),
-      instanceLoop = instances.objectEnumerator(),
-      instance;
-
-    while (instance = instanceLoop.nextObject()) {
-      allSymbolInstances.addObject(instance);
-    }
-  });
-
-  allSymbolInstances.forEach(function (symbolInstance) {
-    var overridePointsToReplace = [];
-    var overrides = symbolInstance.overrides();
-
-    symbolInstance.availableOverrides().forEach(function (availableOverride) {
-
-      var allOverridesThatWeShouldReplace = [];
-
-      getAllLayerOverridesThatWeShouldReplace(availableOverride, currentSelectedStyles, styleToKeep, allOverridesThatWeShouldReplace, symbolInstance, 0, context);
-
-      for (var i = 0; i < allOverridesThatWeShouldReplace.length; i++) {
-        if (currentSelectedStyles[styleToKeep].foreign && currentSelectedStyles[styleToKeep].library != null) {
-          symbolInstance.setValue_forOverridePoint_(foreignStyle.localSharedStyle().objectID(), allOverridesThatWeShouldReplace[i].overridePoint());
-        }
-        else {
-          symbolInstance.setValue_forOverridePoint_(currentSelectedStyles[styleToKeep].layerStyle.objectID(), allOverridesThatWeShouldReplace[i].overridePoint());
-        }
-
-        overridesChangedCounter++;
-      }
-    });
-  });
-
-  return overridesChangedCounter;
-}
-
-function getAllLayerOverridesThatWeShouldReplace(availableOverride, currentSelectedStyles, styleToKeep, allOverridesThatWeShouldReplace, symbolInstance, level, context) {
-  var verbose = false;
-
-  if (verbose) console.log(symbolInstance.name() + "(" + level + ")" + ": ---   Name:" + availableOverride.overridePoint().layerName() + "    -    CV:" + availableOverride.currentValue() + "   -   DV:" + availableOverride.defaultValue());
-
-  if (availableOverride.children() == null) {
-    currentSelectedStyles.forEach(function (style) {
-      if (style.layerStyle != currentSelectedStyles[styleToKeep].layerStyle) {
-        if (Helpers.isString(availableOverride.currentValue())) {
-          if ((availableOverride.currentValue().toString().indexOf(style.layerStyle.objectID()) > -1)
-            || (style.originalStyle != null && (availableOverride.currentValue().toString().indexOf(style.originalStyle.localShareID()) > -1))
-            || (style.originalStyle != null && (availableOverride.currentValue().toString().indexOf(style.originalStyle.remoteShareID()) > -1))
-          ) {
-            if (verbose) console.log("Adding it");
-            allOverridesThatWeShouldReplace.push(availableOverride);
-          }
-
-          if (style.correlativeStyles != null) {
-
-            if (verbose) console.log("Checking overrides: " + style.name + " has " + style.correlativeStyles.length + " correlative styles.")
-            for (var i = 0; i < style.correlativeStyles.length; i++) {
-              if ((availableOverride.currentValue().toString().indexOf(style.correlativeStyles[i].localObject().objectID()) > -1)
-                || (style.originalStyle != null && (availableOverride.currentValue().toString().indexOf(style.correlativeStyles[i].localShareID()) > -1))
-                || (style.originalStyle != null && (availableOverride.currentValue().toString().indexOf(style.correlativeStyles[i].remoteShareID()) > -1))
-              ) {
-                if (verbose) console.log("Adding it - correlative");
-                allOverridesThatWeShouldReplace.push(availableOverride);
-              }
-            }
-          }
-        }
-      }
-    });
-  }
-  else {
-    if (verbose) console.log("Digging deeper because it has " + availableOverride.children().length + " children");
-    availableOverride.children().forEach(function (child) {
-      getAllLayerOverridesThatWeShouldReplace(child, currentSelectedStyles, styleToKeep, allOverridesThatWeShouldReplace, symbolInstance, level + 1, context)
-    });
-  }
-}
-
-function getDuplicateLayerStyles(context, allStyles) {
-
-  var layerStylesNames = [];
-  var layerDuplicatedStylesNames = [];
-
-  for (var i = 0; i < allStyles.length; i++) {
-    var style = allStyles[i];
-
-    if (Helpers.getIndexOf(style.name, layerStylesNames) > -1) {
-      if (Helpers.getIndexOf(style.name, layerDuplicatedStylesNames) < 0) {
-        layerDuplicatedStylesNames.push(style.name);
-      }
-    }
-
-    layerStylesNames.push(style.name);
-  }
-
-  return layerDuplicatedStylesNames;
-
-}
 
 export function MergeSimilarLayerStyles(context) {
 
@@ -283,11 +141,11 @@ export function MergeSimilarLayerStyles(context) {
 
     if (duplicatesSolved <= 0) {
       Helpers.clog("No styles were merged");
-      context.document.showMessage("No styles were merged");
+      UI.message("No styles were merged");
     }
     else {
       Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-      context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+      UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
     }
 
   });
@@ -323,7 +181,7 @@ export function MergeDuplicateLayerStyles(context) {
     browserWindow.loadURL(require('../resources/mergeduplicatelayerstyles.html'));
   }
   else {
-    context.document.showMessage("Looks like there are no layer styles with the same name.");
+    UI.message("Looks like there are no layer styles with the same name.");
     onShutdown(webviewMDLSIdentifier);
   }
 
@@ -400,16 +258,15 @@ export function MergeDuplicateLayerStyles(context) {
     onShutdown(webviewMDLSIdentifier);
     if (duplicatesSolved <= 0) {
       Helpers.clog("No styles were merged");
-      context.document.showMessage("No styles were merged");
+      UI.message("No styles were merged");
     }
     else {
-      Helpers.clog("Wpdated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-      context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
     }
 
   });
 };
-
 
 export function MergeSelectedLayerStyles(context) {
 
@@ -432,13 +289,13 @@ export function MergeSelectedLayerStyles(context) {
 
   if (!Helpers.getLibrariesEnabled()) {
     Helpers.clog("Get local styles list");
-    definedLayerStyles = Helpers.getDefinedLayerStyles(context, false, null);
+    definedLayerStyles = Helpers.getDefinedLayerStyles(context, false);
     styleCounter = definedLayerStyles.length;
     checkingAlsoLibraries = false;
   }
   else {
     Helpers.clog("Get all (including libraries) styles list");
-    definedAllLayerStyles = Helpers.getDefinedLayerStyles(context, true, null);
+    definedAllLayerStyles = Helpers.getDefinedLayerStyles(context, true);
     styleCounter = definedAllLayerStyles.length;
     checkingAlsoLibraries = true;
   }
@@ -448,9 +305,9 @@ export function MergeSelectedLayerStyles(context) {
   }
   else {
     if (styleCounter == 1)
-      context.document.showMessage("There's only 1 layer style. No need to merge.");
+      UI.message("There's only 1 layer style. No need to merge.");
     else
-      context.document.showMessage("Looks like there are no layer styles.");
+      UI.message("Looks like there are no layer styles.");
 
     onShutdown(webviewMLSFLIdentifier);
   }
@@ -475,7 +332,7 @@ export function MergeSelectedLayerStyles(context) {
   webContents.on('GetLocalStylesList', () => {
     Helpers.clog("Get local styles list");
     if (definedLayerStyles == null)
-      definedLayerStyles = Helpers.getDefinedLayerStyles(context, false, null);
+      definedLayerStyles = Helpers.getDefinedLayerStyles(context, false);
 
     checkingAlsoLibraries = false;
     webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedLayerStyles)})`).catch(console.error);
@@ -484,7 +341,7 @@ export function MergeSelectedLayerStyles(context) {
   webContents.on('GetAllStylesList', () => {
     Helpers.clog("Get all (including libraries) styles list");
     if (definedAllLayerStyles == null)
-      definedAllLayerStyles = Helpers.getDefinedLayerStyles(context, true, null);
+      definedAllLayerStyles = Helpers.getDefinedLayerStyles(context, true);
 
     checkingAlsoLibraries = true;
     webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedAllLayerStyles)})`).catch(console.error);
@@ -525,7 +382,7 @@ export function MergeSelectedLayerStyles(context) {
     var affectedLayers = MergeLayerStyles(context, selectedIndex);
 
     Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-    context.document.showMessage("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+    UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
 
     onShutdown(webviewMLSFLIdentifier);
   });

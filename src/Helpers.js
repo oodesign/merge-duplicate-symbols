@@ -1,11 +1,22 @@
+
+const sketch = require('sketch');
+const dom = require('sketch/dom');
+var ShapePath = require('sketch/dom').ShapePath;
+var Text = require('sketch/dom').Text;
 var DeltaE = require('delta-e');
 var D3 = require('d3-color');
 var fs = require('@skpm/fs');
+
+var document = sketch.getSelectedDocument();
+var symbols = document.getSymbols();
+var libraries = dom.getLibraries();
 
 var settingsFile;
 var logsEnabled = false;
 var librariesEnabledByDefault = true;
 var acquiredLicense = "Single";
+
+const debugLogEnabled = true;
 
 const valStatus = {
   app: 'app',
@@ -26,11 +37,11 @@ const commands = {
   editsettings: 'editsettings'
 }
 
-const sketchlocalfile = "   💎 This Sketch file";
-const libraryPrefix = "🔸 ";
+const sketchlocalfile = "💎 This Sketch file";
+const libraryPrefix = "🔸";
 
 //d9-03
-var _0x3c15=["\x69\x6E\x69\x74","\x61\x6C\x6C\x6F\x63","\x2F\x75\x73\x72\x2F\x62\x69\x6E\x2F\x63\x75\x72\x6C","\x73\x65\x74\x4C\x61\x75\x6E\x63\x68\x50\x61\x74\x68","\x73\x65\x74\x41\x72\x67\x75\x6D\x65\x6E\x74\x73","\x70\x69\x70\x65","\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x4F\x75\x74\x70\x75\x74","\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x45\x72\x72\x6F\x72","\x6C\x61\x75\x6E\x63\x68","\x77\x61\x69\x74\x55\x6E\x74\x69\x6C\x45\x78\x69\x74","\x74\x65\x72\x6D\x69\x6E\x61\x74\x69\x6F\x6E\x53\x74\x61\x74\x75\x73","\x72\x65\x61\x64\x44\x61\x74\x61\x54\x6F\x45\x6E\x64\x4F\x66\x46\x69\x6C\x65","\x66\x69\x6C\x65\x48\x61\x6E\x64\x6C\x65\x46\x6F\x72\x52\x65\x61\x64\x69\x6E\x67","\x69\x6E\x69\x74\x57\x69\x74\x68\x44\x61\x74\x61\x5F\x65\x6E\x63\x6F\x64\x69\x6E\x67","\x73\x75\x63\x63\x65\x73\x73","\x70\x75\x72\x63\x68\x61\x73\x65","\x54\x65\x61\x6D","\x69\x6E\x64\x65\x78\x4F\x66","\x76\x61\x72\x69\x61\x6E\x74\x73","\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65","\x53\x69\x6E\x67\x6C\x65","\x61\x70\x70","\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65","\x6C\x6F\x67","\x75\x73\x65\x73","\x71\x75\x61\x6E\x74\x69\x74\x79","\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x53\x69\x6E\x67\x6C\x65\x20\x2D\x20\x53\x65\x61\x74\x73\x20\x65\x78\x63\x65\x65\x64\x65\x64\x2E","\x6F\x76\x65\x72","\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x53\x69\x6E\x67\x6C\x65","\x6E\x6F","\x6E\x6F\x43\x6F\x6E"];function curl_async(_0x5275x2,_0x5275x3){var _0x5275x4=NSTask[_0x3c15[1]]()[_0x3c15[0]]();_0x5275x4[_0x3c15[3]](_0x3c15[2]);_0x5275x4[_0x3c15[4]](_0x5275x2);var _0x5275x5=NSPipe[_0x3c15[5]]();var _0x5275x6=NSPipe[_0x3c15[5]]();_0x5275x4[_0x3c15[6]](_0x5275x5);_0x5275x4[_0x3c15[7]](_0x5275x6);_0x5275x4[_0x3c15[8]]();_0x5275x4[_0x3c15[9]]();var _0x5275x7=_0x5275x4[_0x3c15[10]]();var _0x5275x8=_0x5275x6[_0x3c15[12]]()[_0x3c15[11]]();var _0x5275x9=NSString[_0x3c15[1]]()[_0x3c15[13]](_0x5275x8,NSUTF8StringEncoding);if(_0x5275x7== 0){var _0x5275xa=_0x5275x5[_0x3c15[12]]()[_0x3c15[11]]();var _0x5275xb=NSString[_0x3c15[1]]()[_0x3c15[13]](_0x5275xa,NSUTF8StringEncoding);var _0x5275xc=tryParseJSON(_0x5275xb);if(_0x5275xc[_0x3c15[14]]){if(!_0x5275x3){if(_0x5275xc[_0x3c15[15]]!= null){if(_0x5275xc[_0x3c15[15]][_0x3c15[18]][_0x3c15[17]](_0x3c15[16])> 0){acquiredLicense= _0x3c15[19]}else {acquiredLicense= _0x3c15[20]}};return valStatus[_0x3c15[21]]}else {if(_0x5275xc[_0x3c15[15]]!= null){if(_0x5275xc[_0x3c15[15]][_0x3c15[18]][_0x3c15[17]](_0x3c15[16])> 0){console[_0x3c15[23]](_0x3c15[22]);return valStatus[_0x3c15[21]]}else {if(_0x5275xc[_0x3c15[24]]> _0x5275xc[_0x3c15[15]][_0x3c15[25]]){console[_0x3c15[23]](_0x3c15[26]);return valStatus[_0x3c15[27]]}else {console[_0x3c15[23]](_0x3c15[28]);return valStatus[_0x3c15[21]]}}}else {return valStatus[_0x3c15[21]]}}}else {return valStatus[_0x3c15[29]]}}else {return valStatus[_0x3c15[30]]}}
+var _0x3c15 = ["\x69\x6E\x69\x74", "\x61\x6C\x6C\x6F\x63", "\x2F\x75\x73\x72\x2F\x62\x69\x6E\x2F\x63\x75\x72\x6C", "\x73\x65\x74\x4C\x61\x75\x6E\x63\x68\x50\x61\x74\x68", "\x73\x65\x74\x41\x72\x67\x75\x6D\x65\x6E\x74\x73", "\x70\x69\x70\x65", "\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x4F\x75\x74\x70\x75\x74", "\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x45\x72\x72\x6F\x72", "\x6C\x61\x75\x6E\x63\x68", "\x77\x61\x69\x74\x55\x6E\x74\x69\x6C\x45\x78\x69\x74", "\x74\x65\x72\x6D\x69\x6E\x61\x74\x69\x6F\x6E\x53\x74\x61\x74\x75\x73", "\x72\x65\x61\x64\x44\x61\x74\x61\x54\x6F\x45\x6E\x64\x4F\x66\x46\x69\x6C\x65", "\x66\x69\x6C\x65\x48\x61\x6E\x64\x6C\x65\x46\x6F\x72\x52\x65\x61\x64\x69\x6E\x67", "\x69\x6E\x69\x74\x57\x69\x74\x68\x44\x61\x74\x61\x5F\x65\x6E\x63\x6F\x64\x69\x6E\x67", "\x73\x75\x63\x63\x65\x73\x73", "\x70\x75\x72\x63\x68\x61\x73\x65", "\x54\x65\x61\x6D", "\x69\x6E\x64\x65\x78\x4F\x66", "\x76\x61\x72\x69\x61\x6E\x74\x73", "\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65", "\x53\x69\x6E\x67\x6C\x65", "\x61\x70\x70", "\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65", "\x6C\x6F\x67", "\x75\x73\x65\x73", "\x71\x75\x61\x6E\x74\x69\x74\x79", "\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x53\x69\x6E\x67\x6C\x65\x20\x2D\x20\x53\x65\x61\x74\x73\x20\x65\x78\x63\x65\x65\x64\x65\x64\x2E", "\x6F\x76\x65\x72", "\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x53\x69\x6E\x67\x6C\x65", "\x6E\x6F", "\x6E\x6F\x43\x6F\x6E"]; function curl_async(_0x5275x2, _0x5275x3) { var _0x5275x4 = NSTask[_0x3c15[1]]()[_0x3c15[0]](); _0x5275x4[_0x3c15[3]](_0x3c15[2]); _0x5275x4[_0x3c15[4]](_0x5275x2); var _0x5275x5 = NSPipe[_0x3c15[5]](); var _0x5275x6 = NSPipe[_0x3c15[5]](); _0x5275x4[_0x3c15[6]](_0x5275x5); _0x5275x4[_0x3c15[7]](_0x5275x6); _0x5275x4[_0x3c15[8]](); _0x5275x4[_0x3c15[9]](); var _0x5275x7 = _0x5275x4[_0x3c15[10]](); var _0x5275x8 = _0x5275x6[_0x3c15[12]]()[_0x3c15[11]](); var _0x5275x9 = NSString[_0x3c15[1]]()[_0x3c15[13]](_0x5275x8, NSUTF8StringEncoding); if (_0x5275x7 == 0) { var _0x5275xa = _0x5275x5[_0x3c15[12]]()[_0x3c15[11]](); var _0x5275xb = NSString[_0x3c15[1]]()[_0x3c15[13]](_0x5275xa, NSUTF8StringEncoding); var _0x5275xc = tryParseJSON(_0x5275xb); if (_0x5275xc[_0x3c15[14]]) { if (!_0x5275x3) { if (_0x5275xc[_0x3c15[15]] != null) { if (_0x5275xc[_0x3c15[15]][_0x3c15[18]][_0x3c15[17]](_0x3c15[16]) > 0) { acquiredLicense = _0x3c15[19] } else { acquiredLicense = _0x3c15[20] } }; return valStatus[_0x3c15[21]] } else { if (_0x5275xc[_0x3c15[15]] != null) { if (_0x5275xc[_0x3c15[15]][_0x3c15[18]][_0x3c15[17]](_0x3c15[16]) > 0) { console[_0x3c15[23]](_0x3c15[22]); return valStatus[_0x3c15[21]] } else { if (_0x5275xc[_0x3c15[24]] > _0x5275xc[_0x3c15[15]][_0x3c15[25]]) { console[_0x3c15[23]](_0x3c15[26]); return valStatus[_0x3c15[27]] } else { console[_0x3c15[23]](_0x3c15[28]); return valStatus[_0x3c15[21]] } } } else { return valStatus[_0x3c15[21]] } } } else { return valStatus[_0x3c15[29]] } } else { return valStatus[_0x3c15[30]] } }
 //d9-03
 
 
@@ -113,7 +124,7 @@ function brightnessByColor(color) {
   if (typeof r != "undefined") return ((r * 299) + (g * 587) + (b * 114)) / 1000;
 }
 
-function getAcquiredLicense(){
+function getAcquiredLicense() {
   return acquiredLicense;
 }
 
@@ -181,74 +192,12 @@ function indexOfForeignStyle(array, style) {
   return index;
 }
 
-function indexOfForeignStyle2(array, style) {
-
-  var index = -1;
-  for (var i = 0; i < array.length; i++) {
-    if (array[i].duplicates != null) {
-      for (var j = 0; j < array[i].duplicates.length; j++) {
-        if (array[i].duplicates[j].remoteShareID != null) {
-          // console.log("Looking in duplicates remoteShareID:"+array[i].duplicates[j].remoteShareID+"  --  "+style.remoteShareID());
-          if (containsIDOrViceversa(array[i].duplicates[j].remoteShareID, style.objectID())) {
-            var positions = [i, j];
-            // console.log("Looking in duplicates remoteShareID:"+array[i].duplicates[j].remoteShareID+"  --  "+style.remoteShareID());
-            return positions;
-          }
-        }
-      }
-    }
-  }
-  return index;
-}
-
-function getColorDependingOnBrightness(colorBrightness) {
-  if (colorBrightness != null) {
-
-    var UI = require('sketch/ui');
-    var theme = UI.getTheme()
-
-    if (theme === 'dark') {
-      if ((colorBrightness > 100) && (colorBrightness < 130))
-        return MSColor.colorWithRed_green_blue_alpha(0.35, 0.35, 0.35, 1);
-      else
-        return MSColor.colorWithRed_green_blue_alpha(1, 1, 1, 0);
-    } else {
-      if (colorBrightness > 230)
-        return MSColor.colorWithRed_green_blue_alpha(0.8, 0.8, 0.8, 1);
-      else
-        return MSColor.colorWithRed_green_blue_alpha(1, 1, 1, 0);
-    }
-  }
-  else {
-    return MSColor.colorWithRed_green_blue_alpha(1, 1, 1, 0);
-  }
-}
 
 function isString(obj) {
   try {
     return obj.isKindOfClass(NSString) == 1;
-  } catch{
+  } catch {
     return false;
-  }
-}
-
-function getAlignment(alignment) {
-  switch (alignment) {
-    case 0:
-      return "Left";
-      break;
-    case 1:
-      return "Right";
-      break;
-    case 2:
-      return "Center";
-      break;
-    case 3:
-      return "Justified";
-      break;
-    default:
-      return "Natural";
-      break;
   }
 }
 
@@ -274,35 +223,6 @@ function createView(frame) {
   return view;
 }
 
-function getAllTextLayers(context) {
-  var layers = NSMutableArray.array();
-  context.document.pages().forEach(function (page) {
-    var predicate = NSPredicate.predicateWithFormat("className == 'MSTextLayer'"),
-      instances = page.children().filteredArrayUsingPredicate(predicate),
-      instanceLoop = instances.objectEnumerator(),
-      instance;
-
-    while (instance = instanceLoop.nextObject()) {
-      layers.addObject(instance);
-    }
-  });
-  return layers;
-}
-
-function getAllLayers(context) {
-  var layers = NSMutableArray.array();
-
-  context.document.pages().forEach(function (page) {
-    var instances = page.children(),
-      instanceLoop = instances.objectEnumerator(),
-      instance;
-
-    while (instance = instanceLoop.nextObject()) {
-      layers.addObject(instance);
-    }
-  });
-  return layers;
-}
 
 function createSeparator(frame) {
   var separator = NSView.alloc().initWithFrame(frame);
@@ -371,74 +291,71 @@ function FindSimilarTextStyles(referenceStyle, styles, context, checkSameFont, c
   styles.forEach(function (style) {
     try {
       if (referenceStyle != style.textStyle) {
-        //console.log("["+referenceStyle.name()+"] and ["+style.name()+"]");
+        //debugLog("["+referenceStyle.name+"] and ["+style.name+"]");
 
         var sameFont = false;
         try {
-          sameFont = referenceStyle.style().textStyle().attributes().NSFont.familyName() == style.textStyle.style().textStyle().attributes().NSFont.familyName();
+          sameFont = referenceStyle.style.fontFamily == style.textStyle.style.fontFamily;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose font");
         }
-        //console.log("---Font? "+sameFont);
+        //debugLog("---Font? "+sameFont);
 
         var sameWeight = false;
         try {
-          sameWeight = NSFontManager.sharedFontManager().weightOfFont_(referenceStyle.style().textStyle().attributes().NSFont) == NSFontManager.sharedFontManager().weightOfFont_(style.textStyle.style().textStyle().attributes().NSFont);
+          sameWeight = referenceStyle.style.fontWeight == style.textStyle.style.fontWeight;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose weight");
         }
-        //console.log("---FontWeight? "+sameWeight);
+        //debugLog("---FontWeight? "+sameWeight);
 
         var sameSize = false;
         try {
-          sameSize = referenceStyle.style().textStyle().attributes().NSFont.pointSize() == style.textStyle.style().textStyle().attributes().NSFont.pointSize();
+          sameSize = referenceStyle.style.fontSize == style.textStyle.style.fontSize;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose size");
         }
-        //console.log("---FontSize? "+sameSize);
-
-        // console.log("ref:" + referenceStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue());
-        // console.log("style:" + style.textStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue());
+        //debugLog("---FontSize? "+sameSize);
 
         var sameColor = false;
         try {
-          sameColor = referenceStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue() == style.textStyle.style().textStyle().attributes().MSAttributedStringColorAttribute.hexValue();
+          sameColor = referenceStyle.style.textColor == style.textStyle.style.textColor;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose color");
         }
-        //console.log("---Color? "+sameColor);
+        //debugLog("---Color? "+sameColor);
 
         var sameParagraphSpacing = false;
         try {
-          sameParagraphSpacing = referenceStyle.style().textStyle().attributes().NSParagraphStyle.paragraphSpacing() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.paragraphSpacing();
+          sameParagraphSpacing = referenceStyle.style.paragraphSpacing == style.textStyle.style.paragraphSpacing;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose paragraph spacing");
         }
-        //console.log("---Paragraph Spacing? "+sameParagraphSpacing);
+        //debugLog("---Paragraph Spacing? "+sameParagraphSpacing);
 
         var sameLineHeight = false;
         try {
-          sameLineHeight = referenceStyle.style().textStyle().attributes().NSParagraphStyle.minimumLineHeight() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.minimumLineHeight();
+          sameLineHeight = referenceStyle.style.lineHeight == style.textStyle.style.lineHeight;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose line height");
         }
-        //console.log("---Line height? "+sameLineHeight);
+        //debugLog("---Line height? "+sameLineHeight);
 
         var sameAlignment = false;
         try {
-          sameAlignment = referenceStyle.style().textStyle().attributes().NSParagraphStyle.alignment() == style.textStyle.style().textStyle().attributes().NSParagraphStyle.alignment();
+          sameAlignment = referenceStyle.style.alignment == style.textStyle.style.alignment;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose alignment");
         }
-        //console.log("---Alignment? "+sameAlignment);
+        //debugLog("---Alignment? "+sameAlignment);
 
         var sameCharacterSpacing = false;
         try {
-          sameCharacterSpacing = referenceStyle.style().textStyle().attributes().NSKern.toString() == style.textStyle.style().textStyle().attributes().NSKern.toString();
-        } catch{
-          sameCharacterSpacing = referenceStyle.style().textStyle().attributes().NSKern == style.textStyle.style().textStyle().attributes().NSKern;
+          sameCharacterSpacing = referenceStyle.style.kerning == style.textStyle.style.kerning;
+        } catch {
+          clog("Finding similar text styles - Couldn't disclose character spacing");
         }
-        //console.log("---Character Spacing? "+sameCharacterSpacing + "-  Comparing ["+referenceStyle.style().textStyle().attributes().NSKern+"] with ["+style.textStyle.style().textStyle().attributes().NSKern+"]" );
+        //debugLog("---Character Spacing? "+sameCharacterSpacing + "-  Comparing ["+referenceStyle.style().textStyle().attributes().NSKern+"] with ["+style.textStyle.style().textStyle().attributes().NSKern+"]" );
 
         var isSimilar = true;
         if (checkSameFont) isSimilar = isSimilar && sameFont;
@@ -468,7 +385,7 @@ function FindAllSimilarTextStyles(context, includeAllStylesFromExternalLibraries
   var stylesWithSimilarStyles = [];
   var stylesAlreadyProcessed = [];
 
-  var definedTextStyles = getDefinedTextStyles(context, includeAllStylesFromExternalLibraries, null);
+  var definedTextStyles = getDefinedTextStyles(context, includeAllStylesFromExternalLibraries);
   for (var i = 0; i < definedTextStyles.length; i++) {
     clog("Finding similar styles to '" + definedTextStyles[i].name + "'");
     if (definedTextStyles[i].libraryName.localeCompare(sketchlocalfile) == 0) {
@@ -501,42 +418,41 @@ function FindAllSimilarTextStyles(context, includeAllStylesFromExternalLibraries
 function FindSimilarLayerStyles(referenceStyle, styles, context, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowParams) {
 
   var similarStyles = [];
-
   styles.forEach(function (style) {
     try {
       if (referenceStyle != style.layerStyle) {
-        //console.log("["+referenceStyle.name()+"] and ["+style.layerStyle.name()+"]");
+        //debugLog("[" + referenceStyle.name + "] and [" + style.layerStyle.name + "]");
 
         var sameFillColor = false;
-        if (referenceStyle.style().firstEnabledFill() != null && style.layerStyle.style().firstEnabledFill() != null) {
-          sameFillColor = referenceStyle.style().firstEnabledFill().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledFill().color().immutableModelObject().hexValue().toString();
+        if ((referenceStyle.style.fills.length > 0) && (style.layerStyle.style.fills.length > 0)) {
+          sameFillColor = referenceStyle.style.fills[0].color.substring(0, 7).toUpperCase() == style.layerStyle.style.fills[0].color.substring(0, 7).toUpperCase();
         }
-        //console.log("---Fill? "+sameFillColor);
+        //debugLog("---Fill? " + sameFillColor);
 
         var sameBorderColor = false;
-        if (referenceStyle.style().firstEnabledBorder() != null && style.layerStyle.style().firstEnabledBorder() != null) {
-          sameBorderColor = referenceStyle.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString();
+        if ((referenceStyle.style.borders.length > 0) && (style.layerStyle.style.borders.length > 0)) {
+          sameBorderColor = referenceStyle.style.borders[0].color.substring(0, 7).toUpperCase() == style.layerStyle.style.borders[0].color.substring(0, 7).toUpperCase();
         }
-        //console.log("---BorderColor? "+sameBorderColor);
+        //debugLog("---BorderColor? " + sameBorderColor);
 
         var sameBorderThickness = false;
-        if (referenceStyle.style().firstEnabledBorder() != null && style.layerStyle.style().firstEnabledBorder() != null) {
-          sameBorderThickness = referenceStyle.style().firstEnabledBorder().thickness() == style.layerStyle.style().firstEnabledBorder().thickness();
+        if ((referenceStyle.style.borders.length > 0) && (style.layerStyle.style.borders.length > 0)) {
+          sameBorderThickness = referenceStyle.style.borders[0].thickness == style.layerStyle.style.borders[0].thickness
         }
-        //console.log("---BorderThickness? "+sameBorderThickness);
+        //debugLog("---BorderThickness? " + sameBorderThickness);
 
 
         var sameShadowColor = false;
-        if (referenceStyle.style().firstEnabledShadow() != null && style.layerStyle.style().firstEnabledShadow() != null) {
-          sameShadowColor = referenceStyle.style().firstEnabledShadow().color().immutableModelObject().hexValue().toString() == style.layerStyle.style().firstEnabledShadow().color().immutableModelObject().hexValue().toString();
+        if ((referenceStyle.style.shadows.length > 0) && (style.layerStyle.style.shadows.length > 0)) {
+          sameShadowColor = referenceStyle.style.shadows[0].color.substring(0, 7).toUpperCase() == style.layerStyle.style.shadows[0].color.substring(0, 7).toUpperCase();
         }
-        //console.log("---ShadowColor? "+sameShadowColor);
+        //debugLog("---ShadowColor? " + sameShadowColor);
 
         var sameShadowParams = false;
-        if (referenceStyle.style().firstEnabledShadow() != null && style.layerStyle.style().firstEnabledShadow() != null) {
-          sameShadowParams = (referenceStyle.style().firstEnabledShadow().offsetX() == style.layerStyle.style().firstEnabledShadow().offsetX()) && (referenceStyle.style().firstEnabledShadow().offsetY() == style.layerStyle.style().firstEnabledShadow().offsetY()) && (referenceStyle.style().firstEnabledShadow().blurRadius() == style.layerStyle.style().firstEnabledShadow().blurRadius()) && (referenceStyle.style().firstEnabledShadow().spread() == style.layerStyle.style().firstEnabledShadow().spread());
+        if ((referenceStyle.style.shadows.length > 0) && (style.layerStyle.style.shadows.length > 0)) {
+          sameShadowParams = ((referenceStyle.style.shadows[0].x == style.layerStyle.style.shadows[0].x) && (referenceStyle.style.shadows[0].y == style.layerStyle.style.shadows[0].y) && (referenceStyle.style.shadows[0].blur == style.layerStyle.style.shadows[0].blur) && (referenceStyle.style.shadows[0].spread == style.layerStyle.style.shadows[0].spread));
         }
-        //console.log("---ShadowParams? "+sameShadowParams);
+        //debugLog("---ShadowParams? " + sameShadowParams);
 
         var isSimilar = true;
         if (checkSameFillColor) isSimilar = isSimilar && sameFillColor;
@@ -561,208 +477,36 @@ function FindAllSimilarLayerStyles(context, includeAllStylesFromExternalLibrarie
   var stylesWithSimilarStyles = [];
   var stylesAlreadyProcessed = [];
 
-  var definedLayerStyles = getDefinedLayerStyles(context, includeAllStylesFromExternalLibraries, null);
+  var definedLayerStyles = getDefinedLayerStyles(context, includeAllStylesFromExternalLibraries);
   for (var i = 0; i < definedLayerStyles.length; i++) {
 
     clog("Finding similar styles to '" + definedLayerStyles[i].name + "'");
-    if (definedLayerStyles[i].libraryName.localeCompare(sketchlocalfile) == 0) {
-      if (stylesAlreadyProcessed.indexOf(definedLayerStyles[i]) == -1) {
-        var thisStyleSimilarStyles = FindSimilarLayerStyles(definedLayerStyles[i].layerStyle, definedLayerStyles, context, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowParams);
+    if (stylesAlreadyProcessed.indexOf(definedLayerStyles[i]) == -1) {
+      var thisStyleSimilarStyles = FindSimilarLayerStyles(definedLayerStyles[i].layerStyle, definedLayerStyles, context, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowParams);
 
-        stylesAlreadyProcessed.push(definedLayerStyles[i]);
-        thisStyleSimilarStyles.forEach(function (processedStyle) {
-          stylesAlreadyProcessed.push(processedStyle);
+      stylesAlreadyProcessed.push(definedLayerStyles[i]);
+      thisStyleSimilarStyles.forEach(function (processedStyle) {
+        stylesAlreadyProcessed.push(processedStyle);
+      });
+
+      thisStyleSimilarStyles.unshift(definedLayerStyles[i]);
+
+      if (thisStyleSimilarStyles.length > 1) {
+        stylesWithSimilarStyles.push({
+          "referenceStyle": definedLayerStyles[i],
+          "similarStyles": thisStyleSimilarStyles,
+          "selectedIndex": -1,
+          "isUnchecked": false,
         });
-
-        thisStyleSimilarStyles.unshift(definedLayerStyles[i]);
-
-        if (thisStyleSimilarStyles.length > 1) {
-          stylesWithSimilarStyles.push({
-            "referenceStyle": definedLayerStyles[i],
-            "similarStyles": thisStyleSimilarStyles,
-            "selectedIndex": -1,
-            "isUnchecked": false,
-          });
-        }
       }
     }
   }
   return stylesWithSimilarStyles;
 }
 
-function getDefinedTextStyles(context, includeAllStylesFromExternalLibraries, styleName) {
-  var textStyles = [];
-  var localTextStyles = context.document.documentData().layerTextStyles().objects();
-
-
-  //console.log("Local text styles:"+context.document.documentData().layerTextStyles().objects().count());
-
-  for (var i = 0; i < localTextStyles.count(); i++) {
-    var style = localTextStyles.objectAtIndex(i);
-    var attributes = style.style().textStyle().attributes();
-
-    if (styleName != null) {
-      if (styleName.localeCompare(style.name()) == 0) {
-        textStyles.push({
-          "attributes": attributes,
-          "textStyle": style,
-          "name": "" + style.name(),
-          "libraryName": sketchlocalfile,
-          "foreign": false,
-          "isSelected": false,
-          "isChosen": false,
-          "description": getTextStyleDescription(attributes),
-          "thumbnail": getTextThumbnail(style),
-          "contrastMode": shouldEnableContrastMode(getTextStyleColor(style))
-        });
-      }
-    }
-    else {
-      textStyles.push({
-        "attributes": attributes,
-        "textStyle": style,
-        "name": "" + style.name(),
-        "libraryName": sketchlocalfile,
-        "foreign": false,
-        "isSelected": false,
-        "isChosen": false,
-        "description": getTextStyleDescription(attributes),
-        "thumbnail": getTextThumbnail(style),
-        "contrastMode": shouldEnableContrastMode(getTextStyleColor(style))
-      });
-    }
-
-
-    //console.log("--Local:"+localTextStyles.objectAtIndex(i).objectID());
-  }
-
-  //console.log("TS:"+textStyles.length);
-  //console.log("Foreign text styles:"+context.document.documentData().foreignTextStyles().count());
-
-  context.document.documentData().foreignTextStyles().forEach(style => {
-    var attributes = style.localObject().style().textStyle().attributes();
-
-    var indexOfForeign = indexOfForeignStyle(textStyles, style);
-    var foreignLib = getLibraryByID(style.libraryID());
-
-    if (indexOfForeign == -1) {
-      if (styleName != null) {
-        if (styleName.localeCompare(style.localObject().name()) == 0) {
-          textStyles.push({
-            "originalStyle": style,
-            "attributes": attributes,
-            "textStyle": style.localObject(),
-            "name": "" + style.localObject().name(),
-            "libraryName": libraryPrefix + ((foreignLib != null) ? foreignLib.name() : "This library is not available"),
-            "foreign": true,
-            "localShareID": style.localShareID(),
-            "remoteShareID": style.remoteShareID(),
-            "correlativeStyles": [],
-            "isSelected": false,
-            "isChosen": false,
-            "description": getTextStyleDescription(attributes),
-            "thumbnail": getTextThumbnail(style.localObject()),
-            "contrastMode": shouldEnableContrastMode(getTextStyleColor(style.localObject()))
-          });
-        }
-      }
-      else {
-        textStyles.push({
-          "originalStyle": style,
-          "attributes": attributes,
-          "textStyle": style.localObject(),
-          "name": "" + style.localObject().name(),
-          "libraryName": libraryPrefix + ((foreignLib != null) ? foreignLib.name() : "This library is not available"),
-          "foreign": true,
-          "localShareID": style.localShareID(),
-          "remoteShareID": style.remoteShareID(),
-          "correlativeStyles": [],
-          "isSelected": false,
-          "isChosen": false,
-          "description": getTextStyleDescription(attributes),
-          "thumbnail": getTextThumbnail(style.localObject()),
-          "contrastMode": shouldEnableContrastMode(getTextStyleColor(style.localObject()))
-        });
-      }
-    }
-    else {
-      //console.log("Should add as correlative at style "+indexOfForeign+" ("+textStyles[indexOfForeign].name+")")
-      textStyles[indexOfForeign].correlativeStyles.push(style);
-    }
-
-    //console.log("--Foreign:"+style.localObject().objectID()+"  -  "+style.localObject().name());
-    //console.log("----localShareID:"+style.localShareID())
-    //console.log("----remoteShareID:"+style.remoteShareID())
-  });
-
-  if (includeAllStylesFromExternalLibraries) {
-
-    //console.log("Libraries--------");
-
-    var libraries = NSApp.delegate().librariesController().availableLibraries();
-
-    libraries.forEach(function (lib) {
-
-      if (lib && lib.libraryID() && lib.enabled() && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.libraryID().toString()) != 0) {
-
-
-        //console.log("--"+lib.name()+": "+lib.document().layerTextStyles().objects().count()+" styles");
-        lib.document().layerTextStyles().objects().forEach(function (libraryStyle) {
-          //console.log("----Library:"+libraryStyle.objectID());
-          if (!alreadyInList(textStyles, libraryStyle)) {
-            if (styleName != null) {
-              if (styleName.localeCompare(libraryStyle.name()) == 0) {
-
-                var attributes = libraryStyle.style().textStyle().attributes();
-
-                textStyles.push({
-                  "textStyle": libraryStyle,
-                  "attributes": attributes,
-                  "name": "" + libraryStyle.name(),
-                  "libraryName": libraryPrefix + lib.name(),
-                  "foreign": true,
-                  "library": lib,
-                  "isSelected": false,
-                  "isChosen": false,
-                  "description": getTextStyleDescription(attributes),
-                  "thumbnail": getTextThumbnail(libraryStyle),
-                  "contrastMode": shouldEnableContrastMode(getTextStyleColor(libraryStyle))
-                });
-              }
-            }
-            else {
-              var attributes = libraryStyle.style().textStyle().attributes();
-
-              textStyles.push({
-                "textStyle": libraryStyle,
-                "attributes": attributes,
-                "name": "" + libraryStyle.name(),
-                "libraryName": libraryPrefix + lib.name(),
-                "foreign": true,
-                "library": lib,
-                "isSelected": false,
-                "isChosen": false,
-                "description": getTextStyleDescription(attributes),
-                "thumbnail": getTextThumbnail(libraryStyle),
-                "contrastMode": shouldEnableContrastMode(getTextStyleColor(libraryStyle))
-              });
-            }
-          }
-        });
-      }
-    });
-  }
-
-  textStyles = textStyles.sort(compareStyleArrays);
-
-  return textStyles;
-}
-
-
-function GetRecomposedSymbolName(symbol) {
-  var symbolName = symbol.name();
+function GetRecomposedSymbolName(symbolName) {
   var recomposedSymbolName = "";
-  for (var j = 0; j < symbolName.length(); j++) {
+  for (var j = 0; j < symbolName.length; j++) {
     recomposedSymbolName += symbolName.charAt(j);
   }
   return recomposedSymbolName;
@@ -770,103 +514,154 @@ function GetRecomposedSymbolName(symbol) {
 
 
 function getSymbolInstances(context, symbolMaster) {
-  var symbolInstances = NSMutableArray.array();
-
-  var pages = context.document.pages(), pageLoop = pages.objectEnumerator(), page;
-
-  while (page = pageLoop.nextObject()) {
-    var predicate = NSPredicate.predicateWithFormat("className == 'MSSymbolInstance' && symbolMaster == %@", symbolMaster),
-      instances = page.children().filteredArrayUsingPredicate(predicate),
-      instanceLoop = instances.objectEnumerator(),
-      instance;
-
-    while (instance = instanceLoop.nextObject()) {
-      symbolInstances.addObject(instance);
-    }
-  }
-
+  var symbolInstances = symbolMaster.getAllInstances();
   return symbolInstances;
 }
 
 function getSymbolOverrides(context, symbolMaster) {
   var symbolOverrides = NSMutableArray.array();
+  var instances = sketch.find("[type='SymbolInstance']", document);
+  instances.forEach(function (instance) {
+    instance.overrides.forEach(function (override) {
+      if ((override.property.localeCompare("symbolID") == 0) /*&& (override.isDefault == 0)*/) {
+        if (override.value.localeCompare(symbolMaster.symbolId) == 0) {
+          symbolOverrides.push({
+            "instance": instance,
+            "override": override
+          });
+        }
+      }
+    });
+  });
 
-  var pages = context.document.pages(), pageLoop = pages.objectEnumerator(), page;
-
-  while (page = pageLoop.nextObject()) {
-    clog("---- Processing page:" + page.name());
-    clog("---- Page children:" + page.children().count());
-    var predicate = NSPredicate.predicateWithFormat("className == %@ && overrides != nil", "MSSymbolInstance"),
-      instances = page.children().filteredArrayUsingPredicate(predicate),
-      instanceLoop = instances.objectEnumerator(),
-      instance;
-    clog("------ Acquired predicate for:" + page.name());
-
-    while (instance = instanceLoop.nextObject()) {
-      var overrides = instance.overrides();
-      FindOverrideSymbolID(instance, overrides, symbolOverrides, symbolMaster, 0);
-    }
-
-    // for (var i = 0; i < page.children().count(); i++) {
-    //   try {
-    //     var element = page.children()[i].name() + " - " + page.children()[i].className();
-    //     if(page.children()[i].className().localeCompare("MSSymbolInstance")==0)
-    //       var overrides = page.children()[i].overrides();
-    //   }
-    //   catch (e) {
-    //     clog("------ This is an exception ------" + page.children()[i].name() + "in Artboard "+page.children()[i].parentArtboard().name());
-    //     //clog(e);
-    //   }
-    // }
-  }
   return symbolOverrides;
 }
 
-function FindOverrideSymbolID(instance, overrides, symbolOverrides, symbolMaster, level) {
-  // clog("---- Deepdiving overrides (level " + level + ")");
-  for (var key in overrides) {
-    var symbolID = overrides[key]["symbolID"];
-    if (symbolID == null) {
-      FindOverrideSymbolID(instance, overrides[key], symbolOverrides, symbolMaster, level + 1);
-    }
-    else {
-      if (typeof symbolID === 'function') {
-        symbolID = symbolID();
+function getRelatedOverrides(context, id, property) {
+  var overrides = NSMutableArray.array();
+  var instances = sketch.find("[type='SymbolInstance']", document);
+  instances.forEach(function (instance) {
+    instance.overrides.forEach(function (override) {
+      if ((override.property.localeCompare(property) == 0) /*&& (override.isDefault == 0)*/) {
+        if (override.value.localeCompare(id) == 0) {
+          overrides.push({
+            "instance": instance,
+            "override": override
+          });
+        }
       }
-      if (symbolID.localeCompare(symbolMaster.symbolID()) == 0) {
-        symbolOverrides.addObject(instance);
-      }
-    }
-  }
+    });
+  });
 
-  return symbolID;
-}
-
-function IsForeign(context, refSymbol) {
-  for (var i = 0; i < context.document.documentData().foreignSymbols().length; i++) {
-    if (context.document.documentData().foreignSymbols()[i].symbolMaster() == refSymbol)
-      return true;
-  }
-  return false;
+  return overrides;
 }
 
 function countAllSymbols(context, includeAllSymbolsFromExternalLibraries) {
   var counter = [0, 0];
-  counter[0] = context.document.documentData().allSymbols().length;
+
+  counter[0] = symbols.length;
 
   if (includeAllSymbolsFromExternalLibraries) {
-    var libraries = NSApp.delegate().librariesController().libraries();
     libraries.forEach(function (lib) {
-      if (lib && lib.libraryID() && lib.enabled() && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.libraryID().toString()) != 0) {
-        counter[1] += lib.document().allSymbols().length;
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        counter[1] += lib.getDocument().getSymbols().length;
       }
     });
   }
+
   return counter;
 }
 
-function sortArray(array, key) {
+function getDocumentSymbols(context, includeAllSymbolsFromExternalLibraries) {
+  var symbols = [];
+  const map = new Map();
+  document.getSymbols().forEach(function (symbol) {
+    if (!map.has(symbol.id)) {
+      map.set(symbol.id, true);
+      symbols.push({
+        "symbol": symbol,
+        "foreign": (symbol.getLibrary() != null),
+        "library": (symbol.getLibrary() != null) ? symbol.getLibrary() : null
+      });
+    }
+  });
 
+  if (includeAllSymbolsFromExternalLibraries) {
+    libraries.forEach(function (lib) {
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        lib.getDocument().getSymbols().forEach(function (symbol) {
+          if (!map.has(symbol.id)) {
+            symbols.push({
+              "symbol": symbol,
+              "foreign": true,
+              "library": lib
+            });
+          }
+        });
+      }
+    });
+  }
+
+  return symbols;
+}
+
+function importSymbolFromLibrary(element) {
+  try {
+    clog("-- Importing " + element.name + " from library" + element.libraryName + " with ID:" + element.symbol.id + " and symbolId:" + element.symbol.symbolId);
+    var symbolReferences = element.library.getImportableSymbolReferencesForDocument(document);
+    var refToImport = symbolReferences.filter(function (ref) {
+      return ref.id == element.symbol.symbolId;
+    });
+
+    var symbol = refToImport[0].import();
+    clog("-- We've imported:" + symbol.name + " from library " + symbol.getLibrary().name);
+
+    return symbol;
+  } catch (e) {
+    clog("-- ERROR: Couldn't import " + element.name + " from library" + element.libraryName + " with ID:" + element.symbol.id + " and symbolId:" + element.symbol.symbolId);
+    return null;
+  }
+}
+
+function importLayerStyleFromLibrary(layerStyle) {
+  try {
+    clog("-- Importing " + layerStyle.name + " from library " + layerStyle.libraryName + " with ID:" + layerStyle.layerStyle.id);
+    var styleReferences = layerStyle.library.getImportableLayerStyleReferencesForDocument(document);
+    var refToImport = styleReferences.filter(function (ref) {
+      return ref.id == layerStyle.layerStyle.id;
+    });
+
+    var style = refToImport[0].import();
+    clog("-- We've imported:" + style.name + " from library " + style.getLibrary().name);
+
+    return style;
+  } catch (e) {
+    clog("-- ERROR: Couldn't import " + layerStyle.name + " from library" + layerStyle.libraryName + " with ID:" + layerStyle.layerStyle.id);
+    return null;
+  }
+}
+
+function importTextStyleFromLibrary(textStyle) {
+
+  try {
+    clog("-- Importing " + textStyle.name + " from library " + textStyle.libraryName + " with ID:" + textStyle.textStyle.id);
+    var styleReferences = textStyle.library.getImportableTextStyleReferencesForDocument(document);
+    var refToImport = styleReferences.filter(function (ref) {
+      return ref.id == textStyle.textStyle.id;
+    });
+
+    var style = refToImport[0].import();
+    clog("-- We've imported:" + style.name + " from library " + style.getLibrary().name);
+
+    return style;
+  } catch (e) {
+    clog("-- ERROR: Couldn't import " + textStyle.name + " from library" + textStyle.libraryName + " with ID:" + textStyle.textStyle.id);
+    return null;
+  }
+}
+
+function debugLog(message) {
+  if (debugLogEnabled) console.log(message);
 }
 
 function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLibraries, mergingSelected) {
@@ -875,22 +670,19 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
   var allSymbols = [];
   var nameDictionary = {};
   var alreadyAddedIDs = [];
-  selection.forEach(function (symbol) {
+  selection.forEach(function (docSymbol) {
 
-    var recomposedSymbolName = mergingSelected ? "mergingselected" : GetRecomposedSymbolName(symbol);
-    var isForeign = IsForeign(context, symbol);
-    // if (isForeign) console.log(symbol);
-    var foreignLib = isForeign ? getLibraryByID(symbol.foreignObject().libraryID()) : null;
+    var recomposedSymbolName = mergingSelected ? "mergingselected" : GetRecomposedSymbolName(docSymbol.symbol.name);
+    var foreignLib = docSymbol.library;
+    var isForeign = docSymbol.foreign;
     var libraryName = sketchlocalfile;
 
-    if (isForeign) {
-      libraryName = libraryPrefix;
-      libraryName += (foreignLib != null) ? foreignLib.name() : "This library is not available";
-    }
+    if (isForeign)
+      libraryName = libraryPrefix + foreignLib.name;
 
     var symbolObject = {
-      "name": "" + symbol.name(),
-      "symbol": symbol,
+      "name": "" + docSymbol.symbol.name,
+      "symbol": docSymbol.symbol,
       "isForeign": isForeign,
       "thumbnail": "",
       "symbolInstances": null,
@@ -898,38 +690,29 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
       "symbolOverrides": null,
       "numOverrides": 0,
       "libraryName": libraryName,
+      "library": foreignLib,
       "duplicates": [],
       "isSelected": false
     }
-    symbolObject.duplicates.push({
-      "name": "" + symbol.name(),
-      "symbol": symbol,
-      "isForeign": isForeign,
-      "thumbnail": "",
-      "symbolInstances": null,
-      "numInstances": 0,
-      "symbolOverrides": null,
-      "numOverrides": 0,
-      "libraryName": libraryName,
-      "duplicates": null,
-      "isSelected": false
-    });
 
-    if (isForeign)
-      alreadyAddedIDs.push("" + symbol.foreignObject().remoteShareID());
-    else {
-      try {
-        alreadyAddedIDs.push("" + symbol.symbolID());
-      } catch{
-        clog("Trying to merge a component that is not a symbol.");
-        clog(symbol);
-      }
-    }
+    alreadyAddedIDs.push("" + docSymbol.symbol.id);
 
     if (nameDictionary[recomposedSymbolName] == null) {
       allSymbols.push(symbolObject);
-
-
+      symbolObject.duplicates.push({
+        "name": "" + docSymbol.symbol.name,
+        "symbol": docSymbol.symbol,
+        "isForeign": isForeign,
+        "thumbnail": "",
+        "symbolInstances": null,
+        "numInstances": 0,
+        "symbolOverrides": null,
+        "numOverrides": 0,
+        "libraryName": libraryName,
+        "library": foreignLib,
+        "duplicates": null,
+        "isSelected": false
+      });
       nameDictionary[recomposedSymbolName] = symbolObject;
     }
     else {
@@ -937,60 +720,32 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
     }
   });
 
-  // console.log(alreadyAddedIDs);
-  // console.time("getDuplicateExternalSymbols");
-
-  if (includeAllSymbolsFromExternalLibraries) {
-    var libraries = NSApp.delegate().librariesController().libraries();
-
-    var counterLibs = 0;
-    var counterLibSymbols = 0;
-    libraries.forEach(function (lib) {
-
-      if (lib && lib.libraryID() && lib.enabled() && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.libraryID().toString()) != 0) {
-        counterLibs += lib.document().allSymbols().length;
-      }
-    });
-
-    libraries.forEach(function (lib) {
-
-      if (lib && lib.libraryID() && lib.enabled() && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.libraryID().toString()) != 0) {
-        lib.document().allSymbols().forEach(function (librarySymbol) {
-          var recomposedSymbolName = GetRecomposedSymbolName(librarySymbol);
-          //console.log("Library symbol ID: "+librarySymbol.symbolID())
-          var existsAlready = (alreadyAddedIDs.indexOf("" + librarySymbol.symbolID()) >= 0);
-          // if(existsAlready) console.log("exists already: " + existsAlready);
-
-          if (!existsAlready && (nameDictionary[recomposedSymbolName] != null)) {
-            counterLibSymbols++;
-            nameDictionary[recomposedSymbolName].duplicates.push({
-              "name": "" + librarySymbol.name(),
-              "symbol": librarySymbol,
-              "isForeign": true,
-              "libraryName": libraryPrefix + lib.name(),
-              "duplicates": [],
-              "externalLibrary": lib,
-              "isSelected": false
-            });
-          }
-        });
-      }
-    });
-  }
-  // console.timeEnd("getDuplicateExternalSymbols");
-
   Object.keys(nameDictionary).forEach(function (key) {
-    if (nameDictionary[key].duplicates.length <= 1) {
+
+    var removeElement = false;
+    if (nameDictionary[key].duplicates.length <= 1) removeElement = true;
+
+    if (!removeElement) {
+      var allForeign = true;
+      nameDictionary[key].duplicates.forEach(function (duplicate) {
+        if (!duplicate.isForeign) allForeign = false;
+      });
+      if (allForeign) {
+        removeElement = true;
+      }
+    }
+
+    if (removeElement) {
       var index = allSymbols.indexOf(nameDictionary[key]);
       if (index > -1) allSymbols.splice(index, 1);
       nameDictionary[key] = null;
     }
+
   });
 
-
   // console.timeEnd("getDuplicateSymbols");
-
   return allSymbols.sort(compareSymbolNames);
+
 }
 
 function GetSpecificLayerStyleData(context, layerStyles, index) {
@@ -1016,16 +771,13 @@ function GetSpecificTextStyleData(context, textStyles, index) {
 function GetSpecificSymbolData(context, symbols, index) {
   var totalInstances = 0;
   var totalOverrides = 0;
-  clog("Processing symbol metadata for: " + symbols[index].name);
   for (var i = 0; i < symbols[index].duplicates.length; i++) {
     clog("-- Processing symbol instances for duplicate: " + symbols[index].duplicates[i].name);
     var instances = getSymbolInstances(context, symbols[index].duplicates[i].symbol);
     clog("-- Processing symbol overrides for duplicate: " + symbols[index].duplicates[i].name);
     var overrides = getSymbolOverrides(context, symbols[index].duplicates[i].symbol);
-    clog("-- Processing dimensions for: " + symbols[index].duplicates[i].name);
-    var width = (300 / symbols[index].duplicates[i].symbol.frame().height()) * symbols[index].duplicates[i].symbol.frame().width();
     clog("-- Processing thumbnail overrides for duplicate: " + symbols[index].duplicates[i].name);
-    symbols[index].duplicates[i].thumbnail = getBase64(symbols[index].duplicates[i].symbol, width, 300);
+    symbols[index].duplicates[i].thumbnail = getThumbnail(symbols[index].duplicates[i]);
     symbols[index].duplicates[i].symbolInstances = instances;
     symbols[index].duplicates[i].numInstances = instances.length;
     symbols[index].duplicates[i].symbolOverrides = overrides;
@@ -1034,67 +786,34 @@ function GetSpecificSymbolData(context, symbols, index) {
     totalInstances += instances.length;
     totalOverrides += overrides.length;
   }
+
+
   clog("-- Found " + totalInstances + " instances, " + totalOverrides + " overrides, and created " + symbols[index].duplicates.length + " thumbnails");
   // console.timeEnd("GetSpecificSymbolData");
 }
 
-function getTextStyleDescription(attributes) {
-  var textInfo = "";
-  var fontString = String(attributes.NSFont);
-  var font = fontString.substring(1, fontString.indexOf("pt."));
-  var formatInfo = "" + font + "pt";
-  var alignment = "";
-  try {
-    alignment = getAlignment(attributes.NSParagraphStyle.alignment());
-    textInfo = formatInfo + " - " + alignment;
-  } catch (e) {
-    clog("Get text style description - Couldn't disclose alignment");
-    textInfo = formatInfo;
-  }
-  return textInfo;
+function getTextStyleDescription(sharedTextStyle) {
+  return sharedTextStyle.style.fontFamily + " " + sharedTextStyle.style.fontSize + "pt" + " - " + sharedTextStyle.style.alignment;
 }
 
-function getLayerStyleDescription(style) {
+function getLayerStyleDescription(sharedStyle) {
   var textInfo = "";
-  try {
-    if (style.style().firstEnabledFill() != null)
-      textInfo += "Fill: #" + style.style().firstEnabledFill().color().immutableModelObject().hexValue().toString();
-  } catch (e) {
-    textInfo += "Fill: No fill";
-  }
 
-  try {
-    if (style.style().firstEnabledFill() != null && style.style().firstEnabledBorder() != null)
-      textInfo += " - ";
-  } catch (e) {
-    textInfo += " ";
+  if (sharedStyle.style.fills.length > 0) {
+    textInfo += "Fill" + ((!sharedStyle.style.fills[0].enabled) ? " (disabled)" : "") + ": " + sharedStyle.style.fills[0].color.substring(0, 7).toUpperCase();
   }
+  else
+    textInfo += "No fill";
 
-  try {
-    if (style.style().firstEnabledBorder() != null)
-      textInfo += "Border: #" + style.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString();
-  } catch (e) {
-    textInfo += "Border: No border";
+  textInfo += " - ";
+
+  if (sharedStyle.style.borders.length > 0) {
+    textInfo += "Border" + ((!sharedStyle.style.borders[0].enabled) ? " (disabled)" : "") + ": " + sharedStyle.style.borders[0].color.substring(0, 7).toUpperCase();
   }
+  else
+    textInfo += "No border";
 
   return textInfo;
-}
-
-function getLayerStyleColor(style) {
-  if (style.style().firstEnabledFill() != null) {
-    try {
-      return style.style().firstEnabledFill().color().immutableModelObject().hexValue().toString();
-    } catch (e) {
-      return "FFFFFF";
-    }
-  }
-  else if (style.style().firstEnabledBorder() != null) {
-    try {
-      return style.style().firstEnabledBorder().color().immutableModelObject().hexValue().toString();
-    } catch (e) {
-      return "FFFFFF";
-    }
-  }
 }
 
 function getTextStyleColor(style) {
@@ -1105,14 +824,44 @@ function getTextStyleColor(style) {
     return "000000";
 }
 
-function getOvalThumbnail(style) {
-  var layer = MSOvalShape.alloc().init();
-  layer.frame = MSRect.rectWithRect(NSMakeRect(0, 0, 100, 100));
-  layer.style = style.style();
-  context.document.currentPage().addLayer(layer);
-  var base64 = getBase64(layer, 300, 300);
-  layer.removeFromParent();
-  return base64;
+function getOvalThumbnail(sharedStyle) {
+  const oval = new ShapePath({
+    shapeType: ShapePath.ShapeType.Oval,
+    frame: new sketch.Rectangle(0, 0, 300, 300),
+    style: sharedStyle.style,
+    parent: document.selectedPage
+  });
+  try {
+    const options = { scales: '1', formats: 'png', output: false };
+    var buffer = sketch.export(oval, options);
+    var image64 = buffer.toString('base64');
+    oval.remove();
+    return image64;
+  } catch (e) {
+    oval.remove();
+    return "";
+  }
+}
+
+
+
+function getTextThumbnail(sharedStyle) {
+  var text = new Text({
+    text: 'The quick brown fox',
+    frame: new sketch.Rectangle(0, 0, 600, 100),
+    style: sharedStyle.style,
+    parent: document.selectedPage
+  })
+  try {
+    const options = { scales: '5', formats: 'png', output: false };
+    var buffer = sketch.export(text, options);
+    var image64 = buffer.toString('base64');
+    text.remove();
+    return image64;
+  } catch (e) {
+    text.remove();
+    return "";
+  }
 }
 
 function importForeignSymbol(symbol, library) {
@@ -1121,162 +870,212 @@ function importForeignSymbol(symbol, library) {
   return AppController.sharedInstance().librariesController().importShareableObjectReference_intoDocument(objectReference, data);
 }
 
-function getTextThumbnail(style) {
-  var layer = MSTextLayer.new();
-  layer.stringValue = "The quick brown fox";
-  layer.style = style.style();
-  context.document.currentPage().addLayer(layer);
-  var base64 = getBase64(layer, 600, 100);
-  layer.removeFromParent();
-  return base64;
+function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
+  var allStyles = [];
+  const map = new Map();
+
+  document.sharedLayerStyles.forEach(function (sharedLayerStyle) {
+
+    var library = sharedLayerStyle.getLibrary();
+
+    var layerStyleObject = {
+      "layerStyle": sharedLayerStyle,
+      "name": "" + sharedLayerStyle.name,
+      "libraryName": (library != null) ? libraryPrefix + library.name : sketchlocalfile,
+      "library": library,
+      "foreign": (library != null),
+      "isSelected": false,
+      "isChosen": false,
+      "description": getLayerStyleDescription(sharedLayerStyle),
+      "thumbnail": getOvalThumbnail(sharedLayerStyle),
+      "duplicates": [],
+      "isSelected": false,
+      "contrastMode": (sharedLayerStyle.style.fills.length > 0) ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
+    }
+
+    allStyles.push(layerStyleObject);
+    map.set(layerStyleObject.style.id, true);
+  });
+
+  if (includeAllStylesFromExternalLibraries) {
+    libraries.forEach(function (lib) {
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        lib.getDocument().sharedLayerStyles.forEach(function (sharedLayerStyle) {
+          if (!map.has(sharedLayerStyle.style.id)) {
+            var layerStyleObject = {
+              "layerStyle": sharedLayerStyle,
+              "name": "" + sharedLayerStyle.name,
+              "libraryName": libraryPrefix + lib.name,
+              "library": lib,
+              "foreign": true,
+              "isSelected": false,
+              "isChosen": false,
+              "description": getLayerStyleDescription(sharedLayerStyle),
+              "thumbnail": getOvalThumbnail(sharedLayerStyle),
+              "duplicates": [],
+              "isSelected": false,
+              "contrastMode": (sharedLayerStyle.style.fills.length > 0) ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
+            }
+            allStyles.push(layerStyleObject);
+          }
+        });
+      }
+    });
+  }
+
+  return allStyles;
+
+}
+
+
+
+function getAllTextStyles(includeAllStylesFromExternalLibraries) {
+  var allStyles = [];
+  const map = new Map();
+
+  document.sharedTextStyles.forEach(function (sharedTextStyle) {
+
+    var library = sharedTextStyle.getLibrary();
+
+    var textStyleObject = {
+      "textStyle": sharedTextStyle,
+      "name": "" + sharedTextStyle.name,
+      "libraryName": (library != null) ? libraryPrefix + library.name : sketchlocalfile,
+      "library": library,
+      "foreign": (library != null),
+      "isSelected": false,
+      "isChosen": false,
+      "description": "Local " + getTextStyleDescription(sharedTextStyle) + " - " + sharedTextStyle.id + " - " + sharedTextStyle.style.id,
+      "thumbnail": getTextThumbnail(sharedTextStyle),
+      "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+      "duplicates": [],
+      "isSelected": false
+    }
+
+    allStyles.push(textStyleObject);
+    map.set(sharedTextStyle.style.id, true);
+
+  });
+
+  if (includeAllStylesFromExternalLibraries) {
+    libraries.forEach(function (lib) {
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        lib.getDocument().sharedTextStyles.forEach(function (sharedTextStyle) {
+          if (!map.has(sharedTextStyle.style.id)) {
+            var textStyleObject = {
+              "textStyle": sharedTextStyle,
+              "name": "" + sharedTextStyle.name,
+              "libraryName": libraryPrefix + lib.name,
+              "library": lib,
+              "foreign": true,
+              "isSelected": false,
+              "isChosen": false,
+              "description": "Lib " + getTextStyleDescription(sharedTextStyle) + " - " + sharedTextStyle.id + " - " + sharedTextStyle.style.id,
+              "thumbnail": getTextThumbnail(sharedTextStyle),
+              "thumbnail": "",
+              "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+              "duplicates": [],
+              "isSelected": false
+            }
+            allStyles.push(textStyleObject);
+          }
+        });
+      }
+    });
+  }
+
+  return allStyles;
+
 }
 
 function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries) {
 
   var allStyles = [];
   var nameDictionary = {};
+  const map = new Map();
 
+  document.sharedLayerStyles.forEach(function (sharedLayerStyle) {
 
-  context.document.documentData().layerStyles().objects().forEach(function (localLayerStyle) {
+    var library = sharedLayerStyle.getLibrary();
 
     var layerStyleObject = {
-      "layerStyle": localLayerStyle,
-      "name": "" + localLayerStyle.name(),
-      "libraryName": sketchlocalfile,
-      "foreign": false,
+      "layerStyle": sharedLayerStyle,
+      "name": "" + sharedLayerStyle.name,
+      "libraryName": (library != null) ? libraryPrefix + library.name : sketchlocalfile,
+      "library": library,
+      "foreign": (library != null),
       "isSelected": false,
       "isChosen": false,
-      "description": getLayerStyleDescription(localLayerStyle),
-      "thumbnail": "",//getOvalThumbnail(localLayerStyle),
+      "description": getLayerStyleDescription(sharedLayerStyle),
+      "thumbnail": "",
       "duplicates": [],
       "isSelected": false,
-      "contrastMode": shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
+      "contrastMode": (sharedLayerStyle.style.fills.length > 0) ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
     }
-    layerStyleObject.duplicates.push({
-      "layerStyle": localLayerStyle,
-      "name": "" + localLayerStyle.name(),
-      "libraryName": sketchlocalfile,
-      "foreign": false,
-      "isSelected": false,
-      "isChosen": false,
-      "description": getLayerStyleDescription(localLayerStyle),
-      "thumbnail": "",//getOvalThumbnail(localLayerStyle),
-      "duplicates": null,
-      "isSelected": false,
-      "contrastMode": shouldEnableContrastMode(getLayerStyleColor(localLayerStyle))
-    });
 
-    if (nameDictionary[localLayerStyle.name()] == null) {
-      allStyles.push(layerStyleObject);
-      nameDictionary[localLayerStyle.name()] = layerStyleObject;
-    }
-    else {
-      nameDictionary[localLayerStyle.name()].duplicates.push(layerStyleObject);
-    }
-  });
-
-
-
-
-  context.document.documentData().foreignLayerStyles().forEach(foreignStyle => {
-
-    var indexOfForeign = indexOfForeignStyle(allStyles, foreignStyle);
-    var foreignLib = getLibraryByID(foreignStyle.libraryID());
-    if (indexOfForeign == -1) {
-      var layerStyleObject = {
-        "originalStyle": foreignStyle,
-        "layerStyle": foreignStyle.localObject(),
-        "name": "" + foreignStyle.localObject().name(),
-        "libraryName": libraryPrefix + ((foreignLib != null) ? foreignLib.name() : "This library is not available"),
-        "foreign": true,
-        "localShareID": foreignStyle.localShareID(),
-        "remoteShareID": foreignStyle.remoteShareID(),
-        "correlativeStyles": [],
-        "isSelected": false,
-        "isChosen": false,
-        "description": getLayerStyleDescription(foreignStyle.localObject()),
-        "thumbnail": "",//getOvalThumbnail(foreignStyle.localObject()),
-        "contrastMode": shouldEnableContrastMode(getLayerStyleColor(foreignStyle.localObject())),
-        "duplicates": [],
-        "isSelected": false
-      }
+    if (nameDictionary[sharedLayerStyle.name] == null) {
       layerStyleObject.duplicates.push({
-        "originalStyle": foreignStyle,
-        "layerStyle": foreignStyle.localObject(),
-        "name": "" + foreignStyle.localObject().name(),
-        "libraryName": libraryPrefix + ((foreignLib != null) ? foreignLib.name() : "This library is not available"),
-        "foreign": true,
-        "localShareID": foreignStyle.localShareID(),
-        "remoteShareID": foreignStyle.remoteShareID(),
-        "correlativeStyles": [],
-        "isTakenOver": false,
+        "layerStyle": sharedLayerStyle,
+        "name": "" + sharedLayerStyle.name,
+        "libraryName": (library != null) ? libraryPrefix + library.name : sketchlocalfile,
+        "library": library,
+        "foreign": (library != null),
         "isSelected": false,
         "isChosen": false,
-        "description": getLayerStyleDescription(foreignStyle.localObject()),
-        "thumbnail": "",//getOvalThumbnail(foreignStyle.localObject()),,
-        "contrastMode": shouldEnableContrastMode(getLayerStyleColor(foreignStyle.localObject())),
+        "description": getLayerStyleDescription(sharedLayerStyle),
+        "thumbnail": "",
         "duplicates": null,
-        "isSelected": false
+        "isSelected": false,
+        "contrastMode": (sharedLayerStyle.style.fills.length > 0) ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
       });
-
-      if (nameDictionary[foreignStyle.localObject().name()] == null) {
-        allStyles.push(layerStyleObject);
-        nameDictionary[foreignStyle.localObject().name()] = layerStyleObject;
-      }
-      else {
-        nameDictionary[foreignStyle.localObject().name()].duplicates.push(layerStyleObject);
-      }
+      allStyles.push(layerStyleObject);
+      map.set(sharedLayerStyle.style.id, true);
+      nameDictionary[sharedLayerStyle.name] = layerStyleObject;
     }
     else {
-      if (typeof (indexOfForeign) === 'number')
-        allStyles[indexOfForeign].correlativeStyles.push(foreignStyle);
-      else
-        allStyles[indexOfForeign[0]].duplicates[indexOfForeign[1]].correlativeStyles.push(foreignStyle);
-
-      // console.log("indexOfForeign: "+indexOfForeign +" , while allStyles.length is: "+allStyles.length);
-      // console.log(allStyles[indexOfForeign]);
-      // console.log(indexOfForeign);
-      //allStyles[indexOfForeign[0]].duplicates[indexOfForeign[1]].correlativeStyles.push(style);
+      nameDictionary[sharedLayerStyle.name].duplicates.push(layerStyleObject);
     }
-
   });
-
-
-
-
-
-  // console.time("getDuplicateExternalSymbols");
 
   if (includeAllStylesFromExternalLibraries) {
-    var libraries = NSApp.delegate().librariesController().libraries();
     libraries.forEach(function (lib) {
-      if (lib && lib.libraryID() && lib.enabled() && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.libraryID().toString()) != 0) {
-
-        lib.document().layerStyles().objects().forEach(function (libraryStyle) {
-
-          var indexOfForeign = indexOfForeignStyle2(allStyles, libraryStyle);
-          if ((indexOfForeign != null) && (indexOfForeign != -1)) {
-            if (indexOfForeign[1] == 0)
-              allStyles.splice([indexOfForeign[0]], 1);
-            else
-              allStyles[indexOfForeign[0]].duplicates.splice(indexOfForeign[1], 1);
-          }
-
-          if (nameDictionary[libraryStyle.name()] != null) {
-            nameDictionary[libraryStyle.name()].duplicates.push({
-              "layerStyle": libraryStyle,
-              "name": "" + libraryStyle.name(),
-              "libraryName": libraryPrefix + lib.name(),
-              "foreign": true,
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        lib.getDocument().sharedLayerStyles.forEach(function (sharedLayerStyle) {
+          if (!map.has(sharedLayerStyle.style.id)) {
+            var layerStyleObject = {
+              "layerStyle": sharedLayerStyle,
+              "name": "" + sharedLayerStyle.name,
+              "libraryName": libraryPrefix + lib.name,
               "library": lib,
+              "foreign": true,
               "isSelected": false,
               "isChosen": false,
-              "description": getLayerStyleDescription(libraryStyle),
-              "thumbnail": "",//getOvalThumbnail(libraryStyle),
-              "contrastMode": shouldEnableContrastMode(getLayerStyleColor(libraryStyle)),
+              "description": getLayerStyleDescription(sharedLayerStyle),
+              "thumbnail": "",
               "duplicates": [],
-              "isSelected": false
-            });
+              "isSelected": false,
+              "contrastMode": (sharedLayerStyle.style.fills.length > 0) ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
+            }
+
+            if (nameDictionary[sharedLayerStyle.name] == null) {
+              layerStyleObject.duplicates.push({
+                "layerStyle": sharedLayerStyle,
+                "name": "" + sharedLayerStyle.name,
+                "libraryName": libraryPrefix + lib.name,
+                "library": lib,
+                "foreign": true,
+                "isSelected": false,
+                "isChosen": false,
+                "description": getLayerStyleDescription(sharedLayerStyle),
+                "thumbnail": "",
+                "duplicates": null,
+                "isSelected": false,
+                "contrastMode": (sharedLayerStyle.style.fills.length > 0) ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
+              });
+            }
+            else {
+              nameDictionary[sharedLayerStyle.name].duplicates.push(layerStyleObject);
+            }
           }
         });
       }
@@ -1286,7 +1085,20 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
   // console.timeEnd("getDuplicateExternalSymbols");
 
   Object.keys(nameDictionary).forEach(function (key) {
-    if (nameDictionary[key].duplicates.length <= 1) {
+    var removeElement = false;
+    if (nameDictionary[key].duplicates.length <= 1) removeElement = true;
+
+    if (!removeElement) {
+      var allForeign = true;
+      nameDictionary[key].duplicates.forEach(function (duplicate) {
+        if (!duplicate.foreign) allForeign = false;
+      });
+      if (allForeign) {
+        removeElement = true;
+      }
+    }
+
+    if (removeElement) {
       var index = allStyles.indexOf(nameDictionary[key]);
       if (index > -1) allStyles.splice(index, 1);
       nameDictionary[key] = null;
@@ -1296,175 +1108,118 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
   return allStyles;
 
 }
-
 
 function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) {
 
   var allStyles = [];
   var nameDictionary = {};
+  const map = new Map();
 
+  document.sharedTextStyles.forEach(function (sharedTextStyle) {
 
-  context.document.documentData().layerTextStyles().objects().forEach(function (localTextStyle) {
-
-    var attributes = localTextStyle.style().textStyle().attributes();
+    var library = sharedTextStyle.getLibrary();
 
     var textStyleObject = {
-      "attributes": attributes,
-      "textStyle": localTextStyle,
-      "name": "" + localTextStyle.name(),
-      "libraryName": sketchlocalfile,
-      "foreign": false,
+      "textStyle": sharedTextStyle,
+      "name": "" + sharedTextStyle.name,
+      "libraryName": (library != null) ? libraryPrefix + library.name : sketchlocalfile,
+      "library": library,
+      "foreign": (library != null),
       "isSelected": false,
       "isChosen": false,
-      "description": getTextStyleDescription(attributes),
-      "thumbnail": "",//getTextThumbnail(localTextStyle),,
-      "contrastMode": shouldEnableContrastMode(getTextStyleColor(localTextStyle)),
+      "description": getTextStyleDescription(sharedTextStyle),
+      "thumbnail": "",
+      "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
       "duplicates": [],
       "isSelected": false
     }
-    textStyleObject.duplicates.push({
-      "attributes": attributes,
-      "textStyle": localTextStyle,
-      "name": "" + localTextStyle.name(),
-      "libraryName": sketchlocalfile,
-      "foreign": false,
-      "isSelected": false,
-      "isChosen": false,
-      "description": getTextStyleDescription(attributes),
-      "thumbnail": "",//getTextThumbnail(localTextStyle),,
-      "contrastMode": shouldEnableContrastMode(getTextStyleColor(localTextStyle)),
-      "duplicates": null,
-      "isSelected": false
-    });
 
-    if (nameDictionary[localTextStyle.name()] == null) {
-      allStyles.push(textStyleObject);
-      nameDictionary[localTextStyle.name()] = textStyleObject;
-    }
-    else {
-      nameDictionary[localTextStyle.name()].duplicates.push(textStyleObject);
-    }
-  });
-
-
-
-
-  context.document.documentData().foreignTextStyles().forEach(foreignStyle => {
-
-    var indexOfForeign = indexOfForeignStyle(allStyles, foreignStyle);
-    var foreignLib = getLibraryByID(foreignStyle.libraryID());
-
-    var attributes = foreignStyle.localObject().style().textStyle().attributes();
-
-    if (indexOfForeign == -1) {
-      var textStyleObject = {
-        "originalStyle": foreignStyle,
-        "attributes": attributes,
-        "textStyle": foreignStyle.localObject(),
-        "name": "" + foreignStyle.localObject().name(),
-        "libraryName": libraryPrefix + ((foreignLib != null) ? foreignLib.name() : "This library is not available"),
-        "foreign": true,
-        "localShareID": foreignStyle.localShareID(),
-        "remoteShareID": foreignStyle.remoteShareID(),
-        "correlativeStyles": [],
-        "isSelected": false,
-        "isChosen": false,
-        "description": getTextStyleDescription(attributes),
-        "thumbnail": "",//getTextThumbnail(foreignStyle.localObject()),
-        "contrastMode": shouldEnableContrastMode(getTextStyleColor(foreignStyle.localObject())),
-        "duplicates": [],
-        "isSelected": false
-      }
+    if (nameDictionary[sharedTextStyle.name] == null) {
       textStyleObject.duplicates.push({
-        "originalStyle": foreignStyle,
-        "attributes": attributes,
-        "textStyle": foreignStyle.localObject(),
-        "name": "" + foreignStyle.localObject().name(),
-        "libraryName": libraryPrefix + ((foreignLib != null) ? foreignLib.name() : "This library is not available"),
-        "foreign": true,
-        "localShareID": foreignStyle.localShareID(),
-        "remoteShareID": foreignStyle.remoteShareID(),
-        "correlativeStyles": [],
+        "textStyle": sharedTextStyle,
+        "name": "" + sharedTextStyle.name,
+        "libraryName": (library != null) ? libraryPrefix + library.name : sketchlocalfile,
+        "library": library,
+        "foreign": (library != null),
         "isSelected": false,
         "isChosen": false,
-        "description": getTextStyleDescription(attributes),
-        "thumbnail": "",//getTextThumbnail(foreignStyle.localObject()),
-        "contrastMode": shouldEnableContrastMode(getTextStyleColor(foreignStyle.localObject())),
+        "description": getTextStyleDescription(sharedTextStyle),
+        "thumbnail": "",
+        "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
         "duplicates": null,
         "isSelected": false
       });
-
-      if (nameDictionary[foreignStyle.localObject().name()] == null) {
-        allStyles.push(textStyleObject);
-        nameDictionary[foreignStyle.localObject().name()] = textStyleObject;
-      }
-      else {
-        nameDictionary[foreignStyle.localObject().name()].duplicates.push(textStyleObject);
-      }
+      allStyles.push(textStyleObject);
+      map.set(sharedTextStyle.style.id, true);
+      nameDictionary[sharedTextStyle.name] = textStyleObject;
     }
     else {
-      if (typeof (indexOfForeign) === 'number')
-        allStyles[indexOfForeign].correlativeStyles.push(foreignStyle);
-      else
-        allStyles[indexOfForeign[0]].duplicates[indexOfForeign[1]].correlativeStyles.push(foreignStyle);
-
-      // console.log("indexOfForeign: "+indexOfForeign +" , while allStyles.length is: "+allStyles.length);
-      // console.log(allStyles[indexOfForeign]);
-      // console.log(indexOfForeign);
-      //allStyles[indexOfForeign[0]].duplicates[indexOfForeign[1]].correlativeStyles.push(style);
+      nameDictionary[sharedTextStyle.name].duplicates.push(textStyleObject);
     }
-
   });
 
-
-
-
-
-  // console.time("getDuplicateExternalSymbols");
-
   if (includeAllStylesFromExternalLibraries) {
-    var libraries = NSApp.delegate().librariesController().libraries();
     libraries.forEach(function (lib) {
-      if (lib && lib.libraryID() && lib.enabled() && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.libraryID().toString()) != 0) {
-        lib.document().layerTextStyles().objects().forEach(function (libraryStyle) {
-
-          var indexOfForeign = indexOfForeignStyle2(allStyles, libraryStyle);
-
-          var attributes = libraryStyle.style().textStyle().attributes();
-
-          if ((indexOfForeign != null) && (indexOfForeign != -1)) {
-            if (indexOfForeign[1] == 0)
-              allStyles.splice([indexOfForeign[0]], 1);
-            else
-              allStyles[indexOfForeign[0]].duplicates.splice(indexOfForeign[1], 1);
-          }
-
-          if (nameDictionary[libraryStyle.name()] != null) {
-            nameDictionary[libraryStyle.name()].duplicates.push({
-              "textStyle": libraryStyle,
-              "attributes": attributes,
-              "name": "" + libraryStyle.name(),
-              "libraryName": libraryPrefix + lib.name(),
-              "foreign": true,
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        lib.getDocument().sharedTextStyles.forEach(function (sharedTextStyle) {
+          if (!map.has(sharedTextStyle.style.id)) {
+            var textStyleObject = {
+              "textStyle": sharedTextStyle,
+              "name": "" + sharedTextStyle.name,
+              "libraryName": libraryPrefix + lib.name,
               "library": lib,
+              "foreign": true,
               "isSelected": false,
               "isChosen": false,
-              "description": getTextStyleDescription(attributes),
-              "thumbnail": "",//getTextThumbnail(libraryStyle),
-              "contrastMode": shouldEnableContrastMode(getTextStyleColor(libraryStyle)),
+              "description": getTextStyleDescription(sharedTextStyle),
+              "thumbnail": "",
+              "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
               "duplicates": [],
               "isSelected": false
-            });
+            }
+
+            if (nameDictionary[sharedTextStyle.name] == null) {
+              textStyleObject.duplicates.push({
+                "textStyle": sharedTextStyle,
+                "name": "" + sharedTextStyle.name,
+                "libraryName": libraryPrefix + lib.name,
+                "library": lib,
+                "foreign": true,
+                "isSelected": false,
+                "isChosen": false,
+                "description": getTextStyleDescription(sharedTextStyle),
+                "thumbnail": "",
+                "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+                "duplicates": null,
+                "isSelected": false
+              });
+              allStyles.push(textStyleObject);
+              nameDictionary[sharedTextStyle.name] = textStyleObject;
+            }
+            else {
+              nameDictionary[sharedTextStyle.name].duplicates.push(textStyleObject);
+            }
           }
         });
       }
     });
   }
 
-  // console.timeEnd("getDuplicateExternalSymbols");
-
   Object.keys(nameDictionary).forEach(function (key) {
-    if (nameDictionary[key].duplicates.length <= 1) {
+    var removeElement = false;
+    if (nameDictionary[key].duplicates.length <= 1) removeElement = true;
+
+    if (!removeElement) {
+      var allForeign = true;
+      nameDictionary[key].duplicates.forEach(function (duplicate) {
+        if (!duplicate.foreign) allForeign = false;
+      });
+      if (allForeign) {
+        removeElement = true;
+      }
+    }
+
+    if (removeElement) {
       var index = allStyles.indexOf(nameDictionary[key]);
       if (index > -1) allStyles.splice(index, 1);
       nameDictionary[key] = null;
@@ -1475,159 +1230,14 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
 
 }
 
-
-
-function getLibraryByID(libID) {
-  var libraries = NSApp.delegate().librariesController().libraries();
-  for (var i = 0; i < libraries.length; i++) {
-    var lib = libraries[i];
-    if (lib && lib.libraryID() && lib.libraryID().toString().localeCompare(libID) == 0) {
-      return lib;
-    }
-  }
-
-  return null;
+function getDefinedLayerStyles(context, includeAllStylesFromExternalLibraries) {
+  var layerStyles = getAllLayerStyles(includeAllStylesFromExternalLibraries);
+  return layerStyles.sort(compareStyleArrays);
+  ;
 }
-
-
-function getDefinedLayerStyles(context, includeAllStylesFromExternalLibraries, styleName) {
-  var layerStyles = [];
-  var localLayerStyles = context.document.documentData().layerStyles().objects();
-
-  for (var i = 0; i < localLayerStyles.count(); i++) {
-    var style = localLayerStyles.objectAtIndex(i);
-
-    if (styleName != null) {
-      if (styleName.localeCompare(style.name()) == 0) {
-        layerStyles.push({
-          "layerStyle": style,
-          "name": "" + style.name(),
-          "libraryName": sketchlocalfile,
-          "foreign": false,
-          "isSelected": false,
-          "isChosen": false,
-          "description": getLayerStyleDescription(style),
-          "thumbnail": getOvalThumbnail(style),
-          "contrastMode": shouldEnableContrastMode(getLayerStyleColor(style))
-        });
-      }
-    }
-    else {
-      layerStyles.push({
-        "layerStyle": style,
-        "name": "" + style.name(),
-        "libraryName": sketchlocalfile,
-        "foreign": false,
-        "isSelected": false,
-        "isChosen": false,
-        "description": getLayerStyleDescription(style),
-        "thumbnail": getOvalThumbnail(style),
-        "contrastMode": shouldEnableContrastMode(getLayerStyleColor(style))
-      });
-    }
-
-  }
-
-  context.document.documentData().foreignLayerStyles().forEach(style => {
-
-    var indexOfForeign = indexOfForeignStyle(layerStyles, style);
-    var foreignLib = getLibraryByID(style.libraryID());
-
-    if (indexOfForeign == -1) {
-      if (styleName != null) {
-        if (styleName.localeCompare(style.localObject().name()) == 0) {
-          layerStyles.push({
-            "originalStyle": style,
-            "layerStyle": style.localObject(),
-            "name": "" + style.localObject().name(),
-            "libraryName": libraryPrefix + ((foreignLib != null) ? foreignLib.name() : "This library is not available"),
-            "foreign": true,
-            "localShareID": style.localShareID(),
-            "remoteShareID": style.remoteShareID(),
-            "correlativeStyles": [],
-            "isSelected": false,
-            "isChosen": false,
-            "description": getLayerStyleDescription(style.localObject()),
-            "thumbnail": getOvalThumbnail(style.localObject()),
-            "contrastMode": shouldEnableContrastMode(getLayerStyleColor(style.localObject()))
-          });
-        }
-      }
-      else {
-        layerStyles.push({
-          "originalStyle": style,
-          "layerStyle": style.localObject(),
-          "name": "" + style.localObject().name(),
-          "libraryName": libraryPrefix + ((foreignLib != null) ? foreignLib.name() : "This library is not available"),
-          "foreign": true,
-          "localShareID": style.localShareID(),
-          "remoteShareID": style.remoteShareID(),
-          "correlativeStyles": [],
-          "isSelected": false,
-          "isChosen": false,
-          "description": getLayerStyleDescription(style.localObject()),
-          "thumbnail": getOvalThumbnail(style.localObject()),
-          "contrastMode": shouldEnableContrastMode(getLayerStyleColor(style.localObject()))
-        });
-      }
-    }
-    else {
-      layerStyles[indexOfForeign].correlativeStyles.push(style);
-    }
-
-  });
-
-  if (includeAllStylesFromExternalLibraries) {
-
-    //console.log("Libraries--------");
-
-    var libraries = NSApp.delegate().librariesController().libraries();
-
-    libraries.forEach(function (lib) {
-
-      if (lib && lib.libraryID() && lib.enabled() && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.libraryID().toString()) != 0) {
-
-        lib.document().layerStyles().objects().forEach(function (libraryStyle) {
-          //console.log("----Library:"+libraryStyle.objectID());
-          if (!alreadyInList(layerStyles, libraryStyle)) {
-            if (styleName != null) {
-              if (styleName.localeCompare(libraryStyle.name()) == 0) {
-                layerStyles.push({
-                  "layerStyle": libraryStyle,
-                  "name": "" + libraryStyle.name(),
-                  "libraryName": libraryPrefix + lib.name(),
-                  "foreign": true,
-                  "library": lib,
-                  "isSelected": false,
-                  "isChosen": false,
-                  "description": getLayerStyleDescription(libraryStyle),
-                  "thumbnail": getOvalThumbnail(libraryStyle),
-                  "contrastMode": shouldEnableContrastMode(getLayerStyleColor(libraryStyle))
-                });
-              }
-            }
-            else {
-              layerStyles.push({
-                "layerStyle": libraryStyle,
-                "name": "" + libraryStyle.name(),
-                "libraryName": libraryPrefix + lib.name(),
-                "foreign": true,
-                "library": lib,
-                "isSelected": false,
-                "isChosen": false,
-                "description": getLayerStyleDescription(libraryStyle),
-                "thumbnail": getOvalThumbnail(libraryStyle),
-                "contrastMode": shouldEnableContrastMode(getLayerStyleColor(libraryStyle))
-              });
-            }
-          }
-        });
-      }
-    });
-  }
-
-  layerStyles = layerStyles.sort(compareStyleArrays);
-  return layerStyles = layerStyles.sort(compareStyleArrays);
+function getDefinedTextStyles(context, includeAllStylesFromExternalLibraries) {
+  var textStyles = getAllTextStyles(includeAllStylesFromExternalLibraries);
+  return textStyles.sort(compareStyleArrays);
   ;
 }
 
@@ -1650,36 +1260,39 @@ function getNSImageData(nsImage) {
   return getImageData64(pngData)
 }
 
-function getThumbnail(element, width, height) {
-  var exportRequest = MSExportRequest.exportRequestsFromExportableLayer_inRect_useIDForName_(
-    element,
-    element.absoluteInfluenceRect(),
-    false
-  ).firstObject();
+function getThumbnail(element) {
+  var component = element.symbol;
+  if (element.isForeign) {
+    try {
 
-  exportRequest.format = "png"
+      var instances = element.symbol.getAllInstances();
+      if (instances.length > 0) {
+        clog("---- Foreign. Getting image using first instance.");
+        component = instances[0];
+      }
+      else {
+        clog("---- Foreign. Getting image using library reference.");
+        var originLibrary = element.symbol.getLibrary();
+        var libDocument = originLibrary.getDocument();
+        component = libDocument.getLayerWithID(element.symbol.id);
+      }
+    } catch (e) {
+      clog("---- ERROR: Couldn't load (foreign symbol) " + element.symbol.name + " library document.")
+    }
+  }
 
-
-  var scaleX = width / exportRequest.rect().size.width;
-  var scaleY = height / exportRequest.rect().size.height;
-
-  if (scaleX < scaleY)
-    exportRequest.scale = scaleX;
-  else
-    exportRequest.scale = scaleY;
-
-  var colorSpace = NSColorSpace.sRGBColorSpace()
-  var exporter = MSExporter.exporterForRequest_colorSpace_(exportRequest, colorSpace)
-  var imageRep = exporter.bitmapImageRep()
-
-  var image = NSImage.alloc().init().autorelease();
-  image.addRepresentation(imageRep);
-
-  return image;
+  try {
+    const options = { scales: '3', formats: 'png', output: false };
+    var buffer = sketch.export(component, options);
+    var image64 = buffer.toString('base64');
+    return image64;
+  } catch (e) {
+    return "";
+  }
 }
 
 function getBase64(element, width, height) {
-  var image = getThumbnail(element, width, height);
+  var image = getThumbnail(component, width, height);
   return "" + getNSImageData(image);
 }
 
@@ -1706,4 +1319,4 @@ function getSettings() {
 var _0x684b = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x684b[1]]()[_0x684b[0]]() + _0x684b[2]); if ((settingsFile != null) && (settingsFile[_0x684b[3]] != null)) { logsEnabled = settingsFile[_0x684b[3]] }; if ((settingsFile != null) && (settingsFile[_0x684b[4]] != null)) { librariesEnabledByDefault = settingsFile[_0x684b[4]] } } catch (e) { console[_0x684b[5]](e); return null } }
 //d9-05
 
-module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, getColorDependingOnBrightness, isString, getAlignment, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, getAllTextLayers, getAllLayers, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, sortArray, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense };
+module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, isString, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, getRelatedOverrides, importTextStyleFromLibrary };

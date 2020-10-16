@@ -1,234 +1,91 @@
 import BrowserWindow from 'sketch-module-web-view'
 import { getWebview } from 'sketch-module-web-view/remote'
+var UI = require('sketch/ui')
 const Helpers = require("./Helpers");
 
 const webviewIdentifier = 'merge-duplicates.webview'
 const webviewMSSIdentifier = 'merge-selected-symbols.webview'
 
-function generateUUID() {
-  var d = new Date().getTime();
-  if (Date.now) {
-    d = Date.now(); //high-precision timer
-  }
-  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = (d + Math.random() * 16) % 16 | 0;
-    d = Math.floor(d / 16);
-    return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-  });
-  return uuid;
-};
-
-
-
-//   function getSymbolInstances(context, symbolMaster) {
-//     var symbolInstances = NSMutableArray.array();
-
-//     var pages = context.document.pages(), pageLoop = pages.objectEnumerator(), page;
-
-//     while (page = pageLoop.nextObject()) {
-//       var predicate = NSPredicate.predicateWithFormat("className == 'MSSymbolInstance' && symbolMaster == %@", symbolMaster),
-//         instances = page.children().filteredArrayUsingPredicate(predicate),
-//         instanceLoop = instances.objectEnumerator(),
-//         instance;
-
-//       while (instance = instanceLoop.nextObject()) {
-//         symbolInstances.addObject(instance);
-//       }
-//     }
-
-//     return symbolInstances;
-//   }
-
-// function getSymbolOverrides(context, symbolMaster) {
-//   var symbolOverrides = NSMutableArray.array();
-
-//   var pages = context.document.pages(), pageLoop = pages.objectEnumerator(), page;
-
-//   while (page = pageLoop.nextObject()) {
-//     var predicate = NSPredicate.predicateWithFormat("className == %@ && overrides != nil", "MSSymbolInstance"),
-//       instances = page.children().filteredArrayUsingPredicate(predicate),
-//       instanceLoop = instances.objectEnumerator(),
-//       instance;
-
-//     while (instance = instanceLoop.nextObject()) {
-//       var overrides = instance.overrides();
-//       FindOverrideSymbolID(instance, overrides, symbolOverrides, symbolMaster, 0);
-//     }
-//   }
-//   return symbolOverrides;
-// }
-
-function GetSymbolsByName(name, context) {
-  var allSymbols = context.document.documentData().allSymbols();
-  var matchingSymbols = [];
-  for (var i = 0; i < allSymbols.count(); i++) {
-    var symbolName = allSymbols[i].name().toString();
-    if (symbolName.localeCompare(name) == 0) {
-      matchingSymbols.push(allSymbols[i]);
-    }
-  }
-  return matchingSymbols;
-}
-
-function FindSymbolInstances(context, originalSymbol, duplicateSymbolsByName) {
-  var instancesPerSymbol = [];
-  for (var i = 0; i < duplicateSymbolsByName.length; i++) {
-    instancesPerSymbol[i] = NSMutableArray.array();
-  }
-
-  for (var i = 0; i < duplicateSymbolsByName.length; i++) {
-    var symbolInstances = getSymbolInstances(context, duplicateSymbolsByName[i]);
-    instancesPerSymbol[i] = symbolInstances;
-  }
-
-  return instancesPerSymbol;
-}
-
-function FindSymbolOverrides(context, originalSymbol, duplicateSymbolsByName) {
-  var overridesPerSymbol = [];
-  for (var i = 0; i < duplicateSymbolsByName.length; i++) {
-    overridesPerSymbol[i] = NSMutableArray.array();
-  }
-
-
-  for (var i = 0; i < duplicateSymbolsByName.length; i++) {
-    var symbolOverrides = getSymbolOverrides(context, duplicateSymbolsByName[i]);
-    overridesPerSymbol[i] = symbolOverrides;
-  }
-
-  return overridesPerSymbol;
-}
 
 
 function MergeSymbols(symbolToMerge, symbolToKeep) {
 
-  var symbolsIDsToRemove = [];
+
+  Helpers.clog("-- Starting Merge Symbols");
+
+  var symbolsToRemove = [];
   var symbolToApply;
   var instancesChanged = 0;
   var overridesChanged = 0;
   var symbolsRemoved = 0;
 
-  if (symbolToMerge.duplicates[symbolToKeep].externalLibrary == null) {
-    symbolToApply = symbolToMerge.duplicates[symbolToKeep].symbol;
-  } else {
-    //console.log("Importing symbol from library");
-    var foreignSymbolReference = MSShareableObjectReference.referenceForShareableObject_inLibrary(symbolToMerge.duplicates[symbolToKeep].symbol, symbolToMerge.duplicates[symbolToKeep].externalLibrary);
-    var foreignSymbol = AppController.sharedInstance().librariesController().importShareableObjectReference_intoDocument(foreignSymbolReference, context.document.documentData());
-    symbolToApply = foreignSymbol.symbolMaster();
+
+  Helpers.clog("---- Processing symbols to remove");
+  symbolToApply = symbolToMerge.duplicates[symbolToKeep].symbol;
+  if (symbolToMerge.duplicates[symbolToKeep].isForeign) {
+    symbolToApply = Helpers.importSymbolFromLibrary(symbolToMerge.duplicates[symbolToKeep]);
   }
 
   for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
     if (i != symbolToKeep) {
-      if (symbolsIDsToRemove.indexOf(symbolToMerge.duplicates[i].symbol.symbolID()) < 0)
-        symbolsIDsToRemove.push(symbolToMerge.duplicates[i].symbol.symbolID());
+      symbolsToRemove.push(symbolToMerge.duplicates[i].symbol);
     }
   }
 
+  Helpers.clog("---- Processing instances and overrides to update");
   for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
     if (i != symbolToKeep) {
-
       if (!symbolToMerge.duplicates[i].isForeign)
         symbolsRemoved++;
 
-      var instancesOfSymbol = symbolToMerge.duplicates[i].symbolInstances;
-      var overridesOfSymbol = symbolToMerge.duplicates[i].symbolOverrides;
+      var instancesOfSymbol = Helpers.getSymbolInstances(context, symbolToMerge.duplicates[i].symbol);
+      var overridesOfSymbol = Helpers.getSymbolOverrides(context, symbolToMerge.duplicates[i].symbol);
       var wasUnlinked = false;
 
+
+      Helpers.clog("------ Checking if symbol to merge is foreign");
       if (symbolToMerge.duplicates[i].isForeign && (symbolToMerge.duplicates[i].externalLibrary == null)) {
-        // console.log("About to remove this symbol ↓");
-        // console.log(symbolToMerge.duplicates[i].symbol);
-        // console.log(symbolToMerge.duplicates[i].symbol.foreignObject());
-        symbolToMerge.duplicates[i].symbol.foreignObject().unlinkFromRemote();
+        symbolToMerge.duplicates[i].symbol.unlinkFromLibrary();
         wasUnlinked = true;
       }
 
-      if (symbolToMerge.duplicates[symbolToKeep].externalLibrary == null) {
-        // console.log("Replacing instance for External symbol (" + symbolToMerge.duplicates[symbolToKeep].libraryName + ")");
-        for (var k = 0; k < instancesOfSymbol.length; k++) {
-          instancesOfSymbol[k].changeInstanceToSymbol(symbolToApply);
-          instancesChanged++;
-        }
-      } else {
 
-        for (var k = 0; k < instancesOfSymbol.length; k++) {
-          instancesOfSymbol[k].changeInstanceToSymbol(foreignSymbol.symbolMaster());
-          instancesChanged++;
-        }
-      }
 
-      for (var k = 0; k < overridesOfSymbol.length; k++) {
-        var overridesToReplace = [];
-        var currentOverrides = NSMutableDictionary.dictionaryWithDictionary(overridesOfSymbol[k].overrides());
-
-        var overrideOuterKeys = currentOverrides.allKeys();
-
-        for (var x = 0; x < overrideOuterKeys.count(); x++) {
-          var keyIndex = overrideOuterKeys.objectAtIndex(x);
-          var ascOverride = currentOverrides[keyIndex].toString().replace(/[^\x20-\x7E]+/g, "");
-
-          if (currentOverrides[keyIndex] == null || !(/\S/.test(ascOverride))) {
-            //Internal overrides. Don't consider.
-          }
-          else {
-            if (currentOverrides[keyIndex].allKeys != null) {
-              var overrideInnerKeys = currentOverrides[keyIndex].allKeys();
-              var innerNewOverride = {};
-              for (var y = 0; y < overrideInnerKeys.count(); y++) {
-                var innerkeyIndex = overrideInnerKeys.objectAtIndex(y);
-                var shallbereplaced = false;
-                for (var t = 0; t < symbolsIDsToRemove.length; t++) {
-                  if (currentOverrides[keyIndex]["symbolID"] != null && currentOverrides[keyIndex]["symbolID"].indexOf(symbolsIDsToRemove[t]) > -1)
-                    shallbereplaced = true;
-                }
-                if (shallbereplaced) {
-                  if (overridesToReplace.indexOf(keyIndex) < 0)
-                    overridesToReplace.push(keyIndex);
-                }
-              }
-            }
-          }
-        }
-
-        overridesOfSymbol[k].overridePoints().forEach(function (overridePoint) {
-          if (overridePoint.toString().indexOf("symbolID") > -1) {
-            var shallbereplaced = false;
-            for (t = 0; t < overridesToReplace.length; t++) {
-              if (overridePoint.toString().indexOf(overridesToReplace[t]) > -1) {
-                shallbereplaced = true;
-              }
-            }
-            if (shallbereplaced) {
-              // console.log("Replacing an override. Foreign:" + (symbolToMerge.duplicates[symbolToKeep].externalLibrary != null));
-              overridesOfSymbol[k].setValue_forOverridePoint_(symbolToApply.symbolID(), overridePoint);
-              overridesChanged++;
-            }
-          }
+      Helpers.clog("---- Updating overrides (" + overridesOfSymbol.length + ")");
+      overridesOfSymbol.forEach(function (override) {
+        var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
+        var instanceOverride = instanceLayer.overrides.filter(function (ov) {
+          return ov.id == override.override.id;
         });
 
-      }
-
-      if (!symbolToMerge.duplicates[i].isForeign) {
-        symbolToMerge.duplicates[i].symbol.removeFromParent();
-        //console.log("Removed symbol " + symbolToMerge.duplicates[i].name);
-      }
-      else {
-        if (wasUnlinked) {
-          //console.log("Was unlinked");
-          symbolToMerge.duplicates[i].symbol.removeFromParent();
+        try {
+          Helpers.clog("------ Updating override for " + instanceLayer.name);
+          instanceLayer.setOverrideValue(instanceOverride[0], symbolToApply.symbolId.toString());
+        } catch (e) {
+          Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name);
         }
+      });
 
-        context.document.documentData().foreignSymbols().removeObject(symbolToMerge.duplicates[i].symbol);
-        //console.log("Removed foreign from foreignSymbols (" + symbolToMerge.duplicates[i].name + ")");
-      }
+
+      Helpers.clog("---- Updating instances (" + instancesOfSymbol.length + ")");
+      instancesOfSymbol.forEach(function (instance) {
+        Helpers.clog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name);
+        instance.master = symbolToApply;
+        instancesChanged++;
+      });
 
     }
   }
+
+  symbolsToRemove.forEach(function (symbolToRemove) {
+    symbolToRemove.remove();
+  });
 
   return [symbolsRemoved, instancesChanged, overridesChanged];
 }
 
-export function MergeSelectedSymbols(context) {
 
+export function MergeSelectedSymbols(context) {
 
   Helpers.clog("----- Merge selected symbols -----");
 
@@ -244,21 +101,30 @@ export function MergeSelectedSymbols(context) {
   const webContents = browserWindow.webContents;
   var mssmergeSession = [];
 
-  var selection = context.selection;
-  if (selection.count() < 2) {
-    context.document.showMessage("Wop! Select at least two symbols and run the plugin again :)");
+  var selectedLayers = Helpers.document.selectedLayers.layers;
+  var selection = [];
+
+
+  if (selectedLayers.length < 2) {
+    UI.message("Wop! Select at least two symbols and run the plugin again :)");
     onShutdown(webviewMSSIdentifier);
   } else {
     var areAllSymbols = true;
-    for (var i = 0; i < selection.count(); i++) {
-      if (selection[i].class() != "MSSymbolMaster") {
+    selectedLayers.forEach(function (layer) {
+      if (layer.type.localeCompare("SymbolMaster") != 0)
         areAllSymbols = false;
-      }
-    }
+    });
     if (!areAllSymbols) {
-      context.document.showMessage("Only symbols can be merged");
+      UI.message("Only symbols can be merged");
     } else {
       Helpers.clog("Loading webview");
+      selectedLayers.forEach(function (layer) {
+        selection.push({
+          "symbol": layer,
+          "foreign": false,
+          "library": null
+        });
+      });
       browserWindow.loadURL(require('../resources/mergeselectedsymbols.html'));
     }
   }
@@ -269,7 +135,7 @@ export function MergeSelectedSymbols(context) {
 
   webContents.on('did-finish-load', () => {
     Helpers.clog("Webview loaded");
-    webContents.executeJavaScript(`LaunchMerge(${JSON.stringify(selection.count())})`).catch(console.error);
+    webContents.executeJavaScript(`LaunchMerge(${JSON.stringify(selection.length)})`).catch(console.error);
   })
 
   webContents.on('GetSymbolData', () => {
@@ -308,7 +174,7 @@ export function MergeSelectedSymbols(context) {
 
     Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff);
 
-    context.document.showMessage("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
+    UI.message("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
 
     onShutdown(webviewMSSIdentifier);
   });
@@ -330,6 +196,7 @@ export function MergeDuplicateSymbols(context) {
   const webContents = browserWindow.webContents;
 
   var duplicatedSymbols;
+  var documentSymbols = Helpers.getDocumentSymbols(context, Helpers.getLibrariesEnabled());
   var mergeSession = [];
 
   var numberOfSymbols = Helpers.countAllSymbols(context, Helpers.getLibrariesEnabled());
@@ -338,9 +205,8 @@ export function MergeDuplicateSymbols(context) {
   Helpers.clog("Webview called");
 
   function CalculateDuplicates(includeLibraries) {
-
     Helpers.clog("Processing duplicates. Include libraries: " + includeLibraries);
-    duplicatedSymbols = Helpers.getDuplicateSymbols(context, context.document.documentData().allSymbols(), includeLibraries, false);
+    duplicatedSymbols = Helpers.getDuplicateSymbols(context, documentSymbols, includeLibraries, false);
     Helpers.clog("-- Found " + duplicatedSymbols.length + " duplicates");
     if (duplicatedSymbols.length > 0) {
       Helpers.GetSpecificSymbolData(context, duplicatedSymbols, 0);
@@ -425,11 +291,11 @@ export function MergeDuplicateSymbols(context) {
 
     if (duplicatesSolved > 0) {
       Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff);
-      context.document.showMessage("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
+      UI.message("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
     }
     else {
       Helpers.clog("Completed merge. No symbols were merged.");
-      context.document.showMessage("No symbols were merged.");
+      UI.message("No symbols were merged.");
     }
   });
 

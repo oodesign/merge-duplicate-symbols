@@ -129,7 +129,7 @@ window.DrawStyleList = (index) => {
     inner += `<div id="duplicateItem${i}" class="thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter ${selected}" onclick="onStyleClicked(${i}, ${index})">
                 ${checkbox}
                 <div class="colAvailable verticalLayout thumbnailData" id="duplicateItemThumbnail${i}" >
-                  <div class="rowAvailable padded ${contrastMode}"><div class="thumbnail" style='background-image:url("${globalStylesWithSimilarStyles[index].similarStyles[i].thumbnail}")'></div></div>
+                  <div class="rowAvailable padded ${contrastMode}"><div class="thumbnail" style='background-image:url("data:image/png;base64,${globalStylesWithSimilarStyles[index].similarStyles[i].thumbnail}")'></div></div>
                   <div class="rowAuto primaryText displayFlex"><span class="alignHorizontalCenter">${globalStylesWithSimilarStyles[index].similarStyles[i].name} (${globalStylesWithSimilarStyles[index].similarStyles[i].libraryName})</span></div>
                   <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalStylesWithSimilarStyles[index].similarStyles[i].description}</span></div>
                 </div>

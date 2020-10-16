@@ -150,7 +150,7 @@ window.DrawStyleList = (index) => {
     inner += `<div id="duplicateItem${i}" class="thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter ${selected}" onclick="onStyleClicked(${i}, ${index})">
                 ${checkbox}
                 <div class="colAvailable verticalLayout thumbnailData" id="duplicateItemThumbnail${i}" >
-                  <div class="rowAvailable padded ${contrastMode}"><div class="thumbnail" style='background-image:url("${globalMergeSession[index].textStyleWithDuplicates.duplicates[i].thumbnail}")'></div></div>
+                  <div class="rowAvailable padded ${contrastMode}"><div class="thumbnail" style='background-image:url("data:image/png;base64,${globalMergeSession[index].textStyleWithDuplicates.duplicates[i].thumbnail}")'></div></div>
                   <div class="rowAuto primaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].textStyleWithDuplicates.duplicates[i].name} (${globalMergeSession[index].textStyleWithDuplicates.duplicates[i].libraryName})</span></div>
                   <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].textStyleWithDuplicates.duplicates[i].description}</span></div>
                 </div>
