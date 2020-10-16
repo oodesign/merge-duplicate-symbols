@@ -106,6 +106,19 @@
     },
     {
       "script": "Main.js",
+      "name": "Merge color variables (from list)",
+      "handlers": {
+        "run": "MergeSelectedColorVariables",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      },
+      "identifier": "mergeselectedcolorvariables",
+      "shortcut": "ctrl shift option c",
+      "icon": "icon-sr.png"
+    },
+    {
+      "script": "Main.js",
       "name": "Settings",
       "identifier": "editsettings",
       "handlers": {
@@ -156,6 +169,12 @@
           "mergeduplicatetextstyles",
           "mergeselectedtextstyles",
           "mergesimilartextstyles"
+        ]
+      },
+      {
+        "title": "Color Variables ",
+        "items": [
+          "mergeselectedcolorvariables"
         ]
       },
       {

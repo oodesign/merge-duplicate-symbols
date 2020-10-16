@@ -34,6 +34,7 @@ const commands = {
   mergesimilarlayerstyles: 'mergesimilarlayerstyles',
   mergeselectedlayerstyles: 'mergeselectedlayerstyles',
   mergeduplicatelayerstyles: 'mergeduplicatelayerstyles',
+  mergeselectedcolorvariables: 'mergeselectedcolorvariables',
   editsettings: 'editsettings'
 }
 

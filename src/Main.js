@@ -1,6 +1,7 @@
 const MergeSymbols = require("./MergeDuplicateSymbols");
 const MergeLayerStyles = require("./MergeLayerStyles");
 const MergeTextStyles = require("./MergeTextStyles");
+const MergeColorVariables = require("./MergeColorVariables");
 const Settings = require("./EditSettings");
 const sketch = require('sketch')
 
@@ -58,6 +59,11 @@ export function MergeDuplicateLayerStyles(context) {
   onValidate(context);
 };
 
+export function MergeSelectedColorVariables(context) {
+  globalCommand = Helpers.commands.mergeselectedcolorvariables;
+  onValidate(context);
+};
+
 export function EditSettings(context) {
   globalCommand = Helpers.commands.editsettings;
   onValidate(context);
@@ -73,9 +79,9 @@ export function triggerMethod(context) {
 
   Helpers.LoadSettings();
 
-  Helpers.clog("Sketch version:" +sketch.version.sketch);
-  Helpers.clog("Merge Duplicates version: 6.5.0");
-  Helpers.clog("License: "+Helpers.getAcquiredLicense());
+  Helpers.clog("Sketch version:" + sketch.version.sketch);
+  Helpers.clog("Merge Duplicates version: 7.0.0");
+  Helpers.clog("License: " + Helpers.getAcquiredLicense());
 
   switch (globalCommand) {
     case Helpers.commands.mergeduplicatesymbols:
@@ -101,6 +107,9 @@ export function triggerMethod(context) {
       break;
     case Helpers.commands.mergesimilarlayerstyles:
       MergeLayerStyles.MergeSimilarLayerStyles(context);
+      break;
+    case Helpers.commands.mergeselectedcolorvariables:
+      MergeColorVariables.MergeSelectedColorVariables(context);
       break;
     case Helpers.commands.editsettings:
       Settings.EditSettings(context);
