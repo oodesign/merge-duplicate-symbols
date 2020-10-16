@@ -4377,6 +4377,17 @@ module.exports.sendToWebview = function sendToWebview(identifier, evalString) {
 
 /***/ }),
 
+/***/ "./resources/mergecolorvariablesfromlist.html":
+/*!****************************************************!*\
+  !*** ./resources/mergecolorvariablesfromlist.html ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/2bd7c6bd84bb90d35832cf88a241a58b.html";
+
+/***/ }),
+
 /***/ "./resources/mergeduplicatelayerstyles.html":
 /*!**************************************************!*\
   !*** ./resources/mergeduplicatelayerstyles.html ***!
@@ -4384,7 +4395,7 @@ module.exports.sendToWebview = function sendToWebview(identifier, evalString) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/fa4bee1194debaef9ef224fe06b3053c.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/22566eecbf5b39220719d85a74cde6ff.html";
 
 /***/ }),
 
@@ -4395,7 +4406,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/01e49844551a9879f21264f7d05e2363.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/a00290731c53d44799c1c54560b4bf08.html";
 
 /***/ }),
 
@@ -4406,7 +4417,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/3e3a6a06320955443557f7abc7fb92be.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/6dda7037605ecd046c9f6cb19e348344.html";
 
 /***/ }),
 
@@ -4417,7 +4428,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/df51bc19ac8f6dc17e869fc98a45545f.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/d7f01700c61308f00544106525b18532.html";
 
 /***/ }),
 
@@ -4428,7 +4439,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/16948639fdef51e50a3dd45251fbaa1f.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/15cfee41e86285eae333ef859bb7789b.html";
 
 /***/ }),
 
@@ -4439,7 +4450,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/413c0fb3a3dbad590faa4ec8d201f25b.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/2fef6737b160ffdd0b5b0647a0a740d1.html";
 
 /***/ }),
 
@@ -4450,7 +4461,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/dde2ede005c583d62d83c0c92e497c1b.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/091757345064ce15aa7f5124bbc648bb.html";
 
 /***/ }),
 
@@ -4461,7 +4472,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/5d8809d23ebcd7f6d64a940997b4f42b.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/1e0ecd7eae9921a649391e311fe0b219.html";
 
 /***/ }),
 
@@ -4472,7 +4483,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/3abb53f56294c909c723914c0c08a5a2.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/d4d5f7bb315bb92239a7b8059099fd80.html";
 
 /***/ }),
 
@@ -4483,7 +4494,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/a2c8f96e9048ca31c47d0fa422b26812.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/c06843dcbad8babeaddee9f45154aafb.html";
 
 /***/ }),
 
@@ -4943,6 +4954,18 @@ function getColorDependingOnTheme() {
 }
 
 function compareStyleArrays(a, b) {
+  if (a.name < b.name) {
+    return -1;
+  }
+
+  if (a.name > b.name) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function compareColorVariableArrays(a, b) {
   if (a.name < b.name) {
     return -1;
   }
@@ -5542,6 +5565,34 @@ function getTextThumbnail(sharedStyle) {
   }
 }
 
+function getColorVariableThumbnail(colorVariable) {
+  var oval = new ShapePath({
+    shapeType: ShapePath.ShapeType.Oval,
+    frame: new sketch.Rectangle(0, 0, 300, 300),
+    style: {
+      fills: [{
+        color: colorVariable.color
+      }]
+    },
+    parent: document.selectedPage
+  });
+
+  try {
+    var options = {
+      scales: '1',
+      formats: 'png',
+      output: false
+    };
+    var buffer = sketch.export(oval, options);
+    var image64 = buffer.toString('base64');
+    oval.remove();
+    return image64;
+  } catch (e) {
+    oval.remove();
+    return "";
+  }
+}
+
 function importForeignSymbol(symbol, library) {
   var objectReference = MSShareableObjectReference.referenceForShareableObject_inLibrary(symbol, library);
   return AppController.sharedInstance().librariesController().importShareableObjectReference_intoDocument(objectReference, data);
@@ -5650,6 +5701,60 @@ function getAllTextStyles(includeAllStylesFromExternalLibraries) {
   }
 
   return allStyles;
+}
+
+function getAllColorVariables(includeAllStylesFromExternalLibraries) {
+  var allColorVariables = [];
+  var map = new Map();
+  document.swatches.forEach(function (swatch) {
+    var colorVariableObject = {
+      "colorVariable": swatch,
+      "name": "" + swatch.name,
+      "libraryName": sketchlocalfile,
+      "library": null,
+      "foreign": false,
+      "isSelected": false,
+      "isChosen": false,
+      "description": "",
+      //TODO "Local " + getTextStyleDescription(sharedTextStyle) + " - " + sharedTextStyle.id + " - " + sharedTextStyle.style.id,
+      "thumbnail": getColorVariableThumbnail(swatch),
+      "contrastMode": shouldEnableContrastMode(swatch.color.substring(1, 7)),
+      "duplicates": [],
+      ["isSelected"]: false
+    };
+    allColorVariables.push(colorVariableObject);
+    map.set(swatch.id, true);
+  });
+
+  if (includeAllStylesFromExternalLibraries) {
+    libraries.forEach(function (lib) {
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        lib.getDocument().swatches.forEach(function (swatch) {
+          if (!map.has(swatch.id)) {
+            var colorVariableObject = {
+              "colorVariable": swatch,
+              "name": "" + swatch.name,
+              "libraryName": libraryPrefix + lib.name,
+              "library": lib,
+              "foreign": true,
+              "isSelected": false,
+              "isChosen": false,
+              "description": "",
+              //TODO "Lib " + getTextStyleDescription(sharedTextStyle) + " - " + sharedTextStyle.id + " - " + sharedTextStyle.style.id,
+              "thumbnail": getColorVariableThumbnail(swatch),
+              "contrastMode": shouldEnableContrastMode(swatch.color.substring(1, 7)),
+              "duplicates": [],
+              ["isSelected"]: false
+            };
+            allColorVariables.push(colorVariableObject);
+          }
+        });
+      }
+    });
+  }
+
+  debugLog(allColorVariables);
+  return allColorVariables;
 }
 
 function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries) {
@@ -5891,6 +5996,12 @@ function getDefinedTextStyles(context, includeAllStylesFromExternalLibraries) {
   ;
 }
 
+function getDefinedColorVariables(context, includeAllStylesFromExternalLibraries) {
+  var colorVariables = getAllColorVariables(includeAllStylesFromExternalLibraries);
+  return colorVariables.sort(compareColorVariableArrays);
+  ;
+}
+
 function getImageData64(data) {
   var imageData = data;
   var mimeType = "image/png";
@@ -6040,7 +6151,8 @@ module.exports = {
   getSymbolOverrides: getSymbolOverrides,
   ["getSymbolInstances"]: getSymbolInstances,
   getRelatedOverrides: getRelatedOverrides,
-  importTextStyleFromLibrary: importTextStyleFromLibrary
+  importTextStyleFromLibrary: importTextStyleFromLibrary,
+  getDefinedColorVariables: getDefinedColorVariables
 };
 
 /***/ }),
@@ -6388,6 +6500,101 @@ var checkingAlsoLibraries = false;
 var currentSelectedStyles = [];
 function MergeSelectedColorVariables(context) {
   Helpers.clog("----- Merge selected color variables -----");
+  var options = {
+    identifier: webviewMCVFLIdentifier,
+    width: 1200,
+    height: 700,
+    show: false,
+    remembersWindowFrame: true,
+    titleBarStyle: 'hidden'
+  };
+  var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
+  var webContents = browserWindow.webContents;
+  var definedColorVariables;
+  var definedAllColorVariables;
+  var colorVariableCounter = 0;
+
+  if (!Helpers.getLibrariesEnabled()) {
+    Helpers.clog("Get local color variables list");
+    definedColorVariables = Helpers.getDefinedColorVariables(context, false);
+    colorVariableCounter = definedColorVariables.length;
+    checkingAlsoLibraries = false;
+  }
+
+  if (Helpers.getLibrariesEnabled()) {
+    Helpers.clog("Get all (including libraries) color variables list");
+    definedAllColorVariables = Helpers.getDefinedColorVariables(context, true);
+    colorVariableCounter = definedAllColorVariables.length;
+    checkingAlsoLibraries = true;
+  }
+
+  if (colorVariableCounter > 1) {
+    browserWindow.loadURL(__webpack_require__(/*! ../resources/mergecolorvariablesfromlist.html */ "./resources/mergecolorvariablesfromlist.html"));
+  } else {
+    if (colorVariableCounter == 1) UI.message("There's only 1 color variable. No need to merge.");else UI.message("Looks like there are no color variables.");
+    onShutdown(webviewMCVFLIdentifier);
+  }
+
+  browserWindow.once('ready-to-show', function () {
+    browserWindow.show();
+  });
+  webContents.on('did-finish-load', function () {
+    Helpers.clog("Webview loaded");
+    if (!Helpers.getLibrariesEnabled()) webContents.executeJavaScript("DrawColorVariableList(".concat(JSON.stringify(definedColorVariables), ",").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);else webContents.executeJavaScript("DrawColorVariableList(".concat(JSON.stringify(definedAllColorVariables), ",").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
+  });
+  webContents.on('nativeLog', function (s) {
+    Helpers.clog(s);
+  });
+  webContents.on('GetLocalColorVariablesList', function () {
+    Helpers.clog("Get local color variables list");
+    if (definedColorVariables == null) definedColorVariables = Helpers.getDefinedColorVariables(context, false);
+    checkingAlsoLibraries = false;
+    webContents.executeJavaScript("DrawColorVariableList(".concat(JSON.stringify(definedColorVariables), ")")).catch(console.error);
+  });
+  webContents.on('GetAllColorVariablesList', function () {
+    Helpers.clog("Get all (including libraries) color variables list");
+    if (definedAllColorVariables == null) definedAllColorVariables = Helpers.getDefinedColorVariables(context, true);
+    checkingAlsoLibraries = true;
+    webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedAllColorVariables), ")")).catch(console.error);
+  });
+  webContents.on('Cancel', function () {
+    onShutdown(webviewMCVFLIdentifier);
+  });
+  webContents.on('ExecuteMerge', function (editedGlobalColorVariables) {
+    Helpers.clog("Executing Merge");
+    currentSelectedStyles = [];
+    var selectedIndex = -1;
+    var counter = 0;
+
+    if (!checkingAlsoLibraries) {
+      for (var i = 0; i < definedColorVariables.length; i++) {
+        definedColorVariables[i].isSelected = editedGlobalColorVariables[i].isSelected;
+        definedColorVariables[i].isChosen = editedGlobalColorVariables[i].isChosen;
+        if (editedGlobalColorVariables[i].isChosen) selectedIndex = counter;
+
+        if (editedGlobalColorVariables[i].isSelected) {
+          currentSelectedStyles.push(definedColorVariables[i]);
+          counter++;
+        }
+      }
+    } else {
+      for (var i = 0; i < definedAllColorVariables.length; i++) {
+        definedAllColorVariables[i].isSelected = editedGlobalTextStyles[i].isSelected;
+        definedAllColorVariables[i].isChosen = editedGlobalTextStyles[i].isChosen;
+        if (editedGlobalTextStyles[i].isChosen) selectedIndex = counter;
+
+        if (editedGlobalTextStyles[i].isSelected) {
+          currentSelectedStyles.push(definedAllColorVariables[i]);
+          counter++;
+        }
+      }
+    }
+
+    var affectedLayers = MergeColorVariables(context, selectedIndex);
+    Helpers.clog("Updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+    UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+    onShutdown(webviewMCVFLIdentifier);
+  });
 }
 ;
 

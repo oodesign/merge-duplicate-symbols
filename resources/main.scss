@@ -473,6 +473,10 @@ html,body{
 
 .btnPrimary{
   @include btnPrimary;
+
+  &.xl{
+    width: 170px;
+  }
 }
 
 @mixin btnSecondary{
