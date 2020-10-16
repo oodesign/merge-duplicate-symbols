@@ -26,8 +26,6 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
     symbolToApply = Helpers.importSymbolFromLibrary(symbolToMerge.duplicates[symbolToKeep]);
   }
 
-
-
   for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
     if (i != symbolToKeep) {
       symbolsToRemove.push(symbolToMerge.duplicates[i].symbol);
@@ -52,14 +50,8 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
       }
 
 
-      Helpers.clog("---- Updating instances");
-      instancesOfSymbol.forEach(function (instance) {
-        Helpers.clog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name);
-        instance.master = symbolToApply;
-        instancesChanged++;
-      });
 
-      Helpers.clog("---- Updating overrides");
+      Helpers.clog("---- Updating overrides (" + overridesOfSymbol.length + ")");
       overridesOfSymbol.forEach(function (override) {
         var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
         var instanceOverride = instanceLayer.overrides.filter(function (ov) {
@@ -72,6 +64,14 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
         } catch (e) {
           Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name);
         }
+      });
+
+
+      Helpers.clog("---- Updating instances (" + instancesOfSymbol.length + ")");
+      instancesOfSymbol.forEach(function (instance) {
+        Helpers.clog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name);
+        instance.master = symbolToApply;
+        instancesChanged++;
       });
 
     }

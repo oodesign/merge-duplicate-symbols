@@ -94,7 +94,8 @@
 /***/ (function(module, exports) {
 
 // disable the context menu (eg. the right click menu) to have a more native feel
-document.addEventListener('contextmenu', function (e) {//e.preventDefault()
+document.addEventListener('contextmenu', function (e) {
+  e.preventDefault();
 });
 var globalMergeSession;
 var globalSymbolDisplayed = 0;
@@ -121,7 +122,12 @@ window.GetSymbols = function () {
   document.getElementById('chkIncludeLibraries').checked = includeLibrariesSetting;
   setTimeout(function () {
     var message = "We're looking for duplicates...";
-    if (globalNumberOfSymbolsInDocument > 100) message = "We're looking for duplicates...<br/><br/>Wow, you have " + globalNumberOfSymbolsInDocument + " symbols here (and " + globalNumberOfSymbolsInLibraries + " in linked libraries)! 🙈<br/> This may take a while... Wanna go get a coffee?";
+
+    if (globalNumberOfSymbolsInDocument > 100) {
+      var andLinkedLibraries = globalNumberOfSymbolsInLibraries > 0 ? "(and " + globalNumberOfSymbolsInLibraries + " in linked libraries)" : "";
+      message = "We're looking for duplicates...<br/><br/>Wow, you have " + globalNumberOfSymbolsInDocument + " symbols here " + andLinkedLibraries + "! 🙈<br/> This may take a while... Wanna go get a coffee?";
+    }
+
     window.ShowProgress(message);
     window.postMessage('RecalculateDuplicates');
   }, 200);

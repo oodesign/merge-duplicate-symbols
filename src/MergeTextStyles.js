@@ -17,16 +17,31 @@ function MergeTextStyles(context, styleToKeepIndex) {
   var overridesChangedCounter = 0;
   var styleToKeep = currentSelectedStyles[styleToKeepIndex];
   var styleToApply = styleToKeep.textStyle;
+  var stylesToRemove = [];
   Helpers.clog("Merging styles. Keep '" + styleToKeep.name + "'");
 
   if (styleToKeep.foreign) {
-    styleToApply = Helpers.importTextStyleFromLibrary(styleToKeep);
+    var existingTs = Helpers.document.sharedTextStyles.filter(function (ts) {
+      return ts.id == styleToKeep.textStyle.id;
+    });
+    if (existingTs.length <= 0) {
+      Helpers.clog("Importing style from library " + styleToKeep.libraryName);
+      styleToApply = Helpers.importTextStyleFromLibrary(styleToKeep);
+    }
+    else
+      Helpers.clog("Style not imported (as it's already in document)");
+  }
+
+  for (var i = 0; i < currentSelectedStyles.length; i++) {
+    if (i != styleToKeepIndex) {
+      stylesToRemove.push(currentSelectedStyles[i].textStyle);
+    }
   }
 
   currentSelectedStyles.forEach(function (style) {
     var instances = style.textStyle.getAllInstancesLayers();
 
-    Helpers.clog("-- Updating "+ instances.length + "instances to " + styleToKeep.name);
+    Helpers.clog("-- Updating " + instances.length + "instances to " + styleToKeep.name);
     instances.forEach(function (instance) {
 
       instance.sharedStyle = styleToApply;
@@ -35,7 +50,7 @@ function MergeTextStyles(context, styleToKeepIndex) {
     });
 
     var relatedOverrides = Helpers.getRelatedOverrides(context, style.textStyle.id, "textStyle");
-    Helpers.clog("-- Updating "+ relatedOverrides.length + "related overrides to " + styleToKeep.name);
+    Helpers.clog("-- Updating " + relatedOverrides.length + "related overrides to " + styleToKeep.name);
     relatedOverrides.forEach(function (override) {
       var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
       var instanceOverride = instanceLayer.overrides.filter(function (ov) {
@@ -52,6 +67,13 @@ function MergeTextStyles(context, styleToKeepIndex) {
     });
   });
 
+  stylesToRemove.forEach(function (styleToRemove) {
+    var removeAtIndex = -1;
+    for (var i = 0; i < Helpers.document.sharedTextStyles.length; i++) {
+      if (Helpers.document.sharedTextStyles[i].id == styleToRemove.id) removeAtIndex = i;
+    }
+    if (removeAtIndex > -1) Helpers.document.sharedTextStyles.splice(removeAtIndex, 1);
+  });
 
   return [layersChangedCounter, overridesChangedCounter];
 }
@@ -244,7 +266,7 @@ export function MergeDuplicateTextStyles(context) {
       UI.message("No styles were merged");
     }
     else {
-      Helpers.clog("Wpdated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
       UI.message("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
     }
 

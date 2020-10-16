@@ -4895,72 +4895,11 @@ function indexOfForeignStyle(array, style) {
   return index;
 }
 
-function indexOfForeignStyle2(array, style) {
-  var index = -1;
-
-  for (var i = 0; i < array.length; i++) {
-    if (array[i].duplicates != null) {
-      for (var j = 0; j < array[i].duplicates.length; j++) {
-        if (array[i].duplicates[j].remoteShareID != null) {
-          // console.log("Looking in duplicates remoteShareID:"+array[i].duplicates[j].remoteShareID+"  --  "+style.remoteShareID());
-          if (containsIDOrViceversa(array[i].duplicates[j].remoteShareID, style.objectID())) {
-            var positions = [i, j]; // console.log("Looking in duplicates remoteShareID:"+array[i].duplicates[j].remoteShareID+"  --  "+style.remoteShareID());
-
-            return positions;
-          }
-        }
-      }
-    }
-  }
-
-  return index;
-}
-
-function getColorDependingOnBrightness(colorBrightness) {
-  if (colorBrightness != null) {
-    var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
-
-    var theme = UI.getTheme();
-
-    if (theme === 'dark') {
-      if (colorBrightness > 100 && colorBrightness < 130) return MSColor.colorWithRed_green_blue_alpha(0.35, 0.35, 0.35, 1);else return MSColor.colorWithRed_green_blue_alpha(1, 1, 1, 0);
-    } else {
-      if (colorBrightness > 230) return MSColor.colorWithRed_green_blue_alpha(0.8, 0.8, 0.8, 1);else return MSColor.colorWithRed_green_blue_alpha(1, 1, 1, 0);
-    }
-  } else {
-    return MSColor.colorWithRed_green_blue_alpha(1, 1, 1, 0);
-  }
-}
-
 function isString(obj) {
   try {
     return obj.isKindOfClass(NSString) == 1;
   } catch (_unused) {
     return false;
-  }
-}
-
-function getAlignment(alignment) {
-  switch (alignment) {
-    case 0:
-      return "Left";
-      break;
-
-    case 1:
-      return "Right";
-      break;
-
-    case 2:
-      return "Center";
-      break;
-
-    case 3:
-      return "Justified";
-      break;
-
-    default:
-      return "Natural";
-      break;
   }
 }
 
@@ -5280,14 +5219,16 @@ function getSymbolOverrides(context, symbolMaster) {
   var instances = sketch.find("[type='SymbolInstance']", document);
   instances.forEach(function (instance) {
     instance.overrides.forEach(function (override) {
-      if (override.property.localeCompare("symbolID") == 0 && override.isDefault == 0) {
-        if (override.value.localeCompare(symbolMaster.symbolId) == 0) {
-          symbolOverrides.push({
-            "instance": instance,
-            "override": override
-          });
+      if (override.property.localeCompare("symbolID") == 0)
+        /*&& (override.isDefault == 0)*/
+        {
+          if (override.value.localeCompare(symbolMaster.symbolId) == 0) {
+            symbolOverrides.push({
+              "instance": instance,
+              "override": override
+            });
+          }
         }
-      }
     });
   });
   return symbolOverrides;
@@ -5298,14 +5239,16 @@ function getRelatedOverrides(context, id, property) {
   var instances = sketch.find("[type='SymbolInstance']", document);
   instances.forEach(function (instance) {
     instance.overrides.forEach(function (override) {
-      if (override.property.localeCompare(property) == 0 && override.isDefault == 0) {
-        if (override.value.localeCompare(id) == 0) {
-          overrides.push({
-            "instance": instance,
-            "override": override
-          });
+      if (override.property.localeCompare(property) == 0)
+        /*&& (override.isDefault == 0)*/
+        {
+          if (override.value.localeCompare(id) == 0) {
+            overrides.push({
+              "instance": instance,
+              "override": override
+            });
+          }
         }
-      }
     });
   });
   return overrides;
@@ -5392,8 +5335,6 @@ function importLayerStyleFromLibrary(layerStyle) {
 }
 
 function importTextStyleFromLibrary(textStyle) {
-  debugLog(textStyle);
-
   try {
     clog("-- Importing " + textStyle.name + " from library " + textStyle.libraryName + " with ID:" + textStyle.textStyle.id);
     var styleReferences = textStyle.library.getImportableTextStyleReferencesForDocument(document);
@@ -5462,7 +5403,21 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
     }
   });
   Object.keys(nameDictionary).forEach(function (key) {
-    if (nameDictionary[key].duplicates.length <= 1) {
+    var removeElement = false;
+    if (nameDictionary[key].duplicates.length <= 1) removeElement = true;
+
+    if (!removeElement) {
+      var allForeign = true;
+      nameDictionary[key].duplicates.forEach(function (duplicate) {
+        if (!duplicate.isForeign) allForeign = false;
+      });
+
+      if (allForeign) {
+        removeElement = true;
+      }
+    }
+
+    if (removeElement) {
       var index = allSymbols.indexOf(nameDictionary[key]);
       if (index > -1) allSymbols.splice(index, 1);
       nameDictionary[key] = null;
@@ -5593,6 +5548,7 @@ function importForeignSymbol(symbol, library) {
 
 function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
   var allStyles = [];
+  var map = new Map();
   document.sharedLayerStyles.forEach(function (sharedLayerStyle) {
     var library = sharedLayerStyle.getLibrary();
     var layerStyleObject = {
@@ -5610,27 +5566,30 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
       "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
     };
     allStyles.push(layerStyleObject);
+    map.set(layerStyleObject.style.id, true);
   });
 
   if (includeAllStylesFromExternalLibraries) {
     libraries.forEach(function (lib) {
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
         lib.getDocument().sharedLayerStyles.forEach(function (sharedLayerStyle) {
-          var layerStyleObject = {
-            "layerStyle": sharedLayerStyle,
-            "name": "" + sharedLayerStyle.name,
-            "libraryName": libraryPrefix + lib.name,
-            "library": lib,
-            "foreign": true,
-            "isSelected": false,
-            "isChosen": false,
-            "description": getLayerStyleDescription(sharedLayerStyle),
-            "thumbnail": getOvalThumbnail(sharedLayerStyle),
-            "duplicates": [],
-            ["isSelected"]: false,
-            "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
-          };
-          allStyles.push(layerStyleObject);
+          if (!map.has(sharedLayerStyle.style.id)) {
+            var layerStyleObject = {
+              "layerStyle": sharedLayerStyle,
+              "name": "" + sharedLayerStyle.name,
+              "libraryName": libraryPrefix + lib.name,
+              "library": lib,
+              "foreign": true,
+              "isSelected": false,
+              "isChosen": false,
+              "description": getLayerStyleDescription(sharedLayerStyle),
+              "thumbnail": getOvalThumbnail(sharedLayerStyle),
+              "duplicates": [],
+              ["isSelected"]: false,
+              "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
+            };
+            allStyles.push(layerStyleObject);
+          }
         });
       }
     });
@@ -5641,6 +5600,7 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
 
 function getAllTextStyles(includeAllStylesFromExternalLibraries) {
   var allStyles = [];
+  var map = new Map();
   document.sharedTextStyles.forEach(function (sharedTextStyle) {
     var library = sharedTextStyle.getLibrary();
     var textStyleObject = {
@@ -5648,38 +5608,41 @@ function getAllTextStyles(includeAllStylesFromExternalLibraries) {
       "name": "" + sharedTextStyle.name,
       "libraryName": library != null ? libraryPrefix + library.name : sketchlocalfile,
       "library": library,
-      "foreign": false,
+      "foreign": library != null,
       "isSelected": false,
       "isChosen": false,
-      "description": getTextStyleDescription(sharedTextStyle),
+      "description": "Local " + getTextStyleDescription(sharedTextStyle) + " - " + sharedTextStyle.id + " - " + sharedTextStyle.style.id,
       "thumbnail": getTextThumbnail(sharedTextStyle),
       "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
       "duplicates": [],
       ["isSelected"]: false
     };
     allStyles.push(textStyleObject);
+    map.set(sharedTextStyle.style.id, true);
   });
 
   if (includeAllStylesFromExternalLibraries) {
     libraries.forEach(function (lib) {
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
         lib.getDocument().sharedTextStyles.forEach(function (sharedTextStyle) {
-          var textStyleObject = {
-            "textStyle": sharedTextStyle,
-            "name": "" + sharedTextStyle.name,
-            "libraryName": libraryPrefix + lib.name,
-            "library": lib,
-            "foreign": true,
-            "isSelected": false,
-            "isChosen": false,
-            "description": getTextStyleDescription(sharedTextStyle),
-            "thumbnail": getTextThumbnail(sharedTextStyle),
-            ["thumbnail"]: "",
-            "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
-            "duplicates": [],
-            ["isSelected"]: false
-          };
-          allStyles.push(textStyleObject);
+          if (!map.has(sharedTextStyle.style.id)) {
+            var textStyleObject = {
+              "textStyle": sharedTextStyle,
+              "name": "" + sharedTextStyle.name,
+              "libraryName": libraryPrefix + lib.name,
+              "library": lib,
+              "foreign": true,
+              "isSelected": false,
+              "isChosen": false,
+              "description": "Lib " + getTextStyleDescription(sharedTextStyle) + " - " + sharedTextStyle.id + " - " + sharedTextStyle.style.id,
+              "thumbnail": getTextThumbnail(sharedTextStyle),
+              ["thumbnail"]: "",
+              "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+              "duplicates": [],
+              ["isSelected"]: false
+            };
+            allStyles.push(textStyleObject);
+          }
         });
       }
     });
@@ -5691,6 +5654,7 @@ function getAllTextStyles(includeAllStylesFromExternalLibraries) {
 function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries) {
   var allStyles = [];
   var nameDictionary = {};
+  var map = new Map();
   document.sharedLayerStyles.forEach(function (sharedLayerStyle) {
     var library = sharedLayerStyle.getLibrary();
     var layerStyleObject = {
@@ -5698,7 +5662,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
       "name": "" + sharedLayerStyle.name,
       "libraryName": library != null ? libraryPrefix + library.name : sketchlocalfile,
       "library": library,
-      "foreign": false,
+      "foreign": library != null,
       "isSelected": false,
       "isChosen": false,
       "description": getLayerStyleDescription(sharedLayerStyle),
@@ -5714,7 +5678,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
         "name": "" + sharedLayerStyle.name,
         "libraryName": library != null ? libraryPrefix + library.name : sketchlocalfile,
         "library": library,
-        "foreign": false,
+        "foreign": library != null,
         "isSelected": false,
         "isChosen": false,
         "description": getLayerStyleDescription(sharedLayerStyle),
@@ -5724,6 +5688,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
         "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
       });
       allStyles.push(layerStyleObject);
+      map.set(sharedLayerStyle.style.id, true);
       nameDictionary[sharedLayerStyle.name] = layerStyleObject;
     } else {
       nameDictionary[sharedLayerStyle.name].duplicates.push(layerStyleObject);
@@ -5734,23 +5699,8 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
     libraries.forEach(function (lib) {
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
         lib.getDocument().sharedLayerStyles.forEach(function (sharedLayerStyle) {
-          var layerStyleObject = {
-            "layerStyle": sharedLayerStyle,
-            "name": "" + sharedLayerStyle.name,
-            "libraryName": libraryPrefix + lib.name,
-            "library": lib,
-            "foreign": true,
-            "isSelected": false,
-            "isChosen": false,
-            "description": getLayerStyleDescription(sharedLayerStyle),
-            "thumbnail": "",
-            "duplicates": [],
-            ["isSelected"]: false,
-            "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
-          };
-
-          if (nameDictionary[sharedLayerStyle.name] == null) {
-            layerStyleObject.duplicates.push({
+          if (!map.has(sharedLayerStyle.style.id)) {
+            var layerStyleObject = {
               "layerStyle": sharedLayerStyle,
               "name": "" + sharedLayerStyle.name,
               "libraryName": libraryPrefix + lib.name,
@@ -5760,14 +5710,29 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
               "isChosen": false,
               "description": getLayerStyleDescription(sharedLayerStyle),
               "thumbnail": "",
-              "duplicates": null,
+              "duplicates": [],
               ["isSelected"]: false,
               "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
-            });
-            allStyles.push(layerStyleObject);
-            nameDictionary[sharedLayerStyle.name] = layerStyleObject;
-          } else {
-            nameDictionary[sharedLayerStyle.name].duplicates.push(layerStyleObject);
+            };
+
+            if (nameDictionary[sharedLayerStyle.name] == null) {
+              layerStyleObject.duplicates.push({
+                "layerStyle": sharedLayerStyle,
+                "name": "" + sharedLayerStyle.name,
+                "libraryName": libraryPrefix + lib.name,
+                "library": lib,
+                "foreign": true,
+                "isSelected": false,
+                "isChosen": false,
+                "description": getLayerStyleDescription(sharedLayerStyle),
+                "thumbnail": "",
+                "duplicates": null,
+                ["isSelected"]: false,
+                "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
+              });
+            } else {
+              nameDictionary[sharedLayerStyle.name].duplicates.push(layerStyleObject);
+            }
           }
         });
       }
@@ -5776,7 +5741,21 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
 
 
   Object.keys(nameDictionary).forEach(function (key) {
-    if (nameDictionary[key].duplicates.length <= 1) {
+    var removeElement = false;
+    if (nameDictionary[key].duplicates.length <= 1) removeElement = true;
+
+    if (!removeElement) {
+      var allForeign = true;
+      nameDictionary[key].duplicates.forEach(function (duplicate) {
+        if (!duplicate.foreign) allForeign = false;
+      });
+
+      if (allForeign) {
+        removeElement = true;
+      }
+    }
+
+    if (removeElement) {
       var index = allStyles.indexOf(nameDictionary[key]);
       if (index > -1) allStyles.splice(index, 1);
       nameDictionary[key] = null;
@@ -5788,6 +5767,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
 function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) {
   var allStyles = [];
   var nameDictionary = {};
+  var map = new Map();
   document.sharedTextStyles.forEach(function (sharedTextStyle) {
     var library = sharedTextStyle.getLibrary();
     var textStyleObject = {
@@ -5795,7 +5775,7 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
       "name": "" + sharedTextStyle.name,
       "libraryName": library != null ? libraryPrefix + library.name : sketchlocalfile,
       "library": library,
-      "foreign": false,
+      "foreign": library != null,
       "isSelected": false,
       "isChosen": false,
       "description": getTextStyleDescription(sharedTextStyle),
@@ -5811,7 +5791,7 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
         "name": "" + sharedTextStyle.name,
         "libraryName": library != null ? libraryPrefix + library.name : sketchlocalfile,
         "library": library,
-        "foreign": false,
+        "foreign": library != null,
         "isSelected": false,
         "isChosen": false,
         "description": getTextStyleDescription(sharedTextStyle),
@@ -5821,6 +5801,7 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
         ["isSelected"]: false
       });
       allStyles.push(textStyleObject);
+      map.set(sharedTextStyle.style.id, true);
       nameDictionary[sharedTextStyle.name] = textStyleObject;
     } else {
       nameDictionary[sharedTextStyle.name].duplicates.push(textStyleObject);
@@ -5831,24 +5812,8 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
     libraries.forEach(function (lib) {
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
         lib.getDocument().sharedTextStyles.forEach(function (sharedTextStyle) {
-          debugLog(sharedTextStyle);
-          var textStyleObject = {
-            "textStyle": sharedTextStyle,
-            "name": "" + sharedTextStyle.name,
-            "libraryName": libraryPrefix + lib.name,
-            "library": lib,
-            "foreign": true,
-            "isSelected": false,
-            "isChosen": false,
-            "description": getTextStyleDescription(sharedTextStyle),
-            "thumbnail": "",
-            "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
-            "duplicates": [],
-            ["isSelected"]: false
-          };
-
-          if (nameDictionary[sharedTextStyle.name] == null) {
-            textStyleObject.duplicates.push({
+          if (!map.has(sharedTextStyle.style.id)) {
+            var textStyleObject = {
               "textStyle": sharedTextStyle,
               "name": "" + sharedTextStyle.name,
               "libraryName": libraryPrefix + lib.name,
@@ -5859,42 +5824,58 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
               "description": getTextStyleDescription(sharedTextStyle),
               "thumbnail": "",
               "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
-              "duplicates": null,
+              "duplicates": [],
               ["isSelected"]: false
-            });
-            allStyles.push(textStyleObject);
-            nameDictionary[sharedTextStyle.name] = textStyleObject;
-          } else {
-            nameDictionary[sharedTextStyle.name].duplicates.push(textStyleObject);
+            };
+
+            if (nameDictionary[sharedTextStyle.name] == null) {
+              textStyleObject.duplicates.push({
+                "textStyle": sharedTextStyle,
+                "name": "" + sharedTextStyle.name,
+                "libraryName": libraryPrefix + lib.name,
+                "library": lib,
+                "foreign": true,
+                "isSelected": false,
+                "isChosen": false,
+                "description": getTextStyleDescription(sharedTextStyle),
+                "thumbnail": "",
+                "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+                "duplicates": null,
+                ["isSelected"]: false
+              });
+              allStyles.push(textStyleObject);
+              nameDictionary[sharedTextStyle.name] = textStyleObject;
+            } else {
+              nameDictionary[sharedTextStyle.name].duplicates.push(textStyleObject);
+            }
           }
         });
       }
     });
-  } // console.timeEnd("getDuplicateExternalSymbols");
-
+  }
 
   Object.keys(nameDictionary).forEach(function (key) {
-    if (nameDictionary[key].duplicates.length <= 1) {
+    var removeElement = false;
+    if (nameDictionary[key].duplicates.length <= 1) removeElement = true;
+
+    if (!removeElement) {
+      var allForeign = true;
+      nameDictionary[key].duplicates.forEach(function (duplicate) {
+        if (!duplicate.foreign) allForeign = false;
+      });
+
+      if (allForeign) {
+        removeElement = true;
+      }
+    }
+
+    if (removeElement) {
       var index = allStyles.indexOf(nameDictionary[key]);
       if (index > -1) allStyles.splice(index, 1);
       nameDictionary[key] = null;
     }
   });
   return allStyles;
-}
-
-function getLibraryByID(libID) {
-  var libraries = NSApp.delegate().librariesController().libraries();
-
-  for (var i = 0; i < libraries.length; i++) {
-    var lib = libraries[i];
-
-    if (lib && lib.libraryID() && lib.libraryID().toString().localeCompare(libID) == 0) {
-      return lib;
-    }
-  }
-
-  return null;
 }
 
 function getDefinedLayerStyles(context, includeAllStylesFromExternalLibraries) {
@@ -6009,9 +5990,7 @@ module.exports = {
   GetTextBasedOnCount: GetTextBasedOnCount,
   getBase64: getBase64,
   brightnessByColor: brightnessByColor,
-  getColorDependingOnBrightness: getColorDependingOnBrightness,
   isString: isString,
-  getAlignment: getAlignment,
   getSymbolInstances: getSymbolInstances,
   containsTextStyle: containsTextStyle,
   containsLayerStyle: containsLayerStyle,
@@ -6201,7 +6180,7 @@ function onValidate(_0x8a0ax2) {
 function triggerMethod(context) {
   Helpers.LoadSettings();
   Helpers.clog("Sketch version:" + sketch.version.sketch);
-  Helpers.clog("Merge Duplicates version: 7.0.0");
+  Helpers.clog("Merge Duplicates version: 6.5.0");
   Helpers.clog("License: " + Helpers.getAcquiredLicense());
 
   switch (globalCommand) {
@@ -6428,13 +6407,7 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
         wasUnlinked = true;
       }
 
-      Helpers.clog("---- Updating instances");
-      instancesOfSymbol.forEach(function (instance) {
-        Helpers.clog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name);
-        instance.master = symbolToApply;
-        instancesChanged++;
-      });
-      Helpers.clog("---- Updating overrides");
+      Helpers.clog("---- Updating overrides (" + overridesOfSymbol.length + ")");
       overridesOfSymbol.forEach(function (override) {
         var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
         var instanceOverride = instanceLayer.overrides.filter(function (ov) {
@@ -6447,6 +6420,12 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
         } catch (e) {
           Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name);
         }
+      });
+      Helpers.clog("---- Updating instances (" + instancesOfSymbol.length + ")");
+      instancesOfSymbol.forEach(function (instance) {
+        Helpers.clog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name);
+        instance.master = symbolToApply;
+        instancesChanged++;
       });
     }
   }
@@ -6681,10 +6660,24 @@ function MergeLayerStyles(context, styleToKeepIndex) {
   var overridesChangedCounter = 0;
   var styleToKeep = currentSelectedStyles[styleToKeepIndex];
   var styleToApply = styleToKeep.layerStyle;
+  var stylesToRemove = [];
   Helpers.clog("Merging styles. Keep '" + styleToKeep.name + "'");
 
   if (styleToKeep.foreign) {
-    styleToApply = Helpers.importLayerStyleFromLibrary(styleToKeep);
+    var existingLs = Helpers.document.sharedLayerStyles.filter(function (ls) {
+      return ls.id == styleToKeep.layerStyle.id;
+    });
+
+    if (existingLs.length <= 0) {
+      Helpers.clog("Importing style from library " + styleToKeep.libraryName);
+      styleToApply = Helpers.importLayerStyleFromLibrary(styleToKeep);
+    } else Helpers.clog("Style not imported (as it's already in document)");
+  }
+
+  for (var i = 0; i < currentSelectedStyles.length; i++) {
+    if (i != styleToKeepIndex) {
+      stylesToRemove.push(currentSelectedStyles[i].layerStyle);
+    }
   }
 
   currentSelectedStyles.forEach(function (style) {
@@ -6711,6 +6704,15 @@ function MergeLayerStyles(context, styleToKeepIndex) {
         Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name);
       }
     });
+  });
+  stylesToRemove.forEach(function (styleToRemove) {
+    var removeAtIndex = -1;
+
+    for (var i = 0; i < Helpers.document.sharedLayerStyles.length; i++) {
+      if (Helpers.document.sharedLayerStyles[i].id == styleToRemove.id) removeAtIndex = i;
+    }
+
+    if (removeAtIndex > -1) Helpers.document.sharedLayerStyles.splice(removeAtIndex, 1);
   });
   return [layersChangedCounter, overridesChangedCounter];
 }
@@ -6876,7 +6878,7 @@ function MergeDuplicateLayerStyles(context) {
       Helpers.clog("No styles were merged");
       UI.message("No styles were merged");
     } else {
-      Helpers.clog("Wpdated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
       UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
     }
   });
@@ -7019,10 +7021,24 @@ function MergeTextStyles(context, styleToKeepIndex) {
   var overridesChangedCounter = 0;
   var styleToKeep = currentSelectedStyles[styleToKeepIndex];
   var styleToApply = styleToKeep.textStyle;
+  var stylesToRemove = [];
   Helpers.clog("Merging styles. Keep '" + styleToKeep.name + "'");
 
   if (styleToKeep.foreign) {
-    styleToApply = Helpers.importTextStyleFromLibrary(styleToKeep);
+    var existingTs = Helpers.document.sharedTextStyles.filter(function (ts) {
+      return ts.id == styleToKeep.textStyle.id;
+    });
+
+    if (existingTs.length <= 0) {
+      Helpers.clog("Importing style from library " + styleToKeep.libraryName);
+      styleToApply = Helpers.importTextStyleFromLibrary(styleToKeep);
+    } else Helpers.clog("Style not imported (as it's already in document)");
+  }
+
+  for (var i = 0; i < currentSelectedStyles.length; i++) {
+    if (i != styleToKeepIndex) {
+      stylesToRemove.push(currentSelectedStyles[i].textStyle);
+    }
   }
 
   currentSelectedStyles.forEach(function (style) {
@@ -7049,6 +7065,15 @@ function MergeTextStyles(context, styleToKeepIndex) {
         Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name);
       }
     });
+  });
+  stylesToRemove.forEach(function (styleToRemove) {
+    var removeAtIndex = -1;
+
+    for (var i = 0; i < Helpers.document.sharedTextStyles.length; i++) {
+      if (Helpers.document.sharedTextStyles[i].id == styleToRemove.id) removeAtIndex = i;
+    }
+
+    if (removeAtIndex > -1) Helpers.document.sharedTextStyles.splice(removeAtIndex, 1);
   });
   return [layersChangedCounter, overridesChangedCounter];
 }
@@ -7214,7 +7239,7 @@ function MergeDuplicateTextStyles(context) {
       Helpers.clog("No styles were merged");
       UI.message("No styles were merged");
     } else {
-      Helpers.clog("Wpdated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
       UI.message("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
     }
   });
