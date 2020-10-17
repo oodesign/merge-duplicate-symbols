@@ -116,6 +116,12 @@ function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
   })
 }
 
+export function MergeDuplicateColorVariables(context) {
+
+  Helpers.clog("----- Merge duplicate color variables -----");
+
+};
+
 export function MergeSelectedColorVariables(context) {
 
   Helpers.clog("----- Merge selected color variables -----");
@@ -238,6 +244,12 @@ export function MergeSelectedColorVariables(context) {
 
     onShutdown(webviewMCVFLIdentifier);
   });
+
+};
+
+export function MergeSimilarColorVariables(context) {
+
+  Helpers.clog("----- Merge similar color variables -----");
 
 };
 

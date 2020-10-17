@@ -59,8 +59,18 @@ export function MergeDuplicateLayerStyles(context) {
   onValidate(context);
 };
 
+export function MergeDuplicateColorVariables(context) {
+  globalCommand = Helpers.commands.mergeduplicatecolorvariables;
+  onValidate(context);
+};
+
 export function MergeSelectedColorVariables(context) {
   globalCommand = Helpers.commands.mergeselectedcolorvariables;
+  onValidate(context);
+};
+
+export function MergeSimilarColorVariables(context) {
+  globalCommand = Helpers.commands.mergesimilarcolorvariables;
   onValidate(context);
 };
 
@@ -108,8 +118,14 @@ export function triggerMethod(context) {
     case Helpers.commands.mergesimilarlayerstyles:
       MergeLayerStyles.MergeSimilarLayerStyles(context);
       break;
+    case Helpers.commands.mergeduplicatecolorvariables:
+      MergeColorVariables.MergeDuplicateColorVariables(context);
+      break;
     case Helpers.commands.mergeselectedcolorvariables:
       MergeColorVariables.MergeSelectedColorVariables(context);
+      break;
+    case Helpers.commands.mergesimilarcolorvariables:
+      MergeColorVariables.MergeSimilarColorVariables(context);
       break;
     case Helpers.commands.editsettings:
       Settings.EditSettings(context);

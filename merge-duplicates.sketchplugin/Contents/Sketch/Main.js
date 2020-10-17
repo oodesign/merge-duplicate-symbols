@@ -4629,7 +4629,9 @@ var commands = {
   mergesimilarlayerstyles: 'mergesimilarlayerstyles',
   mergeselectedlayerstyles: 'mergeselectedlayerstyles',
   mergeduplicatelayerstyles: 'mergeduplicatelayerstyles',
+  mergeduplicatecolorvariables: 'mergeduplicatecolorvariables',
   mergeselectedcolorvariables: 'mergeselectedcolorvariables',
+  mergesimilarcolorvariables: 'mergesimilarcolorvariables',
   editsettings: 'editsettings'
 };
 var sketchlocalfile = "💎 This Sketch file";
@@ -6178,7 +6180,7 @@ module.exports = {
 /*!*********************!*\
   !*** ./src/Main.js ***!
   \*********************/
-/*! exports provided: MergeDuplicateSymbols, MergeSelectedSymbols, MergeSelectedTextStyles, MergeSimilarTextStyles, MergeDuplicateTextStyles, MergeSelectedLayerStyles, MergeSimilarLayerStyles, MergeDuplicateLayerStyles, MergeSelectedColorVariables, EditSettings, triggerMethod, showRegistration, onShutdown */
+/*! exports provided: MergeDuplicateSymbols, MergeSelectedSymbols, MergeSelectedTextStyles, MergeSimilarTextStyles, MergeDuplicateTextStyles, MergeSelectedLayerStyles, MergeSimilarLayerStyles, MergeDuplicateLayerStyles, MergeDuplicateColorVariables, MergeSelectedColorVariables, MergeSimilarColorVariables, EditSettings, triggerMethod, showRegistration, onShutdown */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -6191,7 +6193,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MergeSelectedLayerStyles", function() { return MergeSelectedLayerStyles; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MergeSimilarLayerStyles", function() { return MergeSimilarLayerStyles; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MergeDuplicateLayerStyles", function() { return MergeDuplicateLayerStyles; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MergeDuplicateColorVariables", function() { return MergeDuplicateColorVariables; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MergeSelectedColorVariables", function() { return MergeSelectedColorVariables; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MergeSimilarColorVariables", function() { return MergeSimilarColorVariables; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EditSettings", function() { return EditSettings; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "triggerMethod", function() { return triggerMethod; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showRegistration", function() { return showRegistration; });
@@ -6265,8 +6269,18 @@ function MergeDuplicateLayerStyles(context) {
   onValidate(context);
 }
 ;
+function MergeDuplicateColorVariables(context) {
+  globalCommand = Helpers.commands.mergeduplicatecolorvariables;
+  onValidate(context);
+}
+;
 function MergeSelectedColorVariables(context) {
   globalCommand = Helpers.commands.mergeselectedcolorvariables;
+  onValidate(context);
+}
+;
+function MergeSimilarColorVariables(context) {
+  globalCommand = Helpers.commands.mergesimilarcolorvariables;
   onValidate(context);
 }
 ;
@@ -6354,8 +6368,16 @@ function triggerMethod(context) {
       MergeLayerStyles.MergeSimilarLayerStyles(context);
       break;
 
+    case Helpers.commands.mergeduplicatecolorvariables:
+      MergeColorVariables.MergeDuplicateColorVariables(context);
+      break;
+
     case Helpers.commands.mergeselectedcolorvariables:
       MergeColorVariables.MergeSelectedColorVariables(context);
+      break;
+
+    case Helpers.commands.mergesimilarcolorvariables:
+      MergeColorVariables.MergeSimilarColorVariables(context);
       break;
 
     case Helpers.commands.editsettings:
@@ -6492,12 +6514,14 @@ function onShutdown(webviewID) {
 /*!************************************!*\
   !*** ./src/MergeColorVariables.js ***!
   \************************************/
-/*! exports provided: MergeSelectedColorVariables */
+/*! exports provided: MergeDuplicateColorVariables, MergeSelectedColorVariables, MergeSimilarColorVariables */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MergeDuplicateColorVariables", function() { return MergeDuplicateColorVariables; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MergeSelectedColorVariables", function() { return MergeSelectedColorVariables; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MergeSimilarColorVariables", function() { return MergeSimilarColorVariables; });
 /* harmony import */ var sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch-module-web-view */ "./node_modules/sketch-module-web-view/lib/index.js");
 /* harmony import */ var sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var sketch_module_web_view_remote__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sketch-module-web-view/remote */ "./node_modules/sketch-module-web-view/remote.js");
@@ -6622,6 +6646,10 @@ function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
   });
 }
 
+function MergeDuplicateColorVariables(context) {
+  Helpers.clog("----- Merge duplicate color variables -----");
+}
+;
 function MergeSelectedColorVariables(context) {
   Helpers.clog("----- Merge selected color variables -----");
   var options = {
@@ -6719,6 +6747,10 @@ function MergeSelectedColorVariables(context) {
     UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
     onShutdown(webviewMCVFLIdentifier);
   });
+}
+;
+function MergeSimilarColorVariables(context) {
+  Helpers.clog("----- Merge similar color variables -----");
 }
 ;
 
@@ -7813,7 +7845,11 @@ globalThis['MergeDuplicateLayerStyles'] = __skpm_run.bind(this, 'MergeDuplicateL
 globalThis['onShutdown'] = __skpm_run.bind(this, 'onShutdown');
 globalThis['MergeDuplicateTextStyles'] = __skpm_run.bind(this, 'MergeDuplicateTextStyles');
 globalThis['onShutdown'] = __skpm_run.bind(this, 'onShutdown');
+globalThis['MergeDuplicateColorVariables'] = __skpm_run.bind(this, 'MergeDuplicateColorVariables');
+globalThis['onShutdown'] = __skpm_run.bind(this, 'onShutdown');
 globalThis['MergeSelectedColorVariables'] = __skpm_run.bind(this, 'MergeSelectedColorVariables');
+globalThis['onShutdown'] = __skpm_run.bind(this, 'onShutdown');
+globalThis['MergeSimilarColorVariables'] = __skpm_run.bind(this, 'MergeSimilarColorVariables');
 globalThis['onShutdown'] = __skpm_run.bind(this, 'onShutdown');
 globalThis['EditSettings'] = __skpm_run.bind(this, 'EditSettings');
 globalThis['onShutdown'] = __skpm_run.bind(this, 'onShutdown')
