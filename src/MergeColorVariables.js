@@ -5,7 +5,9 @@ const sketch = require('sketch');
 var UI = require('sketch/ui')
 const Helpers = require("./Helpers");
 
+const webviewMDCVIdentifier = 'merge-duplicatecolorvariables.webview'
 const webviewMCVFLIdentifier = 'merge-colorvariablesfromlist.webview'
+const webviewMSCVIdentifier = 'merge-similarcolorvariables.webview'
 
 var checkingAlsoLibraries = false;
 var currentSelectedColorVariables = [];
@@ -120,6 +122,110 @@ export function MergeDuplicateColorVariables(context) {
 
   Helpers.clog("----- Merge duplicate color variables -----");
 
+  const options = {
+    identifier: webviewMDCVIdentifier,
+    width: 1200,
+    height: 700,
+    show: false,
+    remembersWindowFrame: true,
+    titleBarStyle: 'hidden'
+  }
+  const browserWindow = new BrowserWindow(options);
+  const webContents = browserWindow.webContents;
+
+  var onlyDuplicatedColorVariables;
+  var mergeSession = [];
+  CalculateDuplicates(Helpers.getLibrariesEnabled());
+
+  if (onlyDuplicatedColorVariables.length > 0) {
+    browserWindow.loadURL(require('../resources/mergeduplicatecolorvariables.html'));
+  }
+  else {
+    UI.message("Looks like there are no color variables with the same name.");
+    onShutdown(webviewMDCVIdentifier);
+  }
+
+  function CalculateDuplicates(includeLibraries) {
+    Helpers.clog("Finding duplicate color variables. Including libraries:" + includeLibraries);
+    onlyDuplicatedColorVariables = Helpers.getDuplicateColorVariables(context, includeLibraries);
+    if (onlyDuplicatedColorVariables.length > 0) {
+      //Helpers.GetSpecificLayerStyleData(context, onlyDuplicatedColorVariables, 0);
+      mergeSession = [];
+      for (var i = 0; i < onlyDuplicatedColorVariables.length; i++) {
+        mergeSession.push({
+          "colorVariableWithDuplicates": onlyDuplicatedColorVariables[i],
+          "selectedIndex": -1,
+          "isUnchecked": false,
+          "isProcessed": (i == 0) ? true : false
+        });
+      }
+    }
+  }
+
+  browserWindow.once('ready-to-show', () => {
+    browserWindow.show()
+  })
+
+  webContents.on('did-finish-load', () => {
+    Helpers.clog("Webview loaded");
+    webContents.executeJavaScript(`DrawColorVariablesList(${JSON.stringify(mergeSession)}, ${Helpers.getLibrariesEnabled()})`).catch(console.error);
+  })
+
+  webContents.on('nativeLog', s => {
+    Helpers.clog(s);
+  });
+
+  webContents.on('Cancel', () => {
+    onShutdown(webviewMDCVIdentifier);
+  });
+
+  webContents.on('RecalculateDuplicates', (includeLibraries) => {
+    Helpers.clog("Recalculating duplicates");
+    CalculateDuplicates(includeLibraries);
+    webContents.executeJavaScript(`DrawColorVariablesList(${JSON.stringify(mergeSession)})`).catch(console.error);
+  });
+
+  webContents.on('GetSelectedStyleData', (index) => {
+    //Helpers.GetSpecificLayerStyleData(context, onlyDuplicatedColorVariables, index);
+    webContents.executeJavaScript(`ReDrawAfterGettingData(${JSON.stringify(mergeSession[index].colorVariableWithDuplicates)},${index})`).catch(console.error);
+  });
+
+  webContents.on('ExecuteMerge', (editedMergeSession) => {
+    Helpers.clog("Executing Merge");
+
+    var duplicatesSolved = 0;
+    var mergedColorVariables = 0;
+    var affectedLayers = [0, 0];
+
+    for (var i = 0; i < editedMergeSession.length; i++) {
+      Helpers.clog("-- Merging " + mergeSession[i].colorVariableWithDuplicates.name);
+      if (!editedMergeSession[i].isUnchecked && editedMergeSession[i].selectedIndex >= 0) {
+        mergeSession[i].selectedIndex = editedMergeSession[i].selectedIndex;
+        currentSelectedColorVariables = [];
+        for (var j = 0; j < mergeSession[i].colorVariableWithDuplicates.duplicates.length; j++) {
+          currentSelectedColorVariables.push(mergeSession[i].colorVariableWithDuplicates.duplicates[j]);
+          mergedColorVariables++;
+        }
+
+        var results = MergeColorVariables(context, editedMergeSession[i].selectedIndex);
+        affectedLayers[0] += results[0];
+        affectedLayers[1] += results[1];
+
+        duplicatesSolved++;
+      }
+    }
+
+    onShutdown(webviewMDCVIdentifier);
+    if (duplicatesSolved <= 0) {
+      Helpers.clog("No color variables were merged");
+      UI.message("No color variables were merged");
+    }
+    else {
+      Helpers.clog("Updated " + affectedLayers[0] + " layers");
+      UI.message("Yo ho! We updated " + affectedLayers[0] + " layers");
+    }
+
+  });
 };
 
 export function MergeSelectedColorVariables(context) {

@@ -4388,6 +4388,17 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 
 /***/ }),
 
+/***/ "./resources/mergeduplicatecolorvariables.html":
+/*!*****************************************************!*\
+  !*** ./resources/mergeduplicatecolorvariables.html ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/911da7b90d2bb7c2cea954a6ae5d9816.html";
+
+/***/ }),
+
 /***/ "./resources/mergeduplicatelayerstyles.html":
 /*!**************************************************!*\
   !*** ./resources/mergeduplicatelayerstyles.html ***!
@@ -5397,7 +5408,6 @@ function debugLog(message) {
 }
 
 function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLibraries, mergingSelected) {
-  // console.time("getDuplicateSymbols");
   var allSymbols = [];
   var nameDictionary = {};
   var alreadyAddedIDs = [];
@@ -5467,6 +5477,78 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
   }); // console.timeEnd("getDuplicateSymbols");
 
   return allSymbols.sort(compareSymbolNames);
+}
+
+function getDuplicateColorVariables(context, includeLibraries) {
+  var allColorVariables = getAllColorVariables(includeLibraries);
+  var nameDictionary = {};
+  var duplicateColorVariables = [];
+  var alreadyAddedIDs = [];
+  allColorVariables.forEach(function (colorVariable) {
+    var colorVariableObject = {
+      "colorVariable": colorVariable.colorVariable,
+      "name": "" + colorVariable.name,
+      "foreign": colorVariable.foreign,
+      "thumbnail": colorVariable.thumbnail,
+      "libraryName": colorVariable.libraryName,
+      "library": colorVariable.library,
+      "isSelected": false,
+      "isChosen": false,
+      "description": "",
+      //TODO "Local " + getTextStyleDescription(sharedTextStyle) + " - " + sharedTextStyle.id + " - " + sharedTextStyle.style.id,
+      ["thumbnail"]: getColorVariableThumbnail(colorVariable.colorVariable),
+      "contrastMode": shouldEnableContrastMode(colorVariable.colorVariable.color.substring(1, 7)),
+      "duplicates": [],
+      ["isSelected"]: false
+    };
+    alreadyAddedIDs.push("" + colorVariable.colorVariable.id);
+
+    if (nameDictionary[colorVariable.name] == null) {
+      duplicateColorVariables.push(colorVariableObject);
+      colorVariableObject.duplicates.push({
+        "colorVariable": colorVariable.colorVariable,
+        "name": "" + colorVariable.name,
+        "foreign": colorVariable.foreign,
+        "thumbnail": colorVariable.thumbnail,
+        "libraryName": colorVariable.libraryName,
+        "library": colorVariable.library,
+        "isSelected": false,
+        "isChosen": false,
+        "description": "",
+        //TODO "Local " + getTextStyleDescription(sharedTextStyle) + " - " + sharedTextStyle.id + " - " + sharedTextStyle.style.id,
+        ["thumbnail"]: getColorVariableThumbnail(colorVariable.colorVariable),
+        "contrastMode": shouldEnableContrastMode(colorVariable.colorVariable.color.substring(1, 7)),
+        "duplicates": null,
+        ["isSelected"]: false
+      });
+      nameDictionary[colorVariable.name] = colorVariableObject;
+    } else {
+      nameDictionary[colorVariable.name].duplicates.push(colorVariableObject);
+    }
+  });
+  Object.keys(nameDictionary).forEach(function (key) {
+    var removeElement = false;
+    if (nameDictionary[key].duplicates.length <= 1) removeElement = true;
+
+    if (!removeElement) {
+      var allForeign = true;
+      nameDictionary[key].duplicates.forEach(function (duplicate) {
+        if (!duplicate.foreign) allForeign = false;
+      });
+
+      if (allForeign) {
+        removeElement = true;
+      }
+    }
+
+    if (removeElement) {
+      var index = duplicateColorVariables.indexOf(nameDictionary[key]);
+      if (index > -1) duplicateColorVariables.splice(index, 1);
+      nameDictionary[key] = null;
+    }
+  });
+  debugLog(duplicateColorVariables);
+  return duplicateColorVariables;
 }
 
 function GetSpecificLayerStyleData(context, layerStyles, index) {
@@ -5771,7 +5853,6 @@ function getAllColorVariables(includeAllStylesFromExternalLibraries) {
     });
   }
 
-  debugLog(allColorVariables);
   return allColorVariables;
 }
 
@@ -6171,7 +6252,8 @@ module.exports = {
   getRelatedOverrides: getRelatedOverrides,
   importTextStyleFromLibrary: importTextStyleFromLibrary,
   getDefinedColorVariables: getDefinedColorVariables,
-  importColorVariableFromLibrary: importColorVariableFromLibrary
+  importColorVariableFromLibrary: importColorVariableFromLibrary,
+  getDuplicateColorVariables: getDuplicateColorVariables
 };
 
 /***/ }),
@@ -6538,7 +6620,9 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
 var Helpers = __webpack_require__(/*! ./Helpers */ "./src/Helpers.js");
 
+var webviewMDCVIdentifier = 'merge-duplicatecolorvariables.webview';
 var webviewMCVFLIdentifier = 'merge-colorvariablesfromlist.webview';
+var webviewMSCVIdentifier = 'merge-similarcolorvariables.webview';
 var checkingAlsoLibraries = false;
 var currentSelectedColorVariables = [];
 
@@ -6648,6 +6732,103 @@ function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
 
 function MergeDuplicateColorVariables(context) {
   Helpers.clog("----- Merge duplicate color variables -----");
+  var options = {
+    identifier: webviewMDCVIdentifier,
+    width: 1200,
+    height: 700,
+    show: false,
+    remembersWindowFrame: true,
+    titleBarStyle: 'hidden'
+  };
+  var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
+  var webContents = browserWindow.webContents;
+  var onlyDuplicatedColorVariables;
+  var mergeSession = [];
+  CalculateDuplicates(Helpers.getLibrariesEnabled());
+
+  if (onlyDuplicatedColorVariables.length > 0) {
+    browserWindow.loadURL(__webpack_require__(/*! ../resources/mergeduplicatecolorvariables.html */ "./resources/mergeduplicatecolorvariables.html"));
+  } else {
+    UI.message("Looks like there are no color variables with the same name.");
+    onShutdown(webviewMDCVIdentifier);
+  }
+
+  function CalculateDuplicates(includeLibraries) {
+    Helpers.clog("Finding duplicate color variables. Including libraries:" + includeLibraries);
+    onlyDuplicatedColorVariables = Helpers.getDuplicateColorVariables(context, includeLibraries);
+
+    if (onlyDuplicatedColorVariables.length > 0) {
+      //Helpers.GetSpecificLayerStyleData(context, onlyDuplicatedColorVariables, 0);
+      mergeSession = [];
+
+      for (var i = 0; i < onlyDuplicatedColorVariables.length; i++) {
+        mergeSession.push({
+          "colorVariableWithDuplicates": onlyDuplicatedColorVariables[i],
+          "selectedIndex": -1,
+          "isUnchecked": false,
+          "isProcessed": i == 0 ? true : false
+        });
+      }
+    }
+  }
+
+  browserWindow.once('ready-to-show', function () {
+    browserWindow.show();
+  });
+  webContents.on('did-finish-load', function () {
+    Helpers.clog("Webview loaded");
+    webContents.executeJavaScript("DrawColorVariablesList(".concat(JSON.stringify(mergeSession), ", ").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
+  });
+  webContents.on('nativeLog', function (s) {
+    Helpers.clog(s);
+  });
+  webContents.on('Cancel', function () {
+    onShutdown(webviewMDCVIdentifier);
+  });
+  webContents.on('RecalculateDuplicates', function (includeLibraries) {
+    Helpers.clog("Recalculating duplicates");
+    CalculateDuplicates(includeLibraries);
+    webContents.executeJavaScript("DrawColorVariablesList(".concat(JSON.stringify(mergeSession), ")")).catch(console.error);
+  });
+  webContents.on('GetSelectedStyleData', function (index) {
+    //Helpers.GetSpecificLayerStyleData(context, onlyDuplicatedColorVariables, index);
+    webContents.executeJavaScript("ReDrawAfterGettingData(".concat(JSON.stringify(mergeSession[index].colorVariableWithDuplicates), ",").concat(index, ")")).catch(console.error);
+  });
+  webContents.on('ExecuteMerge', function (editedMergeSession) {
+    Helpers.clog("Executing Merge");
+    var duplicatesSolved = 0;
+    var mergedColorVariables = 0;
+    var affectedLayers = [0, 0];
+
+    for (var i = 0; i < editedMergeSession.length; i++) {
+      Helpers.clog("-- Merging " + mergeSession[i].colorVariableWithDuplicates.name);
+
+      if (!editedMergeSession[i].isUnchecked && editedMergeSession[i].selectedIndex >= 0) {
+        mergeSession[i].selectedIndex = editedMergeSession[i].selectedIndex;
+        currentSelectedColorVariables = [];
+
+        for (var j = 0; j < mergeSession[i].colorVariableWithDuplicates.duplicates.length; j++) {
+          currentSelectedColorVariables.push(mergeSession[i].colorVariableWithDuplicates.duplicates[j]);
+          mergedColorVariables++;
+        }
+
+        var results = MergeColorVariables(context, editedMergeSession[i].selectedIndex);
+        affectedLayers[0] += results[0];
+        affectedLayers[1] += results[1];
+        duplicatesSolved++;
+      }
+    }
+
+    onShutdown(webviewMDCVIdentifier);
+
+    if (duplicatesSolved <= 0) {
+      Helpers.clog("No color variables were merged");
+      UI.message("No color variables were merged");
+    } else {
+      Helpers.clog("Updated " + affectedLayers[0] + " layers");
+      UI.message("Yo ho! We updated " + affectedLayers[0] + " layers");
+    }
+  });
 }
 ;
 function MergeSelectedColorVariables(context) {

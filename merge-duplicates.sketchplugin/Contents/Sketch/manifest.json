@@ -114,7 +114,7 @@
         }
       },
       "identifier": "mergeduplicatecolorvariables",
-      "shortcut": "ctrl shift c",
+      "shortcut": "ctrl shift v",
       "icon": "icon-sr.png"
     },
     {
@@ -127,7 +127,7 @@
         }
       },
       "identifier": "mergeselectedcolorvariables",
-      "shortcut": "ctrl shift option c",
+      "shortcut": "ctrl shift option v",
       "icon": "icon-sr.png"
     },
     {
@@ -140,7 +140,7 @@
         }
       },
       "identifier": "mergesimilarcolorvariables",
-      "shortcut": "ctrl shift option command c",
+      "shortcut": "ctrl shift option command v",
       "icon": "icon-sr.png"
     },
     {
