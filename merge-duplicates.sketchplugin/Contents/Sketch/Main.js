@@ -5392,13 +5392,14 @@ function importColorVariableFromLibrary(colorVariable) {
     clog("-- Importing " + colorVariable.name + " from library " + colorVariable.libraryName + " with ID:" + colorVariable.colorVariable.id);
     var colorVariableReferences = colorVariable.library.getImportableSwatchReferencesForDocument(document);
     var refToImport = colorVariableReferences.filter(function (ref) {
-      return ref.id == colorVariable.colorVariable.id;
+      return ref.name == colorVariable.colorVariable.name; //TODO should be replaced by proper ID
     });
     var colorVar = refToImport[0].import();
     clog("-- We've imported:" + colorVar.name);
-    return style;
+    return colorVar;
   } catch (e) {
     clog("-- ERROR: Couldn't import " + colorVariable.name + " from library" + colorVariable.libraryName + " with ID:" + colorVariable.colorVariable.id);
+    clog(e);
     return null;
   }
 }
@@ -6652,8 +6653,8 @@ function MergeColorVariables(context, colorVariableToKeepIndex) {
   }
 
   currentSelectedColorVariables.forEach(function (colorVariable) {
-    doUseColorSwatchesInLayers(colorVariable, colorVariablesToRemove);
-    doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove);
+    doUseColorSwatchesInLayers(colorVariableToApply, colorVariablesToRemove);
+    doUseColorSwatchesInStyles(colorVariableToApply, colorVariablesToRemove);
   });
   colorVariablesToRemove.forEach(function (colorVariableToRemove) {
     var removeAtIndex = -1;
@@ -6676,13 +6677,13 @@ function doUseColorSwatchesInLayers(colorVariable, colorVariablesToRemove) {
       return item.fillType == 'Color';
     }).forEach(function (item) {
       colorVariablesToRemove.forEach(function (cvToRemove) {
-        if (item.color == cvToRemove.color) item.color = colorVariable.colorVariable.referencingColor;
+        if (item.color == cvToRemove.color) item.color = colorVariable.referencingColor;
       });
     }); // Previous actions don't work for Text Layer colors that are colored using TextColor, so let's fix that:
 
     if (layer.style.textColor) {
       colorVariablesToRemove.forEach(function (cvToRemove) {
-        if (layer.style.textColor == cvToRemove.color) layer.style.textColor = colorVariable.colorVariable.referencingColor;
+        if (layer.style.textColor == cvToRemove.color) layer.style.textColor = colorVariable.referencingColor;
       });
     }
   });
@@ -6704,7 +6705,7 @@ function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
     style.style.fills.concat(style.style.borders).forEach(function (item) {
       if (item.fillType == 'Color') {
         colorVariablesToRemove.forEach(function (cvToRemove) {
-          if (item.color == cvToRemove.color) item.color = colorVariable.colorVariable.referencingColor;
+          if (item.color == cvToRemove.color) item.color = colorVariable.referencingColor;
         });
       }
     }); // TODO: This could also work with gradients...
@@ -6721,7 +6722,7 @@ function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
     });
     var currentStyle = style.style;
     colorVariablesToRemove.forEach(function (cvToRemove) {
-      if (currentStyle.textColor == cvToRemove.color) currentStyle.textColor = colorVariable.colorVariable.referencingColor;
+      if (currentStyle.textColor == cvToRemove.color) currentStyle.textColor = colorVariable.referencingColor;
     });
   }); // Finally, update all layers that use a style we updated...
 

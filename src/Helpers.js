@@ -681,15 +681,16 @@ function importColorVariableFromLibrary(colorVariable) {
     clog("-- Importing " + colorVariable.name + " from library " + colorVariable.libraryName + " with ID:" + colorVariable.colorVariable.id);
     var colorVariableReferences = colorVariable.library.getImportableSwatchReferencesForDocument(document);
     var refToImport = colorVariableReferences.filter(function (ref) {
-      return ref.id == colorVariable.colorVariable.id;
+      return ref.name == colorVariable.colorVariable.name; //TODO should be replaced by proper ID
     });
 
     var colorVar = refToImport[0].import();
     clog("-- We've imported:" + colorVar.name);
 
-    return style;
+    return colorVar;
   } catch (e) {
     clog("-- ERROR: Couldn't import " + colorVariable.name + " from library" + colorVariable.libraryName + " with ID:" + colorVariable.colorVariable.id);
+    clog(e);
     return null;
   }
 }

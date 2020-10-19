@@ -39,8 +39,8 @@ function MergeColorVariables(context, colorVariableToKeepIndex) {
   }
 
   currentSelectedColorVariables.forEach(function (colorVariable) {
-    doUseColorSwatchesInLayers(colorVariable, colorVariablesToRemove);
-    doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove);
+    doUseColorSwatchesInLayers(colorVariableToApply, colorVariablesToRemove);
+    doUseColorSwatchesInStyles(colorVariableToApply, colorVariablesToRemove);
   });
 
   colorVariablesToRemove.forEach(function (colorVariableToRemove) {
@@ -64,14 +64,14 @@ function doUseColorSwatchesInLayers(colorVariable, colorVariablesToRemove) {
       .forEach(item => {
         colorVariablesToRemove.forEach(cvToRemove => {
           if (item.color == cvToRemove.color)
-            item.color = colorVariable.colorVariable.referencingColor;
+            item.color = colorVariable.referencingColor;
         });
       })
     // Previous actions don't work for Text Layer colors that are colored using TextColor, so let's fix that:
     if (layer.style.textColor) {
       colorVariablesToRemove.forEach(cvToRemove => {
         if (layer.style.textColor == cvToRemove.color)
-          layer.style.textColor = colorVariable.colorVariable.referencingColor;
+          layer.style.textColor = colorVariable.referencingColor;
       });
     }
   })
@@ -92,7 +92,7 @@ function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
       if (item.fillType == 'Color') {
         colorVariablesToRemove.forEach(cvToRemove => {
           if (item.color == cvToRemove.color)
-            item.color = colorVariable.colorVariable.referencingColor;
+            item.color = colorVariable.referencingColor;
         });
       }
     })
@@ -109,7 +109,7 @@ function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
     const currentStyle = style.style
     colorVariablesToRemove.forEach(cvToRemove => {
       if (currentStyle.textColor == cvToRemove.color)
-        currentStyle.textColor = colorVariable.colorVariable.referencingColor;
+        currentStyle.textColor = colorVariable.referencingColor;
     });
   })
   // Finally, update all layers that use a style we updated...
