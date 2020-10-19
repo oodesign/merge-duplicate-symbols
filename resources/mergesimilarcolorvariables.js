@@ -17,7 +17,7 @@ window.DrawResultsList = (stylesWithSimilarStyles) => {
   window.postMessage("nativeLog", "WV - Drawing results list");
   globalStylesWithSimilarStyles = stylesWithSimilarStyles;
 
-  
+
 
   if (globalStylesWithSimilarStyles.length > 0) {
     var lstResultingStyles = document.getElementById('lstResultingStyles');
@@ -177,6 +177,12 @@ document.getElementById('btnFindMatchingStyles').addEventListener("click", () =>
 document.getElementById('btnEmptyState').addEventListener("click", () => {
   onFilterChanged();
 });
+
+document.getElementById('toleranceSlider').addEventListener("input", () => {
+  document.getElementById('toleranceVal').innerHTML = "(" + document.getElementById('toleranceSlider').value + ")";
+});
+
+
 
 
 

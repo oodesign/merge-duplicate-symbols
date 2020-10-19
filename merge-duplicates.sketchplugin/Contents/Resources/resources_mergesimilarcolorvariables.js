@@ -235,6 +235,9 @@ document.getElementById('btnFindMatchingStyles').addEventListener("click", funct
 document.getElementById('btnEmptyState').addEventListener("click", function () {
   onFilterChanged();
 });
+document.getElementById('toleranceSlider').addEventListener("input", function () {
+  document.getElementById('toleranceVal').innerHTML = "(" + document.getElementById('toleranceSlider').value + ")";
+});
 
 window.onFilterChanged = function () {
   window.postMessage("nativeLog", "WV - Find matching color variables");

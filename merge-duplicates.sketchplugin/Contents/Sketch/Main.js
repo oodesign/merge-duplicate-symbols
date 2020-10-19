@@ -4461,7 +4461,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/039080e72d0c91da744fc6dbf7d74df1.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/bd421c965fd44d1bc142209c65496efa.html";
 
 /***/ }),
 
@@ -6701,7 +6701,7 @@ var currentSelectedColorVariables = [];
 
 function MergeColorVariables(context, colorVariableToKeepIndex) {
   var layersChangedCounter = 0;
-  var overridesChangedCounter = 0;
+  var stylesChangedCounter = 0;
   var colorVariableToKeep = currentSelectedColorVariables[colorVariableToKeepIndex];
   var colorVariableToApply = colorVariableToKeep.colorVariable;
   var colorVariablesToRemove = [];
@@ -6725,8 +6725,8 @@ function MergeColorVariables(context, colorVariableToKeepIndex) {
   }
 
   currentSelectedColorVariables.forEach(function (colorVariable) {
-    doUseColorSwatchesInLayers(colorVariableToApply, colorVariablesToRemove);
-    doUseColorSwatchesInStyles(colorVariableToApply, colorVariablesToRemove);
+    layersChangedCounter = doUseColorSwatchesInLayers(colorVariableToApply, colorVariablesToRemove);
+    stylesChangedCounter = doUseColorSwatchesInStyles(colorVariableToApply, colorVariablesToRemove);
   });
   colorVariablesToRemove.forEach(function (colorVariableToRemove) {
     var removeAtIndex = -1;
@@ -6737,19 +6737,24 @@ function MergeColorVariables(context, colorVariableToKeepIndex) {
 
     if (removeAtIndex > -1) Helpers.document.swatches.splice(removeAtIndex, 1);
   });
-  return [layersChangedCounter, overridesChangedCounter];
+  return [layersChangedCounter, stylesChangedCounter];
 }
 
 function doUseColorSwatchesInLayers(colorVariable, colorVariablesToRemove) {
   // When you open an existing document in Sketch 69, the color assets in the document will be migrated to Color Swatches. However, layers using those colors will not be changed to use the new swatches. This plugin takes care of this
   var allLayers = sketch.find('*'); // TODO: optimise this query: ShapePath, SymbolMaster, Text, SymbolInstance
 
+  var layersAffected = 0;
   allLayers.forEach(function (layer) {
+    var layerAffected = false;
     layer.style.fills.concat(layer.style.borders).filter(function (item) {
       return item.fillType == 'Color';
     }).forEach(function (item) {
       colorVariablesToRemove.forEach(function (cvToRemove) {
-        if (item.color == cvToRemove.color) item.color = colorVariable.referencingColor;
+        if (item.color == cvToRemove.color) {
+          item.color = colorVariable.referencingColor;
+          layerAffected = true;
+        }
       });
     }); // Previous actions don't work for Text Layer colors that are colored using TextColor, so let's fix that:
 
@@ -6758,14 +6763,19 @@ function doUseColorSwatchesInLayers(colorVariable, colorVariablesToRemove) {
         if (layer.style.textColor == cvToRemove.color) layer.style.textColor = colorVariable.referencingColor;
       });
     }
+
+    if (layerAffected) layersAffected++;
   });
+  return layersAffected;
 }
 
 function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
   // This method traverses all Layer and Text Styles, and makes sure they use Color Swatches that exist in the document.
   var stylesCanBeUpdated = [];
+  var stylesAffected = 0;
   var allLayerStyles = Helpers.document.sharedLayerStyles;
   allLayerStyles.forEach(function (style) {
+    var styleAffected = false;
     style.getAllInstances().forEach(function (styleInstance) {
       if (!styleInstance.isOutOfSyncWithSharedStyle(style)) {
         stylesCanBeUpdated.push({
@@ -6777,13 +6787,19 @@ function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
     style.style.fills.concat(style.style.borders).forEach(function (item) {
       if (item.fillType == 'Color') {
         colorVariablesToRemove.forEach(function (cvToRemove) {
-          if (item.color == cvToRemove.color) item.color = colorVariable.referencingColor;
+          if (item.color == cvToRemove.color) {
+            item.color = colorVariable.referencingColor;
+            styleAffected = true;
+          }
         });
       }
     }); // TODO: This could also work with gradients...
+
+    if (styleAffected) stylesAffected++;
   });
   var allTextStyles = Helpers.document.sharedTextStyles;
   allTextStyles.forEach(function (style) {
+    var styleAffected = false;
     style.getAllInstances().forEach(function (styleInstance) {
       if (!styleInstance.isOutOfSyncWithSharedStyle(style)) {
         stylesCanBeUpdated.push({
@@ -6796,11 +6812,13 @@ function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
     colorVariablesToRemove.forEach(function (cvToRemove) {
       if (currentStyle.textColor == cvToRemove.color) currentStyle.textColor = colorVariable.referencingColor;
     });
+    if (styleAffected) stylesAffected++;
   }); // Finally, update all layers that use a style we updated...
 
   stylesCanBeUpdated.forEach(function (pair) {
     pair.instance.syncWithSharedStyle(pair.style);
   });
+  return stylesAffected;
 }
 
 function MergeDuplicateColorVariables(context) {
@@ -6898,8 +6916,8 @@ function MergeDuplicateColorVariables(context) {
       Helpers.clog("No color variables were merged");
       UI.message("No color variables were merged");
     } else {
-      Helpers.clog("Updated " + affectedLayers[0] + " layers");
-      UI.message("Yo ho! We updated " + affectedLayers[0] + " layers");
+      Helpers.clog("Wow how! We updated " + affectedLayers[0] + " layers, and " + affectedLayers[1] + " styles. Awesome!");
+      UI.message("Wow how! We updated " + affectedLayers[0] + " layers, and " + affectedLayers[1] + " styles. Awesome!");
     }
   });
 }
@@ -6997,8 +7015,8 @@ function MergeSelectedColorVariables(context) {
     }
 
     var affectedLayers = MergeColorVariables(context, selectedIndex);
-    Helpers.clog("Updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
-    UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+    Helpers.clog("Wow how! We updated " + affectedLayers[0] + " layers, and " + affectedLayers[1] + " styles. Awesome!");
+    UI.message("Wow how! We updated " + affectedLayers[0] + " layers, and " + affectedLayers[1] + " styles. Awesome!");
     onShutdown(webviewMCVFLIdentifier);
   });
 }
@@ -7061,8 +7079,8 @@ function MergeSimilarColorVariables(context) {
       Helpers.clog("No styles were merged");
       UI.message("No styles were merged");
     } else {
-      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-      UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+      Helpers.clog("Wow how! We updated " + affectedLayers[0] + " layers, and " + affectedLayers[1] + " styles. Awesome!");
+      UI.message("Wow how! We updated " + affectedLayers[0] + " layers, and " + affectedLayers[1] + " styles. Awesome!");
     }
   });
   webContents.on('RecalculateVariables', function (includeAllLibraries, tolerance) {
