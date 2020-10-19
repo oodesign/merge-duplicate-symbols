@@ -357,5 +357,79 @@ export function MergeSimilarColorVariables(context) {
 
   Helpers.clog("----- Merge similar color variables -----");
 
-};
+  const options = {
+    identifier: webviewMSCVIdentifier,
+    width: 1200,
+    height: 700,
+    show: false,
+    remembersWindowFrame: true,
+    titleBarStyle: 'hidden'
+  }
+  const browserWindow = new BrowserWindow(options);
+  const webContents = browserWindow.webContents;
 
+  var colorVariablesWithSimilarColorVariables;
+  Helpers.clog("Loading webview");
+  browserWindow.loadURL(require('../resources/mergesimilarcolorvariables.html'));
+
+
+  browserWindow.once('ready-to-show', () => {
+    browserWindow.show()
+  })
+
+  webContents.on('did-finish-load', () => {
+    Helpers.clog("Webview loaded");
+    webContents.executeJavaScript(`UpdateSettings(${Helpers.getLibrariesEnabled()})`).catch(console.error);
+    colorVariablesWithSimilarColorVariables = Helpers.FindAllSimilarColorVariables(context, Helpers.getLibrariesEnabled(), 30);
+    webContents.executeJavaScript(`DrawResultsList(${JSON.stringify(colorVariablesWithSimilarColorVariables)})`).catch(console.error);
+  })
+
+  webContents.on('nativeLog', s => {
+    Helpers.clog(s);
+  });
+
+  webContents.on('Cancel', () => {
+    onShutdown(webviewMSCVIdentifier);
+  });
+
+  webContents.on('ExecuteMerge', (editedColorVariablesWithSimilarColorVariables) => {
+    Helpers.clog("Execute merge");
+    var duplicatesSolved = 0;
+    var mergedStyles = 0;
+    var affectedLayers = [0, 0];
+    for (var i = 0; i < editedColorVariablesWithSimilarColorVariables.length; i++) {
+      if (!editedColorVariablesWithSimilarColorVariables[i].isUnchecked && editedColorVariablesWithSimilarColorVariables[i].selectedIndex >= 0) {
+        currentSelectedColorVariables = [];
+        for (var j = 0; j < editedColorVariablesWithSimilarColorVariables[i].similarStyles.length; j++) {
+          currentSelectedColorVariables.push(colorVariablesWithSimilarColorVariables[i].similarStyles[j]);
+          mergedStyles++;
+        }
+
+        var results = MergeColorVariables(context, editedColorVariablesWithSimilarColorVariables[i].selectedIndex);
+        affectedLayers[0] += results[0];
+        affectedLayers[1] += results[1];
+
+        duplicatesSolved++;
+      }
+    }
+
+    onShutdown(webviewMSCVIdentifier);
+
+    if (duplicatesSolved <= 0) {
+      Helpers.clog("No styles were merged");
+      UI.message("No styles were merged");
+    }
+    else {
+      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+    }
+
+  });
+
+  webContents.on('RecalculateVariables', (includeAllLibraries, tolerance) => {
+    Helpers.clog("Recalculate similar variables with tolerance: "+tolerance);
+    colorVariablesWithSimilarColorVariables = Helpers.FindAllSimilarColorVariables(context, includeAllLibraries, tolerance);
+    webContents.executeJavaScript(`DrawResultsList(${JSON.stringify(colorVariablesWithSimilarColorVariables)})`).catch(console.error);
+  });
+
+};

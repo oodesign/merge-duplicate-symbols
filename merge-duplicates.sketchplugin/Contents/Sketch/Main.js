@@ -4384,7 +4384,7 @@ module.exports.sendToWebview = function sendToWebview(identifier, evalString) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/2bd7c6bd84bb90d35832cf88a241a58b.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/a96b500ac9e7efd4d38e63dbe01fdb38.html";
 
 /***/ }),
 
@@ -4395,7 +4395,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/911da7b90d2bb7c2cea954a6ae5d9816.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/dfe6646e7238ffa17a269244bc955228.html";
 
 /***/ }),
 
@@ -4406,7 +4406,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/22566eecbf5b39220719d85a74cde6ff.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/34fdd809ddbd8a4bbc2f3df72c20291d.html";
 
 /***/ }),
 
@@ -4417,7 +4417,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/a00290731c53d44799c1c54560b4bf08.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/df058667d72ed4abb6243b3484c248d1.html";
 
 /***/ }),
 
@@ -4428,7 +4428,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/6dda7037605ecd046c9f6cb19e348344.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/93c4a8228ad349eed0d75c395dd8dda8.html";
 
 /***/ }),
 
@@ -4439,7 +4439,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/d7f01700c61308f00544106525b18532.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/9eca21f444b1b07cf33f932904dba5cb.html";
 
 /***/ }),
 
@@ -4450,7 +4450,18 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/15cfee41e86285eae333ef859bb7789b.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/4f133c00701fb2b9a163e827dde8e54e.html";
+
+/***/ }),
+
+/***/ "./resources/mergesimilarcolorvariables.html":
+/*!***************************************************!*\
+  !*** ./resources/mergesimilarcolorvariables.html ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/039080e72d0c91da744fc6dbf7d74df1.html";
 
 /***/ }),
 
@@ -4461,7 +4472,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/2fef6737b160ffdd0b5b0647a0a740d1.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/d70535b8bf3ff81ef4764434899b3399.html";
 
 /***/ }),
 
@@ -4472,7 +4483,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/091757345064ce15aa7f5124bbc648bb.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/b90106b0953f1c965c7ca9f83b486743.html";
 
 /***/ }),
 
@@ -4483,7 +4494,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/1e0ecd7eae9921a649391e311fe0b219.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/b1ea12b82b599789cba8b1f75d1fb1f5.html";
 
 /***/ }),
 
@@ -4494,7 +4505,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/d4d5f7bb315bb92239a7b8059099fd80.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/bdb1bd4425d22477d840cbe1cb42b5a7.html";
 
 /***/ }),
 
@@ -4505,7 +4516,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/c06843dcbad8babeaddee9f45154aafb.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/a51f792c0e98e86cee10f44c61b0d419.html";
 
 /***/ }),
 
@@ -5236,6 +5247,67 @@ function FindAllSimilarLayerStyles(context, includeAllStylesFromExternalLibrarie
   return stylesWithSimilarStyles;
 }
 
+function areColorsSimilar(color1, color2, tolerance) {
+  if (!tolerance) tolerance = 30;
+  var labReferenceColor = D3.lab(color1);
+  var labComparisonColor = D3.lab(color2);
+  var color1 = {
+    L: labReferenceColor.l,
+    A: labReferenceColor.a,
+    B: labReferenceColor.b
+  };
+  var color2 = {
+    L: labComparisonColor.l,
+    A: labComparisonColor.a,
+    B: labComparisonColor.b
+  };
+  var deltaE = DeltaE.getDeltaE76(color1, color2);
+
+  if (parseFloat(deltaE) < tolerance) {
+    return true;
+  } else return false;
+}
+
+function FindSimilarColorVariables(colorVariableRef, colorVariables, tolerance) {
+  var similarColorVariables = [];
+  colorVariables.forEach(function (colorVariable) {
+    if (colorVariableRef != colorVariable.colorVariable) {
+      if (areColorsSimilar("#" + colorVariableRef.color.substring(1, 7), "#" + colorVariable.colorVariable.color.substring(1, 7), tolerance)) similarColorVariables.push(colorVariable);
+    }
+  });
+  return similarColorVariables;
+}
+
+function FindAllSimilarColorVariables(context, includeExternalLibraries, tolerance) {
+  var colorVariablesWithSimilarColorVariables = [];
+  var colorVariablesAlreadyProcessed = [];
+  var definedColorVariables = getDefinedColorVariables(context, includeExternalLibraries);
+
+  for (var i = 0; i < definedColorVariables.length; i++) {
+    clog("Finding similar color variables to '" + definedColorVariables[i].name + "'");
+
+    if (colorVariablesAlreadyProcessed.indexOf(definedColorVariables[i]) == -1) {
+      var thisColorvariableSimilarOnes = FindSimilarColorVariables(definedColorVariables[i].colorVariable, definedColorVariables, tolerance);
+      colorVariablesAlreadyProcessed.push(definedColorVariables[i]);
+      thisColorvariableSimilarOnes.forEach(function (processedColorVariable) {
+        colorVariablesAlreadyProcessed.push(processedColorVariable);
+      });
+      thisColorvariableSimilarOnes.unshift(definedColorVariables[i]);
+
+      if (thisColorvariableSimilarOnes.length > 1) {
+        colorVariablesWithSimilarColorVariables.push({
+          "referenceStyle": definedColorVariables[i],
+          "similarStyles": thisColorvariableSimilarOnes,
+          "selectedIndex": -1,
+          "isUnchecked": false
+        });
+      }
+    }
+  }
+
+  return colorVariablesWithSimilarColorVariables;
+}
+
 function GetRecomposedSymbolName(symbolName) {
   var recomposedSymbolName = "";
 
@@ -5548,7 +5620,6 @@ function getDuplicateColorVariables(context, includeLibraries) {
       nameDictionary[key] = null;
     }
   });
-  debugLog(duplicateColorVariables);
   return duplicateColorVariables;
 }
 
@@ -6254,7 +6325,8 @@ module.exports = {
   importTextStyleFromLibrary: importTextStyleFromLibrary,
   getDefinedColorVariables: getDefinedColorVariables,
   importColorVariableFromLibrary: importColorVariableFromLibrary,
-  getDuplicateColorVariables: getDuplicateColorVariables
+  getDuplicateColorVariables: getDuplicateColorVariables,
+  FindAllSimilarColorVariables: FindAllSimilarColorVariables
 };
 
 /***/ }),
@@ -6933,6 +7005,71 @@ function MergeSelectedColorVariables(context) {
 ;
 function MergeSimilarColorVariables(context) {
   Helpers.clog("----- Merge similar color variables -----");
+  var options = {
+    identifier: webviewMSCVIdentifier,
+    width: 1200,
+    height: 700,
+    show: false,
+    remembersWindowFrame: true,
+    titleBarStyle: 'hidden'
+  };
+  var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
+  var webContents = browserWindow.webContents;
+  var colorVariablesWithSimilarColorVariables;
+  Helpers.clog("Loading webview");
+  browserWindow.loadURL(__webpack_require__(/*! ../resources/mergesimilarcolorvariables.html */ "./resources/mergesimilarcolorvariables.html"));
+  browserWindow.once('ready-to-show', function () {
+    browserWindow.show();
+  });
+  webContents.on('did-finish-load', function () {
+    Helpers.clog("Webview loaded");
+    webContents.executeJavaScript("UpdateSettings(".concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
+    colorVariablesWithSimilarColorVariables = Helpers.FindAllSimilarColorVariables(context, Helpers.getLibrariesEnabled(), 30);
+    webContents.executeJavaScript("DrawResultsList(".concat(JSON.stringify(colorVariablesWithSimilarColorVariables), ")")).catch(console.error);
+  });
+  webContents.on('nativeLog', function (s) {
+    Helpers.clog(s);
+  });
+  webContents.on('Cancel', function () {
+    onShutdown(webviewMSCVIdentifier);
+  });
+  webContents.on('ExecuteMerge', function (editedColorVariablesWithSimilarColorVariables) {
+    Helpers.clog("Execute merge");
+    var duplicatesSolved = 0;
+    var mergedStyles = 0;
+    var affectedLayers = [0, 0];
+
+    for (var i = 0; i < editedColorVariablesWithSimilarColorVariables.length; i++) {
+      if (!editedColorVariablesWithSimilarColorVariables[i].isUnchecked && editedColorVariablesWithSimilarColorVariables[i].selectedIndex >= 0) {
+        currentSelectedColorVariables = [];
+
+        for (var j = 0; j < editedColorVariablesWithSimilarColorVariables[i].similarStyles.length; j++) {
+          currentSelectedColorVariables.push(colorVariablesWithSimilarColorVariables[i].similarStyles[j]);
+          mergedStyles++;
+        }
+
+        var results = MergeColorVariables(context, editedColorVariablesWithSimilarColorVariables[i].selectedIndex);
+        affectedLayers[0] += results[0];
+        affectedLayers[1] += results[1];
+        duplicatesSolved++;
+      }
+    }
+
+    onShutdown(webviewMSCVIdentifier);
+
+    if (duplicatesSolved <= 0) {
+      Helpers.clog("No styles were merged");
+      UI.message("No styles were merged");
+    } else {
+      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+    }
+  });
+  webContents.on('RecalculateVariables', function (includeAllLibraries, tolerance) {
+    Helpers.clog("Recalculate similar variables with tolerance: " + tolerance);
+    colorVariablesWithSimilarColorVariables = Helpers.FindAllSimilarColorVariables(context, includeAllLibraries, tolerance);
+    webContents.executeJavaScript("DrawResultsList(".concat(JSON.stringify(colorVariablesWithSimilarColorVariables), ")")).catch(console.error);
+  });
 }
 ;
 

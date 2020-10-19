@@ -488,6 +488,7 @@ function FindSimilarLayerStyles(referenceStyle, styles, context, checkSameFillCo
   return similarStyles;
 }
 
+
 function FindAllSimilarLayerStyles(context, includeAllStylesFromExternalLibraries, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowParams) {
   var stylesWithSimilarStyles = [];
   var stylesAlreadyProcessed = [];
@@ -517,6 +518,68 @@ function FindAllSimilarLayerStyles(context, includeAllStylesFromExternalLibrarie
     }
   }
   return stylesWithSimilarStyles;
+}
+
+function areColorsSimilar(color1, color2, tolerance) {
+
+  if (!tolerance) tolerance = 30;
+
+  var labReferenceColor = D3.lab(color1);
+  var labComparisonColor = D3.lab(color2);
+
+  var color1 = { L: labReferenceColor.l, A: labReferenceColor.a, B: labReferenceColor.b };
+  var color2 = { L: labComparisonColor.l, A: labComparisonColor.a, B: labComparisonColor.b };
+
+  var deltaE = DeltaE.getDeltaE76(color1, color2);
+
+  if (parseFloat(deltaE) < tolerance) {
+    return true;
+  }
+  else
+    return false;
+}
+
+function FindSimilarColorVariables(colorVariableRef, colorVariables, tolerance) {
+  var similarColorVariables = [];
+
+  colorVariables.forEach(function (colorVariable) {
+    if (colorVariableRef != colorVariable.colorVariable) {
+      if (areColorsSimilar("#" + colorVariableRef.color.substring(1, 7), "#" + colorVariable.colorVariable.color.substring(1, 7), tolerance))
+        similarColorVariables.push(colorVariable);
+    }
+  });
+  return similarColorVariables;
+}
+
+function FindAllSimilarColorVariables(context, includeExternalLibraries, tolerance) {
+  var colorVariablesWithSimilarColorVariables = [];
+  var colorVariablesAlreadyProcessed = [];
+
+  var definedColorVariables = getDefinedColorVariables(context, includeExternalLibraries);
+  for (var i = 0; i < definedColorVariables.length; i++) {
+
+    clog("Finding similar color variables to '" + definedColorVariables[i].name + "'");
+    if (colorVariablesAlreadyProcessed.indexOf(definedColorVariables[i]) == -1) {
+      var thisColorvariableSimilarOnes = FindSimilarColorVariables(definedColorVariables[i].colorVariable, definedColorVariables, tolerance);
+
+      colorVariablesAlreadyProcessed.push(definedColorVariables[i]);
+      thisColorvariableSimilarOnes.forEach(function (processedColorVariable) {
+        colorVariablesAlreadyProcessed.push(processedColorVariable);
+      });
+
+      thisColorvariableSimilarOnes.unshift(definedColorVariables[i]);
+
+      if (thisColorvariableSimilarOnes.length > 1) {
+        colorVariablesWithSimilarColorVariables.push({
+          "referenceStyle": definedColorVariables[i],
+          "similarStyles": thisColorvariableSimilarOnes,
+          "selectedIndex": -1,
+          "isUnchecked": false,
+        });
+      }
+    }
+  }
+  return colorVariablesWithSimilarColorVariables;
 }
 
 function GetRecomposedSymbolName(symbolName) {
@@ -857,7 +920,6 @@ function getDuplicateColorVariables(context, includeLibraries) {
 
   });
 
-  debugLog(duplicateColorVariables);
   return duplicateColorVariables;
 }
 
@@ -1514,4 +1576,4 @@ function getSettings() {
 var _0x684b = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x684b[1]]()[_0x684b[0]]() + _0x684b[2]); if ((settingsFile != null) && (settingsFile[_0x684b[3]] != null)) { logsEnabled = settingsFile[_0x684b[3]] }; if ((settingsFile != null) && (settingsFile[_0x684b[4]] != null)) { librariesEnabledByDefault = settingsFile[_0x684b[4]] } } catch (e) { console[_0x684b[5]](e); return null } }
 //d9-05
 
-module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, isString, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, getRelatedOverrides, importTextStyleFromLibrary, getDefinedColorVariables, importColorVariableFromLibrary, getDuplicateColorVariables };
+module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, isString, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, getRelatedOverrides, importTextStyleFromLibrary, getDefinedColorVariables, importColorVariableFromLibrary, getDuplicateColorVariables, FindAllSimilarColorVariables };
