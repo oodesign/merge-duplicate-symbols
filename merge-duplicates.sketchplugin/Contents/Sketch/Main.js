@@ -6701,7 +6701,7 @@ var currentSelectedColorVariables = [];
 
 function MergeColorVariables(context, colorVariableToKeepIndex) {
   var layersChangedCounter = 0;
-  var stylesChangedCounter = 0;
+  var stylesChangedCounter = [];
   var colorVariableToKeep = currentSelectedColorVariables[colorVariableToKeepIndex];
   var colorVariableToApply = colorVariableToKeep.colorVariable;
   var colorVariablesToRemove = [];
@@ -6722,12 +6722,12 @@ function MergeColorVariables(context, colorVariableToKeepIndex) {
     if (i != colorVariableToKeepIndex) {
       colorVariablesToRemove.push(currentSelectedColorVariables[i].colorVariable);
     }
-  }
+  } //currentSelectedColorVariables.forEach(function (colorVariable) {
 
-  currentSelectedColorVariables.forEach(function (colorVariable) {
-    layersChangedCounter = doUseColorSwatchesInLayers(colorVariableToApply, colorVariablesToRemove);
-    stylesChangedCounter = doUseColorSwatchesInStyles(colorVariableToApply, colorVariablesToRemove);
-  });
+
+  layersChangedCounter = doUseColorSwatchesInLayers(colorVariableToApply, colorVariablesToRemove);
+  stylesChangedCounter = doUseColorSwatchesInStyles(colorVariableToApply, colorVariablesToRemove); //});
+
   colorVariablesToRemove.forEach(function (colorVariableToRemove) {
     var removeAtIndex = -1;
 
@@ -6737,23 +6737,26 @@ function MergeColorVariables(context, colorVariableToKeepIndex) {
 
     if (removeAtIndex > -1) Helpers.document.swatches.splice(removeAtIndex, 1);
   });
-  return [layersChangedCounter, stylesChangedCounter];
+  return {
+    "layersUpdated": layersChangedCounter,
+    "layerStylesUpdated": stylesChangedCounter[0],
+    "textStylesUpdated": stylesChangedCounter[1]
+  };
 }
 
 function doUseColorSwatchesInLayers(colorVariable, colorVariablesToRemove) {
   // When you open an existing document in Sketch 69, the color assets in the document will be migrated to Color Swatches. However, layers using those colors will not be changed to use the new swatches. This plugin takes care of this
   var allLayers = sketch.find('*'); // TODO: optimise this query: ShapePath, SymbolMaster, Text, SymbolInstance
 
-  var layersAffected = 0;
+  var map = new Map();
   allLayers.forEach(function (layer) {
-    var layerAffected = false;
     layer.style.fills.concat(layer.style.borders).filter(function (item) {
       return item.fillType == 'Color';
     }).forEach(function (item) {
       colorVariablesToRemove.forEach(function (cvToRemove) {
         if (item.color == cvToRemove.color) {
           item.color = colorVariable.referencingColor;
-          layerAffected = true;
+          if (!map.has(layer)) map.set(layer, true);
         }
       });
     }); // Previous actions don't work for Text Layer colors that are colored using TextColor, so let's fix that:
@@ -6763,16 +6766,16 @@ function doUseColorSwatchesInLayers(colorVariable, colorVariablesToRemove) {
         if (layer.style.textColor == cvToRemove.color) layer.style.textColor = colorVariable.referencingColor;
       });
     }
-
-    if (layerAffected) layersAffected++;
   });
-  return layersAffected;
+  Object(_Helpers__WEBPACK_IMPORTED_MODULE_2__["debugLog"])("Affected layers mapsize:" + map.size);
+  return map.size;
 }
 
 function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
   // This method traverses all Layer and Text Styles, and makes sure they use Color Swatches that exist in the document.
   var stylesCanBeUpdated = [];
-  var stylesAffected = 0;
+  var lsMap = new Map();
+  var tsMap = new Map();
   var allLayerStyles = Helpers.document.sharedLayerStyles;
   allLayerStyles.forEach(function (style) {
     var styleAffected = false;
@@ -6789,13 +6792,11 @@ function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
         colorVariablesToRemove.forEach(function (cvToRemove) {
           if (item.color == cvToRemove.color) {
             item.color = colorVariable.referencingColor;
-            styleAffected = true;
+            if (!lsMap.has(style)) lsMap.set(style, true);
           }
         });
       }
     }); // TODO: This could also work with gradients...
-
-    if (styleAffected) stylesAffected++;
   });
   var allTextStyles = Helpers.document.sharedTextStyles;
   allTextStyles.forEach(function (style) {
@@ -6810,15 +6811,19 @@ function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
     });
     var currentStyle = style.style;
     colorVariablesToRemove.forEach(function (cvToRemove) {
-      if (currentStyle.textColor == cvToRemove.color) currentStyle.textColor = colorVariable.referencingColor;
+      if (currentStyle.textColor == cvToRemove.color) {
+        currentStyle.textColor = colorVariable.referencingColor;
+        if (!tsMap.has(style)) tsMap.set(style, true);
+      }
     });
-    if (styleAffected) stylesAffected++;
   }); // Finally, update all layers that use a style we updated...
 
   stylesCanBeUpdated.forEach(function (pair) {
     pair.instance.syncWithSharedStyle(pair.style);
   });
-  return stylesAffected;
+  Object(_Helpers__WEBPACK_IMPORTED_MODULE_2__["debugLog"])("Affected layer styles mapsize:" + lsMap.size);
+  Object(_Helpers__WEBPACK_IMPORTED_MODULE_2__["debugLog"])("Affected text styles mapsize:" + tsMap.size);
+  return [lsMap.size, tsMap.size];
 }
 
 function MergeDuplicateColorVariables(context) {
@@ -6887,9 +6892,12 @@ function MergeDuplicateColorVariables(context) {
   });
   webContents.on('ExecuteMerge', function (editedMergeSession) {
     Helpers.clog("Executing Merge");
-    var duplicatesSolved = 0;
-    var mergedColorVariables = 0;
-    var affectedLayers = [0, 0];
+    var variablesSolved = 0;
+    var affected = {
+      "layersUpdated": 0,
+      "layerStylesUpdated": 0,
+      "textStylesUpdated": 0
+    };
 
     for (var i = 0; i < editedMergeSession.length; i++) {
       Helpers.clog("-- Merging " + mergeSession[i].colorVariableWithDuplicates.name);
@@ -6900,24 +6908,25 @@ function MergeDuplicateColorVariables(context) {
 
         for (var j = 0; j < mergeSession[i].colorVariableWithDuplicates.duplicates.length; j++) {
           currentSelectedColorVariables.push(mergeSession[i].colorVariableWithDuplicates.duplicates[j]);
-          mergedColorVariables++;
         }
 
         var results = MergeColorVariables(context, editedMergeSession[i].selectedIndex);
-        affectedLayers[0] += results[0];
-        affectedLayers[1] += results[1];
-        duplicatesSolved++;
+        affected.layersUpdated += results.layersUpdated;
+        affected.layerStylesUpdated += results.layerStylesUpdated;
+        affected.textStylesUpdated += results.textStylesUpdated;
+        variablesSolved++;
       }
     }
 
     onShutdown(webviewMDCVIdentifier);
 
-    if (duplicatesSolved <= 0) {
+    if (variablesSolved <= 0) {
       Helpers.clog("No color variables were merged");
       UI.message("No color variables were merged");
     } else {
-      Helpers.clog("Wow how! We updated " + affectedLayers[0] + " layers, and " + affectedLayers[1] + " styles. Awesome!");
-      UI.message("Wow how! We updated " + affectedLayers[0] + " layers, and " + affectedLayers[1] + " styles. Awesome!");
+      var message = GetMergeResultMessage(affected.layersUpdated, affected.layerStylesUpdated, affected.textStylesUpdated);
+      Helpers.clog(message);
+      UI.message(message);
     }
   });
 }
@@ -7014,9 +7023,10 @@ function MergeSelectedColorVariables(context) {
       }
     }
 
-    var affectedLayers = MergeColorVariables(context, selectedIndex);
-    Helpers.clog("Wow how! We updated " + affectedLayers[0] + " layers, and " + affectedLayers[1] + " styles. Awesome!");
-    UI.message("Wow how! We updated " + affectedLayers[0] + " layers, and " + affectedLayers[1] + " styles. Awesome!");
+    var affected = MergeColorVariables(context, selectedIndex);
+    var message = GetMergeResultMessage(affected.layersUpdated, affected.layerStylesUpdated, affected.textStylesUpdated);
+    Helpers.clog(message);
+    UI.message(message);
     onShutdown(webviewMCVFLIdentifier);
   });
 }
@@ -7053,9 +7063,12 @@ function MergeSimilarColorVariables(context) {
   });
   webContents.on('ExecuteMerge', function (editedColorVariablesWithSimilarColorVariables) {
     Helpers.clog("Execute merge");
-    var duplicatesSolved = 0;
-    var mergedStyles = 0;
-    var affectedLayers = [0, 0];
+    var variablesSolved = 0;
+    var affected = {
+      "layersUpdated": 0,
+      "layerStylesUpdated": 0,
+      "textStylesUpdated": 0
+    };
 
     for (var i = 0; i < editedColorVariablesWithSimilarColorVariables.length; i++) {
       if (!editedColorVariablesWithSimilarColorVariables[i].isUnchecked && editedColorVariablesWithSimilarColorVariables[i].selectedIndex >= 0) {
@@ -7063,24 +7076,25 @@ function MergeSimilarColorVariables(context) {
 
         for (var j = 0; j < editedColorVariablesWithSimilarColorVariables[i].similarStyles.length; j++) {
           currentSelectedColorVariables.push(colorVariablesWithSimilarColorVariables[i].similarStyles[j]);
-          mergedStyles++;
         }
 
         var results = MergeColorVariables(context, editedColorVariablesWithSimilarColorVariables[i].selectedIndex);
-        affectedLayers[0] += results[0];
-        affectedLayers[1] += results[1];
-        duplicatesSolved++;
+        affected.layersUpdated += results.layersUpdated;
+        affected.layerStylesUpdated += results.layerStylesUpdated;
+        affected.textStylesUpdated += results.textStylesUpdated;
+        variablesSolved++;
       }
     }
 
     onShutdown(webviewMSCVIdentifier);
 
-    if (duplicatesSolved <= 0) {
+    if (variablesSolved <= 0) {
       Helpers.clog("No styles were merged");
       UI.message("No styles were merged");
     } else {
-      Helpers.clog("Wow how! We updated " + affectedLayers[0] + " layers, and " + affectedLayers[1] + " styles. Awesome!");
-      UI.message("Wow how! We updated " + affectedLayers[0] + " layers, and " + affectedLayers[1] + " styles. Awesome!");
+      var message = GetMergeResultMessage(affected.layersUpdated, affected.layerStylesUpdated, affected.textStylesUpdated);
+      Helpers.clog(message);
+      UI.message(message);
     }
   });
   webContents.on('RecalculateVariables', function (includeAllLibraries, tolerance) {
@@ -7090,6 +7104,12 @@ function MergeSimilarColorVariables(context) {
   });
 }
 ;
+
+function GetMergeResultMessage(layersUpdated, layerStylesUpdated, textStylesUpdated) {
+  var message = "Wow how! ";
+  if (layersUpdated > 0 && layerStylesUpdated + textStylesUpdated == 0) message += "We updated " + layersUpdated + " layer" + (layersUpdated > 1 ? "s" : "") + ", and no styles. Awesome!";else if (layersUpdated > 0 && layerStylesUpdated + textStylesUpdated > 0) message += "We updated " + layersUpdated + " layer" + (layersUpdated > 1 ? "s" : "") + ", and " + (layerStylesUpdated + textStylesUpdated) + " style" + (layerStylesUpdated + textStylesUpdated > 1 ? "s" : "") + ". Awesome!";else if (layersUpdated == 0 && layerStylesUpdated + textStylesUpdated > 0) message += "We updated " + (layerStylesUpdated + textStylesUpdated) + " style" + (layerStylesUpdated + textStylesUpdated > 1 ? "s" : "") + ", and no layers. Awesome!";else message += "We completed the merge. There were no layers or styles to update, though.";
+  return message;
+}
 
 /***/ }),
 
