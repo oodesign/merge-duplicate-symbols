@@ -1,6 +1,6 @@
 import BrowserWindow from 'sketch-module-web-view'
 import { getWebview } from 'sketch-module-web-view/remote'
-import { debugLog } from './Helpers';
+import { clog, debugLog } from './Helpers';
 const sketch = require('sketch');
 var UI = require('sketch/ui')
 const Helpers = require("./Helpers");
@@ -45,6 +45,8 @@ function MergeColorVariables(context, colorVariableToKeepIndex) {
 
   colorVariablesToRemove.forEach(function (colorVariableToRemove) {
     var removeAtIndex = -1;
+
+    Helpers.clog("Removing color variable "+colorVariableToRemove.name);
     for (var i = 0; i < Helpers.document.swatches.length; i++) {
       if (Helpers.document.swatches[i].id == colorVariableToRemove.id) removeAtIndex = i;
     }
@@ -85,7 +87,7 @@ function doUseColorSwatchesInLayers(colorVariable, colorVariablesToRemove) {
 
   });
 
-  debugLog("Affected layers mapsize:" + map.size)
+  Helpers.clog("Affected layers " + map.size)
 
   return map.size;
 }
@@ -140,8 +142,8 @@ function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
   })
 
 
-  debugLog("Affected layer styles mapsize:" + lsMap.size)
-  debugLog("Affected text styles mapsize:" + tsMap.size)
+  Helpers.clog("Affected layer styles mapsize:" + lsMap.size)
+  Helpers.clog("Affected text styles mapsize:" + tsMap.size)
 
   return [lsMap.size, tsMap.size];
 }

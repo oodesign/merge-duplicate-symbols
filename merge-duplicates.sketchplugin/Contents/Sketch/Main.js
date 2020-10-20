@@ -6730,6 +6730,7 @@ function MergeColorVariables(context, colorVariableToKeepIndex) {
 
   colorVariablesToRemove.forEach(function (colorVariableToRemove) {
     var removeAtIndex = -1;
+    Helpers.clog("Removing color variable " + colorVariableToRemove.name);
 
     for (var i = 0; i < Helpers.document.swatches.length; i++) {
       if (Helpers.document.swatches[i].id == colorVariableToRemove.id) removeAtIndex = i;
@@ -6767,7 +6768,7 @@ function doUseColorSwatchesInLayers(colorVariable, colorVariablesToRemove) {
       });
     }
   });
-  Object(_Helpers__WEBPACK_IMPORTED_MODULE_2__["debugLog"])("Affected layers mapsize:" + map.size);
+  Helpers.clog("Affected layers " + map.size);
   return map.size;
 }
 
@@ -6821,8 +6822,8 @@ function doUseColorSwatchesInStyles(colorVariable, colorVariablesToRemove) {
   stylesCanBeUpdated.forEach(function (pair) {
     pair.instance.syncWithSharedStyle(pair.style);
   });
-  Object(_Helpers__WEBPACK_IMPORTED_MODULE_2__["debugLog"])("Affected layer styles mapsize:" + lsMap.size);
-  Object(_Helpers__WEBPACK_IMPORTED_MODULE_2__["debugLog"])("Affected text styles mapsize:" + tsMap.size);
+  Helpers.clog("Affected layer styles mapsize:" + lsMap.size);
+  Helpers.clog("Affected text styles mapsize:" + tsMap.size);
   return [lsMap.size, tsMap.size];
 }
 
