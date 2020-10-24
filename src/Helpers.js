@@ -1090,7 +1090,7 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
     }
 
     allStyles.push(layerStyleObject);
-    map.set(layerStyleObject.style.id, true);
+    map.set(sharedLayerStyle.style.id, true);
   });
 
   if (includeAllStylesFromExternalLibraries) {
@@ -1141,7 +1141,7 @@ function getAllTextStyles(includeAllStylesFromExternalLibraries) {
       "foreign": (library != null),
       "isSelected": false,
       "isChosen": false,
-      "description": "Local " + getTextStyleDescription(sharedTextStyle) + " - " + sharedTextStyle.id + " - " + sharedTextStyle.style.id,
+      "description": getTextStyleDescription(sharedTextStyle),
       "thumbnail": getTextThumbnail(sharedTextStyle),
       "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
       "duplicates": [],
@@ -1166,7 +1166,7 @@ function getAllTextStyles(includeAllStylesFromExternalLibraries) {
               "foreign": true,
               "isSelected": false,
               "isChosen": false,
-              "description": "Lib " + getTextStyleDescription(sharedTextStyle) + " - " + sharedTextStyle.id + " - " + sharedTextStyle.style.id,
+              "description": getTextStyleDescription(sharedTextStyle),
               "thumbnail": getTextThumbnail(sharedTextStyle),
               "thumbnail": "",
               "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
