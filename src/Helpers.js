@@ -894,7 +894,7 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
     }
 
     allStyles.push(layerStyleObject);
-    map.set(layerStyleObject.style.id, true);
+    map.set(sharedLayerStyle.style.id, true);
   });
 
   if (includeAllStylesFromExternalLibraries) {
