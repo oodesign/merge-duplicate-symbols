@@ -74,7 +74,7 @@ export function triggerMethod(context) {
   Helpers.LoadSettings();
 
   Helpers.clog("Sketch version:" +sketch.version.sketch);
-  Helpers.clog("Merge Duplicates version: 6.5.0");
+  Helpers.clog("Merge Duplicates version: 6.5.2");
   Helpers.clog("License: "+Helpers.getAcquiredLicense());
 
   switch (globalCommand) {
