@@ -473,6 +473,10 @@ html,body{
 
 .btnPrimary{
   @include btnPrimary;
+
+  &.xl{
+    width: 170px;
+  }
 }
 
 @mixin btnSecondary{
@@ -882,6 +886,10 @@ html,body{
 
   .filterTitle{
     width:140px;
+
+    &.xl{
+      width:200px;
+    }
   }
 
   .filterCounter{
@@ -1618,4 +1626,73 @@ input:checked + .slider:before {
 
 .settingsDescription{
   padding: 0 50px 15px 50px;
+}
+
+
+.sliderContainer {
+  width: 100%;
+  margin-top: 20px;
+
+  .inputSlider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    outline: none;
+    transition: all .1s ease-in-out;
+
+    @include for-theme(light){
+      background: $light_sliderBarColor;
+    }
+    @include for-theme(dark){
+      background: $dark_sliderBarColor;
+    }
+  
+    &:hover {
+      @include for-theme(light){
+        background: $light_sliderBarColorHover;
+      }
+      @include for-theme(dark){
+        background: $dark_sliderBarColorHover;
+      }
+    }
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: $accentColor;
+      cursor: pointer;
+      transition: all .1s ease-in-out;
+
+      &:hover{
+        background: $accentColorHover;
+      }
+    }
+  }
+
+  .topLabel{
+    @include primaryMediumText();
+    margin-bottom: 8px;
+  }
+
+  .sliderLabels{
+
+    margin-top:10px;
+
+    .leftRange{
+      @include primaryText;
+      position: absolute;
+      left:0;
+    }
+
+    .rightRange{
+      @include primaryText;
+      text-align: right;
+      position: absolute;
+      right:0;
+    }
+  }
 }

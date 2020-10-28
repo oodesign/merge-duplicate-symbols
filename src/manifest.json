@@ -41,7 +41,7 @@
     },
     {
       "script" : "Main.js",
-      "name" : "Merge similar text styles (Beta)",
+      "name" : "Merge similar text styles",
       "handlers": {
         "run": "MergeSimilarTextStyles",
         "actions": {
@@ -54,7 +54,7 @@
     },
     {
       "script" : "Main.js",
-      "name" : "Merge similar layer styles (Beta)",
+      "name" : "Merge similar layer styles",
       "handlers": {
         "run": "MergeSimilarLayerStyles",
         "actions": {
@@ -103,7 +103,46 @@
       "identifier" : "mergeduplicatetextstyles",
       "shortcut": "ctrl shift t",
       "icon" : "icon-sr.png"
-    },        
+    }, 
+    {
+      "script" : "Main.js",
+      "name" : "Merge duplicate color variables",
+      "handlers": {
+        "run": "MergeDuplicateColorVariables",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      },
+      "identifier" : "mergeduplicatecolorvariables",
+      "shortcut": "ctrl shift v",
+      "icon" : "icon-sr.png"
+    }, 
+    {
+      "script" : "Main.js",
+      "name" : "Merge color variables (from list)",
+      "handlers": {
+        "run": "MergeSelectedColorVariables",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      },
+      "identifier" : "mergeselectedcolorvariables",
+      "shortcut": "ctrl shift option v",
+      "icon" : "icon-sr.png"
+    },  
+    {
+      "script" : "Main.js",
+      "name" : "Merge similar color variables",
+      "handlers": {
+        "run": "MergeSimilarColorVariables",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      },
+      "identifier" : "mergesimilarcolorvariables",
+      "shortcut": "ctrl shift option command v",
+      "icon" : "icon-sr.png"
+    },      
     {
       "script" : "Main.js",
       "name" : "Settings",
@@ -156,6 +195,14 @@
           "mergeduplicatetextstyles",
           "mergeselectedtextstyles",
           "mergesimilartextstyles"
+        ]
+      },
+      {
+        "title": "Color Variables (Beta) ",
+        "items": [
+          "mergeduplicatecolorvariables",
+          "mergeselectedcolorvariables",
+          "mergesimilarcolorvariables"
         ]
       },
       {

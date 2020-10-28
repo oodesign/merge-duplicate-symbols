@@ -34,6 +34,9 @@ const commands = {
   mergesimilarlayerstyles: 'mergesimilarlayerstyles',
   mergeselectedlayerstyles: 'mergeselectedlayerstyles',
   mergeduplicatelayerstyles: 'mergeduplicatelayerstyles',
+  mergeduplicatecolorvariables: 'mergeduplicatecolorvariables',
+  mergeselectedcolorvariables: 'mergeselectedcolorvariables',
+  mergesimilarcolorvariables: 'mergesimilarcolorvariables',
   editsettings: 'editsettings'
 }
 
@@ -251,6 +254,18 @@ function compareStyleArrays(a, b) {
   }
   return 0;
 }
+
+function compareColorVariableArrays(a, b) {
+  if (a.name < b.name) {
+    return -1;
+  }
+  if (a.name > b.name) {
+    return 1;
+  }
+  return 0;
+}
+
+
 
 
 
@@ -473,6 +488,7 @@ function FindSimilarLayerStyles(referenceStyle, styles, context, checkSameFillCo
   return similarStyles;
 }
 
+
 function FindAllSimilarLayerStyles(context, includeAllStylesFromExternalLibraries, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowParams) {
   var stylesWithSimilarStyles = [];
   var stylesAlreadyProcessed = [];
@@ -502,6 +518,68 @@ function FindAllSimilarLayerStyles(context, includeAllStylesFromExternalLibrarie
     }
   }
   return stylesWithSimilarStyles;
+}
+
+function areColorsSimilar(color1, color2, tolerance) {
+
+  if (!tolerance) tolerance = 30;
+
+  var labReferenceColor = D3.lab(color1);
+  var labComparisonColor = D3.lab(color2);
+
+  var color1 = { L: labReferenceColor.l, A: labReferenceColor.a, B: labReferenceColor.b };
+  var color2 = { L: labComparisonColor.l, A: labComparisonColor.a, B: labComparisonColor.b };
+
+  var deltaE = DeltaE.getDeltaE76(color1, color2);
+
+  if (parseFloat(deltaE) < tolerance) {
+    return true;
+  }
+  else
+    return false;
+}
+
+function FindSimilarColorVariables(colorVariableRef, colorVariables, tolerance) {
+  var similarColorVariables = [];
+
+  colorVariables.forEach(function (colorVariable) {
+    if (colorVariableRef != colorVariable.colorVariable) {
+      if (areColorsSimilar("#" + colorVariableRef.color.substring(1, 7), "#" + colorVariable.colorVariable.color.substring(1, 7), tolerance))
+        similarColorVariables.push(colorVariable);
+    }
+  });
+  return similarColorVariables;
+}
+
+function FindAllSimilarColorVariables(context, includeExternalLibraries, tolerance) {
+  var colorVariablesWithSimilarColorVariables = [];
+  var colorVariablesAlreadyProcessed = [];
+
+  var definedColorVariables = getDefinedColorVariables(context, includeExternalLibraries);
+  for (var i = 0; i < definedColorVariables.length; i++) {
+
+    clog("Finding similar color variables to '" + definedColorVariables[i].name + "'");
+    if (colorVariablesAlreadyProcessed.indexOf(definedColorVariables[i]) == -1) {
+      var thisColorvariableSimilarOnes = FindSimilarColorVariables(definedColorVariables[i].colorVariable, definedColorVariables, tolerance);
+
+      colorVariablesAlreadyProcessed.push(definedColorVariables[i]);
+      thisColorvariableSimilarOnes.forEach(function (processedColorVariable) {
+        colorVariablesAlreadyProcessed.push(processedColorVariable);
+      });
+
+      thisColorvariableSimilarOnes.unshift(definedColorVariables[i]);
+
+      if (thisColorvariableSimilarOnes.length > 1) {
+        colorVariablesWithSimilarColorVariables.push({
+          "referenceStyle": definedColorVariables[i],
+          "similarStyles": thisColorvariableSimilarOnes,
+          "selectedIndex": -1,
+          "isUnchecked": false,
+        });
+      }
+    }
+  }
+  return colorVariablesWithSimilarColorVariables;
 }
 
 function GetRecomposedSymbolName(symbolName) {
@@ -660,12 +738,33 @@ function importTextStyleFromLibrary(textStyle) {
   }
 }
 
+function importColorVariableFromLibrary(colorVariable) {
+
+  try {
+    clog("-- Importing " + colorVariable.name + " from library " + colorVariable.libraryName + " with ID:" + colorVariable.colorVariable.id);
+    var colorVariableReferences = colorVariable.library.getImportableSwatchReferencesForDocument(document);
+    var refToImport = colorVariableReferences.filter(function (ref) {
+      return ref.name == colorVariable.colorVariable.name; //TODO should be replaced by proper ID
+    });
+
+    var colorVar = refToImport[0].import();
+    clog("-- We've imported:" + colorVar.name);
+
+    return colorVar;
+  } catch (e) {
+    clog("-- ERROR: Couldn't import " + colorVariable.name + " from library" + colorVariable.libraryName + " with ID:" + colorVariable.colorVariable.id);
+    clog(e);
+    return null;
+  }
+}
+
+
+
 function debugLog(message) {
   if (debugLogEnabled) console.log(message);
 }
 
 function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLibraries, mergingSelected) {
-  // console.time("getDuplicateSymbols");
 
   var allSymbols = [];
   var nameDictionary = {};
@@ -746,6 +845,82 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
   // console.timeEnd("getDuplicateSymbols");
   return allSymbols.sort(compareSymbolNames);
 
+}
+
+function getDuplicateColorVariables(context, includeLibraries) {
+
+  var allColorVariables = getAllColorVariables(includeLibraries);
+  var nameDictionary = {};
+  var duplicateColorVariables = [];
+  var alreadyAddedIDs = [];
+  allColorVariables.forEach(function (colorVariable) {
+
+    var colorVariableObject = {
+      "colorVariable": colorVariable.colorVariable,
+      "name": "" + colorVariable.name,
+      "foreign": colorVariable.foreign,
+      "thumbnail": colorVariable.thumbnail,
+      "libraryName": colorVariable.libraryName,
+      "library": colorVariable.library,
+      "isSelected": false,
+      "isChosen": false,
+      "description": "",//TODO "Local " + getTextStyleDescription(sharedTextStyle) + " - " + sharedTextStyle.id + " - " + sharedTextStyle.style.id,
+      "thumbnail": getColorVariableThumbnail(colorVariable.colorVariable),
+      "contrastMode": shouldEnableContrastMode(colorVariable.colorVariable.color.substring(1, 7)),
+      "duplicates": [],
+      "isSelected": false
+    }
+
+    alreadyAddedIDs.push("" + colorVariable.colorVariable.id);
+
+    if (nameDictionary[colorVariable.name] == null) {
+      duplicateColorVariables.push(colorVariableObject);
+      colorVariableObject.duplicates.push({
+        "colorVariable": colorVariable.colorVariable,
+        "name": "" + colorVariable.name,
+        "foreign": colorVariable.foreign,
+        "thumbnail": colorVariable.thumbnail,
+        "libraryName": colorVariable.libraryName,
+        "library": colorVariable.library,
+        "isSelected": false,
+        "isChosen": false,
+        "description": "",//TODO "Local " + getTextStyleDescription(sharedTextStyle) + " - " + sharedTextStyle.id + " - " + sharedTextStyle.style.id,
+        "thumbnail": getColorVariableThumbnail(colorVariable.colorVariable),
+        "contrastMode": shouldEnableContrastMode(colorVariable.colorVariable.color.substring(1, 7)),
+        "duplicates": null,
+        "isSelected": false
+      });
+      nameDictionary[colorVariable.name] = colorVariableObject;
+    }
+    else {
+      nameDictionary[colorVariable.name].duplicates.push(colorVariableObject);
+    }
+  });
+
+  Object.keys(nameDictionary).forEach(function (key) {
+
+    var removeElement = false;
+    if (nameDictionary[key].duplicates.length <= 1) removeElement = true;
+
+    if (!removeElement) {
+      var allForeign = true;
+      nameDictionary[key].duplicates.forEach(function (duplicate) {
+        if (!duplicate.foreign) allForeign = false;
+      });
+      if (allForeign) {
+        removeElement = true;
+      }
+    }
+
+    if (removeElement) {
+      var index = duplicateColorVariables.indexOf(nameDictionary[key]);
+      if (index > -1) duplicateColorVariables.splice(index, 1);
+      nameDictionary[key] = null;
+    }
+
+  });
+
+  return duplicateColorVariables;
 }
 
 function GetSpecificLayerStyleData(context, layerStyles, index) {
@@ -860,6 +1035,27 @@ function getTextThumbnail(sharedStyle) {
     return image64;
   } catch (e) {
     text.remove();
+    return "";
+  }
+}
+
+function getColorVariableThumbnail(colorVariable) {
+  const oval = new ShapePath({
+    shapeType: ShapePath.ShapeType.Oval,
+    frame: new sketch.Rectangle(0, 0, 300, 300),
+    style: {
+      fills: [{ color: colorVariable.color }],
+    },
+    parent: document.selectedPage
+  });
+  try {
+    const options = { scales: '1', formats: 'png', output: false };
+    var buffer = sketch.export(oval, options);
+    var image64 = buffer.toString('base64');
+    oval.remove();
+    return image64;
+  } catch (e) {
+    oval.remove();
     return "";
   }
 }
@@ -987,6 +1183,62 @@ function getAllTextStyles(includeAllStylesFromExternalLibraries) {
   return allStyles;
 
 }
+
+function getAllColorVariables(includeAllStylesFromExternalLibraries) {
+  var allColorVariables = [];
+  const map = new Map();
+
+  document.swatches.forEach(function (swatch) {
+
+    var colorVariableObject = {
+      "colorVariable": swatch,
+      "name": "" + swatch.name,
+      "libraryName": sketchlocalfile,
+      "library": null,
+      "foreign": false,
+      "isSelected": false,
+      "isChosen": false,
+      "description": "",//TODO "Local " + getTextStyleDescription(sharedTextStyle) + " - " + sharedTextStyle.id + " - " + sharedTextStyle.style.id,
+      "thumbnail": getColorVariableThumbnail(swatch),
+      "contrastMode": shouldEnableContrastMode(swatch.color.substring(1, 7)),
+      "duplicates": [],
+      "isSelected": false
+    }
+
+    allColorVariables.push(colorVariableObject);
+    map.set(swatch.id, true);
+  });
+
+  if (includeAllStylesFromExternalLibraries) {
+    libraries.forEach(function (lib) {
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        lib.getDocument().swatches.forEach(function (swatch) {
+          if (!map.has(swatch.id)) {
+            var colorVariableObject = {
+              "colorVariable": swatch,
+              "name": "" + swatch.name,
+              "libraryName": libraryPrefix + lib.name,
+              "library": lib,
+              "foreign": true,
+              "isSelected": false,
+              "isChosen": false,
+              "description": "",//TODO "Lib " + getTextStyleDescription(sharedTextStyle) + " - " + sharedTextStyle.id + " - " + sharedTextStyle.style.id,
+              "thumbnail": getColorVariableThumbnail(swatch),
+              "contrastMode": shouldEnableContrastMode(swatch.color.substring(1, 7)),
+              "duplicates": [],
+              "isSelected": false
+            }
+            allColorVariables.push(colorVariableObject);
+          }
+        });
+      }
+    });
+  }
+
+  return allColorVariables;
+
+}
+
 
 function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries) {
 
@@ -1240,6 +1492,11 @@ function getDefinedTextStyles(context, includeAllStylesFromExternalLibraries) {
   return textStyles.sort(compareStyleArrays);
   ;
 }
+function getDefinedColorVariables(context, includeAllStylesFromExternalLibraries) {
+  var colorVariables = getAllColorVariables(includeAllStylesFromExternalLibraries);
+  return colorVariables.sort(compareColorVariableArrays);
+  ;
+}
 
 function getImageData64(data) {
   var imageData = data;
@@ -1319,4 +1576,4 @@ function getSettings() {
 var _0x684b = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x684b[1]]()[_0x684b[0]]() + _0x684b[2]); if ((settingsFile != null) && (settingsFile[_0x684b[3]] != null)) { logsEnabled = settingsFile[_0x684b[3]] }; if ((settingsFile != null) && (settingsFile[_0x684b[4]] != null)) { librariesEnabledByDefault = settingsFile[_0x684b[4]] } } catch (e) { console[_0x684b[5]](e); return null } }
 //d9-05
 
-module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, isString, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, getRelatedOverrides, importTextStyleFromLibrary };
+module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, isString, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, getRelatedOverrides, importTextStyleFromLibrary, getDefinedColorVariables, importColorVariableFromLibrary, getDuplicateColorVariables, FindAllSimilarColorVariables };
