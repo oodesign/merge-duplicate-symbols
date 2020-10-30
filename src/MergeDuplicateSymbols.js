@@ -69,7 +69,12 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
 
       Helpers.clog("---- Updating instances (" + instancesOfSymbol.length + ")");
       instancesOfSymbol.forEach(function (instance) {
-        Helpers.clog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name);
+        try {
+          Helpers.clog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name);
+        }
+        catch (e) {
+          Helpers.clog("------ Updating instance " + instance.name + ". Instance doesn't belong to any specific artboard.");
+        }
         instance.master = symbolToApply;
         instancesChanged++;
       });
@@ -77,9 +82,16 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
     }
   }
 
+  Helpers.clog("---- Finalized intance and override replacement.");
+  Helpers.clog("---- Removing discarded symbols.");
+
+
   symbolsToRemove.forEach(function (symbolToRemove) {
     symbolToRemove.remove();
   });
+
+
+  Helpers.clog("---- Merge completed.");
 
   return [symbolsRemoved, instancesChanged, overridesChanged];
 }
