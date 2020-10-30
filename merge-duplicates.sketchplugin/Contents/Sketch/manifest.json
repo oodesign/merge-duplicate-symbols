@@ -222,7 +222,7 @@
   "author": "oodesign",
   "homepage": "http://bit.ly/mergesymbolsinsketch",
   "compatibleVersion": 50,
-  "version": "8.0.1",
+  "version": "8.0.2",
   "disableCocoaScriptPreprocessor": true,
   "appcast": "https://raw.githubusercontent.com/oodesign/merge-duplicate-symbols/master/.appcast.xml"
 }
