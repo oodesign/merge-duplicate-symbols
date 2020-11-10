@@ -41,6 +41,8 @@ Find also similar styles and blend them together. Choose which attributes should
 <li>Merge similar layer styles</li>
 </ul>
 
+<img width="400" src="https://raw.githubusercontent.com/oodesign/merge-duplicate-symbols/master/Images/MergeLayerStyles.gif" alt="Merge symbols illustration"/>
+
 <br/><br/>
 
 ## Merge Text Styles
@@ -54,6 +56,8 @@ Find also similar styles and blend them together. Choose which attributes should
 <li>Merge selected text styles</li>
 <li>Merge similar text styles</li>
 </ul>
+
+<img width="400" src="https://raw.githubusercontent.com/oodesign/merge-duplicate-symbols/master/Images/MergeTextStyles.gif" alt="Merge symbols illustration"/>
 
 <br/><br/>
 
