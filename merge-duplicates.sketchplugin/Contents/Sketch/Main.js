@@ -2417,6 +2417,98 @@ module.exports = function MochaDelegate(definition, superclass) {
 
 /***/ }),
 
+/***/ "./node_modules/sketch-module-google-analytics/index.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/sketch-module-google-analytics/index.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
+
+var kUUIDKey = "google.analytics.uuid";
+var uuid = null
+var uuid = NSUserDefaults.standardUserDefaults().objectForKey(kUUIDKey);
+if (!uuid) {
+  uuid = NSUUID.UUID().UUIDString();
+  NSUserDefaults.standardUserDefaults().setObject_forKey(uuid, kUUIDKey)
+}
+
+var variant = MSApplicationMetadata.metadata().variant;
+var source =
+  "Sketch " +
+  (variant == "NONAPPSTORE" ? "" : variant + " ") +
+  Settings.version.sketch;
+
+function jsonToQueryString(json) {
+  return Object.keys(json)
+    .map(function(key) {
+      return encodeURIComponent(key) + "=" + encodeURIComponent(json[key]);
+    })
+    .join("&");
+}
+
+function makeRequest(url, options) {
+  if (!url) {
+    return
+  }
+
+  if (options && options.makeRequest) {
+    return options.makeRequest(url)
+  }
+  if (options && options.debug) {
+    var request = NSURLRequest.requestWithURL(url)
+    var responsePtr = MOPointer.alloc().init();
+    var errorPtr = MOPointer.alloc().init();
+
+    var data = NSURLConnection.sendSynchronousRequest_returningResponse_error(request, responsePtr, errorPtr)
+    return data ? NSString.alloc().initWithData_encoding(data, NSUTF8StringEncoding) : errorPtr.value()
+  }
+
+  NSURLSession.sharedSession()
+    .dataTaskWithURL(url)
+    .resume();
+}
+
+module.exports = function(trackingId, hitType, props, options) {
+  if (!Settings.globalSettingForKey("analyticsEnabled")) {
+    // the user didn't enable sharing analytics
+    return 'the user didn\'t enable sharing analytics';
+  }
+
+  var payload = {
+    v: 1,
+    tid: trackingId,
+    ds: source,
+    cid: uuid,
+    t: hitType
+  };
+
+  if (typeof __command !== "undefined") {
+    payload.an = __command.pluginBundle().name();
+    payload.aid = __command.pluginBundle().identifier();
+    payload.av = __command.pluginBundle().version();
+  }
+
+  if (props) {
+    Object.keys(props).forEach(function(key) {
+      payload[key] = props[key];
+    });
+  }
+
+  var url = NSURL.URLWithString(
+    "https://www.google-analytics.com/" + (options && options.debug ? "debug/" : "") + "collect?" +
+      jsonToQueryString(payload) +
+      "&z=" +
+      NSUUID.UUID().UUIDString()
+  );
+
+  return makeRequest(url, options)
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/sketch-module-web-view/lib/browser-api.js":
 /*!****************************************************************!*\
   !*** ./node_modules/sketch-module-web-view/lib/browser-api.js ***!
@@ -4628,6 +4720,8 @@ var D3 = __webpack_require__(/*! d3-color */ "./node_modules/d3-color/src/index.
 
 var fs = __webpack_require__(/*! @skpm/fs */ "./node_modules/@skpm/fs/index.js");
 
+var track = __webpack_require__(/*! sketch-module-google-analytics */ "./node_modules/sketch-module-google-analytics/index.js");
+
 var document = sketch.getSelectedDocument();
 var symbols = document.getSymbols();
 var libraries = dom.getLibraries();
@@ -4804,6 +4898,15 @@ var jsonFromFile = function jsonFromFile(filePath, mutable) {
   }));
   return read;
 };
+
+function analytics(action) {
+  var res = track("UA-148526709-1", "event", {
+    ec: "command",
+    // the event category
+    ea: action // the event action
+
+  });
+}
 
 function GetTextBasedOnCount(number) {
   if (number != 1) {
@@ -6326,7 +6429,8 @@ module.exports = {
   getDefinedColorVariables: getDefinedColorVariables,
   importColorVariableFromLibrary: importColorVariableFromLibrary,
   getDuplicateColorVariables: getDuplicateColorVariables,
-  FindAllSimilarColorVariables: FindAllSimilarColorVariables
+  FindAllSimilarColorVariables: FindAllSimilarColorVariables,
+  analytics: analytics
 };
 
 /***/ }),
@@ -6385,61 +6489,73 @@ var globalIsExpired = false;
 var globalIsOver = false;
 var globalCommand;
 function MergeDuplicateSymbols(context) {
+  Helpers.analytics("MergeDuplicateSymbols");
   globalCommand = Helpers.commands.mergeduplicatesymbols;
   onValidate(context);
 }
 ;
 function MergeSelectedSymbols(context) {
+  Helpers.analytics("MergeSelectedSymbols");
   globalCommand = Helpers.commands.mergeselectedsymbols;
   onValidate(context);
 }
 ;
 function MergeSelectedTextStyles(context) {
+  Helpers.analytics("MergeSelectedTextStyles");
   globalCommand = Helpers.commands.mergeselectedtextstyles;
   onValidate(context);
 }
 ;
 function MergeSimilarTextStyles(context) {
+  Helpers.analytics("MergeSimilarTextStyles");
   globalCommand = Helpers.commands.mergesimilartextstyles;
   onValidate(context);
 }
 ;
 function MergeDuplicateTextStyles(context) {
+  Helpers.analytics("MergeDuplicateTextStyles");
   globalCommand = Helpers.commands.mergeduplicatetextstyles;
   onValidate(context);
 }
 ;
 function MergeSelectedLayerStyles(context) {
+  Helpers.analytics("MergeSelectedLayerStyles");
   globalCommand = Helpers.commands.mergeselectedlayerstyles;
   onValidate(context);
 }
 ;
 function MergeSimilarLayerStyles(context) {
+  Helpers.analytics("MergeSimilarLayerStyles");
   globalCommand = Helpers.commands.mergesimilarlayerstyles;
   onValidate(context);
 }
 ;
 function MergeDuplicateLayerStyles(context) {
+  Helpers.analytics("MergeDuplicateLayerStyles");
   globalCommand = Helpers.commands.mergeduplicatelayerstyles;
   onValidate(context);
 }
 ;
 function MergeDuplicateColorVariables(context) {
+  Helpers.analytics("MergeDuplicateColorVariables");
   globalCommand = Helpers.commands.mergeduplicatecolorvariables;
   onValidate(context);
 }
 ;
 function MergeSelectedColorVariables(context) {
+  Helpers.analytics("MergeSelectedColorVariables");
   globalCommand = Helpers.commands.mergeselectedcolorvariables;
   onValidate(context);
 }
 ;
 function MergeSimilarColorVariables(context) {
+  Helpers.analytics("MergeSimilarColorVariables");
   globalCommand = Helpers.commands.mergesimilarcolorvariables;
   onValidate(context);
 }
 ;
 function EditSettings(context) {
+  Helpers.analytics("EditSettings");
   globalCommand = Helpers.commands.editsettings;
   onValidate(context);
 }
@@ -8164,6 +8280,17 @@ module.exports = require("sketch");
 /***/ (function(module, exports) {
 
 module.exports = require("sketch/dom");
+
+/***/ }),
+
+/***/ "sketch/settings":
+/*!**********************************!*\
+  !*** external "sketch/settings" ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("sketch/settings");
 
 /***/ }),
 

@@ -20,61 +20,73 @@ var globalCommand;
 
 
 export function MergeDuplicateSymbols(context) {
+  Helpers.analytics("MergeDuplicateSymbols");
   globalCommand = Helpers.commands.mergeduplicatesymbols;
   onValidate(context);
 };
 
 export function MergeSelectedSymbols(context) {
+  Helpers.analytics("MergeSelectedSymbols");
   globalCommand = Helpers.commands.mergeselectedsymbols;
   onValidate(context);
 };
 
 export function MergeSelectedTextStyles(context) {
+  Helpers.analytics("MergeSelectedTextStyles");
   globalCommand = Helpers.commands.mergeselectedtextstyles;
   onValidate(context);
 };
 
 export function MergeSimilarTextStyles(context) {
+  Helpers.analytics("MergeSimilarTextStyles");
   globalCommand = Helpers.commands.mergesimilartextstyles;
   onValidate(context);
 };
 
 export function MergeDuplicateTextStyles(context) {
+  Helpers.analytics("MergeDuplicateTextStyles");
   globalCommand = Helpers.commands.mergeduplicatetextstyles;
   onValidate(context);
 };
 
 export function MergeSelectedLayerStyles(context) {
+  Helpers.analytics("MergeSelectedLayerStyles");
   globalCommand = Helpers.commands.mergeselectedlayerstyles;
   onValidate(context);
 };
 
 export function MergeSimilarLayerStyles(context) {
+  Helpers.analytics("MergeSimilarLayerStyles");
   globalCommand = Helpers.commands.mergesimilarlayerstyles;
   onValidate(context);
 };
 
 export function MergeDuplicateLayerStyles(context) {
+  Helpers.analytics("MergeDuplicateLayerStyles");
   globalCommand = Helpers.commands.mergeduplicatelayerstyles;
   onValidate(context);
 };
 
 export function MergeDuplicateColorVariables(context) {
+  Helpers.analytics("MergeDuplicateColorVariables");
   globalCommand = Helpers.commands.mergeduplicatecolorvariables;
   onValidate(context);
 };
 
 export function MergeSelectedColorVariables(context) {
+  Helpers.analytics("MergeSelectedColorVariables");
   globalCommand = Helpers.commands.mergeselectedcolorvariables;
   onValidate(context);
 };
 
 export function MergeSimilarColorVariables(context) {
+  Helpers.analytics("MergeSimilarColorVariables");
   globalCommand = Helpers.commands.mergesimilarcolorvariables;
   onValidate(context);
 };
 
 export function EditSettings(context) {
+  Helpers.analytics("EditSettings");
   globalCommand = Helpers.commands.editsettings;
   onValidate(context);
 };
