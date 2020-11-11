@@ -6603,7 +6603,17 @@ function onValidate(_0x8a0ax2) {
 function triggerMethod(context) {
   Helpers.LoadSettings();
   Helpers.clog("Sketch version:" + sketch.version.sketch);
-  Helpers.clog("Merge Duplicates version: 8.0.1");
+  var version = "";
+
+  try {
+    var pluginManager = NSApp.delegate().pluginManager();
+    var plugin = pluginManager.plugins().objectForKey('com.oodesign.mergeduplicatesymbols');
+    version = plugin.version();
+  } catch (e) {
+    version = "Unable to identify version. 8+";
+  }
+
+  Helpers.clog("Merge Duplicates version: " + version);
   Helpers.clog("License: " + Helpers.getAcquiredLicense());
 
   switch (globalCommand) {
