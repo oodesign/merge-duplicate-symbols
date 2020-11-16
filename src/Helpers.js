@@ -82,7 +82,7 @@ var jsonFromFile = function (filePath, mutable) {
 }
 
 function analytics(action) {
-  var res = track("UA-148526709-1", "event", {
+  var res = track("UA-143977399-1", "event", {
     ec: "command", // the event category
     ea: action, // the event action
   });
