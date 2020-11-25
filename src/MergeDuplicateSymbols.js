@@ -1,7 +1,7 @@
 import BrowserWindow from 'sketch-module-web-view'
 import { getWebview } from 'sketch-module-web-view/remote'
 var UI = require('sketch/ui')
-const Helpers = require("./Helpers");
+var Helpers = require("./Helpers");
 
 const webviewIdentifier = 'merge-duplicates.webview'
 const webviewMSSIdentifier = 'merge-selected-symbols.webview'
@@ -208,13 +208,43 @@ export function MergeDuplicateSymbols(context) {
   const webContents = browserWindow.webContents;
 
   var duplicatedSymbols;
-  var documentSymbols = Helpers.getDocumentSymbols(context, Helpers.getLibrariesEnabled());
   var mergeSession = [];
 
+  console.time("Old finding duplicates");
+  var documentSymbols = Helpers.getDocumentSymbols(context, Helpers.getLibrariesEnabled());
+  duplicatedSymbols = Helpers.getDuplicateSymbols(context, documentSymbols, Helpers.getLibrariesEnabled(), false);
+  Helpers.clog("Old method found " + duplicatedSymbols.length + " duplicates");
+  duplicatedSymbols.forEach(function (ds) {
+    Helpers.clog("-- " + ds.name + " that has " + ds.duplicates.length + " duplicates");
+  });
+  console.timeEnd("Old finding duplicates");
+
+
+  console.time("New finding duplicates");
+  var allDuplicates = Helpers.getAllDuplicateSymbolsByName(context, Helpers.getLibrariesEnabled());
+  Helpers.clog("New method found " + allDuplicates.length + " duplicates");
+  allDuplicates.forEach(function (ds) {
+    Helpers.clog("-- " + ds.name + " that has " + ds.duplicates.length + " duplicates");
+  });
+  console.timeEnd("New finding duplicates");
+
+  console.time("countAllSymbols");
   var numberOfSymbols = Helpers.countAllSymbols(context, Helpers.getLibrariesEnabled());
-  Helpers.clog("Local symbols: " + numberOfSymbols[0] + ". Library symbols:" + numberOfSymbols[1] + ". Libraries enabled:" + Helpers.getLibrariesEnabled());
-  browserWindow.loadURL(require('../resources/mergeduplicatesymbols.html'));
-  Helpers.clog("Webview called");
+  console.timeEnd("countAllSymbols");
+
+
+  console.time("getSymbolsMap");
+  var symbolsMap = Helpers.getSymbolsMap(context, allDuplicates);
+  console.timeEnd("getSymbolsMap");
+
+  symbolsMap.forEach(function (symbolMapItem, symbol) {
+    Helpers.clog("-- Symbol " + symbol.name + " has " + symbolMapItem.directInstances.length + " direct instances, and " + symbolMapItem.instancesWithOverrides.size + " instancesWithOverrides");
+  });
+
+
+  // Helpers.clog("Local symbols: " + numberOfSymbols[0] + ". Library symbols:" + numberOfSymbols[1] + ". Libraries enabled:" + Helpers.getLibrariesEnabled());
+  // browserWindow.loadURL(require('../resources/mergeduplicatesymbols.html'));
+  // Helpers.clog("Webview called");
 
   function CalculateDuplicates(includeLibraries) {
     Helpers.clog("Processing duplicates. Include libraries: " + includeLibraries);
