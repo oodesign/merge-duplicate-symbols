@@ -216,6 +216,7 @@ export function MergeDuplicateSymbols(context) {
   Helpers.clog("Old method found " + duplicatedSymbols.length + " duplicates");
   duplicatedSymbols.forEach(function (ds) {
     Helpers.clog("-- " + ds.name + " that has " + ds.duplicates.length + " duplicates");
+    ds.duplicates.forEach(dup => Helpers.clog("---- " + dup.symbol.name + " - ID: " + dup.symbol.id + " - symbolID: " + dup.symbol.symbolId));
   });
   console.timeEnd("Old finding duplicates");
 
@@ -225,6 +226,7 @@ export function MergeDuplicateSymbols(context) {
   Helpers.clog("New method found " + allDuplicates.length + " duplicates");
   allDuplicates.forEach(function (ds) {
     Helpers.clog("-- " + ds.name + " that has " + ds.duplicates.length + " duplicates");
+    ds.duplicates.forEach(dup => Helpers.clog("---- " + dup.symbol.name + " - ID: " + dup.symbol.id + " - symbolID: " + dup.symbol.symbolId));
   });
   console.timeEnd("New finding duplicates");
 
@@ -233,16 +235,18 @@ export function MergeDuplicateSymbols(context) {
   console.timeEnd("countAllSymbols");
 
 
+  Helpers.clog("Local symbols: " + numberOfSymbols.symbols + ". Library symbols:" + numberOfSymbols.foreignSymbols + ". Document instances:" + numberOfSymbols.documentInstances + ". Libraries enabled:" + Helpers.getLibrariesEnabled());
+
+
   console.time("getSymbolsMap");
   var symbolsMap = Helpers.getSymbolsMap(context, allDuplicates);
   console.timeEnd("getSymbolsMap");
 
   symbolsMap.forEach(function (symbolMapItem, symbol) {
-    Helpers.clog("-- Symbol " + symbol.name + " has " + symbolMapItem.directInstances.length + " direct instances, and " + symbolMapItem.instancesWithOverrides.size + " instancesWithOverrides");
+    Helpers.clog("-- Symbol " + symbol.name + " has " + symbolMapItem.directInstances.length + " direct instances, and " + symbolMapItem.instancesWithOverrides.length + " instancesWithOverrides");
   });
 
 
-  // Helpers.clog("Local symbols: " + numberOfSymbols[0] + ". Library symbols:" + numberOfSymbols[1] + ". Libraries enabled:" + Helpers.getLibrariesEnabled());
   // browserWindow.loadURL(require('../resources/mergeduplicatesymbols.html'));
   // Helpers.clog("Webview called");
 

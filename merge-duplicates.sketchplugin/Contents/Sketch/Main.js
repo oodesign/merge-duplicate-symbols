@@ -5456,13 +5456,17 @@ function getRelatedOverrides(context, id, property) {
 }
 
 function countAllSymbols(context, includeAllSymbolsFromExternalLibraries) {
-  var counter = [0, 0];
+  var counter = {
+    "symbols": symbols.length,
+    "foreignSymbols": 0,
+    "documentInstances": sketch.find("SymbolInstance", document).length
+  };
   counter[0] = symbols.length;
 
   if (includeAllSymbolsFromExternalLibraries) {
     libraries.forEach(function (lib) {
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
-        counter[1] += lib.getDocument().getSymbols().length;
+        counter.foreignSymbols += lib.getDocument().getSymbols().length;
       }
     });
   }
@@ -5585,18 +5589,127 @@ function getAllDuplicateSymbolsByName(context, includeAllSymbolsFromExternalLibr
 }
 
 function getSymbolsMap(context, symbols) {
+  console.time("BuildInitialMap takes ");
   var symbolMap = new Map();
+  var idsMap = new Map();
   symbols.forEach(function (symbol) {
     symbol.duplicates.forEach(function (duplicatedSymbol) {
+      idsMap.set(duplicatedSymbol.symbol.symbolId, duplicatedSymbol.symbol);
       symbolMap.set(duplicatedSymbol.symbol, {
         "directInstances": duplicatedSymbol.symbol.getAllInstances(),
-        "instancesWithOverrides": new Map()
+        "instancesWithOverrides": []
       });
     });
+  }); // clog("-- idsMap is:");
+  // idsMap.forEach(function (value, key) {
+  //   clog(key);
+  // });
+
+  console.timeEnd("BuildInitialMap takes ");
+  var allInstances = sketch.find("SymbolInstance", document); // console.time("FindWithFilter takes ");
+  // var extendedAllInstances = [];
+  // allInstances.forEach(instance => extendedAllInstances.push({
+  //   "instance": instance,
+  //   "relatedOverrides": null
+  // }));
+  // var instances = extendedAllInstances.filter(extendedInstance => hasOverrides(extendedInstance.instance, idsMap));
+  // instances.forEach(extendedInstance => {
+  //   symbolMap.forEach(function (value, symbol) {
+  //     value.instancesWithOverrides = extendedInstance.relatedOverrides.filter(rOv => rOv.value == symbol.id);
+  //   });
+  // });
+  // console.timeEnd("FindWithFilter takes ");
+
+  console.time("NativeCombo takes ");
+  var redInstances = allInstances.filter(function (instance) {
+    return hasOverrides2(instance, idsMap);
   });
-  return symbolMap; // var allInstances = sketch.find("SymbolInstance", document);
-  // clog("All instances: "+allInstances.length);
-  // var instances = allInstances.filter(instance => hasOverrides(instance, doc.selectedLayers.layers[0].symbolId));
+  console.timeEnd("NativeCombo takes ");
+  clog("RedInstances is " + redInstances.length);
+  var redInstances2 = allInstances.filter(function (instance) {
+    return instance.sketchObject.overrides().count() > 0;
+  });
+  clog("RedInstances2 is " + redInstances2.length);
+  console.time("RegularForeach takes ");
+  var instanceswithoverrides = 0;
+  var reducedInstances = 0;
+  redInstances.forEach(function (instance) {
+    if (instance.sketchObject.overrides().count() > 0) {
+      reducedInstances++;
+      var instanceOverrides = instance.overrides.filter(function (ov) {
+        return ov.property == "symbolID" && !ov.isDefault && idsMap.has(ov.value);
+      });
+
+      if (instanceOverrides.length > 0) {
+        instanceswithoverrides++;
+        ;
+      }
+
+      ;
+      instanceOverrides.forEach(function (override) {
+        symbolMap.get(idsMap.get(override.value)).instancesWithOverrides.push(instance);
+      });
+    }
+  });
+  console.timeEnd("RegularForeach takes ");
+  clog("Reducedinstances are " + reducedInstances); // console.time("Combined takes ");
+  // var instances = allInstances.filter(instance => hasOverrides(instance, idsMap));
+  // var instanceswithoverrides = 0;
+  // instances.forEach(function (instance) {
+  //   var instanceOverrides = instance.overrides.filter(ov => ov.property == "symbolID" && !ov.isDefault && idsMap.has(ov.value));
+  //   if (instanceOverrides.length > 0) {
+  //     instanceswithoverrides++;;
+  //   };
+  //   instanceOverrides.forEach(override => {
+  //     symbolMap.get(idsMap.get(override.value)).instancesWithOverrides.push(instance);
+  //   });
+  // });
+  // console.timeEnd("Combined takes ");
+
+  return symbolMap;
+}
+
+function hasOverrides2(instance, idsMap) {
+  if (instance.sketchObject.overrides() != null && instance.sketchObject.overrides().count() > 0) {
+    var isthere = FindNestedOverride(instance.sketchObject.overrides(), idsMap);
+    return isthere;
+  }
+
+  return false;
+}
+
+function FindNestedOverride(overrides, idsMap) {
+  for (var key in overrides) {
+    var symbolID = overrides[key]["symbolID"];
+
+    if (symbolID != null) {
+      if (typeof symbolID === 'function') {
+        symbolID = symbolID();
+      } // clog("FindNestedOverride: " + symbolID);
+      // idsMap.forEach(function (value, key) {
+      //   clog("Comparing " + symbolID + " vs " + key + " : " + (symbolID == key) + " - " + idsMap.has(""+symbolID))
+      // });
+
+
+      if (idsMap.has("" + symbolID)) {
+        //clog("=== FOOOOOOOOOUUUUUUND ONEEEEEEEEE ===")
+        return true;
+      }
+    } else {
+      //clog("FindNestedOverride - going deeper");
+      return FindNestedOverride(overrides[key], idsMap);
+    }
+  }
+
+  return false;
+}
+
+function hasOverrides(instance, idsMap) {
+  var instanceOverrides = instance.overrides.filter(function (ov) {
+    return ov.property == "symbolID" && !ov.isDefault && idsMap.has(ov.value);
+  }); //instance.relatedOverrides = instanceOverrides;
+
+  return instanceOverrides.length != 0;
 }
 
 function getDocumentSymbols(context, includeAllSymbolsFromExternalLibraries) {
@@ -7553,6 +7666,9 @@ function MergeDuplicateSymbols(context) {
   Helpers.clog("Old method found " + duplicatedSymbols.length + " duplicates");
   duplicatedSymbols.forEach(function (ds) {
     Helpers.clog("-- " + ds.name + " that has " + ds.duplicates.length + " duplicates");
+    ds.duplicates.forEach(function (dup) {
+      return Helpers.clog("---- " + dup.symbol.name + " - ID: " + dup.symbol.id + " - symbolID: " + dup.symbol.symbolId);
+    });
   });
   console.timeEnd("Old finding duplicates");
   console.time("New finding duplicates");
@@ -7560,18 +7676,21 @@ function MergeDuplicateSymbols(context) {
   Helpers.clog("New method found " + allDuplicates.length + " duplicates");
   allDuplicates.forEach(function (ds) {
     Helpers.clog("-- " + ds.name + " that has " + ds.duplicates.length + " duplicates");
+    ds.duplicates.forEach(function (dup) {
+      return Helpers.clog("---- " + dup.symbol.name + " - ID: " + dup.symbol.id + " - symbolID: " + dup.symbol.symbolId);
+    });
   });
   console.timeEnd("New finding duplicates");
   console.time("countAllSymbols");
   var numberOfSymbols = Helpers.countAllSymbols(context, Helpers.getLibrariesEnabled());
   console.timeEnd("countAllSymbols");
+  Helpers.clog("Local symbols: " + numberOfSymbols.symbols + ". Library symbols:" + numberOfSymbols.foreignSymbols + ". Document instances:" + numberOfSymbols.documentInstances + ". Libraries enabled:" + Helpers.getLibrariesEnabled());
   console.time("getSymbolsMap");
   var symbolsMap = Helpers.getSymbolsMap(context, allDuplicates);
   console.timeEnd("getSymbolsMap");
   symbolsMap.forEach(function (symbolMapItem, symbol) {
-    Helpers.clog("-- Symbol " + symbol.name + " has " + symbolMapItem.directInstances.length + " direct instances, and " + symbolMapItem.instancesWithOverrides.size + " instancesWithOverrides");
-  }); // Helpers.clog("Local symbols: " + numberOfSymbols[0] + ". Library symbols:" + numberOfSymbols[1] + ". Libraries enabled:" + Helpers.getLibrariesEnabled());
-  // browserWindow.loadURL(require('../resources/mergeduplicatesymbols.html'));
+    Helpers.clog("-- Symbol " + symbol.name + " has " + symbolMapItem.directInstances.length + " direct instances, and " + symbolMapItem.instancesWithOverrides.length + " instancesWithOverrides");
+  }); // browserWindow.loadURL(require('../resources/mergeduplicatesymbols.html'));
   // Helpers.clog("Webview called");
 
   function CalculateDuplicates(includeLibraries) {
