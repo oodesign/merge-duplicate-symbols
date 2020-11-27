@@ -207,66 +207,72 @@ export function MergeDuplicateSymbols(context) {
   const browserWindow = new BrowserWindow(options);
   const webContents = browserWindow.webContents;
 
-  var duplicatedSymbols;
   var mergeSession = [];
-
-  console.time("Old finding duplicates");
-  var documentSymbols = Helpers.getDocumentSymbols(context, Helpers.getLibrariesEnabled());
-  duplicatedSymbols = Helpers.getDuplicateSymbols(context, documentSymbols, Helpers.getLibrariesEnabled(), false);
-  Helpers.clog("Old method found " + duplicatedSymbols.length + " duplicates");
-  duplicatedSymbols.forEach(function (ds) {
-    Helpers.clog("-- " + ds.name + " that has " + ds.duplicates.length + " duplicates");
-    ds.duplicates.forEach(dup => Helpers.clog("---- " + dup.symbol.name + " - ID: " + dup.symbol.id + " - symbolID: " + dup.symbol.symbolId));
-  });
-  console.timeEnd("Old finding duplicates");
+  var symbolsMap, allDuplicates;
 
 
-  console.time("New finding duplicates");
-  var allDuplicates = Helpers.getAllDuplicateSymbolsByName(context, Helpers.getLibrariesEnabled());
-  Helpers.clog("New method found " + allDuplicates.length + " duplicates");
-  allDuplicates.forEach(function (ds) {
-    Helpers.clog("-- " + ds.name + " that has " + ds.duplicates.length + " duplicates");
-    ds.duplicates.forEach(dup => Helpers.clog("---- " + dup.symbol.name + " - ID: " + dup.symbol.id + " - symbolID: " + dup.symbol.symbolId));
-  });
-  console.timeEnd("New finding duplicates");
-
-  console.time("countAllSymbols");
+  Helpers.ctime("countAllSymbols");
   var numberOfSymbols = Helpers.countAllSymbols(context, Helpers.getLibrariesEnabled());
-  console.timeEnd("countAllSymbols");
+  Helpers.ctimeEnd("countAllSymbols");
 
 
   Helpers.clog("Local symbols: " + numberOfSymbols.symbols + ". Library symbols:" + numberOfSymbols.foreignSymbols + ". Document instances:" + numberOfSymbols.documentInstances + ". Libraries enabled:" + Helpers.getLibrariesEnabled());
 
 
-  console.time("getSymbolsMap");
-  var symbolsMap = Helpers.getSymbolsMap(context, allDuplicates);
-  console.timeEnd("getSymbolsMap");
 
-  symbolsMap.forEach(function (symbolMapItem, symbol) {
-    Helpers.clog("-- Symbol " + symbol.name + " has " + symbolMapItem.directInstances.length + " direct instances, and " + symbolMapItem.instancesWithOverrides.length + " instancesWithOverrides");
-  });
-
-
-  // browserWindow.loadURL(require('../resources/mergeduplicatesymbols.html'));
-  // Helpers.clog("Webview called");
+  browserWindow.loadURL(require('../resources/mergeduplicatesymbols.html'));
+  Helpers.clog("Webview called");
 
   function CalculateDuplicates(includeLibraries) {
+
     Helpers.clog("Processing duplicates. Include libraries: " + includeLibraries);
-    duplicatedSymbols = Helpers.getDuplicateSymbols(context, documentSymbols, includeLibraries, false);
-    Helpers.clog("-- Found " + duplicatedSymbols.length + " duplicates");
-    if (duplicatedSymbols.length > 0) {
-      Helpers.GetSpecificSymbolData(context, duplicatedSymbols, 0);
+
+    Helpers.ctime("Finding duplicates");
+    allDuplicates = Helpers.getAllDuplicateSymbolsByName(context, includeLibraries);
+    Helpers.ctimeEnd("Finding duplicates");
+
+    Helpers.ctime("getSymbolsMap");
+    symbolsMap = Helpers.getSymbolsMap(context, allDuplicates);
+    Helpers.ctimeEnd("getSymbolsMap");
+
+    symbolsMap.forEach(function (symbolMapItem, symbol) {
+      Helpers.clog("-- Symbol " + symbol.name + " has " + symbolMapItem.directInstances.length + " direct instances, and " + symbolMapItem.instancesWithOverrides.length + " instancesWithOverrides");
+    });
+
+    Helpers.clog("-- Found " + allDuplicates.length + " duplicates");
+    if (allDuplicates.length > 0) {
       mergeSession = [];
-      for (var i = 0; i < duplicatedSymbols.length; i++) {
+      Helpers.GetSpecificSymbolData(allDuplicates[0], symbolsMap);
+      allDuplicates.forEach(duplicate => {
         mergeSession.push({
-          "symbolWithDuplicates": duplicatedSymbols[i],
+          "symbolWithDuplicates": getReducedDuplicateData(duplicate),//GET REDUCED SYMBOLWITHDUPLICATES TO REDUCE STRINGIFY SIZE
           "selectedIndex": -1,
           "isUnchecked": false,
-          "isProcessed": (i == 0) ? true : false
+          "isProcessed": (mergeSession.length == 0) ? true : false
         });
-      }
+      });
     }
     Helpers.clog("End of processing duplicates");
+  }
+
+  function getReducedDuplicateData(symbol) {
+    var reducedDuplicate = {
+      "name": "" + symbol.name,
+      "duplicates": [],
+    }
+    symbol.duplicates.forEach(duplicate => {
+      reducedDuplicate.duplicates.push({
+        "name": "" + duplicate.name,
+        "isForeign": duplicate.isForeign,
+        "thumbnail": duplicate.thumbnail,
+        "numInstances": duplicate.numInstances,
+        "numOverrides": duplicate.numOverrides,
+        "libraryName": duplicate.libraryName,
+        "isSelected": false
+      });
+    });
+
+    return reducedDuplicate;
   }
 
   browserWindow.once('ready-to-show', () => {
@@ -275,7 +281,7 @@ export function MergeDuplicateSymbols(context) {
 
   webContents.on('did-finish-load', () => {
     Helpers.clog("Webview loaded");
-    webContents.executeJavaScript(`LaunchMerge(${JSON.stringify(numberOfSymbols[0])},${JSON.stringify(numberOfSymbols[1])},${Helpers.getLibrariesEnabled()})`).catch(console.error);
+    webContents.executeJavaScript(`LaunchMerge(${JSON.stringify(numberOfSymbols.symbols)},${JSON.stringify(numberOfSymbols.foreignSymbols)},${JSON.stringify(numberOfSymbols.documentInstances)},${Helpers.getLibrariesEnabled()})`).catch(console.error);
   })
 
   webContents.on('nativeLog', s => {
@@ -287,8 +293,11 @@ export function MergeDuplicateSymbols(context) {
   });
 
   webContents.on('GetSelectedSymbolData', (index) => {
-    Helpers.GetSpecificSymbolData(context, duplicatedSymbols, index);
-    webContents.executeJavaScript(`ReDrawAfterGettingData(${JSON.stringify(duplicatedSymbols[index])},${index})`).catch(console.error);
+    Helpers.GetSpecificSymbolData(allDuplicates[index], symbolsMap);
+    console.time("JSONStringify allDuplicates[index]");
+    var stringify = JSON.stringify(getReducedDuplicateData(allDuplicates[index]))
+    console.timeEnd("JSONStringify allDuplicates[index]");
+    webContents.executeJavaScript(`ReDrawAfterGettingData(${stringify},${index})`).catch(console.error);
   });
 
   webContents.on('RecalculateDuplicates', (includeLibraries) => {
@@ -298,7 +307,10 @@ export function MergeDuplicateSymbols(context) {
       CalculateDuplicates(Helpers.getLibrariesEnabled());
 
     Helpers.clog("Drawing duplicates to webview");
-    webContents.executeJavaScript(`DrawDuplicateSymbols(${JSON.stringify(mergeSession)})`).catch(console.error);
+    console.time("JSONStringify mergeSession");
+    var stringify = JSON.stringify(mergeSession);
+    console.timeEnd("JSONStringify mergeSession");
+    webContents.executeJavaScript(`DrawDuplicateSymbols(${stringify})`).catch(console.error);
   });
 
   webContents.on('ExecuteMerge', (editedMergeSession) => {

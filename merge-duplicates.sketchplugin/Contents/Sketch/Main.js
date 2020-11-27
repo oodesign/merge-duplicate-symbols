@@ -4502,6 +4502,17 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 
 /***/ }),
 
+/***/ "./resources/mergeduplicatesymbols.html":
+/*!**********************************************!*\
+  !*** ./resources/mergeduplicatesymbols.html ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/df058667d72ed4abb6243b3484c248d1.html";
+
+/***/ }),
+
 /***/ "./resources/mergeduplicatetextstyles.html":
 /*!*************************************************!*\
   !*** ./resources/mergeduplicatetextstyles.html ***!
@@ -5589,7 +5600,6 @@ function getAllDuplicateSymbolsByName(context, includeAllSymbolsFromExternalLibr
 }
 
 function getSymbolsMap(context, symbols) {
-  console.time("BuildInitialMap takes ");
   var symbolMap = new Map();
   var idsMap = new Map();
   symbols.forEach(function (symbol) {
@@ -5600,79 +5610,35 @@ function getSymbolsMap(context, symbols) {
         "instancesWithOverrides": []
       });
     });
-  }); // clog("-- idsMap is:");
-  // idsMap.forEach(function (value, key) {
-  //   clog(key);
-  // });
-
-  console.timeEnd("BuildInitialMap takes ");
-  var allInstances = sketch.find("SymbolInstance", document); // console.time("FindWithFilter takes ");
-  // var extendedAllInstances = [];
-  // allInstances.forEach(instance => extendedAllInstances.push({
-  //   "instance": instance,
-  //   "relatedOverrides": null
-  // }));
-  // var instances = extendedAllInstances.filter(extendedInstance => hasOverrides(extendedInstance.instance, idsMap));
-  // instances.forEach(extendedInstance => {
-  //   symbolMap.forEach(function (value, symbol) {
-  //     value.instancesWithOverrides = extendedInstance.relatedOverrides.filter(rOv => rOv.value == symbol.id);
-  //   });
-  // });
-  // console.timeEnd("FindWithFilter takes ");
-
-  console.time("NativeCombo takes ");
-  var redInstances = allInstances.filter(function (instance) {
+  });
+  var allInstances = sketch.find("SymbolInstance", document);
+  var reducedInstances = allInstances.filter(function (instance) {
     return hasOverrides2(instance, idsMap);
   });
-  console.timeEnd("NativeCombo takes ");
-  clog("RedInstances is " + redInstances.length);
-  var redInstances2 = allInstances.filter(function (instance) {
-    return instance.sketchObject.overrides().count() > 0;
-  });
-  clog("RedInstances2 is " + redInstances2.length);
-  console.time("RegularForeach takes ");
-  var instanceswithoverrides = 0;
-  var reducedInstances = 0;
-  redInstances.forEach(function (instance) {
+  reducedInstances.forEach(function (instance) {
     if (instance.sketchObject.overrides().count() > 0) {
-      reducedInstances++;
       var instanceOverrides = instance.overrides.filter(function (ov) {
         return ov.property == "symbolID" && !ov.isDefault && idsMap.has(ov.value);
       });
-
-      if (instanceOverrides.length > 0) {
-        instanceswithoverrides++;
-        ;
-      }
-
-      ;
       instanceOverrides.forEach(function (override) {
         symbolMap.get(idsMap.get(override.value)).instancesWithOverrides.push(instance);
       });
     }
   });
-  console.timeEnd("RegularForeach takes ");
-  clog("Reducedinstances are " + reducedInstances); // console.time("Combined takes ");
-  // var instances = allInstances.filter(instance => hasOverrides(instance, idsMap));
-  // var instanceswithoverrides = 0;
-  // instances.forEach(function (instance) {
-  //   var instanceOverrides = instance.overrides.filter(ov => ov.property == "symbolID" && !ov.isDefault && idsMap.has(ov.value));
-  //   if (instanceOverrides.length > 0) {
-  //     instanceswithoverrides++;;
-  //   };
-  //   instanceOverrides.forEach(override => {
-  //     symbolMap.get(idsMap.get(override.value)).instancesWithOverrides.push(instance);
-  //   });
-  // });
-  // console.timeEnd("Combined takes ");
-
   return symbolMap;
+}
+
+function updateAllDuplicatesWithMap(allDuplicates, symbolsMap) {
+  allDuplicates.forEach(function (duplicate) {
+    duplicate.duplicates.forEach(function (symbol) {
+      symbol.symbolInstances = symbolsMap.get(duplicate).directInstances;
+    });
+  });
 }
 
 function hasOverrides2(instance, idsMap) {
   if (instance.sketchObject.overrides() != null && instance.sketchObject.overrides().count() > 0) {
-    var isthere = FindNestedOverride(instance.sketchObject.overrides(), idsMap);
-    return isthere;
+    return FindNestedOverride(instance.sketchObject.overrides(), idsMap);
   }
 
   return false;
@@ -5685,31 +5651,17 @@ function FindNestedOverride(overrides, idsMap) {
     if (symbolID != null) {
       if (typeof symbolID === 'function') {
         symbolID = symbolID();
-      } // clog("FindNestedOverride: " + symbolID);
-      // idsMap.forEach(function (value, key) {
-      //   clog("Comparing " + symbolID + " vs " + key + " : " + (symbolID == key) + " - " + idsMap.has(""+symbolID))
-      // });
-
+      }
 
       if (idsMap.has("" + symbolID)) {
-        //clog("=== FOOOOOOOOOUUUUUUND ONEEEEEEEEE ===")
         return true;
       }
     } else {
-      //clog("FindNestedOverride - going deeper");
       return FindNestedOverride(overrides[key], idsMap);
     }
   }
 
   return false;
-}
-
-function hasOverrides(instance, idsMap) {
-  var instanceOverrides = instance.overrides.filter(function (ov) {
-    return ov.property == "symbolID" && !ov.isDefault && idsMap.has(ov.value);
-  }); //instance.relatedOverrides = instanceOverrides;
-
-  return instanceOverrides.length != 0;
 }
 
 function getDocumentSymbols(context, includeAllSymbolsFromExternalLibraries) {
@@ -5881,7 +5833,7 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
       if (index > -1) allSymbols.splice(index, 1);
       nameDictionary[key] = null;
     }
-  }); // console.timeEnd("getDuplicateSymbols");
+  }); // ctimeEnd("getDuplicateSymbols");
 
   return allSymbols.sort(compareSymbolNames);
 }
@@ -5958,43 +5910,39 @@ function getDuplicateColorVariables(context, includeLibraries) {
 }
 
 function GetSpecificLayerStyleData(context, layerStyles, index) {
-  clog("Processing text style metadata for: " + layerStyles[index].name); // console.time("GetSpecificLayerStyleData");
+  clog("Processing text style metadata for: " + layerStyles[index].name); // ctime("GetSpecificLayerStyleData");
 
   for (var i = 0; i < layerStyles[index].duplicates.length; i++) {
     layerStyles[index].duplicates[i].thumbnail = getOvalThumbnail(layerStyles[index].duplicates[i].layerStyle);
-  } // console.timeEnd("GetSpecificLayerStyleData");
+  } // ctimeEnd("GetSpecificLayerStyleData");
 
 }
 
 function GetSpecificTextStyleData(context, textStyles, index) {
-  clog("Processing text style metadata for: " + textStyles[index].name); // console.time("GetSpecificLayerStyleData");
+  clog("Processing text style metadata for: " + textStyles[index].name); // ctime("GetSpecificLayerStyleData");
 
   for (var i = 0; i < textStyles[index].duplicates.length; i++) {
     textStyles[index].duplicates[i].thumbnail = getTextThumbnail(textStyles[index].duplicates[i].textStyle);
-  } // console.timeEnd("GetSpecificLayerStyleData");
+  } // ctimeEnd("GetSpecificLayerStyleData");
 
 }
 
-function GetSpecificSymbolData(context, symbols, index) {
+function GetSpecificSymbolData(symbol, symbolsMap) {
+  ctime("GetSpecificSymbolData");
   var totalInstances = 0;
   var totalOverrides = 0;
+  symbol.duplicates.forEach(function (duplicate) {
+    var symbolMapItem = symbolsMap.get(duplicate.symbol);
+    duplicate.thumbnail = getThumbnail(duplicate); //duplicate.symbolInstances = symbolMapItem.directInstances;
 
-  for (var i = 0; i < symbols[index].duplicates.length; i++) {
-    clog("-- Processing symbol instances for duplicate: " + symbols[index].duplicates[i].name);
-    var instances = getSymbolInstances(context, symbols[index].duplicates[i].symbol);
-    clog("-- Processing symbol overrides for duplicate: " + symbols[index].duplicates[i].name);
-    var overrides = getSymbolOverrides(context, symbols[index].duplicates[i].symbol);
-    clog("-- Processing thumbnail overrides for duplicate: " + symbols[index].duplicates[i].name);
-    symbols[index].duplicates[i].thumbnail = getThumbnail(symbols[index].duplicates[i]);
-    symbols[index].duplicates[i].symbolInstances = instances;
-    symbols[index].duplicates[i].numInstances = instances.length;
-    symbols[index].duplicates[i].symbolOverrides = overrides;
-    symbols[index].duplicates[i].numOverrides = overrides.length;
-    totalInstances += instances.length;
-    totalOverrides += overrides.length;
-  }
+    duplicate.numInstances = symbolMapItem.directInstances.length; //duplicate.symbolOverrides = symbolMapItem.instancesWithOverrides;
 
-  clog("-- Found " + totalInstances + " instances, " + totalOverrides + " overrides, and created " + symbols[index].duplicates.length + " thumbnails"); // console.timeEnd("GetSpecificSymbolData");
+    duplicate.numOverrides = symbolMapItem.instancesWithOverrides.length;
+    totalInstances += duplicate.numInstances;
+    totalOverrides += duplicate.numOverrides;
+  });
+  clog("-- Found " + totalInstances + " instances, " + totalOverrides + " overrides, and created " + symbol.duplicates.length + " thumbnails");
+  ctimeEnd("GetSpecificSymbolData");
 }
 
 function getTextStyleDescription(sharedTextStyle) {
@@ -6348,7 +6296,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
         });
       }
     });
-  } // console.timeEnd("getDuplicateExternalSymbols");
+  } // ctimeEnd("getDuplicateExternalSymbols");
 
 
   Object.keys(nameDictionary).forEach(function (key) {
@@ -6567,6 +6515,14 @@ function clog(message) {
   if (logsEnabled) console.log(message);
 }
 
+function ctime(message) {
+  if (logsEnabled) console.time(message);
+}
+
+function ctimeEnd(message) {
+  if (logsEnabled) console.timeEnd(message);
+}
+
 function getLogsEnabled() {
   return logsEnabled;
 }
@@ -6663,7 +6619,11 @@ module.exports = {
   FindAllSimilarColorVariables: FindAllSimilarColorVariables,
   analytics: analytics,
   getAllDuplicateSymbolsByName: getAllDuplicateSymbolsByName,
-  getSymbolsMap: getSymbolsMap
+  getSymbolsMap: getSymbolsMap,
+  updateAllDuplicatesWithMap: updateAllDuplicatesWithMap,
+  ctime: ctime,
+  ctimeEnd: ctimeEnd,
+  sketchlocalfile: sketchlocalfile
 };
 
 /***/ }),
@@ -7658,61 +7618,62 @@ function MergeDuplicateSymbols(context) {
   };
   var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
   var webContents = browserWindow.webContents;
-  var duplicatedSymbols;
   var mergeSession = [];
-  console.time("Old finding duplicates");
-  var documentSymbols = Helpers.getDocumentSymbols(context, Helpers.getLibrariesEnabled());
-  duplicatedSymbols = Helpers.getDuplicateSymbols(context, documentSymbols, Helpers.getLibrariesEnabled(), false);
-  Helpers.clog("Old method found " + duplicatedSymbols.length + " duplicates");
-  duplicatedSymbols.forEach(function (ds) {
-    Helpers.clog("-- " + ds.name + " that has " + ds.duplicates.length + " duplicates");
-    ds.duplicates.forEach(function (dup) {
-      return Helpers.clog("---- " + dup.symbol.name + " - ID: " + dup.symbol.id + " - symbolID: " + dup.symbol.symbolId);
-    });
-  });
-  console.timeEnd("Old finding duplicates");
-  console.time("New finding duplicates");
-  var allDuplicates = Helpers.getAllDuplicateSymbolsByName(context, Helpers.getLibrariesEnabled());
-  Helpers.clog("New method found " + allDuplicates.length + " duplicates");
-  allDuplicates.forEach(function (ds) {
-    Helpers.clog("-- " + ds.name + " that has " + ds.duplicates.length + " duplicates");
-    ds.duplicates.forEach(function (dup) {
-      return Helpers.clog("---- " + dup.symbol.name + " - ID: " + dup.symbol.id + " - symbolID: " + dup.symbol.symbolId);
-    });
-  });
-  console.timeEnd("New finding duplicates");
-  console.time("countAllSymbols");
+  var symbolsMap, allDuplicates;
+  Helpers.ctime("countAllSymbols");
   var numberOfSymbols = Helpers.countAllSymbols(context, Helpers.getLibrariesEnabled());
-  console.timeEnd("countAllSymbols");
+  Helpers.ctimeEnd("countAllSymbols");
   Helpers.clog("Local symbols: " + numberOfSymbols.symbols + ". Library symbols:" + numberOfSymbols.foreignSymbols + ". Document instances:" + numberOfSymbols.documentInstances + ". Libraries enabled:" + Helpers.getLibrariesEnabled());
-  console.time("getSymbolsMap");
-  var symbolsMap = Helpers.getSymbolsMap(context, allDuplicates);
-  console.timeEnd("getSymbolsMap");
-  symbolsMap.forEach(function (symbolMapItem, symbol) {
-    Helpers.clog("-- Symbol " + symbol.name + " has " + symbolMapItem.directInstances.length + " direct instances, and " + symbolMapItem.instancesWithOverrides.length + " instancesWithOverrides");
-  }); // browserWindow.loadURL(require('../resources/mergeduplicatesymbols.html'));
-  // Helpers.clog("Webview called");
+  browserWindow.loadURL(__webpack_require__(/*! ../resources/mergeduplicatesymbols.html */ "./resources/mergeduplicatesymbols.html"));
+  Helpers.clog("Webview called");
 
   function CalculateDuplicates(includeLibraries) {
     Helpers.clog("Processing duplicates. Include libraries: " + includeLibraries);
-    duplicatedSymbols = Helpers.getDuplicateSymbols(context, documentSymbols, includeLibraries, false);
-    Helpers.clog("-- Found " + duplicatedSymbols.length + " duplicates");
+    Helpers.ctime("Finding duplicates");
+    allDuplicates = Helpers.getAllDuplicateSymbolsByName(context, includeLibraries);
+    Helpers.ctimeEnd("Finding duplicates");
+    Helpers.ctime("getSymbolsMap");
+    symbolsMap = Helpers.getSymbolsMap(context, allDuplicates);
+    Helpers.ctimeEnd("getSymbolsMap");
+    symbolsMap.forEach(function (symbolMapItem, symbol) {
+      Helpers.clog("-- Symbol " + symbol.name + " has " + symbolMapItem.directInstances.length + " direct instances, and " + symbolMapItem.instancesWithOverrides.length + " instancesWithOverrides");
+    });
+    Helpers.clog("-- Found " + allDuplicates.length + " duplicates");
 
-    if (duplicatedSymbols.length > 0) {
-      Helpers.GetSpecificSymbolData(context, duplicatedSymbols, 0);
+    if (allDuplicates.length > 0) {
       mergeSession = [];
-
-      for (var i = 0; i < duplicatedSymbols.length; i++) {
+      Helpers.GetSpecificSymbolData(allDuplicates[0], symbolsMap);
+      allDuplicates.forEach(function (duplicate) {
         mergeSession.push({
-          "symbolWithDuplicates": duplicatedSymbols[i],
+          "symbolWithDuplicates": getReducedDuplicateData(duplicate),
+          //GET REDUCED SYMBOLWITHDUPLICATES TO REDUCE STRINGIFY SIZE
           "selectedIndex": -1,
           "isUnchecked": false,
-          "isProcessed": i == 0 ? true : false
+          "isProcessed": mergeSession.length == 0 ? true : false
         });
-      }
+      });
     }
 
     Helpers.clog("End of processing duplicates");
+  }
+
+  function getReducedDuplicateData(symbol) {
+    var reducedDuplicate = {
+      "name": "" + symbol.name,
+      "duplicates": []
+    };
+    symbol.duplicates.forEach(function (duplicate) {
+      reducedDuplicate.duplicates.push({
+        "name": "" + duplicate.name,
+        "isForeign": duplicate.isForeign,
+        "thumbnail": duplicate.thumbnail,
+        "numInstances": duplicate.numInstances,
+        "numOverrides": duplicate.numOverrides,
+        "libraryName": duplicate.libraryName,
+        "isSelected": false
+      });
+    });
+    return reducedDuplicate;
   }
 
   browserWindow.once('ready-to-show', function () {
@@ -7720,7 +7681,7 @@ function MergeDuplicateSymbols(context) {
   });
   webContents.on('did-finish-load', function () {
     Helpers.clog("Webview loaded");
-    webContents.executeJavaScript("LaunchMerge(".concat(JSON.stringify(numberOfSymbols[0]), ",").concat(JSON.stringify(numberOfSymbols[1]), ",").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
+    webContents.executeJavaScript("LaunchMerge(".concat(JSON.stringify(numberOfSymbols.symbols), ",").concat(JSON.stringify(numberOfSymbols.foreignSymbols), ",").concat(JSON.stringify(numberOfSymbols.documentInstances), ",").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
     Helpers.clog(s);
@@ -7729,13 +7690,19 @@ function MergeDuplicateSymbols(context) {
     onShutdown(webviewIdentifier);
   });
   webContents.on('GetSelectedSymbolData', function (index) {
-    Helpers.GetSpecificSymbolData(context, duplicatedSymbols, index);
-    webContents.executeJavaScript("ReDrawAfterGettingData(".concat(JSON.stringify(duplicatedSymbols[index]), ",").concat(index, ")")).catch(console.error);
+    Helpers.GetSpecificSymbolData(allDuplicates[index], symbolsMap);
+    console.time("JSONStringify allDuplicates[index]");
+    var stringify = JSON.stringify(getReducedDuplicateData(allDuplicates[index]));
+    console.timeEnd("JSONStringify allDuplicates[index]");
+    webContents.executeJavaScript("ReDrawAfterGettingData(".concat(stringify, ",").concat(index, ")")).catch(console.error);
   });
   webContents.on('RecalculateDuplicates', function (includeLibraries) {
     if (includeLibraries != null) CalculateDuplicates(includeLibraries);else CalculateDuplicates(Helpers.getLibrariesEnabled());
     Helpers.clog("Drawing duplicates to webview");
-    webContents.executeJavaScript("DrawDuplicateSymbols(".concat(JSON.stringify(mergeSession), ")")).catch(console.error);
+    console.time("JSONStringify mergeSession");
+    var stringify = JSON.stringify(mergeSession);
+    console.timeEnd("JSONStringify mergeSession");
+    webContents.executeJavaScript("DrawDuplicateSymbols(".concat(stringify, ")")).catch(console.error);
   });
   webContents.on('ExecuteMerge', function (editedMergeSession) {
     var duplicatesSolved = 0;

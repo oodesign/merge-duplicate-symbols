@@ -788,8 +788,6 @@ function getAllDuplicateSymbolsByName(context, includeAllSymbolsFromExternalLibr
 
 function getSymbolsMap(context, symbols) {
 
-
-  console.time("BuildInitialMap takes ");
   var symbolMap = new Map();
   var idsMap = new Map();
   symbols.forEach(function (symbol) {
@@ -801,89 +799,33 @@ function getSymbolsMap(context, symbols) {
       });
     });
   });
-  // clog("-- idsMap is:");
-  // idsMap.forEach(function (value, key) {
-  //   clog(key);
-  // });
-  console.timeEnd("BuildInitialMap takes ");
 
   var allInstances = sketch.find("SymbolInstance", document);
+  var reducedInstances = allInstances.filter(instance => hasOverrides2(instance, idsMap));
 
-  // console.time("FindWithFilter takes ");
-  // var extendedAllInstances = [];
-  // allInstances.forEach(instance => extendedAllInstances.push({
-  //   "instance": instance,
-  //   "relatedOverrides": null
-  // }));
-  // var instances = extendedAllInstances.filter(extendedInstance => hasOverrides(extendedInstance.instance, idsMap));
-  // instances.forEach(extendedInstance => {
-  //   symbolMap.forEach(function (value, symbol) {
-  //     value.instancesWithOverrides = extendedInstance.relatedOverrides.filter(rOv => rOv.value == symbol.id);
-  //   });
-  // });
-  // console.timeEnd("FindWithFilter takes ");
-
-
-  console.time("NativeCombo takes ");
-  var redInstances = allInstances.filter(instance => hasOverrides2(instance, idsMap));
-  console.timeEnd("NativeCombo takes ");
-  clog("RedInstances is " + redInstances.length);
-
-
-  var redInstances2 = allInstances.filter(instance => (instance.sketchObject.overrides().count() > 0));
-  clog("RedInstances2 is " + redInstances2.length);
-
-  console.time("RegularForeach takes ");
-  var instanceswithoverrides = 0;
-  var reducedInstances = 0;
-
-
-  redInstances.forEach(function (instance) {
+  reducedInstances.forEach(function (instance) {
     if (instance.sketchObject.overrides().count() > 0) {
-      reducedInstances++;
       var instanceOverrides = instance.overrides.filter(ov => ov.property == "symbolID" && !ov.isDefault && idsMap.has(ov.value));
-
-      if (instanceOverrides.length > 0) {
-        instanceswithoverrides++;;
-      };
-
       instanceOverrides.forEach(override => {
         symbolMap.get(idsMap.get(override.value)).instancesWithOverrides.push(instance);
       });
     }
-
   });
-  console.timeEnd("RegularForeach takes ");
-
-  clog("Reducedinstances are " + reducedInstances)
-
-
-  // console.time("Combined takes ");
-  // var instances = allInstances.filter(instance => hasOverrides(instance, idsMap));
-  // var instanceswithoverrides = 0;
-  // instances.forEach(function (instance) {
-  //   var instanceOverrides = instance.overrides.filter(ov => ov.property == "symbolID" && !ov.isDefault && idsMap.has(ov.value));
-
-  //   if (instanceOverrides.length > 0) {
-  //     instanceswithoverrides++;;
-  //   };
-
-  //   instanceOverrides.forEach(override => {
-  //     symbolMap.get(idsMap.get(override.value)).instancesWithOverrides.push(instance);
-  //   });
-  // });
-  // console.timeEnd("Combined takes ");
-
-
 
   return symbolMap;
+}
 
+function updateAllDuplicatesWithMap(allDuplicates, symbolsMap) {
+  allDuplicates.forEach(duplicate => {
+    duplicate.duplicates.forEach(symbol => {
+      symbol.symbolInstances = symbolsMap.get(duplicate).directInstances;
+    });
+  });
 }
 
 function hasOverrides2(instance, idsMap) {
   if ((instance.sketchObject.overrides() != null) && (instance.sketchObject.overrides().count() > 0)) {
-    var isthere = FindNestedOverride(instance.sketchObject.overrides(), idsMap);
-    return isthere;
+    return FindNestedOverride(instance.sketchObject.overrides(), idsMap);
   }
   return false;
 }
@@ -893,30 +835,16 @@ function FindNestedOverride(overrides, idsMap) {
     var symbolID = overrides[key]["symbolID"];
     if (symbolID != null) {
       if (typeof symbolID === 'function') { symbolID = symbolID(); }
-      // clog("FindNestedOverride: " + symbolID);
-      // idsMap.forEach(function (value, key) {
-      //   clog("Comparing " + symbolID + " vs " + key + " : " + (symbolID == key) + " - " + idsMap.has(""+symbolID))
-      // });
-      if (idsMap.has(""+symbolID)) {
-        //clog("=== FOOOOOOOOOUUUUUUND ONEEEEEEEEE ===")
+      if (idsMap.has("" + symbolID)) {
         return true;
       }
     }
     else {
-      //clog("FindNestedOverride - going deeper");
       return FindNestedOverride(overrides[key], idsMap);
     }
   }
   return false;
 }
-
-function hasOverrides(instance, idsMap) {
-  var instanceOverrides = instance.overrides.filter(ov => ov.property == "symbolID" && !ov.isDefault && idsMap.has(ov.value));
-  //instance.relatedOverrides = instanceOverrides;
-  return (instanceOverrides.length != 0);
-}
-
-
 
 function getDocumentSymbols(context, includeAllSymbolsFromExternalLibraries) {
   var symbols = [];
@@ -1110,7 +1038,7 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
 
   });
 
-  // console.timeEnd("getDuplicateSymbols");
+  // ctimeEnd("getDuplicateSymbols");
   return allSymbols.sort(compareSymbolNames);
 
 }
@@ -1196,45 +1124,42 @@ function getDuplicateColorVariables(context, includeLibraries) {
 function GetSpecificLayerStyleData(context, layerStyles, index) {
 
   clog("Processing text style metadata for: " + layerStyles[index].name);
-  // console.time("GetSpecificLayerStyleData");
+  // ctime("GetSpecificLayerStyleData");
   for (var i = 0; i < layerStyles[index].duplicates.length; i++) {
     layerStyles[index].duplicates[i].thumbnail = getOvalThumbnail(layerStyles[index].duplicates[i].layerStyle);
   }
-  // console.timeEnd("GetSpecificLayerStyleData");
+  // ctimeEnd("GetSpecificLayerStyleData");
 }
 
 function GetSpecificTextStyleData(context, textStyles, index) {
 
   clog("Processing text style metadata for: " + textStyles[index].name);
-  // console.time("GetSpecificLayerStyleData");
+  // ctime("GetSpecificLayerStyleData");
   for (var i = 0; i < textStyles[index].duplicates.length; i++) {
     textStyles[index].duplicates[i].thumbnail = getTextThumbnail(textStyles[index].duplicates[i].textStyle);
   }
-  // console.timeEnd("GetSpecificLayerStyleData");
+  // ctimeEnd("GetSpecificLayerStyleData");
 }
 
-function GetSpecificSymbolData(context, symbols, index) {
+function GetSpecificSymbolData(symbol, symbolsMap) {
+  ctime("GetSpecificSymbolData");
   var totalInstances = 0;
   var totalOverrides = 0;
-  for (var i = 0; i < symbols[index].duplicates.length; i++) {
-    clog("-- Processing symbol instances for duplicate: " + symbols[index].duplicates[i].name);
-    var instances = getSymbolInstances(context, symbols[index].duplicates[i].symbol);
-    clog("-- Processing symbol overrides for duplicate: " + symbols[index].duplicates[i].name);
-    var overrides = getSymbolOverrides(context, symbols[index].duplicates[i].symbol);
-    clog("-- Processing thumbnail overrides for duplicate: " + symbols[index].duplicates[i].name);
-    symbols[index].duplicates[i].thumbnail = getThumbnail(symbols[index].duplicates[i]);
-    symbols[index].duplicates[i].symbolInstances = instances;
-    symbols[index].duplicates[i].numInstances = instances.length;
-    symbols[index].duplicates[i].symbolOverrides = overrides;
-    symbols[index].duplicates[i].numOverrides = overrides.length;
+  symbol.duplicates.forEach(duplicate => {
+    var symbolMapItem = symbolsMap.get(duplicate.symbol);
+    duplicate.thumbnail = getThumbnail(duplicate);
+    //duplicate.symbolInstances = symbolMapItem.directInstances;
+    duplicate.numInstances = symbolMapItem.directInstances.length;
+    //duplicate.symbolOverrides = symbolMapItem.instancesWithOverrides;
+    duplicate.numOverrides = symbolMapItem.instancesWithOverrides.length;
 
-    totalInstances += instances.length;
-    totalOverrides += overrides.length;
-  }
+    totalInstances += duplicate.numInstances;
+    totalOverrides += duplicate.numOverrides;
+  });
 
 
-  clog("-- Found " + totalInstances + " instances, " + totalOverrides + " overrides, and created " + symbols[index].duplicates.length + " thumbnails");
-  // console.timeEnd("GetSpecificSymbolData");
+  clog("-- Found " + totalInstances + " instances, " + totalOverrides + " overrides, and created " + symbol.duplicates.length + " thumbnails");
+  ctimeEnd("GetSpecificSymbolData");
 }
 
 function getTextStyleDescription(sharedTextStyle) {
@@ -1606,7 +1531,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
     });
   }
 
-  // console.timeEnd("getDuplicateExternalSymbols");
+  // ctimeEnd("getDuplicateExternalSymbols");
 
   Object.keys(nameDictionary).forEach(function (key) {
     var removeElement = false;
@@ -1809,7 +1734,6 @@ function getThumbnail(element) {
       clog("---- ERROR: Couldn't load (foreign symbol) " + element.symbol.name + " library document.")
     }
   }
-
   try {
     const options = { scales: '3', formats: 'png', output: false };
     var buffer = sketch.export(component, options);
@@ -1830,6 +1754,16 @@ function clog(message) {
     console.log(message);
 }
 
+function ctime(message) {
+  if (logsEnabled)
+    console.time(message);
+}
+
+function ctimeEnd(message) {
+  if (logsEnabled)
+    console.timeEnd(message);
+}
+
 function getLogsEnabled() {
   return logsEnabled;
 }
@@ -1848,4 +1782,4 @@ function getSettings() {
 var _0x684b = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x684b[1]]()[_0x684b[0]]() + _0x684b[2]); if ((settingsFile != null) && (settingsFile[_0x684b[3]] != null)) { logsEnabled = settingsFile[_0x684b[3]] }; if ((settingsFile != null) && (settingsFile[_0x684b[4]] != null)) { librariesEnabledByDefault = settingsFile[_0x684b[4]] } } catch (e) { console[_0x684b[5]](e); return null } }
 //d9-05
 
-module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, isString, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, getRelatedOverrides, importTextStyleFromLibrary, getDefinedColorVariables, importColorVariableFromLibrary, getDuplicateColorVariables, FindAllSimilarColorVariables, analytics, getAllDuplicateSymbolsByName, getSymbolsMap };
+module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, isString, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, getRelatedOverrides, importTextStyleFromLibrary, getDefinedColorVariables, importColorVariableFromLibrary, getDuplicateColorVariables, FindAllSimilarColorVariables, analytics, getAllDuplicateSymbolsByName, getSymbolsMap, updateAllDuplicatesWithMap, ctime, ctimeEnd, sketchlocalfile };

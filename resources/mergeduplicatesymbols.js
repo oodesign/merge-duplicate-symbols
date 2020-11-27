@@ -7,12 +7,14 @@ var globalSymbolDisplayed = 0;
 var isLoadingSymbolData = false;
 var globalNumberOfSymbolsInDocument = 0;
 var globalNumberOfSymbolsInLibraries = 0;
+var globalNumberOfInstancesInDocument = 0;
 var globalView = 1;
 var includeLibrariesSetting = false;
 
-window.LaunchMerge = (numberOfLocalSymbols, numberOfLibrarySymbols, includeLibraries) => {
+window.LaunchMerge = (numberOfLocalSymbols, numberOfLibrarySymbols, numberOfInstancesInDocument, includeLibraries) => {
   globalNumberOfSymbolsInDocument = numberOfLocalSymbols;
   globalNumberOfSymbolsInLibraries = numberOfLibrarySymbols;
+  globalNumberOfInstancesInDocument = numberOfInstancesInDocument;
   includeLibrariesSetting = includeLibraries;
 
   if (document.readyState == 'loading') {
@@ -29,7 +31,7 @@ window.GetSymbols = () => {
 
   setTimeout(function () {
     var message = "We're looking for duplicates...";
-    if (globalNumberOfSymbolsInDocument > 100) {
+    if (((globalNumberOfSymbolsInDocument + globalNumberOfSymbolsInLibraries) > 500) || (globalNumberOfInstancesInDocument > 5000)) {
       var andLinkedLibraries = (globalNumberOfSymbolsInLibraries > 0) ? "(and " + globalNumberOfSymbolsInLibraries + " in linked libraries)" : ""
       message = "We're looking for duplicates...<br/><br/>Wow, you have " + globalNumberOfSymbolsInDocument + " symbols here " + andLinkedLibraries + "! 🙈<br/> This may take a while... Wanna go get a coffee?"
     }
