@@ -1148,9 +1148,9 @@ function GetSpecificSymbolData(symbol, symbolsMap) {
   symbol.duplicates.forEach(duplicate => {
     var symbolMapItem = symbolsMap.get(duplicate.symbol);
     duplicate.thumbnail = getThumbnail(duplicate);
-    //duplicate.symbolInstances = symbolMapItem.directInstances;
+    duplicate.symbolInstances = symbolMapItem.directInstances;
     duplicate.numInstances = symbolMapItem.directInstances.length;
-    //duplicate.symbolOverrides = symbolMapItem.instancesWithOverrides;
+    duplicate.symbolOverrides = symbolMapItem.instancesWithOverrides;
     duplicate.numOverrides = symbolMapItem.instancesWithOverrides.length;
 
     totalInstances += duplicate.numInstances;
