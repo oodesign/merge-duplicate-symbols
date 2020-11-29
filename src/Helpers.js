@@ -599,25 +599,42 @@ function GetRecomposedSymbolName(symbolName) {
 }
 
 
-function getSymbolInstances(context, symbolMaster) {
+function getSymbolInstances(symbolMaster) {
+  // console.log("getSymbolInstances. Symbol is " + (symbolMaster != null));
+  // console.log(symbolMaster);
   var symbolInstances = symbolMaster.getAllInstances();
   return symbolInstances;
 }
 
-function getSymbolOverrides(context, symbolMaster) {
-  var symbolOverrides = NSMutableArray.array();
-  var instances = sketch.find("[type='SymbolInstance']", document);
-  instances.forEach(function (instance) {
-    instance.overrides.forEach(function (override) {
-      if ((override.property.localeCompare("symbolID") == 0) /*&& (override.isDefault == 0)*/) {
-        if (override.value.localeCompare(symbolMaster.symbolId) == 0) {
-          symbolOverrides.push({
-            "instance": instance,
-            "override": override
-          });
-        }
-      }
-    });
+function getSymbolOverrides(symbolMaster, idsMap) {
+  var symbolOverrides = [];
+  // var instances = sketch.find("[type='SymbolInstance']", document);
+  // instances.forEach(function (instance) {
+  //   instance.overrides.forEach(function (override) {
+  //     if ((override.property.localeCompare("symbolID") == 0) /*&& (override.isDefault == 0)*/) {
+  //       if (override.value.localeCompare(symbolMaster.symbolId) == 0) {
+  //         symbolOverrides.push({
+  //           "instance": instance,
+  //           "override": override
+  //         });
+  //       }
+  //     }
+  //   });
+  // });
+
+  var allInstances = sketch.find("SymbolInstance", document);
+  var reducedInstances = allInstances.filter(instance => hasOverrides2(instance, idsMap));
+
+  reducedInstances.forEach(function (instance) {
+    if (instance.sketchObject.overrides().count() > 0) {
+      var instanceOverrides = instance.overrides.filter(ov => ov.property == "symbolID" && !ov.isDefault && ov.value == symbolMaster.symbolId);
+      instanceOverrides.forEach(override => {
+        symbolOverrides.push({
+          "instance": instance,
+          "override": override
+        });
+      });
+    }
   });
 
   return symbolOverrides;
@@ -814,6 +831,8 @@ function getSymbolsMap(context, symbols) {
 
   return symbolMap;
 }
+
+
 
 function updateAllDuplicatesWithMap(allDuplicates, symbolsMap) {
   allDuplicates.forEach(duplicate => {
@@ -1156,8 +1175,6 @@ function GetSpecificSymbolData(symbol, symbolsMap) {
     totalInstances += duplicate.numInstances;
     totalOverrides += duplicate.numOverrides;
   });
-
-
   clog("-- Found " + totalInstances + " instances, " + totalOverrides + " overrides, and created " + symbol.duplicates.length + " thumbnails");
   ctimeEnd("GetSpecificSymbolData");
 }

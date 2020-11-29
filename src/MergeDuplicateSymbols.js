@@ -13,11 +13,16 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
 
   Helpers.clog("-- Starting Merge Symbols");
 
+  // for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
+  //   Helpers.clog("---- " + symbolToMerge.duplicates[i].name + ". Has '.symbol' property " + (symbolToMerge.duplicates[i].symbol != null));
+  // };
+
   var symbolsToRemove = [];
   var symbolToApply;
   var instancesChanged = 0;
   var overridesChanged = 0;
   var symbolsRemoved = 0;
+  var idsMap = new Map();
 
 
   Helpers.clog("---- Processing symbols to remove");
@@ -28,6 +33,7 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
 
   for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
     if (i != symbolToKeep) {
+      idsMap.set(symbolToMerge.duplicates[i].symbol.symbolId)
       symbolsToRemove.push(symbolToMerge.duplicates[i].symbol);
     }
   }
@@ -40,8 +46,8 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
         symbolsRemoved++;
 
       Helpers.ctime("-- Taking instances and overrides");
-      var instancesOfSymbol = symbolToMerge.duplicates[i].symbolInstances;
-      var instancesWithOverrides = symbolToMerge.duplicates[i].symbolOverrides;
+      var instancesOfSymbol = Helpers.getSymbolInstances(symbolToMerge.duplicates[i].symbol);
+      var symbolOverrides = Helpers.getSymbolOverrides(symbolToMerge.duplicates[i].symbol, idsMap);
       var wasUnlinked = false;
       Helpers.ctimeEnd("-- Taking instances and overrides");
 
@@ -56,17 +62,15 @@ function MergeSymbols(symbolToMerge, symbolToKeep) {
 
 
       Helpers.ctime("-- Updating overrides");
-      Helpers.clog("---- Updating overrides (" + instancesWithOverrides.length + ")");
-      instancesWithOverrides.forEach(function (instanceWithOverrides) {
-        var overrides = instanceWithOverrides.overrides.filter(ov => ov.value == symbolToMerge.duplicates[i].symbol.symbolId);
-        overrides.forEach(override => {
-          try {
-            Helpers.clog("------ Updating override for " + instanceWithOverrides.name);
-            instanceWithOverrides.setOverrideValue(override, symbolToApply.symbolId.toString());
-          } catch (e) {
-            Helpers.clog("---- ERROR: Couldn't update override for " + instanceWithOverrides.name);
-          }
-        });
+      Helpers.clog("---- Updating overrides (" + symbolOverrides.length + ")");
+      symbolOverrides.forEach(function (override) {
+        try {
+          Helpers.clog("------ Updating override for " + override.instance.name);
+          override.instance.setOverrideValue(override.override, symbolToApply.symbolId.toString());
+        } catch (e) {
+          Helpers.clog("---- ERROR: Couldn't update override for " + override.instance.name);
+          Helpers.clog(e);
+        }
       });
       Helpers.ctimeEnd("-- Updating overrides");
 
@@ -332,7 +336,13 @@ export function MergeDuplicateSymbols(context) {
           mergedSymbols++;
         }
 
-        var localMergeResults = MergeSymbols(mergeSessionMap.get(mergeSession[i].symbolWithDuplicates), mergeSession[i].selectedIndex);
+        Helpers.clog("-- " + mergeSession[i].symbolWithDuplicates.name + " has the following duplicates:");
+        var mergeobject = mergeSessionMap.get(mergeSession[i].symbolWithDuplicates);
+        mergeobject.duplicates.forEach(foDup => {
+          Helpers.clog("---- " + foDup.name + ". Has '.symbol' property " + (foDup.symbol != null));
+        });
+
+        var localMergeResults = MergeSymbols(mergeobject, mergeSession[i].selectedIndex);
         mergeResults[0] += localMergeResults[0];
         mergeResults[1] += localMergeResults[1];
         mergeResults[2] += localMergeResults[2];
