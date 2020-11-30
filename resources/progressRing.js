@@ -12,16 +12,25 @@ class ProgressRing extends HTMLElement {
         height="${radius * 2}"
         width="${radius * 2}"
        >
-         <circle
-           stroke="#FF8E78"
-           stroke-dasharray="${this._circumference} ${this._circumference}"
-           style="stroke-dashoffset:${this._circumference}"
-           stroke-width="${stroke}"
-           fill="transparent"
-           r="${normalizedRadius}"
-           cx="${radius}"
-           cy="${radius}"
-        />
+       <circle
+         opacity="0.1"
+         stroke="#999999"
+         stroke-width="${stroke}"
+         fill="transparent"
+         r="${normalizedRadius}"
+         cx="${radius}"
+         cy="${radius}"
+      />
+      <circle class="progressRing"
+        stroke="#FF8E78"
+        stroke-dasharray="${this._circumference} ${this._circumference}"
+        style="stroke-dashoffset:${this._circumference}"
+        stroke-width="${stroke}"
+        fill="transparent"
+        r="${normalizedRadius}"
+        cx="${radius}"
+        cy="${radius}"
+     />
       </svg>
 
       <style>
@@ -36,7 +45,7 @@ class ProgressRing extends HTMLElement {
 
   setProgress(percent) {
     const offset = this._circumference - (percent / 100 * this._circumference);
-    const circle = this._root.querySelector('circle');
+    const circle = this._root.querySelector(".progressRing");
     circle.style.strokeDashoffset = offset;
   }
 

@@ -101,7 +101,7 @@ window.ShowLayout = (index) => {
 }
 
 window.HideLayout = (showEmptyState, showProgressCircle) => {
-  window.postMessage("nativeLog", "WV - Hide layout");
+  //window.postMessage("nativeLog", "WV - Hide layout");
   if(showEmptyState) document.getElementById('emptyState').className = "emptyState fadeIn";
   if(showProgressCircle){
      document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
@@ -182,7 +182,6 @@ window.ShowMergeProgress = (progress) => {
   HideLayout(false, true);
 }
 window.UpdateMergeProgress = (progress, message, message2) => {
-  window.postMessage("nativeLog", "WV - Update progress: "+progress);
   document.getElementById('progressRing').setProgress(progress);
   document.getElementById('mergeloadingMessage').innerHTML = message;
   document.getElementById('mergeloadingMessage2').innerHTML = message2;

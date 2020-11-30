@@ -179,7 +179,7 @@ window.ShowLayout = function (index) {
 };
 
 window.HideLayout = function (showEmptyState, showProgressCircle) {
-  window.postMessage("nativeLog", "WV - Hide layout");
+  //window.postMessage("nativeLog", "WV - Hide layout");
   if (showEmptyState) document.getElementById('emptyState').className = "emptyState fadeIn";
 
   if (showProgressCircle) {
@@ -260,7 +260,6 @@ window.ShowMergeProgress = function (progress) {
 };
 
 window.UpdateMergeProgress = function (progress, message, message2) {
-  window.postMessage("nativeLog", "WV - Update progress: " + progress);
   document.getElementById('progressRing').setProgress(progress);
   document.getElementById('mergeloadingMessage').innerHTML = message;
   document.getElementById('mergeloadingMessage2').innerHTML = message2;

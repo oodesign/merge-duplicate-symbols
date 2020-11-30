@@ -10,12 +10,7 @@ const webviewMSSIdentifier = 'merge-selected-symbols.webview'
 
 function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge, webContents) {
 
-
-  Helpers.clog("-- Starting Merge Symbols");
-
-  // for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
-  //   Helpers.clog("---- " + symbolToMerge.duplicates[i].name + ". Has '.symbol' property " + (symbolToMerge.duplicates[i].symbol != null));
-  // };
+  Helpers.clog("-- Starting Merge Symbols (" + symbolToMerge.duplicates.length + ")");
 
   var symbolsToRemove = [];
   var symbolToApply;
@@ -23,7 +18,6 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge, we
   var overridesChanged = 0;
   var symbolsRemoved = 0;
   var idsMap = new Map();
-
 
   Helpers.clog("---- Processing symbols to remove");
   symbolToApply = symbolToMerge.duplicates[symbolToKeep].symbol;
@@ -33,9 +27,10 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge, we
 
   var tasksToPerform = 0, tasksExecuted = 0;
   var instancesToChange = 0, overridesToChange = 0;
-
   var instOverMap = new Map();
 
+
+  Helpers.clog("---- Getting all related symbols instances and overrides");
   for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
     if (i != symbolToKeep) {
       idsMap.set(symbolToMerge.duplicates[i].symbol.symbolId)
@@ -56,12 +51,7 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge, we
 
   tasksToPerform = instancesToChange + overridesToChange;
 
-  Helpers.clog("---- Processing instances and overrides to update");
-  Helpers.clog("---- Tasks to perform: " + tasksToPerform);
   Helpers.ctime("Merging symbol:" + symbolToMerge.name);
-
-
-
   webContents.executeJavaScript(`ShowMergeProgress()`).catch(console.error);
 
   for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
@@ -85,10 +75,7 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge, we
       Helpers.ctimeEnd("-- Unlinking from library");
 
 
-      var message = "Updating " + symbolToMerge.name;
-      // var message2 = ((instancesOfSymbol.length > 0) ? ((instancesOfSymbol.length == 1) ? "1 instance" : instancesOfSymbol.length+" instances") : "");
-      // if ((symbolOverrides.length > 0) && (instancesOfSymbol.length>0)) message2 +=" and ";
-      // message2 += ((symbolOverrides.length > 0) ? ((symbolOverrides.length == 1) ? "1 override" : symbolOverrides.length+" overrides") : "");
+      var message = "Merging " + symbolToMerge.name;
 
       Helpers.ctime("-- Updating overrides");
       Helpers.clog("---- Updating overrides (" + symbolOverrides.length + ")");
@@ -127,24 +114,19 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge, we
         webContents.executeJavaScript(`UpdateMergeProgress(${progress}, ${JSON.stringify(message)}, ${JSON.stringify(message2)})`).catch(console.error);
       });
 
-
-
       Helpers.ctimeEnd("-- Updating instances");
 
     }
   }
+
   Helpers.ctimeEnd("Merging symbol:" + symbolToMerge.name);
 
   Helpers.clog("---- Finalized intance and override replacement.");
   Helpers.clog("---- Removing discarded symbols.");
 
-
   symbolsToRemove.forEach(function (symbolToRemove) {
     symbolToRemove.remove();
   });
-
-
-  Helpers.clog("---- Tasks executed:" + tasksExecuted + " of " + tasksToPerform);
 
   Helpers.clog("---- Merge completed.");
 
@@ -282,11 +264,12 @@ export function MergeDuplicateSymbols(context) {
   function CalculateDuplicates(includeLibraries) {
 
     Helpers.clog("Processing duplicates. Include libraries: " + includeLibraries);
-
     Helpers.ctime("Finding duplicates");
     allDuplicates = Helpers.getAllDuplicateSymbolsByName(context, includeLibraries);
     Helpers.ctimeEnd("Finding duplicates");
 
+
+    Helpers.clog("Getting symbols map");
     Helpers.ctime("getSymbolsMap");
     symbolsMap = Helpers.getSymbolsMap(context, allDuplicates);
     Helpers.ctimeEnd("getSymbolsMap");
@@ -372,19 +355,16 @@ export function MergeDuplicateSymbols(context) {
     var mergedSymbols = 0;
     var mergeResults = [0, 0, 0];
     Helpers.clog("Executing Merge");
+    var totalToMerge = editedMergeSession.filter(ems => !ems.isUnchecked && ems.selectedIndex >= 0).length;
     for (var i = 0; i < editedMergeSession.length; i++) {
       Helpers.clog("-- Merging " + mergeSession[i].symbolWithDuplicates.name);
       if (!editedMergeSession[i].isUnchecked && editedMergeSession[i].selectedIndex >= 0) {
         mergeSession[i].selectedIndex = editedMergeSession[i].selectedIndex;
-        for (var j = 0; j < mergeSession[i].symbolWithDuplicates.duplicates.length; j++) {
-          mergedSymbols++;
-        }
-
-        Helpers.clog("-- " + mergeSession[i].symbolWithDuplicates.name + " has the following duplicates:");
+        mergedSymbols += mergeSession[i].symbolWithDuplicates.duplicates.length;
+        
         var mergeobject = mergeSessionMap.get(mergeSession[i].symbolWithDuplicates);
-
         var basePercent = (duplicatesSolved * 100 / editedMergeSession.length);
-        var localMergeResults = MergeSymbols(mergeobject, mergeSession[i].selectedIndex, basePercent, editedMergeSession.length, webContents);
+        var localMergeResults = MergeSymbols(mergeobject, mergeSession[i].selectedIndex, basePercent, totalToMerge, webContents);
         mergeResults[0] += localMergeResults[0];
         mergeResults[1] += localMergeResults[1];
         mergeResults[2] += localMergeResults[2];

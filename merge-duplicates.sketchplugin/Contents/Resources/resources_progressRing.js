@@ -140,7 +140,7 @@ function (_HTMLElement) {
     _this._root = _this.attachShadow({
       mode: 'open'
     });
-    _this._root.innerHTML = "\n      <svg\n        height=\"".concat(radius * 2, "\"\n        width=\"").concat(radius * 2, "\"\n       >\n         <circle\n           stroke=\"#FF8E78\"\n           stroke-dasharray=\"").concat(_this._circumference, " ").concat(_this._circumference, "\"\n           style=\"stroke-dashoffset:").concat(_this._circumference, "\"\n           stroke-width=\"").concat(stroke, "\"\n           fill=\"transparent\"\n           r=\"").concat(normalizedRadius, "\"\n           cx=\"").concat(radius, "\"\n           cy=\"").concat(radius, "\"\n        />\n      </svg>\n\n      <style>\n        circle {\n          transition: stroke-dashoffset 0.35s;\n          transform: rotate(-90deg);\n          transform-origin: 50% 50%;\n        }\n      </style>\n    ");
+    _this._root.innerHTML = "\n      <svg\n        height=\"".concat(radius * 2, "\"\n        width=\"").concat(radius * 2, "\"\n       >\n       <circle\n         opacity=\"0.1\"\n         stroke=\"#999999\"\n         stroke-width=\"").concat(stroke, "\"\n         fill=\"transparent\"\n         r=\"").concat(normalizedRadius, "\"\n         cx=\"").concat(radius, "\"\n         cy=\"").concat(radius, "\"\n      />\n      <circle class=\"progressRing\"\n        stroke=\"#FF8E78\"\n        stroke-dasharray=\"").concat(_this._circumference, " ").concat(_this._circumference, "\"\n        style=\"stroke-dashoffset:").concat(_this._circumference, "\"\n        stroke-width=\"").concat(stroke, "\"\n        fill=\"transparent\"\n        r=\"").concat(normalizedRadius, "\"\n        cx=\"").concat(radius, "\"\n        cy=\"").concat(radius, "\"\n     />\n      </svg>\n\n      <style>\n        circle {\n          transition: stroke-dashoffset 0.35s;\n          transform: rotate(-90deg);\n          transform-origin: 50% 50%;\n        }\n      </style>\n    ");
     return _this;
   }
 
@@ -149,7 +149,7 @@ function (_HTMLElement) {
     value: function setProgress(percent) {
       var offset = this._circumference - percent / 100 * this._circumference;
 
-      var circle = this._root.querySelector('circle');
+      var circle = this._root.querySelector(".progressRing");
 
       circle.style.strokeDashoffset = offset;
     }
