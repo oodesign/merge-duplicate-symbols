@@ -165,7 +165,7 @@ window.DrawDuplicateSymbols = function (mergeSession) {
     DrawSymbolList(globalSymbolDisplayed);
     ShowLayout();
   } else {
-    HideLayout();
+    HideLayout(true, false);
   }
 };
 
@@ -178,10 +178,17 @@ window.ShowLayout = function (index) {
   document.getElementById('btnOK').className = "notDisplayed";
 };
 
-window.HideLayout = function (index) {
+window.HideLayout = function (showEmptyState, showProgressCircle) {
   window.postMessage("nativeLog", "WV - Hide layout");
-  document.getElementById('emptyState').className = "emptyState fadeIn";
+  if (showEmptyState) document.getElementById('emptyState').className = "emptyState fadeIn";
+
+  if (showProgressCircle) {
+    document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
+  }
+
   document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
+  document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState fadeOut";
+  document.getElementById('contentList').className = "rowAvailable listOfStyles fadeOut";
   document.getElementById('btnCancel').className = "notDisplayed";
   document.getElementById('btnMerge').className = "notDisplayed";
   document.getElementById('chkLibraries').className = "notDisplayed";
@@ -246,6 +253,17 @@ window.ReDrawAfterGettingData = function (symbolData, index) {
   DrawSymbolList(index);
   document.getElementById('listOfSymbols').className = "movingYFadeInitialState workZone movingYFadeIn" + (globalView == 0 ? " cardsView" : "");
   document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeIn";
+};
+
+window.ShowMergeProgress = function (progress) {
+  HideLayout(false, true);
+};
+
+window.UpdateMergeProgress = function (progress, message, message2) {
+  window.postMessage("nativeLog", "WV - Update progress: " + progress);
+  document.getElementById('progressRing').setProgress(progress);
+  document.getElementById('mergeloadingMessage').innerHTML = message;
+  document.getElementById('mergeloadingMessage2').innerHTML = message2;
 };
 
 window.onSymbolClicked = function (index, selectedSymbol) {

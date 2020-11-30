@@ -86,7 +86,7 @@ window.DrawDuplicateSymbols = (mergeSession) => {
     ShowLayout();
   }
   else {
-    HideLayout();
+    HideLayout(true, false);
   }
 }
 
@@ -100,10 +100,16 @@ window.ShowLayout = (index) => {
   document.getElementById('btnOK').className = "notDisplayed";
 }
 
-window.HideLayout = (index) => {
+window.HideLayout = (showEmptyState, showProgressCircle) => {
   window.postMessage("nativeLog", "WV - Hide layout");
-  document.getElementById('emptyState').className = "emptyState fadeIn";
+  if(showEmptyState) document.getElementById('emptyState').className = "emptyState fadeIn";
+  if(showProgressCircle){
+     document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
+  }
+  
   document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
+  document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState fadeOut";
+  document.getElementById('contentList').className = "rowAvailable listOfStyles fadeOut";
   document.getElementById('btnCancel').className = "notDisplayed";
   document.getElementById('btnMerge').className = "notDisplayed";
   document.getElementById('chkLibraries').className = "notDisplayed";
@@ -172,7 +178,15 @@ window.ReDrawAfterGettingData = (symbolData, index) => {
   document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeIn";
 }
 
-
+window.ShowMergeProgress = (progress) => {
+  HideLayout(false, true);
+}
+window.UpdateMergeProgress = (progress, message, message2) => {
+  window.postMessage("nativeLog", "WV - Update progress: "+progress);
+  document.getElementById('progressRing').setProgress(progress);
+  document.getElementById('mergeloadingMessage').innerHTML = message;
+  document.getElementById('mergeloadingMessage2').innerHTML = message2;
+}
 
 window.onSymbolClicked = (index, selectedSymbol) => {
   window.postMessage("nativeLog", "WV - Symbol clicked. Updating selection status.");

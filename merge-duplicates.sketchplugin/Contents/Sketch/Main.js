@@ -4509,7 +4509,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/df058667d72ed4abb6243b3484c248d1.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/9ed8a8fed1e43350c6e3719c054732bb.html";
 
 /***/ }),
 
@@ -4726,7 +4726,8 @@ var document = sketch.getSelectedDocument();
 var symbols = document.getSymbols();
 var libraries = dom.getLibraries();
 var settingsFile;
-var logsEnabled = false;
+var logsEnabled = false,
+    timingEnabled = false;
 var librariesEnabledByDefault = true;
 var acquiredLicense = "Single";
 var debugLogEnabled = true;
@@ -6533,15 +6534,19 @@ function clog(message) {
 }
 
 function ctime(message) {
-  if (logsEnabled) console.time(message);
+  if (timingEnabled) console.time(message);
 }
 
 function ctimeEnd(message) {
-  if (logsEnabled) console.timeEnd(message);
+  if (timingEnabled) console.timeEnd(message);
 }
 
 function getLogsEnabled() {
   return logsEnabled;
+}
+
+function getTimingEnabled() {
+  return timingEnabled;
 }
 
 function getLibrariesEnabled() {
@@ -6640,7 +6645,8 @@ module.exports = {
   updateAllDuplicatesWithMap: updateAllDuplicatesWithMap,
   ctime: ctime,
   ctimeEnd: ctimeEnd,
-  sketchlocalfile: sketchlocalfile
+  sketchlocalfile: sketchlocalfile,
+  getTimingEnabled: getTimingEnabled
 };
 
 /***/ }),
@@ -7476,7 +7482,7 @@ var Helpers = __webpack_require__(/*! ./Helpers */ "./src/Helpers.js");
 var webviewIdentifier = 'merge-duplicates.webview';
 var webviewMSSIdentifier = 'merge-selected-symbols.webview';
 
-function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge) {
+function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge, webContents) {
   Helpers.clog("-- Starting Merge Symbols"); // for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
   //   Helpers.clog("---- " + symbolToMerge.duplicates[i].name + ". Has '.symbol' property " + (symbolToMerge.duplicates[i].symbol != null));
   // };
@@ -7496,6 +7502,8 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge) {
 
   var tasksToPerform = 0,
       tasksExecuted = 0;
+  var instancesToChange = 0,
+      overridesToChange = 0;
   var instOverMap = new Map();
 
   for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
@@ -7508,14 +7516,16 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge) {
         "instancesOfSymbol": instancesOfSymbol,
         "symbolOverrides": symbolOverrides
       });
-      tasksToPerform += instancesOfSymbol.length;
-      tasksToPerform += symbolOverrides.length;
+      instancesToChange += instancesOfSymbol.length;
+      overridesToChange += symbolOverrides.length;
     }
   }
 
+  tasksToPerform = instancesToChange + overridesToChange;
   Helpers.clog("---- Processing instances and overrides to update");
   Helpers.clog("---- Tasks to perform: " + tasksToPerform);
   Helpers.ctime("Merging symbol:" + symbolToMerge.name);
+  webContents.executeJavaScript("ShowMergeProgress()").catch(console.error);
 
   for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
     if (i != symbolToKeep) {
@@ -7534,14 +7544,21 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge) {
       }
 
       Helpers.ctimeEnd("-- Unlinking from library");
+      var message = "Updating " + symbolToMerge.name; // var message2 = ((instancesOfSymbol.length > 0) ? ((instancesOfSymbol.length == 1) ? "1 instance" : instancesOfSymbol.length+" instances") : "");
+      // if ((symbolOverrides.length > 0) && (instancesOfSymbol.length>0)) message2 +=" and ";
+      // message2 += ((symbolOverrides.length > 0) ? ((symbolOverrides.length == 1) ? "1 override" : symbolOverrides.length+" overrides") : "");
+
       Helpers.ctime("-- Updating overrides");
       Helpers.clog("---- Updating overrides (" + symbolOverrides.length + ")");
       symbolOverrides.forEach(function (override) {
         try {
           Helpers.clog("------ Updating override for " + override.instance.name);
           override.instance.setOverrideValue(override.override, symbolToApply.symbolId.toString());
+          overridesChanged++;
           tasksExecuted++;
-          console.log("Real % % % :" + (basePercent + tasksExecuted * 100 / tasksToPerform / totalToMerge));
+          var progress = Math.floor(basePercent + tasksExecuted * 100 / tasksToPerform / totalToMerge);
+          var message2 = "Updating overrides (" + overridesChanged + " of " + overridesToChange + ")";
+          webContents.executeJavaScript("UpdateMergeProgress(".concat(progress, ", ").concat(JSON.stringify(message), ", ").concat(JSON.stringify(message2), ")")).catch(console.error);
         } catch (e) {
           Helpers.clog("---- ERROR: Couldn't update override for " + override.instance.name);
           Helpers.clog(e);
@@ -7559,8 +7576,10 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge) {
 
         instance.master = symbolToApply;
         tasksExecuted++;
-        console.log("Real % % % :" + (basePercent + tasksExecuted * 100 / tasksToPerform / totalToMerge));
         instancesChanged++;
+        var progress = Math.floor(basePercent + tasksExecuted * 100 / tasksToPerform / totalToMerge);
+        var message2 = "Updating instances (" + instancesChanged + " of " + instancesToChange + ")";
+        webContents.executeJavaScript("UpdateMergeProgress(".concat(progress, ", ").concat(JSON.stringify(message), ", ").concat(JSON.stringify(message2), ")")).catch(console.error);
       });
       Helpers.ctimeEnd("-- Updating instances");
     }
@@ -7767,8 +7786,7 @@ function MergeDuplicateSymbols(context) {
         Helpers.clog("-- " + mergeSession[i].symbolWithDuplicates.name + " has the following duplicates:");
         var mergeobject = mergeSessionMap.get(mergeSession[i].symbolWithDuplicates);
         var basePercent = duplicatesSolved * 100 / editedMergeSession.length;
-        console.log("% % %" + basePercent);
-        var localMergeResults = MergeSymbols(mergeobject, mergeSession[i].selectedIndex, basePercent, editedMergeSession.length);
+        var localMergeResults = MergeSymbols(mergeobject, mergeSession[i].selectedIndex, basePercent, editedMergeSession.length, webContents);
         mergeResults[0] += localMergeResults[0];
         mergeResults[1] += localMergeResults[1];
         mergeResults[2] += localMergeResults[2];

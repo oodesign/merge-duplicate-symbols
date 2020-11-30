@@ -8,7 +8,7 @@ const webviewMSSIdentifier = 'merge-selected-symbols.webview'
 
 
 
-function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge) {
+function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge, webContents) {
 
 
   Helpers.clog("-- Starting Merge Symbols");
@@ -32,6 +32,7 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge) {
   }
 
   var tasksToPerform = 0, tasksExecuted = 0;
+  var instancesToChange = 0, overridesToChange = 0;
 
   var instOverMap = new Map();
 
@@ -48,15 +49,20 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge) {
         "symbolOverrides": symbolOverrides
       });
 
-      tasksToPerform += instancesOfSymbol.length;
-      tasksToPerform += symbolOverrides.length;
+      instancesToChange += instancesOfSymbol.length;
+      overridesToChange += symbolOverrides.length;
     }
   }
+
+  tasksToPerform = instancesToChange + overridesToChange;
 
   Helpers.clog("---- Processing instances and overrides to update");
   Helpers.clog("---- Tasks to perform: " + tasksToPerform);
   Helpers.ctime("Merging symbol:" + symbolToMerge.name);
 
+
+
+  webContents.executeJavaScript(`ShowMergeProgress()`).catch(console.error);
 
   for (var i = 0; i < symbolToMerge.duplicates.length; i++) {
     if (i != symbolToKeep) {
@@ -79,14 +85,22 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge) {
       Helpers.ctimeEnd("-- Unlinking from library");
 
 
+      var message = "Updating " + symbolToMerge.name;
+      // var message2 = ((instancesOfSymbol.length > 0) ? ((instancesOfSymbol.length == 1) ? "1 instance" : instancesOfSymbol.length+" instances") : "");
+      // if ((symbolOverrides.length > 0) && (instancesOfSymbol.length>0)) message2 +=" and ";
+      // message2 += ((symbolOverrides.length > 0) ? ((symbolOverrides.length == 1) ? "1 override" : symbolOverrides.length+" overrides") : "");
+
       Helpers.ctime("-- Updating overrides");
       Helpers.clog("---- Updating overrides (" + symbolOverrides.length + ")");
       symbolOverrides.forEach(function (override) {
         try {
           Helpers.clog("------ Updating override for " + override.instance.name);
           override.instance.setOverrideValue(override.override, symbolToApply.symbolId.toString());
+          overridesChanged++;
           tasksExecuted++;
-          console.log("Real % % % :" + (basePercent + ((tasksExecuted * 100 / tasksToPerform) / totalToMerge)))
+          var progress = Math.floor(basePercent + ((tasksExecuted * 100 / tasksToPerform) / totalToMerge));
+          var message2 = "Updating overrides (" + overridesChanged + " of " + overridesToChange + ")";
+          webContents.executeJavaScript(`UpdateMergeProgress(${progress}, ${JSON.stringify(message)}, ${JSON.stringify(message2)})`).catch(console.error);
         } catch (e) {
           Helpers.clog("---- ERROR: Couldn't update override for " + override.instance.name);
           Helpers.clog(e);
@@ -107,8 +121,10 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge) {
         instance.master = symbolToApply;
 
         tasksExecuted++;
-        console.log("Real % % % :" + (basePercent + ((tasksExecuted * 100 / tasksToPerform) / totalToMerge)))
         instancesChanged++;
+        var progress = Math.floor(basePercent + ((tasksExecuted * 100 / tasksToPerform) / totalToMerge));
+        var message2 = "Updating instances (" + instancesChanged + " of " + instancesToChange + ")";
+        webContents.executeJavaScript(`UpdateMergeProgress(${progress}, ${JSON.stringify(message)}, ${JSON.stringify(message2)})`).catch(console.error);
       });
 
 
@@ -368,8 +384,7 @@ export function MergeDuplicateSymbols(context) {
         var mergeobject = mergeSessionMap.get(mergeSession[i].symbolWithDuplicates);
 
         var basePercent = (duplicatesSolved * 100 / editedMergeSession.length);
-        console.log("% % %" + basePercent)
-        var localMergeResults = MergeSymbols(mergeobject, mergeSession[i].selectedIndex, basePercent, editedMergeSession.length);
+        var localMergeResults = MergeSymbols(mergeobject, mergeSession[i].selectedIndex, basePercent, editedMergeSession.length, webContents);
         mergeResults[0] += localMergeResults[0];
         mergeResults[1] += localMergeResults[1];
         mergeResults[2] += localMergeResults[2];
