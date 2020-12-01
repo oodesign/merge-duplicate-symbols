@@ -5555,7 +5555,6 @@ function getAllDuplicateSymbolsByName(context, includeAllSymbolsFromExternalLibr
         lib.getDocument().getSymbols().forEach(function (symbol) {
           if (!idsMap.has(symbol.id)) {
             if (!namesMap.has(symbol.name)) {
-              console.log("Adding from external library symbol:" + symbol.name);
               var symbolObject = {
                 "name": "" + symbol.name,
                 "duplicates": []
@@ -5575,7 +5574,7 @@ function getAllDuplicateSymbolsByName(context, includeAllSymbolsFromExternalLibr
               });
               duplicatedSymbols.push(symbolObject);
               idsMap.set(symbol.id, symbolObject);
-              namesMap.set(symbol.name, true);
+              namesMap.set(symbol.name, symbolObject);
             } else {
               var symbolObject = namesMap.get(symbol.name);
               symbolObject.duplicates.push({
