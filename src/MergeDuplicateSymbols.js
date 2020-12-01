@@ -62,7 +62,6 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge, we
       Helpers.ctime("-- Taking instances and overrides");
       var instancesOfSymbol = instOverMap.get(symbolToMerge.duplicates[i]).instancesOfSymbol;
       var symbolOverrides = instOverMap.get(symbolToMerge.duplicates[i]).symbolOverrides;
-      var wasUnlinked = false;
       Helpers.ctimeEnd("-- Taking instances and overrides");
 
 
@@ -70,7 +69,6 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge, we
       Helpers.clog("------ Checking if symbol to merge is foreign");
       if (symbolToMerge.duplicates[i].isForeign && (symbolToMerge.duplicates[i].externalLibrary == null)) {
         symbolToMerge.duplicates[i].symbol.unlinkFromLibrary();
-        wasUnlinked = true;
       }
       Helpers.ctimeEnd("-- Unlinking from library");
 
@@ -188,11 +186,14 @@ export function MergeSelectedSymbols(context) {
   })
 
   webContents.on('GetSymbolData', () => {
+    Helpers.clog("Getting session data");
     mssmergeSession = [];
     mssmergeSession = Helpers.getSelectedSymbolsSession(selection);
 
+    Helpers.clog("Acquired merge session data");
 
     var reducedMergeSession = Helpers.getReducedSymbolsSession(mssmergeSession);
+    Helpers.clog("Acquired reduced merge session data");
     webContents.executeJavaScript(`DrawSymbolList(${JSON.stringify(reducedMergeSession)})`).catch(console.error);
   })
 
@@ -226,6 +227,8 @@ export function MergeSelectedSymbols(context) {
     UI.message("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
 
     onShutdown(webviewMSSIdentifier);
+
+    Helpers.clog("Closed window");
   });
 };
 
@@ -296,7 +299,7 @@ export function MergeDuplicateSymbols(context) {
     Helpers.clog("End of processing duplicates");
   }
 
-  
+
 
   browserWindow.once('ready-to-show', () => {
     browserWindow.show()
@@ -343,7 +346,7 @@ export function MergeDuplicateSymbols(context) {
       if (!editedMergeSession[i].isUnchecked && editedMergeSession[i].selectedIndex >= 0) {
         mergeSession[i].selectedIndex = editedMergeSession[i].selectedIndex;
         mergedSymbols += mergeSession[i].symbolWithDuplicates.duplicates.length;
-        
+
         var mergeobject = mergeSessionMap.get(mergeSession[i].symbolWithDuplicates);
         var basePercent = (duplicatesSolved * 100 / editedMergeSession.length);
         var localMergeResults = MergeSymbols(mergeobject, mergeSession[i].selectedIndex, basePercent, totalToMerge, webContents);

@@ -4509,7 +4509,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/91656929b7bbf3a09f2a202f8c425c6d.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/1e82f74da5e60e23898cb0b52cba1537.html";
 
 /***/ }),
 
@@ -4542,7 +4542,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/4f133c00701fb2b9a163e827dde8e54e.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/23e4437c1f8c5068d141c93bde0f8fcd.html";
 
 /***/ }),
 
@@ -7540,14 +7540,12 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge, we
       Helpers.ctime("-- Taking instances and overrides");
       var instancesOfSymbol = instOverMap.get(symbolToMerge.duplicates[i]).instancesOfSymbol;
       var symbolOverrides = instOverMap.get(symbolToMerge.duplicates[i]).symbolOverrides;
-      var wasUnlinked = false;
       Helpers.ctimeEnd("-- Taking instances and overrides");
       Helpers.ctime("-- Unlinking from library");
       Helpers.clog("------ Checking if symbol to merge is foreign");
 
       if (symbolToMerge.duplicates[i].isForeign && symbolToMerge.duplicates[i].externalLibrary == null) {
         symbolToMerge.duplicates[i].symbol.unlinkFromLibrary();
-        wasUnlinked = true;
       }
 
       Helpers.ctimeEnd("-- Unlinking from library");
@@ -7647,9 +7645,12 @@ function MergeSelectedSymbols(context) {
     webContents.executeJavaScript("LaunchMerge(".concat(JSON.stringify(selection.length), ")")).catch(console.error);
   });
   webContents.on('GetSymbolData', function () {
+    Helpers.clog("Getting session data");
     mssmergeSession = [];
     mssmergeSession = Helpers.getSelectedSymbolsSession(selection);
+    Helpers.clog("Acquired merge session data");
     var reducedMergeSession = Helpers.getReducedSymbolsSession(mssmergeSession);
+    Helpers.clog("Acquired reduced merge session data");
     webContents.executeJavaScript("DrawSymbolList(".concat(JSON.stringify(reducedMergeSession), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
@@ -7667,6 +7668,7 @@ function MergeSelectedSymbols(context) {
     Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff);
     UI.message("Hey ho! You just removed " + mergeResults[0] + " symbols" + replacedStuff + " Amazing!");
     onShutdown(webviewMSSIdentifier);
+    Helpers.clog("Closed window");
   });
 }
 ;

@@ -183,6 +183,23 @@ window.DrawSymbolList = function (mergeSession) {
   window.postMessage("nativeLog", "WV - Completed drawing symbols");
 };
 
+window.HideLayout = function () {
+  document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
+  document.getElementById('workZoneTitle').className = "rowAuto fadeOut";
+  document.getElementById('listOfStyles').className = "rowAvailable listOfStyles fadeOut";
+  document.getElementById('actionsRow').className = "rowAuto bottomBar fadeOut";
+};
+
+window.ShowMergeProgress = function (progress) {
+  HideLayout();
+};
+
+window.UpdateMergeProgress = function (progress, message, message2) {
+  document.getElementById('progressRing').setProgress(progress);
+  document.getElementById('mergeloadingMessage').innerHTML = message;
+  document.getElementById('mergeloadingMessage2').innerHTML = message2;
+};
+
 window.cancelAssignation = function () {
   window.postMessage('Cancel');
 };
