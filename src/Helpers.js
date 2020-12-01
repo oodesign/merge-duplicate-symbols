@@ -759,8 +759,6 @@ function getAllDuplicateSymbolsByName(context, includeAllSymbolsFromExternalLibr
             }
             else {
               var symbolObject = namesMap.get(symbol.name);
-              console.log("trying to retrieve"+symbol.name)
-              console.log("symbolObject name:"+symbolObject.name)
               symbolObject.duplicates.push({
                 "name": "" + symbol.name,
                 "symbol": symbol,
@@ -1760,7 +1758,7 @@ function getThumbnail(element) {
       }
       else {
         clog("---- Foreign. Getting image using library reference.");
-        var originLibrary = element.symbol.getLibrary();
+        var originLibrary = element.library;
         var libDocument = originLibrary.getDocument();
         component = libDocument.getLayerWithID(element.symbol.id);
       }
