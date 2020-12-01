@@ -22,7 +22,9 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge, we
   Helpers.clog("---- Processing symbols to remove");
   symbolToApply = symbolToMerge.duplicates[symbolToKeep].symbol;
   if (symbolToMerge.duplicates[symbolToKeep].isForeign) {
-    symbolToApply = Helpers.importSymbolFromLibrary(symbolToMerge.duplicates[symbolToKeep]);
+    var alreadyInDoc = (Helpers.document.getSymbols().filter(sym => sym.symbolId.localeCompare(symbolToApply.symbolId) == 0).length > 0);
+    if (!alreadyInDoc)
+      symbolToApply = Helpers.importSymbolFromLibrary(symbolToMerge.duplicates[symbolToKeep]);
   }
 
   var tasksToPerform = 0, tasksExecuted = 0;
@@ -277,10 +279,6 @@ export function MergeDuplicateSymbols(context) {
     symbolsMap = Helpers.getSymbolsMap(context, allDuplicates);
     Helpers.ctimeEnd("getSymbolsMap");
 
-    symbolsMap.forEach(function (symbolMapItem, symbol) {
-      Helpers.clog("-- Symbol " + symbol.name + " has " + symbolMapItem.directInstances.length + " direct instances, and " + symbolMapItem.instancesWithOverrides.length + " instancesWithOverrides");
-    });
-
     Helpers.clog("-- Found " + allDuplicates.length + " duplicates");
     if (allDuplicates.length > 0) {
       mergeSession = [];
@@ -324,7 +322,7 @@ export function MergeDuplicateSymbols(context) {
     webContents.executeJavaScript(`ReDrawAfterGettingData(${stringify},${index})`).catch(console.error);
   });
 
-  webContents.on('RecalculateDuplicates', (includeLibraries) => {
+  webContents.on('RecalculateDuplicates', (includeLibraries, index) => {
     if (includeLibraries != null)
       CalculateDuplicates(includeLibraries);
     else
@@ -332,7 +330,7 @@ export function MergeDuplicateSymbols(context) {
 
     Helpers.clog("Drawing duplicates to webview");
     var stringify = JSON.stringify(mergeSession);
-    webContents.executeJavaScript(`DrawDuplicateSymbols(${stringify})`).catch(console.error);
+    webContents.executeJavaScript(`DrawDuplicateSymbols(${stringify}, 0)`).catch(console.error);
   });
 
   webContents.on('ExecuteMerge', (editedMergeSession) => {

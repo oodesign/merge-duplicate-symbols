@@ -135,11 +135,12 @@ window.GetSymbols = function () {
   }, 200);
 };
 
-window.DrawDuplicateSymbols = function (mergeSession) {
+window.DrawDuplicateSymbols = function (mergeSession, displayIndex) {
   window.postMessage("nativeLog", "WV - Drawing duplicate symbols list");
   window.HideProgress();
-  globalMergeSession = mergeSession;
-  if (globalSymbolDisplayed >= globalMergeSession.length) globalSymbolDisplayed = 0;
+  globalMergeSession = mergeSession; //if (globalSymbolDisplayed >= globalMergeSession.length)
+
+  globalSymbolDisplayed = displayIndex;
   var lstDuplicateSymbols = document.getElementById('lstDuplicateSymbols');
   var btnMerge = document.getElementById('btnMerge');
   var inner = "";
@@ -312,7 +313,7 @@ window.DrawSymbolList = function (index) {
 document.getElementById('chkIncludeLibraries').addEventListener("click", function () {
   window.postMessage("nativeLog", "WV - Include libraries check changed");
   window.ShowProgress("");
-  window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked);
+  window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked, globalSymbolDisplayed);
 });
 
 window.cancelAssignation = function () {

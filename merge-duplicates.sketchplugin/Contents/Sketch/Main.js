@@ -5555,6 +5555,7 @@ function getAllDuplicateSymbolsByName(context, includeAllSymbolsFromExternalLibr
         lib.getDocument().getSymbols().forEach(function (symbol) {
           if (!idsMap.has(symbol.id)) {
             if (!namesMap.has(symbol.name)) {
+              console.log("Adding from external library symbol:" + symbol.name);
               var symbolObject = {
                 "name": "" + symbol.name,
                 "duplicates": []
@@ -5577,6 +5578,8 @@ function getAllDuplicateSymbolsByName(context, includeAllSymbolsFromExternalLibr
               namesMap.set(symbol.name, true);
             } else {
               var symbolObject = namesMap.get(symbol.name);
+              console.log("trying to retrieve" + symbol.name);
+              console.log("symbolObject name:" + symbolObject.name);
               symbolObject.duplicates.push({
                 "name": "" + symbol.name,
                 "symbol": symbol,
@@ -5656,13 +5659,13 @@ function updateAllDuplicatesWithMap(allDuplicates, symbolsMap) {
 
 function hasOverrides2(instance, idsMap) {
   if (instance.sketchObject.overrides() != null && instance.sketchObject.overrides().count() > 0) {
-    return FindNestedOverride(instance.sketchObject.overrides(), idsMap);
+    return FindNestedOverride(instance.sketchObject.overrides(), idsMap, instance);
   }
 
   return false;
 }
 
-function FindNestedOverride(overrides, idsMap) {
+function FindNestedOverride(overrides, idsMap, instance) {
   for (var key in overrides) {
     var symbolID = overrides[key]["symbolID"];
 
@@ -5675,7 +5678,7 @@ function FindNestedOverride(overrides, idsMap) {
         return true;
       }
     } else {
-      return FindNestedOverride(overrides[key], idsMap);
+      if (FindNestedOverride(overrides[key], idsMap, instance)) return true;
     }
   }
 
@@ -5727,7 +5730,7 @@ function importSymbolFromLibrary(element) {
     return symbol;
   } catch (e) {
     clog("-- ERROR: Couldn't import " + element.name + " from library" + element.libraryName + " with ID:" + element.symbol.id + " and symbolId:" + element.symbol.symbolId);
-    return null;
+    return element.symbol;
   }
 }
 
@@ -7505,7 +7508,10 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge, we
   symbolToApply = symbolToMerge.duplicates[symbolToKeep].symbol;
 
   if (symbolToMerge.duplicates[symbolToKeep].isForeign) {
-    symbolToApply = Helpers.importSymbolFromLibrary(symbolToMerge.duplicates[symbolToKeep]);
+    var alreadyInDoc = Helpers.document.getSymbols().filter(function (sym) {
+      return sym.symbolId.localeCompare(symbolToApply.symbolId) == 0;
+    }).length > 0;
+    if (!alreadyInDoc) symbolToApply = Helpers.importSymbolFromLibrary(symbolToMerge.duplicates[symbolToKeep]);
   }
 
   var tasksToPerform = 0,
@@ -7703,9 +7709,6 @@ function MergeDuplicateSymbols(context) {
     Helpers.ctime("getSymbolsMap");
     symbolsMap = Helpers.getSymbolsMap(context, allDuplicates);
     Helpers.ctimeEnd("getSymbolsMap");
-    symbolsMap.forEach(function (symbolMapItem, symbol) {
-      Helpers.clog("-- Symbol " + symbol.name + " has " + symbolMapItem.directInstances.length + " direct instances, and " + symbolMapItem.instancesWithOverrides.length + " instancesWithOverrides");
-    });
     Helpers.clog("-- Found " + allDuplicates.length + " duplicates");
 
     if (allDuplicates.length > 0) {
@@ -7744,11 +7747,11 @@ function MergeDuplicateSymbols(context) {
     var stringify = JSON.stringify(Helpers.getReducedDuplicateData(allDuplicates[index]));
     webContents.executeJavaScript("ReDrawAfterGettingData(".concat(stringify, ",").concat(index, ")")).catch(console.error);
   });
-  webContents.on('RecalculateDuplicates', function (includeLibraries) {
+  webContents.on('RecalculateDuplicates', function (includeLibraries, index) {
     if (includeLibraries != null) CalculateDuplicates(includeLibraries);else CalculateDuplicates(Helpers.getLibrariesEnabled());
     Helpers.clog("Drawing duplicates to webview");
     var stringify = JSON.stringify(mergeSession);
-    webContents.executeJavaScript("DrawDuplicateSymbols(".concat(stringify, ")")).catch(console.error);
+    webContents.executeJavaScript("DrawDuplicateSymbols(".concat(stringify, ", 0)")).catch(console.error);
   });
   webContents.on('ExecuteMerge', function (editedMergeSession) {
     var duplicatesSolved = 0;

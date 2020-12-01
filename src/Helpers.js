@@ -734,6 +734,7 @@ function getAllDuplicateSymbolsByName(context, includeAllSymbolsFromExternalLibr
         lib.getDocument().getSymbols().forEach(function (symbol) {
           if (!idsMap.has(symbol.id)) {
             if (!namesMap.has(symbol.name)) {
+              console.log("Adding from external library symbol:"+symbol.name)
               var symbolObject = {
                 "name": "" + symbol.name,
                 "duplicates": [],
@@ -758,6 +759,8 @@ function getAllDuplicateSymbolsByName(context, includeAllSymbolsFromExternalLibr
             }
             else {
               var symbolObject = namesMap.get(symbol.name);
+              console.log("trying to retrieve"+symbol.name)
+              console.log("symbolObject name:"+symbolObject.name)
               symbolObject.duplicates.push({
                 "name": "" + symbol.name,
                 "symbol": symbol,
@@ -844,12 +847,13 @@ function updateAllDuplicatesWithMap(allDuplicates, symbolsMap) {
 
 function hasOverrides2(instance, idsMap) {
   if ((instance.sketchObject.overrides() != null) && (instance.sketchObject.overrides().count() > 0)) {
-    return FindNestedOverride(instance.sketchObject.overrides(), idsMap);
+    return FindNestedOverride(instance.sketchObject.overrides(), idsMap, instance);
   }
   return false;
 }
 
-function FindNestedOverride(overrides, idsMap) {
+function FindNestedOverride(overrides, idsMap, instance) {
+  
   for (var key in overrides) {
     var symbolID = overrides[key]["symbolID"];
     if (symbolID != null) {
@@ -859,7 +863,7 @@ function FindNestedOverride(overrides, idsMap) {
       }
     }
     else {
-      return FindNestedOverride(overrides[key], idsMap);
+      if(FindNestedOverride(overrides[key], idsMap, instance)) return true;
     }
   }
   return false;
@@ -912,7 +916,7 @@ function importSymbolFromLibrary(element) {
     return symbol;
   } catch (e) {
     clog("-- ERROR: Couldn't import " + element.name + " from library" + element.libraryName + " with ID:" + element.symbol.id + " and symbolId:" + element.symbol.symbolId);
-    return null;
+    return element.symbol;
   }
 }
 

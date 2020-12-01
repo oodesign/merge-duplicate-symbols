@@ -42,14 +42,14 @@ window.GetSymbols = () => {
 
 
 
-window.DrawDuplicateSymbols = (mergeSession) => {
+window.DrawDuplicateSymbols = (mergeSession, displayIndex) => {
   window.postMessage("nativeLog", "WV - Drawing duplicate symbols list");
   window.HideProgress();
 
   globalMergeSession = mergeSession;
 
-  if (globalSymbolDisplayed >= globalMergeSession.length)
-    globalSymbolDisplayed = 0;
+  //if (globalSymbolDisplayed >= globalMergeSession.length)
+  globalSymbolDisplayed = displayIndex;
   var lstDuplicateSymbols = document.getElementById('lstDuplicateSymbols');
   var btnMerge = document.getElementById('btnMerge');
   var inner = "";
@@ -102,11 +102,11 @@ window.ShowLayout = (index) => {
 
 window.HideLayout = (showEmptyState, showProgressCircle) => {
   //window.postMessage("nativeLog", "WV - Hide layout");
-  if(showEmptyState) document.getElementById('emptyState').className = "emptyState fadeIn";
-  if(showProgressCircle){
-     document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
+  if (showEmptyState) document.getElementById('emptyState').className = "emptyState fadeIn";
+  if (showProgressCircle) {
+    document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
   }
-  
+
   document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
   document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState fadeOut";
   document.getElementById('contentList').className = "rowAvailable listOfStyles fadeOut";
@@ -252,7 +252,7 @@ window.DrawSymbolList = (index) => {
 document.getElementById('chkIncludeLibraries').addEventListener("click", () => {
   window.postMessage("nativeLog", "WV - Include libraries check changed");
   window.ShowProgress("");
-  window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked);
+  window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked, globalSymbolDisplayed);
 });
 
 window.cancelAssignation = () => {
