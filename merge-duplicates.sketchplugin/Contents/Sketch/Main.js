@@ -5784,76 +5784,85 @@ function debugLog(message) {
   if (debugLogEnabled) console.log(message);
 }
 
-function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLibraries, mergingSelected) {
-  var allSymbols = [];
-  var nameDictionary = {};
-  var alreadyAddedIDs = [];
+function getReducedDuplicateData(symbol) {
+  var reducedDuplicate = {
+    "name": "" + symbol.name,
+    "duplicates": []
+  };
+  symbol.duplicates.forEach(function (duplicate) {
+    reducedDuplicate.duplicates.push({
+      "name": "" + duplicate.name,
+      "isForeign": duplicate.isForeign,
+      "thumbnail": duplicate.thumbnail,
+      "numInstances": duplicate.numInstances,
+      "numOverrides": duplicate.numOverrides,
+      "libraryName": duplicate.libraryName,
+      "isSelected": false
+    });
+  });
+  return reducedDuplicate;
+}
+
+function getSelectedSymbolsSession(selection) {
+  var symbolObjects = [];
+  var idsMap = new Map();
   selection.forEach(function (docSymbol) {
-    var recomposedSymbolName = mergingSelected ? "mergingselected" : GetRecomposedSymbolName(docSymbol.symbol.name);
     var foreignLib = docSymbol.library;
     var isForeign = docSymbol.foreign;
     var libraryName = sketchlocalfile;
     if (isForeign) libraryName = libraryPrefix + foreignLib.name;
-    var symbolObject = {
+    var symbolObject;
+
+    if (symbolObjects.length == 0) {
+      var symbolObject = {
+        "name": "" + docSymbol.symbol.name,
+        "duplicates": []
+      };
+      symbolObjects.push(symbolObject);
+    } else symbolObject = symbolObjects[0];
+
+    idsMap.set(docSymbol.symbol.symbolId, docSymbol.symbol);
+    var symbolInstances = getSymbolInstances(docSymbol.symbol);
+    var symbolOverrides = getSymbolOverrides(docSymbol.symbol, idsMap);
+    symbolObject.duplicates.push({
       "name": "" + docSymbol.symbol.name,
       "symbol": docSymbol.symbol,
       "isForeign": isForeign,
-      "thumbnail": "",
-      "symbolInstances": null,
-      "numInstances": 0,
-      "symbolOverrides": null,
-      "numOverrides": 0,
+      "thumbnail": getThumbnail(docSymbol),
+      "symbolInstances": symbolInstances,
+      "numInstances": symbolInstances.length,
+      "symbolOverrides": symbolOverrides,
+      "numOverrides": symbolOverrides.length,
       "libraryName": libraryName,
       "library": foreignLib,
-      "duplicates": [],
       "isSelected": false
-    };
-    alreadyAddedIDs.push("" + docSymbol.symbol.id);
-
-    if (nameDictionary[recomposedSymbolName] == null) {
-      allSymbols.push(symbolObject);
-      symbolObject.duplicates.push({
-        "name": "" + docSymbol.symbol.name,
-        "symbol": docSymbol.symbol,
-        "isForeign": isForeign,
-        "thumbnail": "",
-        "symbolInstances": null,
-        "numInstances": 0,
-        "symbolOverrides": null,
-        "numOverrides": 0,
-        "libraryName": libraryName,
-        "library": foreignLib,
-        "duplicates": null,
-        "isSelected": false
-      });
-      nameDictionary[recomposedSymbolName] = symbolObject;
-    } else {
-      nameDictionary[recomposedSymbolName].duplicates.push(symbolObject);
-    }
+    });
   });
-  Object.keys(nameDictionary).forEach(function (key) {
-    var removeElement = false;
-    if (nameDictionary[key].duplicates.length <= 1) removeElement = true;
+  return symbolObjects.sort(compareSymbolNames);
+}
 
-    if (!removeElement) {
-      var allForeign = true;
-      nameDictionary[key].duplicates.forEach(function (duplicate) {
-        if (!duplicate.isForeign) allForeign = false;
+function getReducedSymbolsSession(session) {
+  var reducedSession = [];
+  session.forEach(function (sessionItem) {
+    var symbolObject = {
+      "name": "" + sessionItem.name,
+      "duplicates": []
+    };
+    sessionItem.duplicates.forEach(function (duplicate) {
+      symbolObject.duplicates.push({
+        "name": "" + duplicate.name,
+        "isForeign": duplicate.isForeign,
+        "thumbnail": duplicate.thumbnail,
+        "numInstances": duplicate.numInstances,
+        "numOverrides": duplicate.numOverrides,
+        "libraryName": duplicate.libraryName,
+        "library": duplicate.library,
+        "isSelected": duplicate.isSelected
       });
-
-      if (allForeign) {
-        removeElement = true;
-      }
-    }
-
-    if (removeElement) {
-      var index = allSymbols.indexOf(nameDictionary[key]);
-      if (index > -1) allSymbols.splice(index, 1);
-      nameDictionary[key] = null;
-    }
-  }); // ctimeEnd("getDuplicateSymbols");
-
-  return allSymbols.sort(compareSymbolNames);
+    });
+    reducedSession.push(symbolObject);
+  });
+  return reducedSession;
 }
 
 function getDuplicateColorVariables(context, includeLibraries) {
@@ -6608,7 +6617,7 @@ module.exports = {
   valStatus: valStatus,
   writeTextToFile: writeTextToFile,
   commands: commands,
-  getDuplicateSymbols: getDuplicateSymbols,
+  getSelectedSymbolsSession: getSelectedSymbolsSession,
   importForeignSymbol: importForeignSymbol,
   GetSpecificSymbolData: GetSpecificSymbolData,
   getDuplicateLayerStyles: getDuplicateLayerStyles,
@@ -6646,7 +6655,9 @@ module.exports = {
   ctime: ctime,
   ctimeEnd: ctimeEnd,
   sketchlocalfile: sketchlocalfile,
-  getTimingEnabled: getTimingEnabled
+  getTimingEnabled: getTimingEnabled,
+  getReducedDuplicateData: getReducedDuplicateData,
+  getReducedSymbolsSession: getReducedSymbolsSession
 };
 
 /***/ }),
@@ -7637,13 +7648,9 @@ function MergeSelectedSymbols(context) {
   });
   webContents.on('GetSymbolData', function () {
     mssmergeSession = [];
-    mssmergeSession = Helpers.getDuplicateSymbols(context, selection, false, true);
-
-    for (var i = 0; i < mssmergeSession.length; i++) {
-      Helpers.GetSpecificSymbolData(context, mssmergeSession, i);
-    }
-
-    webContents.executeJavaScript("DrawSymbolList(".concat(JSON.stringify(mssmergeSession), ")")).catch(console.error);
+    mssmergeSession = Helpers.getSelectedSymbolsSession(selection);
+    var reducedMergeSession = Helpers.getReducedSymbolsSession(mssmergeSession);
+    webContents.executeJavaScript("DrawSymbolList(".concat(JSON.stringify(reducedMergeSession), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
     Helpers.clog(s);
@@ -7654,7 +7661,7 @@ function MergeSelectedSymbols(context) {
   webContents.on('ExecuteMerge', function (editedMergeSession, selectedIndex) {
     Helpers.clog("Execute merge. Selected symbol: " + mssmergeSession[0].duplicates[selectedIndex].name);
     var mergeResults = [0, 0, 0];
-    mergeResults = MergeSymbols(mssmergeSession[0], selectedIndex);
+    mergeResults = MergeSymbols(mssmergeSession[0], selectedIndex, 0, 1, webContents);
     var replacedStuff = "";
     if (mergeResults[1] > 0 && mergeResults[2]) replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";else if (mergeResults[1] > 0) replacedStuff = " and replaced " + mergeResults[1] + " instances.";else if (mergeResults[2] > 0) replacedStuff = " and updated " + mergeResults[2] + " overrides.";else replacedStuff = ".";
     Helpers.clog("Completed merge. Removed " + mergeResults[0] + " symbols" + replacedStuff);
@@ -7703,7 +7710,7 @@ function MergeDuplicateSymbols(context) {
       mergeSession = [];
       Helpers.GetSpecificSymbolData(allDuplicates[0], symbolsMap);
       allDuplicates.forEach(function (duplicate) {
-        var reducedSymbol = getReducedDuplicateData(duplicate);
+        var reducedSymbol = Helpers.getReducedDuplicateData(duplicate);
         mergeSessionMap.set(reducedSymbol, duplicate);
         mergeSession.push({
           "symbolWithDuplicates": reducedSymbol,
@@ -7715,25 +7722,6 @@ function MergeDuplicateSymbols(context) {
     }
 
     Helpers.clog("End of processing duplicates");
-  }
-
-  function getReducedDuplicateData(symbol) {
-    var reducedDuplicate = {
-      "name": "" + symbol.name,
-      "duplicates": []
-    };
-    symbol.duplicates.forEach(function (duplicate) {
-      reducedDuplicate.duplicates.push({
-        "name": "" + duplicate.name,
-        "isForeign": duplicate.isForeign,
-        "thumbnail": duplicate.thumbnail,
-        "numInstances": duplicate.numInstances,
-        "numOverrides": duplicate.numOverrides,
-        "libraryName": duplicate.libraryName,
-        "isSelected": false
-      });
-    });
-    return reducedDuplicate;
   }
 
   browserWindow.once('ready-to-show', function () {
@@ -7751,7 +7739,7 @@ function MergeDuplicateSymbols(context) {
   });
   webContents.on('GetSelectedSymbolData', function (index) {
     Helpers.GetSpecificSymbolData(allDuplicates[index], symbolsMap);
-    var stringify = JSON.stringify(getReducedDuplicateData(allDuplicates[index]));
+    var stringify = JSON.stringify(Helpers.getReducedDuplicateData(allDuplicates[index]));
     webContents.executeJavaScript("ReDrawAfterGettingData(".concat(stringify, ",").concat(index, ")")).catch(console.error);
   });
   webContents.on('RecalculateDuplicates', function (includeLibraries) {

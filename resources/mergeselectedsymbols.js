@@ -76,7 +76,6 @@ window.DrawSymbolList = (mergeSession) => {
 
   var inner = "";
   for (var i = 0; i < symbolWithDuplicates.duplicates.length; i++) {
-
     
     window.postMessage("nativeLog", "WV --- Drawing symbol: "+symbolWithDuplicates.duplicates[i].name);
 

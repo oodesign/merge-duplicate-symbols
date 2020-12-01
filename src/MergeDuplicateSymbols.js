@@ -189,11 +189,11 @@ export function MergeSelectedSymbols(context) {
 
   webContents.on('GetSymbolData', () => {
     mssmergeSession = [];
-    mssmergeSession = Helpers.getDuplicateSymbols(context, selection, false, true);
-    for (var i = 0; i < mssmergeSession.length; i++) {
-      Helpers.GetSpecificSymbolData(context, mssmergeSession, i);
-    }
-    webContents.executeJavaScript(`DrawSymbolList(${JSON.stringify(mssmergeSession)})`).catch(console.error);
+    mssmergeSession = Helpers.getSelectedSymbolsSession(selection);
+
+
+    var reducedMergeSession = Helpers.getReducedSymbolsSession(mssmergeSession);
+    webContents.executeJavaScript(`DrawSymbolList(${JSON.stringify(reducedMergeSession)})`).catch(console.error);
   })
 
   webContents.on('nativeLog', s => {
@@ -208,7 +208,7 @@ export function MergeSelectedSymbols(context) {
     Helpers.clog("Execute merge. Selected symbol: " + mssmergeSession[0].duplicates[selectedIndex].name);
     var mergeResults = [0, 0, 0];
 
-    mergeResults = MergeSymbols(mssmergeSession[0], selectedIndex);
+    mergeResults = MergeSymbols(mssmergeSession[0], selectedIndex, 0, 1, webContents);
 
     var replacedStuff = "";
     if (mergeResults[1] > 0 && mergeResults[2])
@@ -283,7 +283,7 @@ export function MergeDuplicateSymbols(context) {
       mergeSession = [];
       Helpers.GetSpecificSymbolData(allDuplicates[0], symbolsMap);
       allDuplicates.forEach(duplicate => {
-        var reducedSymbol = getReducedDuplicateData(duplicate);
+        var reducedSymbol = Helpers.getReducedDuplicateData(duplicate);
         mergeSessionMap.set(reducedSymbol, duplicate);
         mergeSession.push({
           "symbolWithDuplicates": reducedSymbol,
@@ -296,25 +296,7 @@ export function MergeDuplicateSymbols(context) {
     Helpers.clog("End of processing duplicates");
   }
 
-  function getReducedDuplicateData(symbol) {
-    var reducedDuplicate = {
-      "name": "" + symbol.name,
-      "duplicates": [],
-    }
-    symbol.duplicates.forEach(duplicate => {
-      reducedDuplicate.duplicates.push({
-        "name": "" + duplicate.name,
-        "isForeign": duplicate.isForeign,
-        "thumbnail": duplicate.thumbnail,
-        "numInstances": duplicate.numInstances,
-        "numOverrides": duplicate.numOverrides,
-        "libraryName": duplicate.libraryName,
-        "isSelected": false
-      });
-    });
-
-    return reducedDuplicate;
-  }
+  
 
   browserWindow.once('ready-to-show', () => {
     browserWindow.show()
@@ -335,7 +317,7 @@ export function MergeDuplicateSymbols(context) {
 
   webContents.on('GetSelectedSymbolData', (index) => {
     Helpers.GetSpecificSymbolData(allDuplicates[index], symbolsMap);
-    var stringify = JSON.stringify(getReducedDuplicateData(allDuplicates[index]))
+    var stringify = JSON.stringify(Helpers.getReducedDuplicateData(allDuplicates[index]))
     webContents.executeJavaScript(`ReDrawAfterGettingData(${stringify},${index})`).catch(console.error);
   });
 
