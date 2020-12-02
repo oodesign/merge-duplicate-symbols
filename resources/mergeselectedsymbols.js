@@ -77,8 +77,7 @@ window.DrawSymbolList = (mergeSession) => {
   var inner = "";
   for (var i = 0; i < symbolWithDuplicates.duplicates.length; i++) {
 
-    
-    window.postMessage("nativeLog", "WV --- Drawing symbol: "+symbolWithDuplicates.duplicates[i].name);
+    window.postMessage("nativeLog", "WV --- Drawing symbol: " + symbolWithDuplicates.duplicates[i].name);
 
     var selected = symbolWithDuplicates.duplicates[i].isSelected ? "selected" : "";
     var checked = symbolWithDuplicates.duplicates[i].isSelected ? "checked" : "";
@@ -113,6 +112,26 @@ window.DrawSymbolList = (mergeSession) => {
   window.postMessage("nativeLog", "WV - Completed drawing symbols");
 }
 
+
+
+window.HideLayout = () => {
+  document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
+  document.getElementById('workZoneTitle').className = "rowAuto fadeOut";
+  document.getElementById('listOfStyles').className = "rowAvailable listOfStyles fadeOut";
+  document.getElementById('actionsRow').className = "rowAuto bottomBar fadeOut";
+}
+
+
+window.ShowMergeProgress = (progress) => {
+  HideLayout();
+}
+
+window.UpdateMergeProgress = (progress, message, message2) => {
+  document.getElementById('progressRing').setProgress(progress);
+  document.getElementById('mergeloadingMessage').innerHTML = message;
+  document.getElementById('mergeloadingMessage2').innerHTML = message2;
+}
+
 window.cancelAssignation = () => {
   window.postMessage('Cancel');
 }
@@ -141,6 +160,6 @@ document.getElementById('btnListView').addEventListener("click", () => {
   document.getElementById('listOfSymbols').classList.remove("cardsView");
   document.getElementById('btnCardView').classList.remove("selected");
   document.getElementById('btnListView').classList.add("selected");
-  
+
 });
 

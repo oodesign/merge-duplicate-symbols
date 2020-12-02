@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <title>Styler</title>
-  <link rel="stylesheet" href="./main.css">
+  <link rel="stylesheet" href="8d9c36cd79719054abf149e949c6fa98.css";">
 </head>
 
 <body>
@@ -21,6 +21,7 @@
           </div>
         </div>
         <div class="colAvailable">
+          <progress-ring stroke="4" radius="120" progress="20"></progress-ring>
           <div class="verticalLayout">
             <div class="rowAuto">
               <div class="horizontalLayout">
@@ -104,9 +105,10 @@
           </div>
           <div id="progressCircle" class="progressCircle offDownCenter">
             <div class="verticalLayout alignFullCenter">
-              <progress-ring id="progressRing" stroke="3" radius="30" progress="0"></progress-ring>
-              <div id="mergeloadingMessage" class="primaryText rowAuto"></div>
-              <div id="mergeloadingMessage2" class="secondaryText rowAuto"></div>
+              <div id="progressCircleIndicator" class="rowAuto alignFullCenter item progress-0">
+                <div class="radial-inner-bg"></div>
+              </div>
+              <div id="loadingMessage" class="secondaryText rowAuto"></div>
             </div>
           </div>
           <div id="emptyState" class="emptyState fadeOut">
@@ -135,7 +137,7 @@
       </div>
     </div>
     <div class="rowAuto bottomBar">
-      <div id="actionsRow" class="horizontalLayout actionsRow">
+      <div class="horizontalLayout actionsRow">
         <div class="colAvailable">
           <div id="chkLibraries" class="roundCheckbox notDisplayed">
             <input type="checkbox" id="chkIncludeLibraries" checked />
@@ -158,7 +160,7 @@
   </div>
   <!-- notice the "../" here. It's because webview.js will be compiled in a different folder -->
   <script src="../resources_mergeduplicatesymbols.js"></script>
-  <script src="../resources_progressRing.js"></script>
+  <script type="module" src="../resources_progressRing.js"></script>
 </body>
 
 </html>

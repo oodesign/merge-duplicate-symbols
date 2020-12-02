@@ -13,7 +13,7 @@ var symbols = document.getSymbols();
 var libraries = dom.getLibraries();
 
 var settingsFile;
-var logsEnabled = false;
+var logsEnabled = false, timingEnabled = false;
 var librariesEnabledByDefault = true;
 var acquiredLicense = "Single";
 
@@ -599,25 +599,42 @@ function GetRecomposedSymbolName(symbolName) {
 }
 
 
-function getSymbolInstances(context, symbolMaster) {
+function getSymbolInstances(symbolMaster) {
+  // console.log("getSymbolInstances. Symbol is " + (symbolMaster != null));
+  // console.log(symbolMaster);
   var symbolInstances = symbolMaster.getAllInstances();
   return symbolInstances;
 }
 
-function getSymbolOverrides(context, symbolMaster) {
-  var symbolOverrides = NSMutableArray.array();
-  var instances = sketch.find("[type='SymbolInstance']", document);
-  instances.forEach(function (instance) {
-    instance.overrides.forEach(function (override) {
-      if ((override.property.localeCompare("symbolID") == 0) /*&& (override.isDefault == 0)*/) {
-        if (override.value.localeCompare(symbolMaster.symbolId) == 0) {
-          symbolOverrides.push({
-            "instance": instance,
-            "override": override
-          });
-        }
-      }
-    });
+function getSymbolOverrides(symbolMaster, idsMap) {
+  var symbolOverrides = [];
+  // var instances = sketch.find("[type='SymbolInstance']", document);
+  // instances.forEach(function (instance) {
+  //   instance.overrides.forEach(function (override) {
+  //     if ((override.property.localeCompare("symbolID") == 0) /*&& (override.isDefault == 0)*/) {
+  //       if (override.value.localeCompare(symbolMaster.symbolId) == 0) {
+  //         symbolOverrides.push({
+  //           "instance": instance,
+  //           "override": override
+  //         });
+  //       }
+  //     }
+  //   });
+  // });
+
+  var allInstances = sketch.find("SymbolInstance", document);
+  var reducedInstances = allInstances.filter(instance => hasOverrides2(instance, idsMap));
+
+  reducedInstances.forEach(function (instance) {
+    if (instance.sketchObject.overrides().count() > 0) {
+      var instanceOverrides = instance.overrides.filter(ov => ov.property == "symbolID" && !ov.isDefault && ov.value == symbolMaster.symbolId);
+      instanceOverrides.forEach(override => {
+        symbolOverrides.push({
+          "instance": instance,
+          "override": override
+        });
+      });
+    }
   });
 
   return symbolOverrides;
@@ -643,19 +660,210 @@ function getRelatedOverrides(context, id, property) {
 }
 
 function countAllSymbols(context, includeAllSymbolsFromExternalLibraries) {
-  var counter = [0, 0];
+  var counter = {
+    "symbols": symbols.length,
+    "foreignSymbols": 0,
+    "documentInstances": sketch.find("SymbolInstance", document).length
+  };
 
   counter[0] = symbols.length;
 
   if (includeAllSymbolsFromExternalLibraries) {
     libraries.forEach(function (lib) {
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
-        counter[1] += lib.getDocument().getSymbols().length;
+        counter.foreignSymbols += lib.getDocument().getSymbols().length;
       }
     });
   }
 
   return counter;
+}
+
+
+function getAllDuplicateSymbolsByName(context, includeAllSymbolsFromExternalLibraries) {
+  var duplicatedSymbols = [];
+  const namesMap = new Map();
+  const idsMap = new Map();
+  document.getSymbols().forEach(function (symbol) {
+    if (!idsMap.has(symbol.id)) {
+      if (!namesMap.has(symbol.name)) {
+        var symbolObject = {
+          "name": "" + symbol.name,
+          "duplicates": [],
+        }
+        symbolObject.duplicates.push({
+          "name": "" + symbol.name,
+          "symbol": symbol,
+          "isForeign": (symbol.getLibrary() != null),
+          "thumbnail": "",
+          "symbolInstances": null,
+          "numInstances": 0,
+          "symbolOverrides": null,
+          "numOverrides": 0,
+          "libraryName": (symbol.getLibrary() != null) ? libraryPrefix + symbol.getLibrary().name : sketchlocalfile,
+          "library": (symbol.getLibrary() != null) ? symbol.getLibrary() : null,
+          "isSelected": false
+        });
+
+        duplicatedSymbols.push(symbolObject);
+        idsMap.set(symbol.id, symbolObject);
+        namesMap.set(symbol.name, symbolObject);
+      }
+      else {
+        var symbolObject = namesMap.get(symbol.name);
+        symbolObject.duplicates.push({
+          "name": "" + symbol.name,
+          "symbol": symbol,
+          "isForeign": (symbol.getLibrary() != null),
+          "thumbnail": "",
+          "symbolInstances": null,
+          "numInstances": 0,
+          "symbolOverrides": null,
+          "numOverrides": 0,
+          "libraryName": (symbol.getLibrary() != null) ? libraryPrefix + symbol.getLibrary().name : sketchlocalfile,
+          "library": (symbol.getLibrary() != null) ? symbol.getLibrary() : null,
+          "isSelected": false
+        });
+      }
+    }
+  });
+
+  if (includeAllSymbolsFromExternalLibraries) {
+    libraries.forEach(function (lib) {
+      if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        lib.getDocument().getSymbols().forEach(function (symbol) {
+          if (!idsMap.has(symbol.id)) {
+            if (!namesMap.has(symbol.name)) {
+              var symbolObject = {
+                "name": "" + symbol.name,
+                "duplicates": [],
+              }
+              symbolObject.duplicates.push({
+                "name": "" + symbol.name,
+                "symbol": symbol,
+                "isForeign": true,
+                "thumbnail": "",
+                "symbolInstances": null,
+                "numInstances": 0,
+                "symbolOverrides": null,
+                "numOverrides": 0,
+                "libraryName": lib.name,
+                "library": lib,
+                "isSelected": false
+              });
+
+              duplicatedSymbols.push(symbolObject);
+              idsMap.set(symbol.id, symbolObject);
+              namesMap.set(symbol.name, symbolObject);
+            }
+            else {
+              var symbolObject = namesMap.get(symbol.name);
+              symbolObject.duplicates.push({
+                "name": "" + symbol.name,
+                "symbol": symbol,
+                "isForeign": true,
+                "thumbnail": "",
+                "symbolInstances": null,
+                "numInstances": 0,
+                "symbolOverrides": null,
+                "numOverrides": 0,
+                "libraryName": lib.name,
+                "library": lib,
+                "isSelected": false
+              });
+            }
+          }
+        });
+      }
+    });
+  }
+
+
+  namesMap.forEach(function (symbolObject, name) {
+
+    var removeElement = false;
+    if (symbolObject.duplicates.length <= 1) removeElement = true;
+
+    if (!removeElement) {
+      var allForeign = true;
+      symbolObject.duplicates.forEach(function (duplicate) {
+        if (!duplicate.isForeign) allForeign = false;
+      });
+      removeElement = allForeign;
+    }
+
+    if (removeElement) {
+      var index = duplicatedSymbols.indexOf(symbolObject);
+      if (index > -1) duplicatedSymbols.splice(index, 1);
+    }
+
+  });
+
+  return duplicatedSymbols.sort(compareSymbolNames);
+
+}
+
+function getSymbolsMap(context, symbols) {
+
+  var symbolMap = new Map();
+  var idsMap = new Map();
+  symbols.forEach(function (symbol) {
+    symbol.duplicates.forEach(function (duplicatedSymbol) {
+      idsMap.set(duplicatedSymbol.symbol.symbolId, duplicatedSymbol.symbol);
+      symbolMap.set(duplicatedSymbol.symbol, {
+        "directInstances": duplicatedSymbol.symbol.getAllInstances(),
+        "instancesWithOverrides": []
+      });
+    });
+  });
+
+  var allInstances = sketch.find("SymbolInstance", document);
+  var reducedInstances = allInstances.filter(instance => hasOverrides2(instance, idsMap));
+
+  reducedInstances.forEach(function (instance) {
+    if (instance.sketchObject.overrides().count() > 0) {
+      var instanceOverrides = instance.overrides.filter(ov => ov.property == "symbolID" && !ov.isDefault && idsMap.has(ov.value));
+      instanceOverrides.forEach(override => {
+        symbolMap.get(idsMap.get(override.value)).instancesWithOverrides.push(instance);
+      });
+    }
+  });
+
+  return symbolMap;
+}
+
+
+
+function updateAllDuplicatesWithMap(allDuplicates, symbolsMap) {
+  allDuplicates.forEach(duplicate => {
+    duplicate.duplicates.forEach(symbol => {
+      symbol.symbolInstances = symbolsMap.get(duplicate).directInstances;
+    });
+  });
+}
+
+function hasOverrides2(instance, idsMap) {
+  if ((instance.sketchObject.overrides() != null) && (instance.sketchObject.overrides().count() > 0)) {
+    return FindNestedOverride(instance.sketchObject.overrides(), idsMap, instance);
+  }
+  return false;
+}
+
+function FindNestedOverride(overrides, idsMap, instance) {
+  
+  for (var key in overrides) {
+    var symbolID = overrides[key]["symbolID"];
+    if (symbolID != null) {
+      if (typeof symbolID === 'function') { symbolID = symbolID(); }
+      if (idsMap.has("" + symbolID)) {
+        return true;
+      }
+    }
+    else {
+      if(FindNestedOverride(overrides[key], idsMap, instance)) return true;
+    }
+  }
+  return false;
 }
 
 function getDocumentSymbols(context, includeAllSymbolsFromExternalLibraries) {
@@ -705,7 +913,7 @@ function importSymbolFromLibrary(element) {
     return symbol;
   } catch (e) {
     clog("-- ERROR: Couldn't import " + element.name + " from library" + element.libraryName + " with ID:" + element.symbol.id + " and symbolId:" + element.symbol.symbolId);
-    return null;
+    return element.symbol;
   }
 }
 
@@ -772,14 +980,32 @@ function debugLog(message) {
   if (debugLogEnabled) console.log(message);
 }
 
-function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLibraries, mergingSelected) {
+function getReducedDuplicateData(symbol) {
+  var reducedDuplicate = {
+    "name": "" + symbol.name,
+    "duplicates": [],
+  }
+  symbol.duplicates.forEach(duplicate => {
+    reducedDuplicate.duplicates.push({
+      "name": "" + duplicate.name,
+      "isForeign": duplicate.isForeign,
+      "thumbnail": duplicate.thumbnail,
+      "numInstances": duplicate.numInstances,
+      "numOverrides": duplicate.numOverrides,
+      "libraryName": duplicate.libraryName,
+      "isSelected": false
+    });
+  });
 
-  var allSymbols = [];
-  var nameDictionary = {};
-  var alreadyAddedIDs = [];
+  return reducedDuplicate;
+}
+
+function getSelectedSymbolsSession(selection) {
+
+  var symbolObjects = [];
+  var idsMap = new Map();
+
   selection.forEach(function (docSymbol) {
-
-    var recomposedSymbolName = mergingSelected ? "mergingselected" : GetRecomposedSymbolName(docSymbol.symbol.name);
     var foreignLib = docSymbol.library;
     var isForeign = docSymbol.foreign;
     var libraryName = sketchlocalfile;
@@ -787,71 +1013,66 @@ function getDuplicateSymbols(context, selection, includeAllSymbolsFromExternalLi
     if (isForeign)
       libraryName = libraryPrefix + foreignLib.name;
 
-    var symbolObject = {
+    var symbolObject;
+    if (symbolObjects.length == 0) {
+      var symbolObject = {
+        "name": "" + docSymbol.symbol.name,
+        "duplicates": []
+      }
+      symbolObjects.push(symbolObject);
+    }
+    else
+      symbolObject = symbolObjects[0];
+
+
+    idsMap.set(docSymbol.symbol.symbolId, docSymbol.symbol);
+    var symbolInstances = getSymbolInstances(docSymbol.symbol);
+    var symbolOverrides = getSymbolOverrides(docSymbol.symbol, idsMap);
+
+    symbolObject.duplicates.push({
       "name": "" + docSymbol.symbol.name,
       "symbol": docSymbol.symbol,
       "isForeign": isForeign,
-      "thumbnail": "",
-      "symbolInstances": null,
-      "numInstances": 0,
-      "symbolOverrides": null,
-      "numOverrides": 0,
+      "thumbnail": getThumbnail(docSymbol),
+      "symbolInstances": symbolInstances,
+      "numInstances": symbolInstances.length,
+      "symbolOverrides": symbolOverrides,
+      "numOverrides": symbolOverrides.length,
       "libraryName": libraryName,
       "library": foreignLib,
-      "duplicates": [],
       "isSelected": false
+    });
+  });
+
+  return symbolObjects.sort(compareSymbolNames);
+
+}
+
+
+function getReducedSymbolsSession(session) {
+
+  var reducedSession = [];
+  session.forEach(sessionItem => {
+    var symbolObject = {
+      "name": "" + sessionItem.name,
+      "duplicates": []
     }
-
-    alreadyAddedIDs.push("" + docSymbol.symbol.id);
-
-    if (nameDictionary[recomposedSymbolName] == null) {
-      allSymbols.push(symbolObject);
+    sessionItem.duplicates.forEach(duplicate => {
       symbolObject.duplicates.push({
-        "name": "" + docSymbol.symbol.name,
-        "symbol": docSymbol.symbol,
-        "isForeign": isForeign,
-        "thumbnail": "",
-        "symbolInstances": null,
-        "numInstances": 0,
-        "symbolOverrides": null,
-        "numOverrides": 0,
-        "libraryName": libraryName,
-        "library": foreignLib,
-        "duplicates": null,
-        "isSelected": false
-      });
-      nameDictionary[recomposedSymbolName] = symbolObject;
-    }
-    else {
-      nameDictionary[recomposedSymbolName].duplicates.push(symbolObject);
-    }
+        "name": "" + duplicate.name,
+        "isForeign": duplicate.isForeign,
+        "thumbnail": duplicate.thumbnail,
+        "numInstances": duplicate.numInstances,
+        "numOverrides": duplicate.numOverrides,
+        "libraryName": duplicate.libraryName,
+        "library": duplicate.library,
+        "isSelected": duplicate.isSelected
+      })
+    });
+    reducedSession.push(symbolObject);
   });
 
-  Object.keys(nameDictionary).forEach(function (key) {
-
-    var removeElement = false;
-    if (nameDictionary[key].duplicates.length <= 1) removeElement = true;
-
-    if (!removeElement) {
-      var allForeign = true;
-      nameDictionary[key].duplicates.forEach(function (duplicate) {
-        if (!duplicate.isForeign) allForeign = false;
-      });
-      if (allForeign) {
-        removeElement = true;
-      }
-    }
-
-    if (removeElement) {
-      var index = allSymbols.indexOf(nameDictionary[key]);
-      if (index > -1) allSymbols.splice(index, 1);
-      nameDictionary[key] = null;
-    }
-
-  });
-
-  // console.timeEnd("getDuplicateSymbols");
-  return allSymbols.sort(compareSymbolNames);
+  return reducedSession;
 
 }
 
@@ -936,45 +1157,40 @@ function getDuplicateColorVariables(context, includeLibraries) {
 function GetSpecificLayerStyleData(context, layerStyles, index) {
 
   clog("Processing text style metadata for: " + layerStyles[index].name);
-  // console.time("GetSpecificLayerStyleData");
+  // ctime("GetSpecificLayerStyleData");
   for (var i = 0; i < layerStyles[index].duplicates.length; i++) {
     layerStyles[index].duplicates[i].thumbnail = getOvalThumbnail(layerStyles[index].duplicates[i].layerStyle);
   }
-  // console.timeEnd("GetSpecificLayerStyleData");
+  // ctimeEnd("GetSpecificLayerStyleData");
 }
 
 function GetSpecificTextStyleData(context, textStyles, index) {
 
   clog("Processing text style metadata for: " + textStyles[index].name);
-  // console.time("GetSpecificLayerStyleData");
+  // ctime("GetSpecificLayerStyleData");
   for (var i = 0; i < textStyles[index].duplicates.length; i++) {
     textStyles[index].duplicates[i].thumbnail = getTextThumbnail(textStyles[index].duplicates[i].textStyle);
   }
-  // console.timeEnd("GetSpecificLayerStyleData");
+  // ctimeEnd("GetSpecificLayerStyleData");
 }
 
-function GetSpecificSymbolData(context, symbols, index) {
+function GetSpecificSymbolData(symbol, symbolsMap) {
+  ctime("GetSpecificSymbolData");
   var totalInstances = 0;
   var totalOverrides = 0;
-  for (var i = 0; i < symbols[index].duplicates.length; i++) {
-    clog("-- Processing symbol instances for duplicate: " + symbols[index].duplicates[i].name);
-    var instances = getSymbolInstances(context, symbols[index].duplicates[i].symbol);
-    clog("-- Processing symbol overrides for duplicate: " + symbols[index].duplicates[i].name);
-    var overrides = getSymbolOverrides(context, symbols[index].duplicates[i].symbol);
-    clog("-- Processing thumbnail overrides for duplicate: " + symbols[index].duplicates[i].name);
-    symbols[index].duplicates[i].thumbnail = getThumbnail(symbols[index].duplicates[i]);
-    symbols[index].duplicates[i].symbolInstances = instances;
-    symbols[index].duplicates[i].numInstances = instances.length;
-    symbols[index].duplicates[i].symbolOverrides = overrides;
-    symbols[index].duplicates[i].numOverrides = overrides.length;
+  symbol.duplicates.forEach(duplicate => {
+    var symbolMapItem = symbolsMap.get(duplicate.symbol);
+    duplicate.thumbnail = getThumbnail(duplicate);
+    duplicate.symbolInstances = symbolMapItem.directInstances;
+    duplicate.numInstances = symbolMapItem.directInstances.length;
+    duplicate.symbolOverrides = symbolMapItem.instancesWithOverrides;
+    duplicate.numOverrides = symbolMapItem.instancesWithOverrides.length;
 
-    totalInstances += instances.length;
-    totalOverrides += overrides.length;
-  }
-
-
-  clog("-- Found " + totalInstances + " instances, " + totalOverrides + " overrides, and created " + symbols[index].duplicates.length + " thumbnails");
-  // console.timeEnd("GetSpecificSymbolData");
+    totalInstances += duplicate.numInstances;
+    totalOverrides += duplicate.numOverrides;
+  });
+  clog("-- Found " + totalInstances + " instances, " + totalOverrides + " overrides, and created " + symbol.duplicates.length + " thumbnails");
+  ctimeEnd("GetSpecificSymbolData");
 }
 
 function getTextStyleDescription(sharedTextStyle) {
@@ -1346,7 +1562,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
     });
   }
 
-  // console.timeEnd("getDuplicateExternalSymbols");
+  // ctimeEnd("getDuplicateExternalSymbols");
 
   Object.keys(nameDictionary).forEach(function (key) {
     var removeElement = false;
@@ -1541,7 +1757,7 @@ function getThumbnail(element) {
       }
       else {
         clog("---- Foreign. Getting image using library reference.");
-        var originLibrary = element.symbol.getLibrary();
+        var originLibrary = element.library;
         var libDocument = originLibrary.getDocument();
         component = libDocument.getLayerWithID(element.symbol.id);
       }
@@ -1549,7 +1765,6 @@ function getThumbnail(element) {
       clog("---- ERROR: Couldn't load (foreign symbol) " + element.symbol.name + " library document.")
     }
   }
-
   try {
     const options = { scales: '3', formats: 'png', output: false };
     var buffer = sketch.export(component, options);
@@ -1570,8 +1785,22 @@ function clog(message) {
     console.log(message);
 }
 
+function ctime(message) {
+  if (timingEnabled)
+    console.time(message);
+}
+
+function ctimeEnd(message) {
+  if (timingEnabled)
+    console.timeEnd(message);
+}
+
 function getLogsEnabled() {
   return logsEnabled;
+}
+
+function getTimingEnabled() {
+  return timingEnabled;
 }
 
 function getLibrariesEnabled() {
@@ -1588,4 +1817,4 @@ function getSettings() {
 var _0x684b = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x684b[1]]()[_0x684b[0]]() + _0x684b[2]); if ((settingsFile != null) && (settingsFile[_0x684b[3]] != null)) { logsEnabled = settingsFile[_0x684b[3]] }; if ((settingsFile != null) && (settingsFile[_0x684b[4]] != null)) { librariesEnabledByDefault = settingsFile[_0x684b[4]] } } catch (e) { console[_0x684b[5]](e); return null } }
 //d9-05
 
-module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, isString, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getDuplicateSymbols, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, getRelatedOverrides, importTextStyleFromLibrary, getDefinedColorVariables, importColorVariableFromLibrary, getDuplicateColorVariables, FindAllSimilarColorVariables, analytics };
+module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, isString, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getDefinedLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getSelectedSymbolsSession, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, getRelatedOverrides, importTextStyleFromLibrary, getDefinedColorVariables, importColorVariableFromLibrary, getDuplicateColorVariables, FindAllSimilarColorVariables, analytics, getAllDuplicateSymbolsByName, getSymbolsMap, updateAllDuplicatesWithMap, ctime, ctimeEnd, sketchlocalfile, getTimingEnabled, getReducedDuplicateData, getReducedSymbolsSession };

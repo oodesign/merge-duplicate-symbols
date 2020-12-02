@@ -7,12 +7,14 @@ var globalSymbolDisplayed = 0;
 var isLoadingSymbolData = false;
 var globalNumberOfSymbolsInDocument = 0;
 var globalNumberOfSymbolsInLibraries = 0;
+var globalNumberOfInstancesInDocument = 0;
 var globalView = 1;
 var includeLibrariesSetting = false;
 
-window.LaunchMerge = (numberOfLocalSymbols, numberOfLibrarySymbols, includeLibraries) => {
+window.LaunchMerge = (numberOfLocalSymbols, numberOfLibrarySymbols, numberOfInstancesInDocument, includeLibraries) => {
   globalNumberOfSymbolsInDocument = numberOfLocalSymbols;
   globalNumberOfSymbolsInLibraries = numberOfLibrarySymbols;
+  globalNumberOfInstancesInDocument = numberOfInstancesInDocument;
   includeLibrariesSetting = includeLibraries;
 
   if (document.readyState == 'loading') {
@@ -29,7 +31,7 @@ window.GetSymbols = () => {
 
   setTimeout(function () {
     var message = "We're looking for duplicates...";
-    if (globalNumberOfSymbolsInDocument > 100) {
+    if (((globalNumberOfSymbolsInDocument + globalNumberOfSymbolsInLibraries) > 500) || (globalNumberOfInstancesInDocument > 5000)) {
       var andLinkedLibraries = (globalNumberOfSymbolsInLibraries > 0) ? "(and " + globalNumberOfSymbolsInLibraries + " in linked libraries)" : ""
       message = "We're looking for duplicates...<br/><br/>Wow, you have " + globalNumberOfSymbolsInDocument + " symbols here " + andLinkedLibraries + "! 🙈<br/> This may take a while... Wanna go get a coffee?"
     }
@@ -40,14 +42,14 @@ window.GetSymbols = () => {
 
 
 
-window.DrawDuplicateSymbols = (mergeSession) => {
+window.DrawDuplicateSymbols = (mergeSession, displayIndex) => {
   window.postMessage("nativeLog", "WV - Drawing duplicate symbols list");
   window.HideProgress();
 
   globalMergeSession = mergeSession;
 
-  if (globalSymbolDisplayed >= globalMergeSession.length)
-    globalSymbolDisplayed = 0;
+  //if (globalSymbolDisplayed >= globalMergeSession.length)
+  globalSymbolDisplayed = displayIndex;
   var lstDuplicateSymbols = document.getElementById('lstDuplicateSymbols');
   var btnMerge = document.getElementById('btnMerge');
   var inner = "";
@@ -84,7 +86,7 @@ window.DrawDuplicateSymbols = (mergeSession) => {
     ShowLayout();
   }
   else {
-    HideLayout();
+    HideLayout(true, false);
   }
 }
 
@@ -98,10 +100,16 @@ window.ShowLayout = (index) => {
   document.getElementById('btnOK').className = "notDisplayed";
 }
 
-window.HideLayout = (index) => {
-  window.postMessage("nativeLog", "WV - Hide layout");
-  document.getElementById('emptyState').className = "emptyState fadeIn";
+window.HideLayout = (showEmptyState, showProgressCircle) => {
+  //window.postMessage("nativeLog", "WV - Hide layout");
+  if (showEmptyState) document.getElementById('emptyState').className = "emptyState fadeIn";
+  if (showProgressCircle) {
+    document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
+  }
+
   document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
+  document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState fadeOut";
+  document.getElementById('contentList').className = "rowAvailable listOfStyles fadeOut";
   document.getElementById('btnCancel').className = "notDisplayed";
   document.getElementById('btnMerge').className = "notDisplayed";
   document.getElementById('chkLibraries').className = "notDisplayed";
@@ -170,7 +178,14 @@ window.ReDrawAfterGettingData = (symbolData, index) => {
   document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeIn";
 }
 
-
+window.ShowMergeProgress = (progress) => {
+  HideLayout(false, true);
+}
+window.UpdateMergeProgress = (progress, message, message2) => {
+  document.getElementById('progressRing').setProgress(progress);
+  document.getElementById('mergeloadingMessage').innerHTML = message;
+  document.getElementById('mergeloadingMessage2').innerHTML = message2;
+}
 
 window.onSymbolClicked = (index, selectedSymbol) => {
   window.postMessage("nativeLog", "WV - Symbol clicked. Updating selection status.");
@@ -237,7 +252,7 @@ window.DrawSymbolList = (index) => {
 document.getElementById('chkIncludeLibraries').addEventListener("click", () => {
   window.postMessage("nativeLog", "WV - Include libraries check changed");
   window.ShowProgress("");
-  window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked);
+  window.postMessage('RecalculateDuplicates', document.getElementById('chkIncludeLibraries').checked, globalSymbolDisplayed);
 });
 
 window.cancelAssignation = () => {
