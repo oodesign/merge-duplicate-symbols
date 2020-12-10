@@ -150,6 +150,7 @@ window.DrawStyleList = (index) => {
                   <div class="rowAvailable padded ${contrastMode}"><div class="thumbnail" style='background-image:url("data:image/png;base64,${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].thumbnail}")'></div></div>
                   <div class="rowAuto primaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].name} (${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].libraryName})</span></div>
                   <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].description}</span></div>
+                  <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].numInstances} instances - Used in ${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].numOverrides} overrides</span></div>
                 </div>
               </div>`;
   }

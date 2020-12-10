@@ -18,7 +18,7 @@ function MergeLayerStyles(context, styleToKeepIndex) {
   var styleToApply = styleToKeep.layerStyle;
   var stylesToRemove = [];
   Helpers.clog("Merging styles. Keep '" + styleToKeep.name + "'");
-  
+
 
   if (styleToKeep.foreign) {
     var existingLs = Helpers.document.sharedLayerStyles.filter(function (ls) {
@@ -173,8 +173,10 @@ export function MergeDuplicateLayerStyles(context) {
   const browserWindow = new BrowserWindow(options);
   const webContents = browserWindow.webContents;
 
-  var onlyDuplicatedLayerStyles;
+  var onlyDuplicatedLayerStyles, layerStylesMap;
   var mergeSession = [];
+  var mergeSessionMap = new Map();
+
   CalculateDuplicates(Helpers.getLibrariesEnabled());
 
   if (onlyDuplicatedLayerStyles.length > 0) {
@@ -187,18 +189,28 @@ export function MergeDuplicateLayerStyles(context) {
 
   function CalculateDuplicates(includeLibraries) {
     Helpers.clog("Finding duplicate layer styles. Including libraries:" + includeLibraries);
-    onlyDuplicatedLayerStyles = Helpers.getDuplicateLayerStyles(context, includeLibraries);
+    onlyDuplicatedLayerStyles = Helpers.getAllDuplicateLayerStylesByName(context, includeLibraries);
+
+    layerStylesMap = Helpers.getLayerStylesMap(context, onlyDuplicatedLayerStyles);
+
+    // console.log("layerStylesMap:")
+    // layerStylesMap.forEach(function (value, key) {
+    //   console.log("---- -- " + key.name + " - Direct:" + value.directInstances.length + " - Indirect:" + value.instancesWithOverrides.length);
+    // });
+
     if (onlyDuplicatedLayerStyles.length > 0) {
-      Helpers.GetSpecificLayerStyleData(context, onlyDuplicatedLayerStyles, 0);
+      Helpers.GetSpecificLayerStyleData(onlyDuplicatedLayerStyles[0], layerStylesMap);
       mergeSession = [];
-      for (var i = 0; i < onlyDuplicatedLayerStyles.length; i++) {
+      onlyDuplicatedLayerStyles.forEach(duplicate => {
+        var reducedStyle = Helpers.getReducedLayerStyleData(duplicate);
+        mergeSessionMap.set(reducedStyle, duplicate);
         mergeSession.push({
-          "layerStyleWithDuplicates": onlyDuplicatedLayerStyles[i],
+          "layerStyleWithDuplicates": reducedStyle,
           "selectedIndex": -1,
           "isUnchecked": false,
-          "isProcessed": (i == 0) ? true : false
+          "isProcessed": (mergeSession.length == 0)
         });
-      }
+      });
     }
   }
 
@@ -226,8 +238,9 @@ export function MergeDuplicateLayerStyles(context) {
   });
 
   webContents.on('GetSelectedStyleData', (index) => {
-    Helpers.GetSpecificLayerStyleData(context, onlyDuplicatedLayerStyles, index);
-    webContents.executeJavaScript(`ReDrawAfterGettingData(${JSON.stringify(mergeSession[index].layerStyleWithDuplicates)},${index})`).catch(console.error);
+    Helpers.GetSpecificLayerStyleData(onlyDuplicatedLayerStyles[index], layerStylesMap);
+    var stringify = JSON.stringify(Helpers.getReducedLayerStyleData(onlyDuplicatedLayerStyles[index]))
+    webContents.executeJavaScript(`ReDrawAfterGettingData(${stringify},${index})`).catch(console.error);
   });
 
   webContents.on('ExecuteMerge', (editedMergeSession) => {
