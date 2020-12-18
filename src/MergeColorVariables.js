@@ -20,7 +20,7 @@ function MergeColorVariables(context, colorVariableToKeepIndex) {
   var colorVariablesToRemove = [];
   Helpers.clog("Merging color variables. Keep '" + colorVariableToKeep.name + "'");
 
-  if (colorVariableToKeep.foreign) {
+  if (colorVariableToKeep.isForeign) {
     var existingCV = Helpers.document.swatches.filter(function (sw) {
       return sw.id == colorVariableToKeep.colorVariable.id;
     });

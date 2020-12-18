@@ -12,7 +12,7 @@ window.DrawStylesList = (mergeSession, includeLibraries) => {
   globalMergeSession = mergeSession;
   includeLibrariesSetting = includeLibraries;
 
-  if(includeLibraries!=null)
+  if (includeLibraries != null)
     document.getElementById('chkIncludeLibraries').checked = includeLibrariesSetting;
 
   if (globalStyleDisplayed >= globalMergeSession.length)
@@ -131,7 +131,7 @@ window.DrawStyleList = (index) => {
   globalStyleDisplayed = index;
   var inner = "";
   for (var i = 0; i < globalMergeSession[index].layerStyleWithDuplicates.duplicates.length; i++) {
-    window.postMessage("nativeLog", "WV --- Drawing style: "+globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].name);
+    window.postMessage("nativeLog", "WV --- Drawing style: " + globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].name);
 
     var isSelected = (globalMergeSession[index].selectedIndex == i)
     var selected = isSelected ? "selected" : "";
@@ -144,21 +144,25 @@ window.DrawStyleList = (index) => {
 
     var contrastMode = globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].contrastMode ? "bgContrastMode" : "";
 
-    inner += `<div id="duplicateItem${i}" class="thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter ${selected}" onclick="onStyleClicked(${i}, ${index})">
+    if (!globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].isHidden) {
+      inner += `<div id="duplicateItem${i}" class="thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter ${selected}" onclick="onStyleClicked(${i}, ${index})">
                 ${checkbox}
                 <div class="colAvailable verticalLayout thumbnailData" id="duplicateItemThumbnail${i}" >
                   <div class="rowAvailable padded ${contrastMode}"><div class="thumbnail" style='background-image:url("data:image/png;base64,${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].thumbnail}")'></div></div>
                   <div class="rowAuto primaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].name} (${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].libraryName})</span></div>
                   <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].description}</span></div>
                   <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].numInstances} instances - Used in ${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].numOverrides} overrides</span></div>
+                  <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].id}</span></div>
+                  <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].isHidden}</span></div>
                 </div>
               </div>`;
+    }
   }
 
   var resultsTitle = document.getElementById("resultsTitle");
   var resultsDescription = document.getElementById("resultsDescription");
   resultsTitle.innerHTML = globalMergeSession[index].layerStyleWithDuplicates.name;
-  resultsDescription.innerHTML = "There are " + globalMergeSession[index].layerStyleWithDuplicates.duplicates.length + " styles with this name. The style you decide to keep will be applied to all layers & overrides using any of the discarded styles, and the discarded styles will be removed from the local file.";
+  resultsDescription.innerHTML = "There are " + globalMergeSession[index].layerStyleWithDuplicates.duplicates.filter(el => !el.isHidden).length + " styles with this name. The style you decide to keep will be applied to all layers & overrides using any of the discarded styles, and the discarded styles will be removed from the local file.";
 
   var listOfStyles = document.getElementById('listOfStyles');
   listOfStyles.innerHTML = inner;

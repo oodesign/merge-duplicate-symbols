@@ -20,7 +20,7 @@ function MergeTextStyles(context, styleToKeepIndex) {
   var stylesToRemove = [];
   Helpers.clog("Merging styles. Keep '" + styleToKeep.name + "'");
 
-  if (styleToKeep.foreign) {
+  if (styleToKeep.isForeign) {
     var existingTs = Helpers.document.sharedTextStyles.filter(function (ts) {
       return ts.id == styleToKeep.textStyle.id;
     });

@@ -926,7 +926,7 @@ function getDocumentSymbols(context, includeAllSymbolsFromExternalLibraries) {
       map.set(symbol.id, true);
       symbols.push({
         "symbol": symbol,
-        "foreign": (symbol.getLibrary() != null),
+        "isForeign": (symbol.getLibrary() != null),
         "library": (symbol.getLibrary() != null) ? symbol.getLibrary() : null
       });
     }
@@ -939,7 +939,7 @@ function getDocumentSymbols(context, includeAllSymbolsFromExternalLibraries) {
           if (!map.has(symbol.id)) {
             symbols.push({
               "symbol": symbol,
-              "foreign": true,
+              "isForeign": true,
               "library": lib
             });
           }
@@ -1059,15 +1059,17 @@ function getReducedLayerStyleData(layerStyle) {
   }
   layerStyle.duplicates.forEach(duplicate => {
     reducedDuplicate.duplicates.push({
+      "id": "" + duplicate.layerStyle.id + " // " + duplicate.layerStyle.style.id + " // " + ((duplicate.layerStyle.id.indexOf("[") >= 0) ? duplicate.layerStyle.id.substring(duplicate.layerStyle.id.indexOf("[") + 1, duplicate.layerStyle.id.length - 1) : "xxx"),
       "name": "" + duplicate.name,
-      "foreign": duplicate.foreign,
+      "isForeign": duplicate.isForeign,
       "description": duplicate.description,
       "thumbnail": duplicate.thumbnail,
       "contrastMode": duplicate.contrastMode,
       "numInstances": duplicate.numInstances,
       "numOverrides": duplicate.numOverrides,
       "libraryName": duplicate.libraryName,
-      "isSelected": false
+      "isSelected": duplicate.isSelected,
+      "isHidden": duplicate.isHidden
     });
   });
 
@@ -1081,7 +1083,7 @@ function getSelectedSymbolsSession(selection) {
 
   selection.forEach(function (docSymbol) {
     var foreignLib = docSymbol.library;
-    var isForeign = docSymbol.foreign;
+    var isForeign = docSymbol.isForeign;
     var libraryName = sketchlocalfile;
 
     if (isForeign)
@@ -1162,7 +1164,7 @@ function getDuplicateColorVariables(context, includeLibraries) {
       "colorVariable": colorVariable.colorVariable,
       "name": "" + colorVariable.name,
       "color": "" + colorVariable.color,
-      "foreign": colorVariable.foreign,
+      "isForeign": colorVariable.isForeign,
       "thumbnail": colorVariable.thumbnail,
       "libraryName": colorVariable.libraryName,
       "library": colorVariable.library,
@@ -1183,7 +1185,7 @@ function getDuplicateColorVariables(context, includeLibraries) {
         "colorVariable": colorVariable.colorVariable,
         "name": "" + colorVariable.name,
         "color": "" + colorVariable.color,
-        "foreign": colorVariable.foreign,
+        "isForeign": colorVariable.isForeign,
         "thumbnail": colorVariable.thumbnail,
         "libraryName": colorVariable.libraryName,
         "library": colorVariable.library,
@@ -1210,7 +1212,7 @@ function getDuplicateColorVariables(context, includeLibraries) {
     if (!removeElement) {
       var allForeign = true;
       nameDictionary[key].duplicates.forEach(function (duplicate) {
-        if (!duplicate.foreign) allForeign = false;
+        if (!duplicate.isForeign) allForeign = false;
       });
       if (allForeign) {
         removeElement = true;
@@ -1388,7 +1390,7 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
       "name": "" + sharedLayerStyle.name,
       "libraryName": (library != null) ? libraryPrefix + library.name : sketchlocalfile,
       "library": library,
-      "foreign": (library != null),
+      "isForeign": (library != null),
       "isSelected": false,
       "isChosen": false,
       "description": getLayerStyleDescription(sharedLayerStyle),
@@ -1412,7 +1414,7 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
               "name": "" + sharedLayerStyle.name,
               "libraryName": libraryPrefix + lib.name,
               "library": lib,
-              "foreign": true,
+              "isForeign": true,
               "isSelected": false,
               "isChosen": false,
               "description": getLayerStyleDescription(sharedLayerStyle),
@@ -1447,7 +1449,7 @@ function getAllTextStyles(includeAllStylesFromExternalLibraries) {
       "name": "" + sharedTextStyle.name,
       "libraryName": (library != null) ? libraryPrefix + library.name : sketchlocalfile,
       "library": library,
-      "foreign": (library != null),
+      "isForeign": (library != null),
       "isSelected": false,
       "isChosen": false,
       "description": getTextStyleDescription(sharedTextStyle),
@@ -1472,7 +1474,7 @@ function getAllTextStyles(includeAllStylesFromExternalLibraries) {
               "name": "" + sharedTextStyle.name,
               "libraryName": libraryPrefix + lib.name,
               "library": lib,
-              "foreign": true,
+              "isForeign": true,
               "isSelected": false,
               "isChosen": false,
               "description": getTextStyleDescription(sharedTextStyle),
@@ -1505,7 +1507,7 @@ function getAllColorVariables(includeAllStylesFromExternalLibraries) {
       "color": "" + swatch.color.substring(0, 7),
       "libraryName": sketchlocalfile,
       "library": null,
-      "foreign": false,
+      "isForeign": false,
       "isSelected": false,
       "isChosen": false,
       "description": "" + swatch.color.substring(0, 7),
@@ -1530,7 +1532,7 @@ function getAllColorVariables(includeAllStylesFromExternalLibraries) {
               "color": "" + swatch.color.substring(0, 7),
               "libraryName": libraryPrefix + lib.name,
               "library": lib,
-              "foreign": true,
+              "isForeign": true,
               "isSelected": false,
               "isChosen": false,
               "description": "" + swatch.color.substring(0, 7),
@@ -1555,9 +1557,20 @@ function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesFromExte
   var duplicatedLayerStyles = [];
   const namesMap = new Map();
   const idsMap = new Map();
+  const redundantIdsMap = new Map();
   document.sharedLayerStyles.forEach(function (sharedLayerStyle) {
+
     if (!idsMap.has(sharedLayerStyle.id)) {
+      var redId1 = sharedLayerStyle.style.id;
+      var redId2 = (sharedLayerStyle.id.indexOf("[") >= 0) ? sharedLayerStyle.id.substring(sharedLayerStyle.id.indexOf("[") + 1, sharedLayerStyle.id.length - 1) : null;
+      var redundantIn = false;
+      if (redId2 != null)
+        redundantIn = redundantIdsMap.has(redId1) || redundantIdsMap.has(redId2);
+      else
+        redundantIn = redundantIdsMap.has(redId1)
+
       if (!namesMap.has(sharedLayerStyle.name)) {
+
         var styleObject = {
           "name": "" + sharedLayerStyle.name,
           "duplicates": [],
@@ -1567,31 +1580,7 @@ function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesFromExte
           "layerStyle": sharedLayerStyle,
           "libraryName": (sharedLayerStyle.getLibrary() != null) ? libraryPrefix + sharedLayerStyle.getLibrary().name : sketchlocalfile,
           "library": (sharedLayerStyle.getLibrary() != null) ? sharedLayerStyle.getLibrary() : null,
-          "foreign": (sharedLayerStyle.getLibrary() != null),
-          "isSelected": false,
-          "isChosen": false,
-          "description": getLayerStyleDescription(sharedLayerStyle),
-          "thumbnail": "",
-          "isSelected": false,
-          "contrastMode": (sharedLayerStyle.style.fills.length > 0) ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false,
-          "styleInstances": null,
-          "numInstances": 0,
-          "styleOverrides": null,
-          "numOverrides": 0
-        });
-
-        duplicatedLayerStyles.push(styleObject);
-        idsMap.set(sharedLayerStyle.id, styleObject);
-        namesMap.set(sharedLayerStyle.name, styleObject);
-      }
-      else {
-        var styleObject = namesMap.get(sharedLayerStyle.name);
-        styleObject.duplicates.push({
-          "name": "" + sharedLayerStyle.name,
-          "layerStyle": sharedLayerStyle,
-          "libraryName": (sharedLayerStyle.getLibrary() != null) ? libraryPrefix + sharedLayerStyle.getLibrary().name : sketchlocalfile,
-          "library": (sharedLayerStyle.getLibrary() != null) ? sharedLayerStyle.getLibrary() : null,
-          "foreign": (sharedLayerStyle.getLibrary() != null),
+          "isForeign": (sharedLayerStyle.getLibrary() != null),
           "isSelected": false,
           "isChosen": false,
           "description": getLayerStyleDescription(sharedLayerStyle),
@@ -1602,6 +1591,34 @@ function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesFromExte
           "numInstances": 0,
           "styleOverrides": null,
           "numOverrides": 0,
+          "isHidden": redundantIn
+        });
+
+        duplicatedLayerStyles.push(styleObject);
+        idsMap.set(sharedLayerStyle.id, styleObject);
+        redundantIdsMap.set(redId1, styleObject);
+        if (redId2 != null) redundantIdsMap.set(redId2, styleObject);
+        namesMap.set(sharedLayerStyle.name, styleObject);
+      }
+      else {
+        var styleObject = namesMap.get(sharedLayerStyle.name);
+        styleObject.duplicates.push({
+          "name": "" + sharedLayerStyle.name,
+          "layerStyle": sharedLayerStyle,
+          "libraryName": (sharedLayerStyle.getLibrary() != null) ? libraryPrefix + sharedLayerStyle.getLibrary().name : sketchlocalfile,
+          "library": (sharedLayerStyle.getLibrary() != null) ? sharedLayerStyle.getLibrary() : null,
+          "isForeign": (sharedLayerStyle.getLibrary() != null),
+          "isSelected": false,
+          "isChosen": false,
+          "description": getLayerStyleDescription(sharedLayerStyle),
+          "thumbnail": "",
+          "isSelected": false,
+          "contrastMode": (sharedLayerStyle.style.fills.length > 0) ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false,
+          "styleInstances": null,
+          "numInstances": 0,
+          "styleOverrides": null,
+          "numOverrides": 0,
+          "isHidden": redundantIn
         });
       }
     }
@@ -1612,7 +1629,16 @@ function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesFromExte
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
         lib.getDocument().sharedLayerStyles.forEach(function (sharedLayerStyle) {
           if (!idsMap.has(sharedLayerStyle.id)) {
+            var redId1 = sharedLayerStyle.style.id;
+            var redId2 = (sharedLayerStyle.id.indexOf("[") >= 0) ? sharedLayerStyle.id.substring(sharedLayerStyle.id.indexOf("[") + 1, sharedLayerStyle.id.length - 1) : null;
+            var redundantIn = false;
+            if (redId2 != null)
+              redundantIn = redundantIdsMap.has(redId1) || redundantIdsMap.has(redId2);
+            else
+              redundantIn = redundantIdsMap.has(redId1)
+
             if (!namesMap.has(sharedLayerStyle.name)) {
+
               var styleObject = {
                 "name": "" + sharedLayerStyle.name,
                 "duplicates": [],
@@ -1622,7 +1648,7 @@ function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesFromExte
                 "layerStyle": sharedLayerStyle,
                 "libraryName": libraryPrefix + lib.name,
                 "library": lib,
-                "foreign": true,
+                "isForeign": true,
                 "isSelected": false,
                 "isChosen": false,
                 "description": getLayerStyleDescription(sharedLayerStyle),
@@ -1633,10 +1659,13 @@ function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesFromExte
                 "numInstances": 0,
                 "styleOverrides": null,
                 "numOverrides": 0,
+                "isHidden": redundantIn
               });
 
               duplicatedLayerStyles.push(styleObject);
               idsMap.set(sharedLayerStyle.id, styleObject);
+              redundantIdsMap.set(redId1, styleObject);
+              if (redId2 != null) redundantIdsMap.set(redId2, styleObject);
               namesMap.set(sharedLayerStyle.name, styleObject);
             }
             else {
@@ -1646,7 +1675,7 @@ function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesFromExte
                 "layerStyle": sharedLayerStyle,
                 "libraryName": libraryPrefix + lib.name,
                 "library": lib,
-                "foreign": true,
+                "isForeign": true,
                 "isSelected": false,
                 "isChosen": false,
                 "description": getLayerStyleDescription(sharedLayerStyle),
@@ -1657,6 +1686,7 @@ function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesFromExte
                 "numInstances": 0,
                 "styleOverrides": null,
                 "numOverrides": 0,
+                "isHidden": redundantIn
               });
             }
           }
@@ -1706,7 +1736,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
       "name": "" + sharedLayerStyle.name,
       "libraryName": (library != null) ? libraryPrefix + library.name : sketchlocalfile,
       "library": library,
-      "foreign": (library != null),
+      "isForeign": (library != null),
       "isSelected": false,
       "isChosen": false,
       "description": getLayerStyleDescription(sharedLayerStyle),
@@ -1722,7 +1752,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
         "name": "" + sharedLayerStyle.name,
         "libraryName": (library != null) ? libraryPrefix + library.name : sketchlocalfile,
         "library": library,
-        "foreign": (library != null),
+        "isForeign": (library != null),
         "isSelected": false,
         "isChosen": false,
         "description": getLayerStyleDescription(sharedLayerStyle),
@@ -1750,7 +1780,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
               "name": "" + sharedLayerStyle.name,
               "libraryName": libraryPrefix + lib.name,
               "library": lib,
-              "foreign": true,
+              "isForeign": true,
               "isSelected": false,
               "isChosen": false,
               "description": getLayerStyleDescription(sharedLayerStyle),
@@ -1766,7 +1796,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
                 "name": "" + sharedLayerStyle.name,
                 "libraryName": libraryPrefix + lib.name,
                 "library": lib,
-                "foreign": true,
+                "isForeign": true,
                 "isSelected": false,
                 "isChosen": false,
                 "description": getLayerStyleDescription(sharedLayerStyle),
@@ -1794,7 +1824,7 @@ function getDuplicateLayerStyles(context, includeAllStylesFromExternalLibraries)
     if (!removeElement) {
       var allForeign = true;
       nameDictionary[key].duplicates.forEach(function (duplicate) {
-        if (!duplicate.foreign) allForeign = false;
+        if (!duplicate.isForeign) allForeign = false;
       });
       if (allForeign) {
         removeElement = true;
@@ -1827,7 +1857,7 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
       "name": "" + sharedTextStyle.name,
       "libraryName": (library != null) ? libraryPrefix + library.name : sketchlocalfile,
       "library": library,
-      "foreign": (library != null),
+      "isForeign": (library != null),
       "isSelected": false,
       "isChosen": false,
       "description": getTextStyleDescription(sharedTextStyle),
@@ -1843,7 +1873,7 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
         "name": "" + sharedTextStyle.name,
         "libraryName": (library != null) ? libraryPrefix + library.name : sketchlocalfile,
         "library": library,
-        "foreign": (library != null),
+        "isForeign": (library != null),
         "isSelected": false,
         "isChosen": false,
         "description": getTextStyleDescription(sharedTextStyle),
@@ -1871,7 +1901,7 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
               "name": "" + sharedTextStyle.name,
               "libraryName": libraryPrefix + lib.name,
               "library": lib,
-              "foreign": true,
+              "isForeign": true,
               "isSelected": false,
               "isChosen": false,
               "description": getTextStyleDescription(sharedTextStyle),
@@ -1887,7 +1917,7 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
                 "name": "" + sharedTextStyle.name,
                 "libraryName": libraryPrefix + lib.name,
                 "library": lib,
-                "foreign": true,
+                "isForeign": true,
                 "isSelected": false,
                 "isChosen": false,
                 "description": getTextStyleDescription(sharedTextStyle),
@@ -1915,7 +1945,7 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
     if (!removeElement) {
       var allForeign = true;
       nameDictionary[key].duplicates.forEach(function (duplicate) {
-        if (!duplicate.foreign) allForeign = false;
+        if (!duplicate.isForeign) allForeign = false;
       });
       if (allForeign) {
         removeElement = true;

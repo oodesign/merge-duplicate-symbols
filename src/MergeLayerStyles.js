@@ -20,7 +20,7 @@ function MergeLayerStyles(context, styleToKeepIndex) {
   Helpers.clog("Merging styles. Keep '" + styleToKeep.name + "'");
 
 
-  if (styleToKeep.foreign) {
+  if (styleToKeep.isForeign) {
     var existingLs = Helpers.document.sharedLayerStyles.filter(function (ls) {
       return ls.id == styleToKeep.layerStyle.id;
     });
