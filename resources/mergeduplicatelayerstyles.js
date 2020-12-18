@@ -108,6 +108,26 @@ window.ReDrawAfterGettingData = (symbolData, index) => {
   document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeIn";
 }
 
+window.ShowMergeProgress = (progress) => {
+  HideLayout(false, true);
+}
+window.UpdateMergeProgress = (progress, message, message2) => {
+  document.getElementById('progressRing').setProgress(progress);
+  document.getElementById('mergeloadingMessage').innerHTML = message;
+  document.getElementById('mergeloadingMessage2').innerHTML = message2;
+}
+
+window.HideLayout = () => {
+  //window.postMessage("nativeLog", "WV - Hide layout");
+  document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
+  document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
+  document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState fadeOut";
+  document.getElementById('contentList').className = "rowAvailable listOfStyles fadeOut";
+  document.getElementById('btnCancel').className = "notDisplayed";
+  document.getElementById('btnMerge').className = "notDisplayed";
+  document.getElementById('chkIncludeLibraries').className = "notDisplayed";
+}
+
 window.onStyleClicked = (index, selectedStyle) => {
   window.postMessage("nativeLog", "WV - Style clicked. Updating selection status.");
   for (var i = 0; i < globalMergeSession[selectedStyle].layerStyleWithDuplicates.duplicates.length; i++) {
