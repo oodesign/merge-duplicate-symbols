@@ -1066,19 +1066,21 @@ function getReducedLayerStyleData(layerStyle) {
     "duplicates": [],
   }
   layerStyle.duplicates.forEach(duplicate => {
-    reducedDuplicate.duplicates.push({
-      "id": "" + duplicate.layerStyle.id + " // " + duplicate.layerStyle.style.id + " // " + ((duplicate.layerStyle.id.indexOf("[") >= 0) ? duplicate.layerStyle.id.substring(duplicate.layerStyle.id.indexOf("[") + 1, duplicate.layerStyle.id.length - 1) : "xxx"),
-      "name": "" + duplicate.name,
-      "isForeign": duplicate.isForeign,
-      "description": duplicate.description,
-      "thumbnail": duplicate.thumbnail,
-      "contrastMode": duplicate.contrastMode,
-      "numInstances": duplicate.numInstances,
-      "numOverrides": duplicate.numOverrides,
-      "libraryName": duplicate.libraryName,
-      "isSelected": duplicate.isSelected,
-      "isHidden": duplicate.isHidden
-    });
+    if (!duplicate.isHidden) {
+      reducedDuplicate.duplicates.push({
+        "id": "" + duplicate.layerStyle.id + " // " + duplicate.layerStyle.style.id + " // " + ((duplicate.layerStyle.id.indexOf("[") >= 0) ? duplicate.layerStyle.id.substring(duplicate.layerStyle.id.indexOf("[") + 1, duplicate.layerStyle.id.length - 1) : "xxx"),
+        "name": "" + duplicate.name,
+        "isForeign": duplicate.isForeign,
+        "description": duplicate.description,
+        "thumbnail": duplicate.thumbnail,
+        "contrastMode": duplicate.contrastMode,
+        "numInstances": duplicate.numInstances,
+        "numOverrides": duplicate.numOverrides,
+        "libraryName": duplicate.libraryName,
+        "isSelected": duplicate.isSelected,
+        "isHidden": duplicate.isHidden
+      });
+    }
   });
 
   return reducedDuplicate;

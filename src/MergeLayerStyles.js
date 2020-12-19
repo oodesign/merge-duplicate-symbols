@@ -28,10 +28,11 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
   if (styleToMerge.duplicates[styleToKeep].isForeign) {
     var alreadyInDoc = (Helpers.document.sharedLayerStyles.filter(ls => ls.id == styleToMerge.duplicates[styleToKeep].layerStyle.id)).length > 0;
     if (!alreadyInDoc)
-    styleToApply = Helpers.importLayerStyleFromLibrary(styleToMerge.duplicates[styleToKeep]);
+      styleToApply = Helpers.importLayerStyleFromLibrary(styleToMerge.duplicates[styleToKeep]);
   }
 
   var tasksToPerform = 0, tasksExecuted = 0;
+  var progress = basePercent;
   var instancesToChange = 0, overridesToChange = 0;
   var instOverMap = new Map();
 
@@ -90,7 +91,7 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
           override.instance.setOverrideValue(override.override, styleToApply.id.toString());
           overridesChanged++;
           tasksExecuted++;
-          var progress = Math.floor(basePercent + ((tasksExecuted * 100 / tasksToPerform) / totalToMerge));
+          progress = Math.floor(basePercent + ((tasksExecuted * 100 / tasksToPerform) / totalToMerge));
           var message2 = "Updating overrides (" + overridesChanged + " of " + overridesToChange + ")";
           webContents.executeJavaScript(`UpdateMergeProgress(${progress}, ${JSON.stringify(message)}, ${JSON.stringify(message2)})`).catch(console.error);
         } catch (e) {
@@ -116,7 +117,7 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
 
         tasksExecuted++;
         instancesChanged++;
-        var progress = Math.floor(basePercent + ((tasksExecuted * 100 / tasksToPerform) / totalToMerge));
+        progress = Math.floor(basePercent + ((tasksExecuted * 100 / tasksToPerform) / totalToMerge));
         var message2 = "Updating instances (" + instancesChanged + " of " + instancesToChange + ")";
         webContents.executeJavaScript(`UpdateMergeProgress(${progress}, ${JSON.stringify(message)}, ${JSON.stringify(message2)})`).catch(console.error);
       });
@@ -126,99 +127,35 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
     }
   }
 
-  Helpers.ctimeEnd("Merging symbol:" + styleToMerge.name);
-
+  Helpers.ctimeEnd("Merging layer style:" + styleToMerge.name);
   Helpers.clog("---- Finalized intance and override replacement.");
-  Helpers.clog("---- Removing discarded symbols.");
 
+  var sharedStylesToRemove = Helpers.document.sharedLayerStyles.filter(sharedStyle => isMarkedForRemove(sharedStyle, stylesToRemove));
 
-  //TODO Check all layer style IDs (not just .id) to ensure proper cleanup
-  stylesToRemove.forEach(function (styleToRemove) {
-    var removeAtIndex = -1;
-    for (var i = 0; i < Helpers.document.sharedLayerStyles.length; i++) {
-      if (Helpers.document.sharedLayerStyles[i].id == styleToRemove.id) removeAtIndex = i;
-    }
-    if (removeAtIndex > -1) Helpers.document.sharedLayerStyles.splice(removeAtIndex, 1);
+  Helpers.clog("---- Removing discarded layer styles (" + sharedStylesToRemove.length + ").");
+  webContents.executeJavaScript(`UpdateMergeProgress(${progress}, ${JSON.stringify(message)}, "Removing discarded layer styles")`).catch(console.error);
+
+  sharedStylesToRemove.forEach(sharedStyleToRemove => {
+
+    Helpers.clog("------ Removing " + sharedStyleToRemove.name + " (" + sharedStyleToRemove.id + ") from sharedLayerStyles.");
+    sharedStyleToRemove.unlinkFromLibrary();
+    Helpers.clog("-------- Unlinked from library.");
+    var styleIndex = Helpers.document.sharedLayerStyles.findIndex(sL => sL.id == sharedStyleToRemove.id);
+    Helpers.clog("-------- Located in sharedLayerStyles (" + styleIndex + ").");
+    Helpers.document.sharedLayerStyles.splice(styleIndex, 1);
+    Helpers.clog("-------- Removed from sharedLayerStyles.");
   });
 
   Helpers.clog("---- Merge completed.");
 
   return [stylesRemoved, instancesChanged, overridesChanged];
 
+}
 
-
-
-
-
-
-
-
-
-
-  // var layersChangedCounter = 0;
-  // var overridesChangedCounter = 0;
-  // var styleToKeep = currentSelectedStyles[styleToKeepIndex];
-  // var styleToApply = styleToKeep.layerStyle;
-  // var stylesToRemove = [];
-  // Helpers.clog("Merging styles. Keep '" + styleToKeep.name + "'");
-
-
-  // if (styleToKeep.isForeign) {
-  //   var existingLs = Helpers.document.sharedLayerStyles.filter(function (ls) {
-  //     return ls.id == styleToKeep.layerStyle.id;
-  //   });
-
-  //   if (existingLs.length <= 0) {
-  //     Helpers.clog("Importing style from library " + styleToKeep.libraryName);
-  //     styleToApply = Helpers.importLayerStyleFromLibrary(styleToKeep);
-  //   }
-  //   else
-  //     Helpers.clog("Style not imported (as it's already in document)");
-  // }
-
-  // for (var i = 0; i < currentSelectedStyles.length; i++) {
-  //   if (i != styleToKeepIndex) {
-  //     stylesToRemove.push(currentSelectedStyles[i].layerStyle);
-  //   }
-  // }
-
-  // currentSelectedStyles.forEach(function (style) {
-  //   var instances = style.layerStyle.getAllInstancesLayers();
-
-  //   Helpers.clog("-- Updating " + instances.length + "instances to " + styleToKeep.name);
-  //   instances.forEach(function (instance) {
-  //     instance.sharedStyle = styleToApply;
-  //     instance.style.syncWithSharedStyle(styleToApply);
-  //     layersChangedCounter++;
-  //   });
-
-  //   var relatedOverrides = Helpers.getRelatedOverrides(context, style.layerStyle.id, "layerStyle");
-  //   Helpers.clog("-- Updating " + relatedOverrides.length + "related overrides to " + styleToKeep.name);
-  //   relatedOverrides.forEach(function (override) {
-  //     var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
-  //     var instanceOverride = instanceLayer.overrides.filter(function (ov) {
-  //       return ov.id == override.override.id;
-  //     });
-
-  //     try {
-  //       Helpers.clog("------ Updating override for " + instanceLayer.name);
-  //       instanceLayer.setOverrideValue(instanceOverride[0], styleToApply.id.toString());
-  //       overridesChangedCounter++;
-  //     } catch (e) {
-  //       Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name);
-  //     }
-  //   });
-  // });
-
-  // stylesToRemove.forEach(function (styleToRemove) {
-  //   var removeAtIndex = -1;
-  //   for (var i = 0; i < Helpers.document.sharedLayerStyles.length; i++) {
-  //     if (Helpers.document.sharedLayerStyles[i].id == styleToRemove.id) removeAtIndex = i;
-  //   }
-  //   if (removeAtIndex > -1) Helpers.document.sharedLayerStyles.splice(removeAtIndex, 1);
-  // });
-
-  // return [layersChangedCounter, overridesChangedCounter];
+function isMarkedForRemove(sharedLayerStyle, stylesToRemove) {
+  var redId1 = sharedLayerStyle.style.id;
+  var redId2 = (sharedLayerStyle.id.indexOf("[") >= 0) ? sharedLayerStyle.id.substring(sharedLayerStyle.id.indexOf("[") + 1, sharedLayerStyle.id.length - 1) : null;
+  return (stylesToRemove.filter(str => (str.id == sharedLayerStyle.id) || (str.id == redId1) || (str.id == redId2)).length > 0);
 }
 
 
@@ -397,8 +334,8 @@ export function MergeDuplicateLayerStyles(context) {
     var totalToMerge = editedMergeSession.filter(ems => !ems.isUnchecked && ems.selectedIndex >= 0).length;
 
     for (var i = 0; i < editedMergeSession.length; i++) {
-      Helpers.clog("-- Merging " + mergeSession[i].layerStyleWithDuplicates.name);
       if (!editedMergeSession[i].isUnchecked && editedMergeSession[i].selectedIndex >= 0) {
+        Helpers.clog("-- Merging " + mergeSession[i].layerStyleWithDuplicates.name);
         mergeSession[i].selectedIndex = editedMergeSession[i].selectedIndex;
         var mergeobject = mergeSessionMap.get(mergeSession[i].layerStyleWithDuplicates);
         var basePercent = (duplicatesSolved * 100 / editedMergeSession.length);
@@ -407,6 +344,8 @@ export function MergeDuplicateLayerStyles(context) {
         mergeResults[0] += localMergeResults[0];
         mergeResults[1] += localMergeResults[1];
         mergeResults[2] += localMergeResults[2];
+        // webContents.executeJavaScript(`ShowMergeProgress()`).catch(console.error);
+        // webContents.executeJavaScript(`UpdateMergeProgress(${basePercent}, "Woooo", "Wuuuuu")`).catch(console.error);
 
         duplicatesSolved++;
       }

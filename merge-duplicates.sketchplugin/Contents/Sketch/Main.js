@@ -4498,7 +4498,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/a20f781fb416aa38a75c3ce838a391ad.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/5e1cfa6486c06d988f11ad79ff23f030.html";
 
 /***/ }),
 
@@ -5874,19 +5874,21 @@ function getReducedLayerStyleData(layerStyle) {
     "duplicates": []
   };
   layerStyle.duplicates.forEach(function (duplicate) {
-    reducedDuplicate.duplicates.push({
-      "id": "" + duplicate.layerStyle.id + " // " + duplicate.layerStyle.style.id + " // " + (duplicate.layerStyle.id.indexOf("[") >= 0 ? duplicate.layerStyle.id.substring(duplicate.layerStyle.id.indexOf("[") + 1, duplicate.layerStyle.id.length - 1) : "xxx"),
-      "name": "" + duplicate.name,
-      "isForeign": duplicate.isForeign,
-      "description": duplicate.description,
-      "thumbnail": duplicate.thumbnail,
-      "contrastMode": duplicate.contrastMode,
-      "numInstances": duplicate.numInstances,
-      "numOverrides": duplicate.numOverrides,
-      "libraryName": duplicate.libraryName,
-      "isSelected": duplicate.isSelected,
-      "isHidden": duplicate.isHidden
-    });
+    if (!duplicate.isHidden) {
+      reducedDuplicate.duplicates.push({
+        "id": "" + duplicate.layerStyle.id + " // " + duplicate.layerStyle.style.id + " // " + (duplicate.layerStyle.id.indexOf("[") >= 0 ? duplicate.layerStyle.id.substring(duplicate.layerStyle.id.indexOf("[") + 1, duplicate.layerStyle.id.length - 1) : "xxx"),
+        "name": "" + duplicate.name,
+        "isForeign": duplicate.isForeign,
+        "description": duplicate.description,
+        "thumbnail": duplicate.thumbnail,
+        "contrastMode": duplicate.contrastMode,
+        "numInstances": duplicate.numInstances,
+        "numOverrides": duplicate.numOverrides,
+        "libraryName": duplicate.libraryName,
+        "isSelected": duplicate.isSelected,
+        "isHidden": duplicate.isHidden
+      });
+    }
   });
   return reducedDuplicate;
 }
@@ -8102,6 +8104,7 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
 
   var tasksToPerform = 0,
       tasksExecuted = 0;
+  var progress = basePercent;
   var instancesToChange = 0,
       overridesToChange = 0;
   var instOverMap = new Map();
@@ -8150,7 +8153,7 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
           override.instance.setOverrideValue(override.override, styleToApply.id.toString());
           overridesChanged++;
           tasksExecuted++;
-          var progress = Math.floor(basePercent + tasksExecuted * 100 / tasksToPerform / totalToMerge);
+          progress = Math.floor(basePercent + tasksExecuted * 100 / tasksToPerform / totalToMerge);
           var message2 = "Updating overrides (" + overridesChanged + " of " + overridesToChange + ")";
           webContents.executeJavaScript("UpdateMergeProgress(".concat(progress, ", ").concat(JSON.stringify(message), ", ").concat(JSON.stringify(message2), ")")).catch(console.error);
         } catch (e) {
@@ -8172,7 +8175,7 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
         instance.style.syncWithSharedStyle(styleToApply);
         tasksExecuted++;
         instancesChanged++;
-        var progress = Math.floor(basePercent + tasksExecuted * 100 / tasksToPerform / totalToMerge);
+        progress = Math.floor(basePercent + tasksExecuted * 100 / tasksToPerform / totalToMerge);
         var message2 = "Updating instances (" + instancesChanged + " of " + instancesToChange + ")";
         webContents.executeJavaScript("UpdateMergeProgress(".concat(progress, ", ").concat(JSON.stringify(message), ", ").concat(JSON.stringify(message2), ")")).catch(console.error);
       });
@@ -8180,74 +8183,34 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
     }
   }
 
-  Helpers.ctimeEnd("Merging symbol:" + styleToMerge.name);
+  Helpers.ctimeEnd("Merging layer style:" + styleToMerge.name);
   Helpers.clog("---- Finalized intance and override replacement.");
-  Helpers.clog("---- Removing discarded symbols."); //TODO Check all layer style IDs (not just .id) to ensure proper cleanup
-
-  stylesToRemove.forEach(function (styleToRemove) {
-    var removeAtIndex = -1;
-
-    for (var i = 0; i < Helpers.document.sharedLayerStyles.length; i++) {
-      if (Helpers.document.sharedLayerStyles[i].id == styleToRemove.id) removeAtIndex = i;
-    }
-
-    if (removeAtIndex > -1) Helpers.document.sharedLayerStyles.splice(removeAtIndex, 1);
+  var sharedStylesToRemove = Helpers.document.sharedLayerStyles.filter(function (sharedStyle) {
+    return isMarkedForRemove(sharedStyle, stylesToRemove);
+  });
+  Helpers.clog("---- Removing discarded layer styles (" + sharedStylesToRemove.length + ").");
+  webContents.executeJavaScript("UpdateMergeProgress(".concat(progress, ", ").concat(JSON.stringify(message), ", \"Removing discarded layer styles\")")).catch(console.error);
+  sharedStylesToRemove.forEach(function (sharedStyleToRemove) {
+    Helpers.clog("------ Removing " + sharedStyleToRemove.name + " (" + sharedStyleToRemove.id + ") from sharedLayerStyles.");
+    sharedStyleToRemove.unlinkFromLibrary();
+    Helpers.clog("-------- Unlinked from library.");
+    var styleIndex = Helpers.document.sharedLayerStyles.findIndex(function (sL) {
+      return sL.id == sharedStyleToRemove.id;
+    });
+    Helpers.clog("-------- Located in sharedLayerStyles (" + styleIndex + ").");
+    Helpers.document.sharedLayerStyles.splice(styleIndex, 1);
+    Helpers.clog("-------- Removed from sharedLayerStyles.");
   });
   Helpers.clog("---- Merge completed.");
-  return [stylesRemoved, instancesChanged, overridesChanged]; // var layersChangedCounter = 0;
-  // var overridesChangedCounter = 0;
-  // var styleToKeep = currentSelectedStyles[styleToKeepIndex];
-  // var styleToApply = styleToKeep.layerStyle;
-  // var stylesToRemove = [];
-  // Helpers.clog("Merging styles. Keep '" + styleToKeep.name + "'");
-  // if (styleToKeep.isForeign) {
-  //   var existingLs = Helpers.document.sharedLayerStyles.filter(function (ls) {
-  //     return ls.id == styleToKeep.layerStyle.id;
-  //   });
-  //   if (existingLs.length <= 0) {
-  //     Helpers.clog("Importing style from library " + styleToKeep.libraryName);
-  //     styleToApply = Helpers.importLayerStyleFromLibrary(styleToKeep);
-  //   }
-  //   else
-  //     Helpers.clog("Style not imported (as it's already in document)");
-  // }
-  // for (var i = 0; i < currentSelectedStyles.length; i++) {
-  //   if (i != styleToKeepIndex) {
-  //     stylesToRemove.push(currentSelectedStyles[i].layerStyle);
-  //   }
-  // }
-  // currentSelectedStyles.forEach(function (style) {
-  //   var instances = style.layerStyle.getAllInstancesLayers();
-  //   Helpers.clog("-- Updating " + instances.length + "instances to " + styleToKeep.name);
-  //   instances.forEach(function (instance) {
-  //     instance.sharedStyle = styleToApply;
-  //     instance.style.syncWithSharedStyle(styleToApply);
-  //     layersChangedCounter++;
-  //   });
-  //   var relatedOverrides = Helpers.getRelatedOverrides(context, style.layerStyle.id, "layerStyle");
-  //   Helpers.clog("-- Updating " + relatedOverrides.length + "related overrides to " + styleToKeep.name);
-  //   relatedOverrides.forEach(function (override) {
-  //     var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
-  //     var instanceOverride = instanceLayer.overrides.filter(function (ov) {
-  //       return ov.id == override.override.id;
-  //     });
-  //     try {
-  //       Helpers.clog("------ Updating override for " + instanceLayer.name);
-  //       instanceLayer.setOverrideValue(instanceOverride[0], styleToApply.id.toString());
-  //       overridesChangedCounter++;
-  //     } catch (e) {
-  //       Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name);
-  //     }
-  //   });
-  // });
-  // stylesToRemove.forEach(function (styleToRemove) {
-  //   var removeAtIndex = -1;
-  //   for (var i = 0; i < Helpers.document.sharedLayerStyles.length; i++) {
-  //     if (Helpers.document.sharedLayerStyles[i].id == styleToRemove.id) removeAtIndex = i;
-  //   }
-  //   if (removeAtIndex > -1) Helpers.document.sharedLayerStyles.splice(removeAtIndex, 1);
-  // });
-  // return [layersChangedCounter, overridesChangedCounter];
+  return [stylesRemoved, instancesChanged, overridesChanged];
+}
+
+function isMarkedForRemove(sharedLayerStyle, stylesToRemove) {
+  var redId1 = sharedLayerStyle.style.id;
+  var redId2 = sharedLayerStyle.id.indexOf("[") >= 0 ? sharedLayerStyle.id.substring(sharedLayerStyle.id.indexOf("[") + 1, sharedLayerStyle.id.length - 1) : null;
+  return stylesToRemove.filter(function (str) {
+    return str.id == sharedLayerStyle.id || str.id == redId1 || str.id == redId2;
+  }).length > 0;
 }
 
 function MergeSimilarLayerStyles(context) {
@@ -8397,16 +8360,17 @@ function MergeDuplicateLayerStyles(context) {
     }).length;
 
     for (var i = 0; i < editedMergeSession.length; i++) {
-      Helpers.clog("-- Merging " + mergeSession[i].layerStyleWithDuplicates.name);
-
       if (!editedMergeSession[i].isUnchecked && editedMergeSession[i].selectedIndex >= 0) {
+        Helpers.clog("-- Merging " + mergeSession[i].layerStyleWithDuplicates.name);
         mergeSession[i].selectedIndex = editedMergeSession[i].selectedIndex;
         var mergeobject = mergeSessionMap.get(mergeSession[i].layerStyleWithDuplicates);
         var basePercent = duplicatesSolved * 100 / editedMergeSession.length;
         var localMergeResults = MergeLayerStyles(mergeobject, mergeSession[i].selectedIndex, basePercent, totalToMerge, webContents);
         mergeResults[0] += localMergeResults[0];
         mergeResults[1] += localMergeResults[1];
-        mergeResults[2] += localMergeResults[2];
+        mergeResults[2] += localMergeResults[2]; // webContents.executeJavaScript(`ShowMergeProgress()`).catch(console.error);
+        // webContents.executeJavaScript(`UpdateMergeProgress(${basePercent}, "Woooo", "Wuuuuu")`).catch(console.error);
+
         duplicatesSolved++;
       }
     }

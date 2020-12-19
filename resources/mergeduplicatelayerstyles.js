@@ -1,6 +1,6 @@
 // disable the context menu (eg. the right click menu) to have a more native feel
 document.addEventListener('contextmenu', (e) => {
-  e.preventDefault()
+  //e.preventDefault()
 })
 var globalMergeSession;
 var globalStyleDisplayed = 0;
@@ -109,7 +109,8 @@ window.ReDrawAfterGettingData = (symbolData, index) => {
 }
 
 window.ShowMergeProgress = (progress) => {
-  HideLayout(false, true);
+  HideLayout();
+  document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
 }
 window.UpdateMergeProgress = (progress, message, message2) => {
   document.getElementById('progressRing').setProgress(progress);
@@ -119,13 +120,12 @@ window.UpdateMergeProgress = (progress, message, message2) => {
 
 window.HideLayout = () => {
   //window.postMessage("nativeLog", "WV - Hide layout");
-  document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
   document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
   document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState fadeOut";
   document.getElementById('contentList').className = "rowAvailable listOfStyles fadeOut";
   document.getElementById('btnCancel').className = "notDisplayed";
   document.getElementById('btnMerge').className = "notDisplayed";
-  document.getElementById('chkIncludeLibraries').className = "notDisplayed";
+  document.getElementById('chkLibraries').className = "notDisplayed";
 }
 
 window.onStyleClicked = (index, selectedStyle) => {
