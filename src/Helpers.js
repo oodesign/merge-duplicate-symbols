@@ -921,26 +921,20 @@ function FindNestedLayerStyleOverride(overrides, idsMap, instance, level) {
   for (var key in overrides) {
      var symbolID = overrides[key]["symbolID"];
     if (symbolID == null) {
-      //console.log(overrides[key]);
       if(overrides[key] instanceof __NSDictionaryM){
         for (var key2 in overrides[key]) {
-          //console.log("Checking NSDictionary");
-          //console.log(overrides[key][key2]);
           if(overrides[key][key2] instanceof __NSDictionaryM)
           {
-            //console.log("Checking inner level");
             if (FindNestedLayerStyleOverride(overrides[key][key2], idsMap, instance, level+1)) return true;        
           }
           else
           {
-            //console.log("Checking Dictionary value directly");
             if (idsMap.has("" + overrides[key][key2])) { return true;};
           }
         }
       }
       else
       {
-        //console.log("Checking directly");
         if (idsMap.has("" + overrides[key])) { return true;};
       }
     }

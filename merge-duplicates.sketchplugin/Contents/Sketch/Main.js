@@ -5740,16 +5740,11 @@ function FindNestedLayerStyleOverride(overrides, idsMap, instance, level) {
     var symbolID = overrides[key]["symbolID"];
 
     if (symbolID == null) {
-      //console.log(overrides[key]);
       if (overrides[key] instanceof __NSDictionaryM) {
         for (var key2 in overrides[key]) {
-          //console.log("Checking NSDictionary");
-          //console.log(overrides[key][key2]);
           if (overrides[key][key2] instanceof __NSDictionaryM) {
-            //console.log("Checking inner level");
             if (FindNestedLayerStyleOverride(overrides[key][key2], idsMap, instance, level + 1)) return true;
           } else {
-            //console.log("Checking Dictionary value directly");
             if (idsMap.has("" + overrides[key][key2])) {
               return true;
             }
@@ -5758,7 +5753,6 @@ function FindNestedLayerStyleOverride(overrides, idsMap, instance, level) {
           }
         }
       } else {
-        //console.log("Checking directly");
         if (idsMap.has("" + overrides[key])) {
           return true;
         }
@@ -8218,17 +8212,25 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
   });
   Helpers.clog("---- Removing discarded layer styles (" + sharedStylesToRemove.length + ").");
   webContents.executeJavaScript("UpdateMergeProgress(".concat(progress, ", ").concat(JSON.stringify(message), ", \"Removing discarded layer styles\")")).catch(console.error);
+  Helpers.ctime("Removing discarded styles");
   sharedStylesToRemove.forEach(function (sharedStyleToRemove) {
     Helpers.clog("------ Removing " + sharedStyleToRemove.name + " (" + sharedStyleToRemove.id + ") from sharedLayerStyles.");
+    Helpers.ctime("Unlink from library");
     sharedStyleToRemove.unlinkFromLibrary();
+    Helpers.ctimeEnd("Unlink from library");
     Helpers.clog("-------- Unlinked from library.");
+    Helpers.ctime("Find index");
     var styleIndex = Helpers.document.sharedLayerStyles.findIndex(function (sL) {
       return sL.id == sharedStyleToRemove.id;
     });
+    Helpers.ctimeEnd("Find index");
     Helpers.clog("-------- Located in sharedLayerStyles (" + styleIndex + ").");
+    Helpers.ctime("Splice");
     Helpers.document.sharedLayerStyles.splice(styleIndex, 1);
+    Helpers.ctimeEnd("Splice");
     Helpers.clog("-------- Removed from sharedLayerStyles.");
   });
+  Helpers.ctimeEnd("Removing discarded styles");
   Helpers.clog("---- Merge completed.");
   return [stylesRemoved, instancesChanged, overridesChanged];
 }
