@@ -5663,7 +5663,11 @@ function getLayerStylesMap(context, layerStyles) {
   var idsMap = new Map();
   layerStyles.forEach(function (layerStyle) {
     layerStyle.duplicates.forEach(function (duplicatedStyle) {
+      var redId1 = duplicatedStyle.layerStyle.style.id;
+      var redId2 = duplicatedStyle.layerStyle.id.indexOf("[") >= 0 ? duplicatedStyle.layerStyle.id.substring(duplicatedStyle.layerStyle.id.indexOf("[") + 1, duplicatedStyle.layerStyle.id.length - 1) : null;
       idsMap.set(duplicatedStyle.layerStyle.id, duplicatedStyle.layerStyle);
+      idsMap.set(redId1, duplicatedStyle.layerStyle);
+      if (redId2 != null) idsMap.set(redId2, duplicatedStyle.layerStyle);
       layerStylesMap.set(duplicatedStyle.layerStyle, {
         "directInstances": duplicatedStyle.layerStyle.getAllInstancesLayers(),
         "instancesWithOverrides": []
@@ -5731,16 +5735,38 @@ function hasLayerStyleOverrides(instance, idsMap) {
   return false;
 }
 
-function FindNestedLayerStyleOverride(overrides, idsMap, instance) {
+function FindNestedLayerStyleOverride(overrides, idsMap, instance, level) {
   for (var key in overrides) {
     var symbolID = overrides[key]["symbolID"];
 
     if (symbolID == null) {
-      if (idsMap.has("" + overrides[key])) {
-        return true;
+      //console.log(overrides[key]);
+      if (overrides[key] instanceof __NSDictionaryM) {
+        for (var key2 in overrides[key]) {
+          //console.log("Checking NSDictionary");
+          //console.log(overrides[key][key2]);
+          if (overrides[key][key2] instanceof __NSDictionaryM) {
+            //console.log("Checking inner level");
+            if (FindNestedLayerStyleOverride(overrides[key][key2], idsMap, instance, level + 1)) return true;
+          } else {
+            //console.log("Checking Dictionary value directly");
+            if (idsMap.has("" + overrides[key][key2])) {
+              return true;
+            }
+
+            ;
+          }
+        }
+      } else {
+        //console.log("Checking directly");
+        if (idsMap.has("" + overrides[key])) {
+          return true;
+        }
+
+        ;
       }
     } else {
-      if (FindNestedSymbolOverride(overrides[key], idsMap, instance)) return true;
+      if (FindNestedLayerStyleOverride(overrides[key], idsMap, instance, level + 1)) return true;
     }
   }
 
@@ -6373,8 +6399,6 @@ function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesFromExte
         });
         duplicatedLayerStyles.push(styleObject);
         idsMap.set(sharedLayerStyle.id, styleObject);
-        redundantIdsMap.set(redId1, styleObject);
-        if (redId2 != null) redundantIdsMap.set(redId2, styleObject);
         namesMap.set(sharedLayerStyle.name, styleObject);
       } else {
         var styleObject = namesMap.get(sharedLayerStyle.name);
@@ -6397,6 +6421,9 @@ function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesFromExte
           "isHidden": redundantIn
         });
       }
+
+      redundantIdsMap.set(redId1, styleObject);
+      if (redId2 != null) redundantIdsMap.set(redId2, styleObject);
     }
   });
 
@@ -6435,8 +6462,6 @@ function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesFromExte
               });
               duplicatedLayerStyles.push(styleObject);
               idsMap.set(sharedLayerStyle.id, styleObject);
-              redundantIdsMap.set(redId1, styleObject);
-              if (redId2 != null) redundantIdsMap.set(redId2, styleObject);
               namesMap.set(sharedLayerStyle.name, styleObject);
             } else {
               var styleObject = namesMap.get(sharedLayerStyle.name);
@@ -6459,6 +6484,9 @@ function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesFromExte
                 "isHidden": redundantIn
               });
             }
+
+            redundantIdsMap.set(redId1, styleObject);
+            if (redId2 != null) redundantIdsMap.set(redId2, styleObject);
           }
         });
       }

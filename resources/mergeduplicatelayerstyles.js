@@ -93,13 +93,17 @@ window.HideProgress = () => {
   document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeOut";
 };
 
-window.ReDrawAfterGettingData = (symbolData, index) => {
+window.ReDrawAfterGettingData = (styleData, index) => {
   window.postMessage("nativeLog", "WV - Redraw after getting style data");
   globalMergeSession[index].isProcessed = true;
   isLoadingStyleData = false;
 
   for (var i = 0; i < globalMergeSession[index].layerStyleWithDuplicates.duplicates.length; i++) {
-    globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].thumbnail = symbolData.duplicates[i].thumbnail;
+    globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].thumbnail = styleData.duplicates[i].thumbnail;
+    globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].styleInstances = styleData.duplicates[i].styleInstances;
+    globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].numInstances = styleData.duplicates[i].numInstances;
+    globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].styleOverrides = styleData.duplicates[i].styleOverrides;
+    globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].numOverrides = styleData.duplicates[i].numOverrides;
   }
 
   window.HideProgress(100);
