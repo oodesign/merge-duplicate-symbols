@@ -6247,7 +6247,8 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
     });
   }
 
-  return allStyles;
+  return allStyles.sort(compareStyleArrays);
+  ;
 }
 
 function getAllTextStyles(includeAllStylesFromExternalLibraries) {
@@ -6878,7 +6879,7 @@ module.exports = {
   FindSimilarTextStyles: FindSimilarTextStyles,
   FindAllSimilarLayerStyles: FindAllSimilarLayerStyles,
   FindSimilarLayerStyles: FindSimilarLayerStyles,
-  getDefinedLayerStyles: getDefinedLayerStyles,
+  getAllLayerStyles: getAllLayerStyles,
   getDefinedTextStyles: getDefinedTextStyles,
   indexOfForeignStyle: indexOfForeignStyle,
   IsInTrial: IsInTrial,
@@ -8206,7 +8207,7 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
   }
 
   Helpers.ctimeEnd("Merging layer style:" + styleToMerge.name);
-  Helpers.clog("---- Finalized intance and override replacement.");
+  Helpers.clog("---- Finalized instance and override replacement.");
   var sharedStylesToRemove = Helpers.document.sharedLayerStyles.filter(function (sharedStyle) {
     return isMarkedForRemove(sharedStyle, stylesToRemove);
   });
@@ -8215,19 +8216,13 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
   Helpers.ctime("Removing discarded styles");
   sharedStylesToRemove.forEach(function (sharedStyleToRemove) {
     Helpers.clog("------ Removing " + sharedStyleToRemove.name + " (" + sharedStyleToRemove.id + ") from sharedLayerStyles.");
-    Helpers.ctime("Unlink from library");
     sharedStyleToRemove.unlinkFromLibrary();
-    Helpers.ctimeEnd("Unlink from library");
     Helpers.clog("-------- Unlinked from library.");
-    Helpers.ctime("Find index");
     var styleIndex = Helpers.document.sharedLayerStyles.findIndex(function (sL) {
       return sL.id == sharedStyleToRemove.id;
     });
-    Helpers.ctimeEnd("Find index");
     Helpers.clog("-------- Located in sharedLayerStyles (" + styleIndex + ").");
-    Helpers.ctime("Splice");
     Helpers.document.sharedLayerStyles.splice(styleIndex, 1);
-    Helpers.ctimeEnd("Splice");
     Helpers.clog("-------- Removed from sharedLayerStyles.");
   });
   Helpers.ctimeEnd("Removing discarded styles");
@@ -8336,10 +8331,7 @@ function MergeDuplicateLayerStyles(context) {
   function CalculateDuplicates(includeLibraries) {
     Helpers.clog("Finding duplicate layer styles. Including libraries:" + includeLibraries);
     onlyDuplicatedLayerStyles = Helpers.getAllDuplicateLayerStylesByName(context, includeLibraries);
-    layerStylesMap = Helpers.getLayerStylesMap(context, onlyDuplicatedLayerStyles); // console.log("layerStylesMap:")
-    // layerStylesMap.forEach(function (value, key) {
-    //   console.log("---- -- " + key.name + " - Direct:" + value.directInstances.length + " - Indirect:" + value.instancesWithOverrides.length);
-    // });
+    layerStylesMap = Helpers.getLayerStylesMap(context, onlyDuplicatedLayerStyles);
 
     if (onlyDuplicatedLayerStyles.length > 0) {
       Helpers.GetSpecificLayerStyleData(onlyDuplicatedLayerStyles[0], layerStylesMap);
@@ -8431,21 +8423,12 @@ function MergeSelectedLayerStyles(context) {
   };
   var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
   var webContents = browserWindow.webContents;
-  var definedLayerStyles;
-  var definedAllLayerStyles;
+  var allLayerStyles;
   var styleCounter = 0;
-
-  if (!Helpers.getLibrariesEnabled()) {
-    Helpers.clog("Get local styles list");
-    definedLayerStyles = Helpers.getDefinedLayerStyles(context, false);
-    styleCounter = definedLayerStyles.length;
-    checkingAlsoLibraries = false;
-  } else {
-    Helpers.clog("Get all (including libraries) styles list");
-    definedAllLayerStyles = Helpers.getDefinedLayerStyles(context, true);
-    styleCounter = definedAllLayerStyles.length;
-    checkingAlsoLibraries = true;
-  }
+  Helpers.clog("Get layer styles list. Libraries included:" + Helpers.getLibrariesEnabled());
+  allLayerStyles = Helpers.getAllLayerStyles(Helpers.getLibrariesEnabled());
+  styleCounter = allLayerStyles.length;
+  checkingAlsoLibraries = Helpers.getLibrariesEnabled();
 
   if (styleCounter > 1) {
     browserWindow.loadURL(__webpack_require__(/*! ../resources/mergelayerstylesfromlist.html */ "./resources/mergelayerstylesfromlist.html"));
@@ -8457,24 +8440,19 @@ function MergeSelectedLayerStyles(context) {
   browserWindow.once('ready-to-show', function () {
     browserWindow.show();
   });
+  console.log("allLayerStyles.length:" + styleCounter);
   webContents.on('did-finish-load', function () {
     Helpers.clog("Webview loaded");
-    if (!Helpers.getLibrariesEnabled()) webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedLayerStyles), ",").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);else webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedAllLayerStyles), ",").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
+    webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(allLayerStyles), ",").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
   });
   webContents.on('nativeLog', function (s) {
     Helpers.clog(s);
   });
-  webContents.on('GetLocalStylesList', function () {
+  webContents.on('GetStylesList', function (librariesEnabled) {
     Helpers.clog("Get local styles list");
-    if (definedLayerStyles == null) definedLayerStyles = Helpers.getDefinedLayerStyles(context, false);
-    checkingAlsoLibraries = false;
-    webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedLayerStyles), ")")).catch(console.error);
-  });
-  webContents.on('GetAllStylesList', function () {
-    Helpers.clog("Get all (including libraries) styles list");
-    if (definedAllLayerStyles == null) definedAllLayerStyles = Helpers.getDefinedLayerStyles(context, true);
-    checkingAlsoLibraries = true;
-    webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(definedAllLayerStyles), ")")).catch(console.error);
+    if (allLayerStyles == null) allLayerStyles = Helpers.getAllLayerStyles(librariesEnabled);
+    checkingAlsoLibraries = librariesEnabled;
+    webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(allLayerStyles), ")")).catch(console.error);
   });
   webContents.on('Cancel', function () {
     onShutdown(webviewMLSFLIdentifier);

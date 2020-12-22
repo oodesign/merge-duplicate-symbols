@@ -44,7 +44,7 @@ window.DrawStyleList = (layerStyles, includeLibraries) => {
   globalLayerStyles = layerStyles;
   includeLibrariesSetting = includeLibraries;
 
-  if(includeLibraries!=null)
+  if (includeLibraries != null)
     document.getElementById('chkIncludeLibraries').checked = includeLibrariesSetting;
 
   const groupByLibraryName = groupBy('libraryName');
@@ -102,7 +102,7 @@ window.DrawStyleList = (layerStyles, includeLibraries) => {
 }
 
 window.onExpanderClicked = (index) => {
-  window.postMessage("nativeLog", "WV - Expanding "+index);
+  window.postMessage("nativeLog", "WV - Expanding " + index);
   var groupStyleHeader = document.getElementById("groupStyleHeader" + index);
   var groupStyleList = document.getElementById("groupStyleList" + index);
   if (groupStyleHeader.className.toString().indexOf("collapsed") >= 0) {
@@ -238,10 +238,7 @@ document.getElementById('btnMerge').addEventListener("click", () => {
 document.getElementById('chkIncludeLibraries').addEventListener("click", () => {
   window.postMessage("nativeLog", "WV - Include libraries check changed");
   var check = document.getElementById('chkIncludeLibraries');
-  if (check.checked)
-    window.postMessage('GetAllStylesList');
-  else
-    window.postMessage('GetLocalStylesList');
+  window.postMessage('GetStylesList', check.checked);
 });
 
 

@@ -128,7 +128,7 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
   }
 
   Helpers.ctimeEnd("Merging layer style:" + styleToMerge.name);
-  Helpers.clog("---- Finalized intance and override replacement.");
+  Helpers.clog("---- Finalized instance and override replacement.");
 
   var sharedStylesToRemove = Helpers.document.sharedLayerStyles.filter(sharedStyle => isMarkedForRemove(sharedStyle, stylesToRemove));
 
@@ -139,19 +139,11 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
   Helpers.ctime("Removing discarded styles");
   sharedStylesToRemove.forEach(sharedStyleToRemove => {
     Helpers.clog("------ Removing " + sharedStyleToRemove.name + " (" + sharedStyleToRemove.id + ") from sharedLayerStyles.");
-
-    Helpers.ctime("Unlink from library");
     sharedStyleToRemove.unlinkFromLibrary();
-    Helpers.ctimeEnd("Unlink from library");
-
     Helpers.clog("-------- Unlinked from library.");
-    Helpers.ctime("Find index");
     var styleIndex = Helpers.document.sharedLayerStyles.findIndex(sL => sL.id == sharedStyleToRemove.id);
-    Helpers.ctimeEnd("Find index");
     Helpers.clog("-------- Located in sharedLayerStyles (" + styleIndex + ").");
-    Helpers.ctime("Splice");
     Helpers.document.sharedLayerStyles.splice(styleIndex, 1);
-    Helpers.ctimeEnd("Splice");
     Helpers.clog("-------- Removed from sharedLayerStyles.");
   });
   Helpers.ctimeEnd("Removing discarded styles");
@@ -283,11 +275,6 @@ export function MergeDuplicateLayerStyles(context) {
 
     layerStylesMap = Helpers.getLayerStylesMap(context, onlyDuplicatedLayerStyles);
 
-    // console.log("layerStylesMap:")
-    // layerStylesMap.forEach(function (value, key) {
-    //   console.log("---- -- " + key.name + " - Direct:" + value.directInstances.length + " - Indirect:" + value.instancesWithOverrides.length);
-    // });
-
     if (onlyDuplicatedLayerStyles.length > 0) {
       Helpers.GetSpecificLayerStyleData(onlyDuplicatedLayerStyles[0], layerStylesMap);
       mergeSession = [];
@@ -401,22 +388,14 @@ export function MergeSelectedLayerStyles(context) {
   const browserWindow = new BrowserWindow(options);
   const webContents = browserWindow.webContents;
 
-  var definedLayerStyles;
-  var definedAllLayerStyles;
+  var allLayerStyles;
   var styleCounter = 0;
 
-  if (!Helpers.getLibrariesEnabled()) {
-    Helpers.clog("Get local styles list");
-    definedLayerStyles = Helpers.getDefinedLayerStyles(context, false);
-    styleCounter = definedLayerStyles.length;
-    checkingAlsoLibraries = false;
-  }
-  else {
-    Helpers.clog("Get all (including libraries) styles list");
-    definedAllLayerStyles = Helpers.getDefinedLayerStyles(context, true);
-    styleCounter = definedAllLayerStyles.length;
-    checkingAlsoLibraries = true;
-  }
+  Helpers.clog("Get layer styles list. Libraries included:" + Helpers.getLibrariesEnabled());
+  allLayerStyles = Helpers.getAllLayerStyles(Helpers.getLibrariesEnabled());
+  styleCounter = allLayerStyles.length;
+  checkingAlsoLibraries = Helpers.getLibrariesEnabled();
+
 
   if (styleCounter > 1) {
     browserWindow.loadURL(require('../resources/mergelayerstylesfromlist.html'));
@@ -434,36 +413,26 @@ export function MergeSelectedLayerStyles(context) {
     browserWindow.show()
   })
 
+  console.log("allLayerStyles.length:" + styleCounter)
+
   webContents.on('did-finish-load', () => {
     Helpers.clog("Webview loaded");
-    if (!Helpers.getLibrariesEnabled())
-      webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedLayerStyles)},${Helpers.getLibrariesEnabled()})`).catch(console.error);
-    else
-      webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedAllLayerStyles)},${Helpers.getLibrariesEnabled()})`).catch(console.error);
-
+    webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(allLayerStyles)},${Helpers.getLibrariesEnabled()})`).catch(console.error);
   })
 
   webContents.on('nativeLog', s => {
     Helpers.clog(s);
   });
 
-  webContents.on('GetLocalStylesList', () => {
+  webContents.on('GetStylesList', (librariesEnabled) => {
     Helpers.clog("Get local styles list");
-    if (definedLayerStyles == null)
-      definedLayerStyles = Helpers.getDefinedLayerStyles(context, false);
+    if (allLayerStyles == null)
+      allLayerStyles = Helpers.getAllLayerStyles(librariesEnabled);
 
-    checkingAlsoLibraries = false;
-    webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedLayerStyles)})`).catch(console.error);
+    checkingAlsoLibraries = librariesEnabled;
+    webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(allLayerStyles)})`).catch(console.error);
   });
 
-  webContents.on('GetAllStylesList', () => {
-    Helpers.clog("Get all (including libraries) styles list");
-    if (definedAllLayerStyles == null)
-      definedAllLayerStyles = Helpers.getDefinedLayerStyles(context, true);
-
-    checkingAlsoLibraries = true;
-    webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedAllLayerStyles)})`).catch(console.error);
-  });
 
   webContents.on('Cancel', () => {
     onShutdown(webviewMLSFLIdentifier);

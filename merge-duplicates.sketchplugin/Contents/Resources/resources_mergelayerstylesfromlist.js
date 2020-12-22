@@ -293,7 +293,7 @@ document.getElementById('btnMerge').addEventListener("click", function () {
 document.getElementById('chkIncludeLibraries').addEventListener("click", function () {
   window.postMessage("nativeLog", "WV - Include libraries check changed");
   var check = document.getElementById('chkIncludeLibraries');
-  if (check.checked) window.postMessage('GetAllStylesList');else window.postMessage('GetLocalStylesList');
+  window.postMessage('GetStylesList', check.checked);
 });
 
 /***/ })
