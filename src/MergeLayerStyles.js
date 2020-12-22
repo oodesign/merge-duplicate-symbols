@@ -395,7 +395,7 @@ export function MergeSelectedLayerStyles(context) {
   allLayerStyles = Helpers.getAllLayerStyles(Helpers.getLibrariesEnabled());
   styleCounter = allLayerStyles.length;
   checkingAlsoLibraries = Helpers.getLibrariesEnabled();
-
+  Helpers.clog("allLayerStyles:" + allLayerStyles.length);
 
   if (styleCounter > 1) {
     browserWindow.loadURL(require('../resources/mergelayerstylesfromlist.html'));

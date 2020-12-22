@@ -25,7 +25,8 @@ function sortOnKeys(dict) {
 const groupBy = key => array =>
   array.reduce((objectsByKeyValue, obj) => {
     const value = obj[key];
-    objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+    refinedValue = (value.indexOf("(Master")>0) ? value.substring(0, value.indexOf("(Master")) : value;
+    objectsByKeyValue[refinedValue] = (objectsByKeyValue[refinedValue] || []).concat(obj);
     return objectsByKeyValue;
   }, {});
 
@@ -196,6 +197,7 @@ window.DrawSelectedStylesList = () => {
                     <div class="rowAvailable padded ${contrastMode}"><div class="thumbnail" style='background-image:url("data:image/png;base64,${groupOfStyles[i].thumbnail}")'></div></div>
                     <div class="rowAuto primaryText displayFlex"><span class="alignHorizontalCenter">${groupOfStyles[i].name} (${groupOfStyles[i].libraryName})</span></div>
                     <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${groupOfStyles[i].description}</span></div>
+                    <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${groupOfStyles[i].isHidden}</span></div>
                   </div>
                 </div>`;
 

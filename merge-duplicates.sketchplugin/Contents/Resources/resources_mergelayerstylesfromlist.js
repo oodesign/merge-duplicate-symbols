@@ -123,7 +123,8 @@ var groupBy = function groupBy(key) {
   return function (array) {
     return array.reduce(function (objectsByKeyValue, obj) {
       var value = obj[key];
-      objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+      refinedValue = value.indexOf("(Master") > 0 ? value.substring(0, value.indexOf("(Master")) : value;
+      objectsByKeyValue[refinedValue] = (objectsByKeyValue[refinedValue] || []).concat(obj);
       return objectsByKeyValue;
     }, {});
   };
@@ -257,7 +258,7 @@ window.DrawSelectedStylesList = function () {
         var checked = groupOfStyles[i].isChosen ? "checked" : "";
         var checkbox = "<div class=\"colAuto roundCheckbox\">\n                          <input type=\"checkbox\" ".concat(checked, " id=\"workZoneItemCheck").concat(stylenum, "\"/>\n                          <label></label>\n                        </div>");
         var contrastMode = groupOfStyles[i].contrastMode ? "bgContrastMode" : "";
-        inner += "<div id=\"workZoneStyle".concat(stylenum, "\" class=\"thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter ").concat(selected, "\" onclick=\"onStyleClicked(").concat(stylenum, ")\">\n                  ").concat(checkbox, "\n                  <div class=\"colAvailable verticalLayout thumbnailData\" id=\"workZoneStyleThumbnail").concat(stylenum, "\" >\n                    <div class=\"rowAvailable padded ").concat(contrastMode, "\"><div class=\"thumbnail\" style='background-image:url(\"data:image/png;base64,").concat(groupOfStyles[i].thumbnail, "\")'></div></div>\n                    <div class=\"rowAuto primaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(groupOfStyles[i].name, " (").concat(groupOfStyles[i].libraryName, ")</span></div>\n                    <div class=\"rowAuto secondaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(groupOfStyles[i].description, "</span></div>\n                  </div>\n                </div>");
+        inner += "<div id=\"workZoneStyle".concat(stylenum, "\" class=\"thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter ").concat(selected, "\" onclick=\"onStyleClicked(").concat(stylenum, ")\">\n                  ").concat(checkbox, "\n                  <div class=\"colAvailable verticalLayout thumbnailData\" id=\"workZoneStyleThumbnail").concat(stylenum, "\" >\n                    <div class=\"rowAvailable padded ").concat(contrastMode, "\"><div class=\"thumbnail\" style='background-image:url(\"data:image/png;base64,").concat(groupOfStyles[i].thumbnail, "\")'></div></div>\n                    <div class=\"rowAuto primaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(groupOfStyles[i].name, " (").concat(groupOfStyles[i].libraryName, ")</span></div>\n                    <div class=\"rowAuto secondaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(groupOfStyles[i].description, "</span></div>\n                    <div class=\"rowAuto secondaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(groupOfStyles[i].isHidden, "</span></div>\n                  </div>\n                </div>");
         counter++;
       }
 

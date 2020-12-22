@@ -6200,32 +6200,48 @@ function importForeignSymbol(symbol, library) {
 
 function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
   var allStyles = [];
-  var map = new Map();
+  var idsMap = new Map();
+  var redundantIdsMap = new Map();
   document.sharedLayerStyles.forEach(function (sharedLayerStyle) {
     var library = sharedLayerStyle.getLibrary();
-    var layerStyleObject = {
-      "layerStyle": sharedLayerStyle,
-      "name": "" + sharedLayerStyle.name,
-      "libraryName": library != null ? libraryPrefix + library.name : sketchlocalfile,
-      "library": library,
-      "isForeign": library != null,
-      "isSelected": false,
-      "isChosen": false,
-      "description": getLayerStyleDescription(sharedLayerStyle),
-      "thumbnail": getOvalThumbnail(sharedLayerStyle),
-      "duplicates": [],
-      ["isSelected"]: false,
-      "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
-    };
-    allStyles.push(layerStyleObject);
-    map.set(sharedLayerStyle.style.id, true);
+
+    if (!idsMap.has(sharedLayerStyle.id)) {
+      var redId1 = sharedLayerStyle.style.id;
+      var redId2 = sharedLayerStyle.id.indexOf("[") >= 0 ? sharedLayerStyle.id.substring(sharedLayerStyle.id.indexOf("[") + 1, sharedLayerStyle.id.length - 1) : null;
+      var redundantIn = false;
+      if (redId2 != null) redundantIn = redundantIdsMap.has(redId1) || redundantIdsMap.has(redId2);else redundantIn = redundantIdsMap.has(redId1);
+      var layerStyleObject = {
+        "layerStyle": sharedLayerStyle,
+        "name": "" + sharedLayerStyle.name,
+        "libraryName": library != null ? libraryPrefix + library.name : sketchlocalfile,
+        "library": library,
+        "isForeign": library != null,
+        "isSelected": false,
+        "isChosen": false,
+        "description": getLayerStyleDescription(sharedLayerStyle),
+        "thumbnail": getOvalThumbnail(sharedLayerStyle),
+        "numInstances": 0,
+        "numOverrides": 0,
+        ["isSelected"]: false,
+        "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false,
+        "isHidden": redundantIn
+      };
+      allStyles.push(layerStyleObject);
+      idsMap.set(sharedLayerStyle.style.id, true);
+      redundantIdsMap.set(redId1, layerStyleObject);
+      if (redId2 != null) redundantIdsMap.set(redId2, layerStyleObject);
+    }
   });
 
   if (includeAllStylesFromExternalLibraries) {
     libraries.forEach(function (lib) {
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
         lib.getDocument().sharedLayerStyles.forEach(function (sharedLayerStyle) {
-          if (!map.has(sharedLayerStyle.style.id)) {
+          if (!idsMap.has(sharedLayerStyle.style.id)) {
+            var redId1 = sharedLayerStyle.style.id;
+            var redId2 = sharedLayerStyle.id.indexOf("[") >= 0 ? sharedLayerStyle.id.substring(sharedLayerStyle.id.indexOf("[") + 1, sharedLayerStyle.id.length - 1) : null;
+            var redundantIn = false;
+            if (redId2 != null) redundantIn = redundantIdsMap.has(redId1) || redundantIdsMap.has(redId2);else redundantIn = redundantIdsMap.has(redId1);
             var layerStyleObject = {
               "layerStyle": sharedLayerStyle,
               "name": "" + sharedLayerStyle.name,
@@ -6236,11 +6252,16 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
               "isChosen": false,
               "description": getLayerStyleDescription(sharedLayerStyle),
               "thumbnail": getOvalThumbnail(sharedLayerStyle),
-              "duplicates": [],
+              "numInstances": 0,
+              "numOverrides": 0,
               ["isSelected"]: false,
-              "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false
+              "contrastMode": sharedLayerStyle.style.fills.length > 0 ? shouldEnableContrastMode(sharedLayerStyle.style.fills[0].color.substring(1, 7)) : false,
+              "isHidden": redundantIn
             };
             allStyles.push(layerStyleObject);
+            idsMap.set(sharedLayerStyle.style.id, true);
+            redundantIdsMap.set(redId1, layerStyleObject);
+            if (redId2 != null) redundantIdsMap.set(redId2, layerStyleObject);
           }
         });
       }
@@ -8429,6 +8450,7 @@ function MergeSelectedLayerStyles(context) {
   allLayerStyles = Helpers.getAllLayerStyles(Helpers.getLibrariesEnabled());
   styleCounter = allLayerStyles.length;
   checkingAlsoLibraries = Helpers.getLibrariesEnabled();
+  Helpers.clog("allLayerStyles:" + allLayerStyles.length);
 
   if (styleCounter > 1) {
     browserWindow.loadURL(__webpack_require__(/*! ../resources/mergelayerstylesfromlist.html */ "./resources/mergelayerstylesfromlist.html"));
