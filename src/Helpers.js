@@ -932,11 +932,25 @@ function FindNestedLayerStyleOverride(overrides, idsMap, instance, level) {
         }
       }
       else {
-        if (idsMap.has("" + overrides[key])) { return true; };
+        try {
+          if (idsMap.has("" + overrides[key])) { return true; };
+        } catch (e) {
+          console.log("Crash1");
+          console.log(idsMap);
+          console.log(overrides[key]);
+          console.log(e);
+        }
       }
     }
     else {
-      if (FindNestedLayerStyleOverride(overrides[key], idsMap, instance, level + 1)) return true;
+      try {
+        if (FindNestedLayerStyleOverride(overrides[key], idsMap, instance, level + 1)) return true;
+      } catch (e) {
+        console.log("Crash2");
+        console.log(idsMap);
+        console.log(overrides[key]);
+        console.log(e);
+      }
     }
   }
   return false;
@@ -1407,6 +1421,7 @@ function importForeignSymbol(symbol, library) {
 }
 
 function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
+  console.log("getAllLayerStyles:" + includeAllStylesFromExternalLibraries)
   var allStyles = [];
   const idsMap = new Map();
   const redundantIdsMap = new Map();
@@ -1420,7 +1435,7 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
       if (redId2 != null)
         redundantIn = redundantIdsMap.has(redId1) || redundantIdsMap.has(redId2);
       else
-        redundantIn = redundantIdsMap.has(redId1)
+        redundantIn = redundantIdsMap.has(redId1);
 
       var layerStyleObject = {
         "layerStyle": sharedLayerStyle,

@@ -1,6 +1,6 @@
 // disable the context menu (eg. the right click menu) to have a more native feel
 document.addEventListener('contextmenu', (e) => {
-  e.preventDefault()
+  //e.preventDefault()
 })
 var globalLayerStyles;
 var globalGroupedLayerStyles;
@@ -78,6 +78,8 @@ window.DrawStyleList = (layerStyles, includeLibraries) => {
     inner += `<div id="groupStyleList${groupnum}" class="rowAuto expanderContent">`;
 
     for (var i = 0; i < groupOfStyles.length; i++) {
+      var isHidden = groupOfStyles[i].isHidden ? "notDisplayed" : "";
+      
       var checked = groupOfStyles[i].isSelected ? "checked" : "";
 
       var checkbox = `<div class="squareCheckbox">
@@ -86,7 +88,7 @@ window.DrawStyleList = (layerStyles, includeLibraries) => {
         <span>${groupOfStyles[i].name}</span>
       </div>`;
 
-      inner += `<div id="layerStyleItem${stylenum}" onclick="onLayerStyleItemChanged(${stylenum})" class="leftPanelListItem alignVerticalCenter">${checkbox} </div>`
+      inner += `<div id="layerStyleItem${stylenum}" onclick="onLayerStyleItemChanged(${stylenum})" class="leftPanelListItem alignVerticalCenter ${isHidden}">${checkbox} </div>`
       stylenum++;
     }
 
@@ -197,7 +199,6 @@ window.DrawSelectedStylesList = () => {
                     <div class="rowAvailable padded ${contrastMode}"><div class="thumbnail" style='background-image:url("data:image/png;base64,${groupOfStyles[i].thumbnail}")'></div></div>
                     <div class="rowAuto primaryText displayFlex"><span class="alignHorizontalCenter">${groupOfStyles[i].name} (${groupOfStyles[i].libraryName})</span></div>
                     <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${groupOfStyles[i].description}</span></div>
-                    <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${groupOfStyles[i].isHidden}</span></div>
                   </div>
                 </div>`;
 

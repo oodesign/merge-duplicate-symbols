@@ -5753,14 +5753,28 @@ function FindNestedLayerStyleOverride(overrides, idsMap, instance, level) {
           }
         }
       } else {
-        if (idsMap.has("" + overrides[key])) {
-          return true;
-        }
+        try {
+          if (idsMap.has("" + overrides[key])) {
+            return true;
+          }
 
-        ;
+          ;
+        } catch (e) {
+          console.log("Crash1");
+          console.log(idsMap);
+          console.log(overrides[key]);
+          console.log(e);
+        }
       }
     } else {
-      if (FindNestedLayerStyleOverride(overrides[key], idsMap, instance, level + 1)) return true;
+      try {
+        if (FindNestedLayerStyleOverride(overrides[key], idsMap, instance, level + 1)) return true;
+      } catch (e) {
+        console.log("Crash2");
+        console.log(idsMap);
+        console.log(overrides[key]);
+        console.log(e);
+      }
     }
   }
 
@@ -6199,6 +6213,7 @@ function importForeignSymbol(symbol, library) {
 }
 
 function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
+  console.log("getAllLayerStyles:" + includeAllStylesFromExternalLibraries);
   var allStyles = [];
   var idsMap = new Map();
   var redundantIdsMap = new Map();
@@ -8471,8 +8486,8 @@ function MergeSelectedLayerStyles(context) {
     Helpers.clog(s);
   });
   webContents.on('GetStylesList', function (librariesEnabled) {
-    Helpers.clog("Get local styles list");
-    if (allLayerStyles == null) allLayerStyles = Helpers.getAllLayerStyles(librariesEnabled);
+    Helpers.clog("Get styles list");
+    allLayerStyles = Helpers.getAllLayerStyles(librariesEnabled);
     checkingAlsoLibraries = librariesEnabled;
     webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(allLayerStyles), ")")).catch(console.error);
   });

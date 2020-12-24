@@ -425,9 +425,8 @@ export function MergeSelectedLayerStyles(context) {
   });
 
   webContents.on('GetStylesList', (librariesEnabled) => {
-    Helpers.clog("Get local styles list");
-    if (allLayerStyles == null)
-      allLayerStyles = Helpers.getAllLayerStyles(librariesEnabled);
+    Helpers.clog("Get styles list");
+    allLayerStyles = Helpers.getAllLayerStyles(librariesEnabled);
 
     checkingAlsoLibraries = librariesEnabled;
     webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(allLayerStyles)})`).catch(console.error);
