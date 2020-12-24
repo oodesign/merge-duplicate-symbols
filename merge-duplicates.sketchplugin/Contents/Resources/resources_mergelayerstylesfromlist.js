@@ -94,7 +94,8 @@
 /***/ (function(module, exports) {
 
 // disable the context menu (eg. the right click menu) to have a more native feel
-document.addEventListener('contextmenu', function (e) {//e.preventDefault()
+document.addEventListener('contextmenu', function (e) {
+  e.preventDefault();
 });
 var globalLayerStyles;
 var globalGroupedLayerStyles;
@@ -175,6 +176,27 @@ window.DrawStyleList = function (layerStyles, includeLibraries) {
   var lstLayerStyles = document.getElementById('lstLayerStyles');
   lstLayerStyles.innerHTML = inner;
   clearWorkzone();
+};
+
+window.ShowMergeProgress = function (progress) {
+  HideLayout();
+  document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
+};
+
+window.UpdateMergeProgress = function (progress, message, message2) {
+  document.getElementById('progressRing').setProgress(progress);
+  document.getElementById('mergeloadingMessage').innerHTML = message;
+  document.getElementById('mergeloadingMessage2').innerHTML = message2;
+};
+
+window.HideLayout = function () {
+  //window.postMessage("nativeLog", "WV - Hide layout");
+  document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
+  document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState fadeOut";
+  document.getElementById('contentList').className = "rowAvailable listOfStyles fadeOut";
+  document.getElementById('btnCancel').className = "notDisplayed";
+  document.getElementById('btnMerge').className = "notDisplayed";
+  document.getElementById('chkLibraries').className = "notDisplayed";
 };
 
 window.onExpanderClicked = function (index) {

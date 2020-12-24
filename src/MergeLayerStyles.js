@@ -13,7 +13,7 @@ var currentSelectedStyles = [];
 
 function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, webContents) {
 
-  Helpers.clog("-- Starting Merge Layer Styles (" + styleToMerge.duplicates.length + ")");
+  Helpers.clog("-- Starting Merge Layer Styles (" + styleToMerge.duplicates.length + "). Style to keep is:" + styleToKeep);
 
   var stylesToRemove = [];
   var styleToApply;
@@ -201,8 +201,8 @@ export function MergeSimilarLayerStyles(context) {
   webContents.on('ExecuteMerge', (editedStylesWithSimilarStyles) => {
     Helpers.clog("Execute merge");
     var duplicatesSolved = 0;
-    var mergedStyles = 0;
-    var affectedLayers = [0, 0];
+    var mergeResults = [0, 0, 0];
+
     for (var i = 0; i < editedStylesWithSimilarStyles.length; i++) {
       if (!editedStylesWithSimilarStyles[i].isUnchecked && editedStylesWithSimilarStyles[i].selectedIndex >= 0) {
         currentSelectedStyles = [];
@@ -324,7 +324,6 @@ export function MergeDuplicateLayerStyles(context) {
     Helpers.clog("Executing Merge");
 
     var duplicatesSolved = 0;
-    var mergedStyles = 0;
     var mergeResults = [0, 0, 0];
 
 
@@ -413,7 +412,6 @@ export function MergeSelectedLayerStyles(context) {
     browserWindow.show()
   })
 
-  console.log("allLayerStyles.length:" + styleCounter)
 
   webContents.on('did-finish-load', () => {
     Helpers.clog("Webview loaded");
@@ -439,38 +437,44 @@ export function MergeSelectedLayerStyles(context) {
 
   webContents.on('ExecuteMerge', (editedGlobalLayerStyles) => {
     Helpers.clog("Executing Merge");
-    currentSelectedStyles = [];
     var selectedIndex = -1;
-    var counter = 0;
-    if (!checkingAlsoLibraries) {
-      for (var i = 0; i < definedLayerStyles.length; i++) {
-        definedLayerStyles[i].isSelected = editedGlobalLayerStyles[i].isSelected;
-        definedLayerStyles[i].isChosen = editedGlobalLayerStyles[i].isChosen;
-        if (editedGlobalLayerStyles[i].isChosen) selectedIndex = counter;
-        if (editedGlobalLayerStyles[i].isSelected) {
-          currentSelectedStyles.push(definedLayerStyles[i]);
-          counter++;
+    var mergeSession = {
+      "name": "Selected layer styles",
+      "duplicates": []
+    };
+
+    //Create merge structure
+    for (var i = 0; i < allLayerStyles.length; i++) {
+      allLayerStyles[i].isSelected = editedGlobalLayerStyles[i].isSelected;
+      allLayerStyles[i].isChosen = editedGlobalLayerStyles[i].isChosen;
+
+      if (allLayerStyles[i].isSelected) {
+        if (allLayerStyles[i].isChosen) {
+          selectedIndex = mergeSession.duplicates.length;
+          mergeSession.name = allLayerStyles[i].name;
         }
-      }
-    }
-    else {
-      for (var i = 0; i < definedAllLayerStyles.length; i++) {
-        definedAllLayerStyles[i].isSelected = editedGlobalLayerStyles[i].isSelected;
-        definedAllLayerStyles[i].isChosen = editedGlobalLayerStyles[i].isChosen;
-        if (editedGlobalLayerStyles[i].isChosen) selectedIndex = counter;
-        if (editedGlobalLayerStyles[i].isSelected) {
-          currentSelectedStyles.push(definedAllLayerStyles[i]);
-          counter++;
-        }
+        mergeSession.duplicates.push(allLayerStyles[i]);
+
       }
     }
 
-    var affectedLayers = MergeLayerStyles(context, selectedIndex);
-
-    Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-    UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+    var mergeResults = MergeLayerStyles(mergeSession, selectedIndex, 0, 1, webContents);
 
     onShutdown(webviewMLSFLIdentifier);
+
+    var replacedStuff = "";
+    if (mergeResults[1] > 0 && mergeResults[2])
+      replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";
+    else if (mergeResults[1] > 0)
+      replacedStuff = " and replaced " + mergeResults[1] + " instances.";
+    else if (mergeResults[2] > 0)
+      replacedStuff = " and updated " + mergeResults[2] + " overrides.";
+    else
+      replacedStuff = ".";
+
+
+    Helpers.clog("Completed merge. Removed " + mergeResults[0] + " layer styles" + replacedStuff);
+    UI.message("Hey ho! You just removed " + mergeResults[0] + " layer styles" + replacedStuff + " Amazing!");
   });
 };
 

@@ -935,10 +935,10 @@ function FindNestedLayerStyleOverride(overrides, idsMap, instance, level) {
         try {
           if (idsMap.has("" + overrides[key])) { return true; };
         } catch (e) {
-          console.log("Crash1");
-          console.log(idsMap);
-          console.log(overrides[key]);
-          console.log(e);
+          Helpers.clog("Error while processing overrides (1).");
+          Helpers.clog(idsMap);
+          Helpers.clog(overrides[key]);
+          Helpers.clog(e);
         }
       }
     }
@@ -946,10 +946,10 @@ function FindNestedLayerStyleOverride(overrides, idsMap, instance, level) {
       try {
         if (FindNestedLayerStyleOverride(overrides[key], idsMap, instance, level + 1)) return true;
       } catch (e) {
-        console.log("Crash2");
-        console.log(idsMap);
-        console.log(overrides[key]);
-        console.log(e);
+        Helpers.clog("Error while processing overrides (2).");
+        Helpers.clog(idsMap);
+        Helpers.clog(overrides[key]);
+        Helpers.clog(e);
       }
     }
   }
@@ -1421,7 +1421,6 @@ function importForeignSymbol(symbol, library) {
 }
 
 function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
-  console.log("getAllLayerStyles:" + includeAllStylesFromExternalLibraries)
   var allStyles = [];
   const idsMap = new Map();
   const redundantIdsMap = new Map();

@@ -4531,7 +4531,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/9eca21f444b1b07cf33f932904dba5cb.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/92bda81d5890e8b2e051a00e08e9fff1.html";
 
 /***/ }),
 
@@ -5760,20 +5760,20 @@ function FindNestedLayerStyleOverride(overrides, idsMap, instance, level) {
 
           ;
         } catch (e) {
-          console.log("Crash1");
-          console.log(idsMap);
-          console.log(overrides[key]);
-          console.log(e);
+          Helpers.clog("Error while processing overrides (1).");
+          Helpers.clog(idsMap);
+          Helpers.clog(overrides[key]);
+          Helpers.clog(e);
         }
       }
     } else {
       try {
         if (FindNestedLayerStyleOverride(overrides[key], idsMap, instance, level + 1)) return true;
       } catch (e) {
-        console.log("Crash2");
-        console.log(idsMap);
-        console.log(overrides[key]);
-        console.log(e);
+        Helpers.clog("Error while processing overrides (2).");
+        Helpers.clog(idsMap);
+        Helpers.clog(overrides[key]);
+        Helpers.clog(e);
       }
     }
   }
@@ -6213,7 +6213,6 @@ function importForeignSymbol(symbol, library) {
 }
 
 function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
-  console.log("getAllLayerStyles:" + includeAllStylesFromExternalLibraries);
   var allStyles = [];
   var idsMap = new Map();
   var redundantIdsMap = new Map();
@@ -8144,7 +8143,7 @@ var checkingAlsoLibraries = false;
 var currentSelectedStyles = [];
 
 function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, webContents) {
-  Helpers.clog("-- Starting Merge Layer Styles (" + styleToMerge.duplicates.length + ")");
+  Helpers.clog("-- Starting Merge Layer Styles (" + styleToMerge.duplicates.length + "). Style to keep is:" + styleToKeep);
   var stylesToRemove = [];
   var styleToApply;
   var instancesChanged = 0;
@@ -8305,8 +8304,7 @@ function MergeSimilarLayerStyles(context) {
   webContents.on('ExecuteMerge', function (editedStylesWithSimilarStyles) {
     Helpers.clog("Execute merge");
     var duplicatesSolved = 0;
-    var mergedStyles = 0;
-    var affectedLayers = [0, 0];
+    var mergeResults = [0, 0, 0];
 
     for (var i = 0; i < editedStylesWithSimilarStyles.length; i++) {
       if (!editedStylesWithSimilarStyles[i].isUnchecked && editedStylesWithSimilarStyles[i].selectedIndex >= 0) {
@@ -8411,7 +8409,6 @@ function MergeDuplicateLayerStyles(context) {
   webContents.on('ExecuteMerge', function (editedMergeSession) {
     Helpers.clog("Executing Merge");
     var duplicatesSolved = 0;
-    var mergedStyles = 0;
     var mergeResults = [0, 0, 0];
     var totalToMerge = editedMergeSession.filter(function (ems) {
       return !ems.isUnchecked && ems.selectedIndex >= 0;
@@ -8477,7 +8474,6 @@ function MergeSelectedLayerStyles(context) {
   browserWindow.once('ready-to-show', function () {
     browserWindow.show();
   });
-  console.log("allLayerStyles.length:" + styleCounter);
   webContents.on('did-finish-load', function () {
     Helpers.clog("Webview loaded");
     webContents.executeJavaScript("DrawStyleList(".concat(JSON.stringify(allLayerStyles), ",").concat(Helpers.getLibrariesEnabled(), ")")).catch(console.error);
@@ -8496,38 +8492,32 @@ function MergeSelectedLayerStyles(context) {
   });
   webContents.on('ExecuteMerge', function (editedGlobalLayerStyles) {
     Helpers.clog("Executing Merge");
-    currentSelectedStyles = [];
     var selectedIndex = -1;
-    var counter = 0;
+    var mergeSession = {
+      "name": "Selected layer styles",
+      "duplicates": []
+    }; //Create merge structure
 
-    if (!checkingAlsoLibraries) {
-      for (var i = 0; i < definedLayerStyles.length; i++) {
-        definedLayerStyles[i].isSelected = editedGlobalLayerStyles[i].isSelected;
-        definedLayerStyles[i].isChosen = editedGlobalLayerStyles[i].isChosen;
-        if (editedGlobalLayerStyles[i].isChosen) selectedIndex = counter;
+    for (var i = 0; i < allLayerStyles.length; i++) {
+      allLayerStyles[i].isSelected = editedGlobalLayerStyles[i].isSelected;
+      allLayerStyles[i].isChosen = editedGlobalLayerStyles[i].isChosen;
 
-        if (editedGlobalLayerStyles[i].isSelected) {
-          currentSelectedStyles.push(definedLayerStyles[i]);
-          counter++;
+      if (allLayerStyles[i].isSelected) {
+        if (allLayerStyles[i].isChosen) {
+          selectedIndex = mergeSession.duplicates.length;
+          mergeSession.name = allLayerStyles[i].name;
         }
-      }
-    } else {
-      for (var i = 0; i < definedAllLayerStyles.length; i++) {
-        definedAllLayerStyles[i].isSelected = editedGlobalLayerStyles[i].isSelected;
-        definedAllLayerStyles[i].isChosen = editedGlobalLayerStyles[i].isChosen;
-        if (editedGlobalLayerStyles[i].isChosen) selectedIndex = counter;
 
-        if (editedGlobalLayerStyles[i].isSelected) {
-          currentSelectedStyles.push(definedAllLayerStyles[i]);
-          counter++;
-        }
+        mergeSession.duplicates.push(allLayerStyles[i]);
       }
     }
 
-    var affectedLayers = MergeLayerStyles(context, selectedIndex);
-    Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-    UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+    var mergeResults = MergeLayerStyles(mergeSession, selectedIndex, 0, 1, webContents);
     onShutdown(webviewMLSFLIdentifier);
+    var replacedStuff = "";
+    if (mergeResults[1] > 0 && mergeResults[2]) replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";else if (mergeResults[1] > 0) replacedStuff = " and replaced " + mergeResults[1] + " instances.";else if (mergeResults[2] > 0) replacedStuff = " and updated " + mergeResults[2] + " overrides.";else replacedStuff = ".";
+    Helpers.clog("Completed merge. Removed " + mergeResults[0] + " layer styles" + replacedStuff);
+    UI.message("Hey ho! You just removed " + mergeResults[0] + " layer styles" + replacedStuff + " Amazing!");
   });
 }
 ;
