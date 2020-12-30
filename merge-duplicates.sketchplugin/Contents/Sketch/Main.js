@@ -8428,9 +8428,8 @@ function MergeDuplicateLayerStyles(context) {
 
         duplicatesSolved++;
       }
-    }
+    } //onShutdown(webviewMDLSIdentifier);
 
-    onShutdown(webviewMDLSIdentifier);
 
     if (duplicatesSolved <= 0) {
       Helpers.clog("No styles were merged");

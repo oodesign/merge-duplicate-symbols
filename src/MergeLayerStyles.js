@@ -340,8 +340,6 @@ export function MergeDuplicateLayerStyles(context) {
         mergeResults[0] += localMergeResults[0];
         mergeResults[1] += localMergeResults[1];
         mergeResults[2] += localMergeResults[2];
-        // webContents.executeJavaScript(`ShowMergeProgress()`).catch(console.error);
-        // webContents.executeJavaScript(`UpdateMergeProgress(${basePercent}, "Woooo", "Wuuuuu")`).catch(console.error);
 
         duplicatesSolved++;
       }
