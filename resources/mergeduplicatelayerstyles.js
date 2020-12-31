@@ -116,6 +116,7 @@ window.ShowMergeProgress = (progress) => {
   HideLayout();
   document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
 }
+
 window.UpdateMergeProgress = (progress, message, message2) => {
   document.getElementById('progressRing').setProgress(progress);
   document.getElementById('mergeloadingMessage').innerHTML = message;

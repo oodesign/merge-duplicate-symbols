@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <title>Styler</title>
-  <link rel="stylesheet" href="./main.css">
+  <link rel="stylesheet" href="543b481a81f0c34a4da46ef6af0cba46.css";">
 </head>
 
 <body>
@@ -14,7 +14,8 @@
         <div id="filterArea" class="colAuto filterArea verticalLayout">
           <div id="filterHeader" class="rowAuto groupHeader">
             <div class="horizontalLayout">
-              <div class="colAvailable alignVerticalCenter"><span class="filterTitle">Filter by attribute</span><div id="filterCounter" class="notDisplayed"><span id="filtersAppliedNum">2</span></div></div>
+              <div class="colAvailable alignVerticalCenter"><span class="filterTitle xl">Color comparison</span>
+              </div>
               <div class="colAuto expanderIcon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                   <path
@@ -25,47 +26,26 @@
             </div>
           </div>
           <div class="rowAvailable scrollable filterAreaPadded">
-            <div class="treeContent">
-              <div class="roundCheckbox">
-                <input type="checkbox" id="checkSameFillColor" checked />
-                <label class="labelCheck" for="checkSameFillColor">
-                  <div class="padder"><span>Fill color</span></div>
-                </label>
+            <div class="sliderContainer">
+              <div id="toleranceLabel" class="topLabel">
+                <span class="primaryText">Tolerance</span> 
+                <span id="toleranceVal" class="secondaryText">(30)</span> 
               </div>
-              <div class="roundCheckbox">
-                <input type="checkbox" id="checkSameBorderColor" checked />
-                <label class="labelCheck" for="checkSameBorderColor">
-                  <div class="padder"><span>Border color</span></div>
-                </label>
-              </div>
-              <div class="roundCheckbox">
-                <input type="checkbox" id="checkSameBorderThickness" />
-                <label class="labelCheck" for="checkSameBorderThickness">
-                  <div class="padder"><span>Border thickness</span></div>
-                </label>
-              </div>
-              <div class="roundCheckbox">
-                <input type="checkbox" id="checkSameShadowColor" />
-                <label class="labelCheck" for="checkSameShadowColor">
-                  <div class="padder"><span>Shadow color</span></div>
-                </label>
-              </div>
-              <div class="roundCheckbox">
-                <input type="checkbox" id="checkSameShadowXYBlurSpread" />
-                <label class="labelCheck" for="checkSameShadowXYBlurSpread">
-                  <div class="padder"><span>Shadow X,Y,Blur,Spread</span></div>
-                </label>
+              <input type="range" min="0" max="100" value="30" id="toleranceSlider" class="inputSlider">
+              <div class="sliderLabels">
+                <span class="leftRange">Very similar</span>
+                <span class="rightRange">Quite different</span>
               </div>
             </div>
           </div>
           <div class="rowAuto filterAreaPadded">
-            <button id="btnFindMatchingStyles" class="btnApply">Find matching styles</button>
+            <button id="btnFindMatchingStyles" class="btnApply">Find matching color variables</button>
           </div>
         </div>
         <div id="resultsPanel" class="colAuto leftPanel collapsed">
           <div class="verticalLayout leftPanelArea">
             <div class="rowAuto areaHeader alignVerticalCenter">
-              <span>Styles that have similar styles</span>
+              <span>Color variables that have similar color variables</span>
             </div>
             <div class="rowAvailable scrollable">
               <div id="lstResultingStyles" class="rowAuto">
@@ -85,8 +65,15 @@
                 <div class="colAuto logo"></div>
               </div>
             </div>
-            <div id="contentList" class="rowAvailable listOfStyles">
-              
+            <div class="rowAvailable listOfStyles">
+              <div id="progressLayer" class="progressCircle">
+                <div class="verticalLayout alignFullCenter">
+                  <div id="progressCircle" class="rowAuto  item progress-0">
+                    <div class="radial-inner-bg"></div>
+                  </div>
+                  <div id="loadingMessage" class="secondaryText rowAuto"></div>
+                </div>
+              </div>
               <div id="emptyState" class="emptyState">
                 <div class="verticalLayout">
                   <div class="rowAuto alignFullCenter">
@@ -107,10 +94,10 @@
                     </svg>
                   </div>
                   <div id="emptyStateMessage" class="rowAuto secondaryText">
-                    Choose the attributes you’d like to match and click on 'Find matching styles'
+                    Choose your tolerance and click on 'Find matching color variables'
                   </div>
                   <div class="rowAuto secondaryText">
-                    <button id="btnEmptyState" class="btnApply">Find matching styles</button>
+                    <button id="btnEmptyState" class="btnApply">Find matching color variables</button>
                   </div>
                 </div>
               </div>
@@ -120,28 +107,13 @@
               </div>
             </div>
           </div>
-          <div id="progressLayer" class="progressCircle offDownCenter">
-            <div class="verticalLayout alignFullCenter">
-              <div class="mk-spinner-wrap">
-                <div class="mk-spinner-ring"></div>
-              </div>
-              <div id="loadingMessage" class="secondaryText rowAuto"></div>
-            </div>
-          </div>
-          <div id="progressCircle" class="progressCircle offDownCenter fadeOut">
-            <div class="verticalLayout alignFullCenter">
-              <progress-ring id="progressRing" stroke="3" radius="30" progress="0"></progress-ring>
-              <div id="mergeloadingMessage" class="primaryText rowAuto"></div>
-              <div id="mergeloadingMessage2" class="secondaryText rowAuto"></div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
     <div class="rowAuto bottomBar">
       <div class="horizontalLayout actionsRow">
         <div class="colAvailable">
-          <div id="chkLibraries" class="roundCheckbox">
+          <div class="roundCheckbox">
             <input type="checkbox" id="chkIncludeLibraries" />
             <label for="chkIncludeLibraries">
               <span id="lblIncludeLibraries" class="longLabel">Include all enabled libraries styles</span>
@@ -152,16 +124,15 @@
           <button id="btnCancel" class="btnSecondary">Cancel</button>
         </div>
         <div class="colAuto">
-          <button id="btnMerge" class="btnPrimary" disabled>Merge styles</button>
+          <button id="btnMerge" class="btnPrimary xl" disabled>Merge color variables</button>
         </div>
       </div>
     </div>
-    <div class="draggableArea alignFullCenter" data-app-region="drag"><span id="windowTitle">Merge similar layer
-        styles</span></div>
+    <div class="draggableArea alignFullCenter" data-app-region="drag"><span id="windowTitle">Merge similar color
+        variables</span></div>
   </div>
   <!-- notice the "../" here. It's because webview.js will be compiled in a different folder -->
-  <script src="../resources_mergesimilarlayerstyles.js"></script>
-  <script src="../resources_progressRing.js"></script>
+  <script src="../resources_mergesimilarcolorvariables.js"></script>
 </body>
 
 </html>

@@ -932,6 +932,13 @@ html,body{
       display: none;
     }
   }
+
+  &.hidden{
+    width:0;
+    span, .regularIcon,.treeContent, .btnApply,.filterCounter{
+      display: none;
+    }
+  }
 }
 
 @mixin roundCheckbox($bgColor,$marginBottom){

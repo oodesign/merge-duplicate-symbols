@@ -88,15 +88,6 @@ function analytics(action) {
   });
 }
 
-function GetTextBasedOnCount(number) {
-  if (number != 1) {
-    return " styles ";
-  }
-  else {
-    return " style ";
-  }
-}
-
 
 function shouldEnableContrastMode(color) {
   var UI = require('sketch/ui');
@@ -122,102 +113,10 @@ function shouldEnableContrastMode(color) {
     return false;
 }
 
-function brightnessByColor(color) {
-  var color = "" + color, isHEX = color.indexOf("#") == 0, isRGB = color.indexOf("rgb") == 0;
-  if (isHEX) {
-    var m = color.substr(1).match(color.length == 7 ? /(\S{2})/g : /(\S{1})/g);
-    if (m) var r = parseInt(m[0], 16), g = parseInt(m[1], 16), b = parseInt(m[2], 16);
-  }
-  if (isRGB) {
-    var m = color.match(/(\d+){3}/g);
-    if (m) var r = m[0], g = m[1], b = m[2];
-  }
-  if (typeof r != "undefined") return ((r * 299) + (g * 587) + (b * 114)) / 1000;
-}
+
 
 function getAcquiredLicense() {
   return acquiredLicense;
-}
-
-
-function containsIDOrViceversa(id1, id2) {
-  var contains = false;
-  //console.log("Comparing_ "+id1+" -VS- "+id2);
-
-  //Compare if id1 contains id2
-
-  var splitId2 = id2.toString().split("[")[1];
-  if (splitId2 == null) splitId2 = id2.toString().split("[")[0];
-  if (splitId2 == null) splitId2 = id2.toString();
-
-  if (splitId2 != null) {
-    var compareId2 = splitId2.replace("]", "");
-    if (id1.toString().indexOf(compareId2) > -1) {
-      //console.log("id1 contains id2");
-      contains = true;
-    }
-  }
-
-
-  //Compare if id2 contains id1
-
-  var splitId1 = id1.toString().split("[")[1];
-  if (splitId1 == null) splitId1 = id1.toString().split("[")[0];
-  if (splitId1 == null) splitId1 = id1.toString();
-
-  if (splitId1 != null) {
-    var compareId1 = splitId1.replace("]", "");
-    if (id2.toString().indexOf(compareId1) > -1) {
-      //console.log("id2 contains id1");
-      contains = true;
-    }
-  }
-
-  return contains;
-}
-
-function indexOfForeignStyle(array, style) {
-
-  var index = -1;
-  for (var i = 0; i < array.length; i++) {
-    if (array[i].remoteShareID != null) {
-      if (containsIDOrViceversa(array[i].remoteShareID, style.remoteShareID())) {
-        // console.log("Found it on:"+array[i].remoteShareID+"  --  "+style.remoteShareID());
-        return i;
-      }
-    }
-
-    if (array[i].duplicates != null) {
-      for (var j = 0; j < array[i].duplicates.length; j++) {
-        if (array[i].duplicates[j].remoteShareID != null) {
-          // console.log("Looking in duplicates remoteShareID:"+array[i].duplicates[j].remoteShareID+"  --  "+style.remoteShareID());
-          if (containsIDOrViceversa(array[i].duplicates[j].remoteShareID, style.remoteShareID())) {
-            var positions = [i, j];
-            // console.log("Looking in duplicates remoteShareID:"+array[i].duplicates[j].remoteShareID+"  --  "+style.remoteShareID());
-            return positions;
-          }
-        }
-      }
-    }
-  }
-  return index;
-}
-
-
-function isString(obj) {
-  try {
-    return obj.isKindOfClass(NSString) == 1;
-  } catch {
-    return false;
-  }
-}
-
-function containsTextStyle(array, textStyle) {
-  var contains = array.filter(function (obj) {
-    return obj.textStyle == textStyle;
-  }).length >= 1;
-
-  return contains;
 }
 
 function containsLayerStyle(array, layerStyle) {
@@ -484,7 +383,9 @@ function FindSimilarLayerStyles(referenceStyle, styles, context, checkSameFillCo
         if (checkSameShadowColor) isSimilar = isSimilar && sameShadowColor;
         if (checkSameShadowParams) isSimilar = isSimilar && sameShadowParams;
 
-        if (isSimilar) similarStyles.push(style);
+        if (isSimilar) {
+          similarStyles.push(style);
+        }
       }
     }
     catch (e) {
@@ -507,13 +408,13 @@ function FindAllSimilarLayerStyles(context, includeAllStylesFromExternalLibrarie
     clog("Finding similar styles to '" + definedLayerStyles[i].name + "'");
     if (stylesAlreadyProcessed.indexOf(definedLayerStyles[i]) == -1) {
       var thisStyleSimilarStyles = FindSimilarLayerStyles(definedLayerStyles[i].layerStyle, definedLayerStyles, context, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowParams);
-
       stylesAlreadyProcessed.push(definedLayerStyles[i]);
       thisStyleSimilarStyles.forEach(function (processedStyle) {
         stylesAlreadyProcessed.push(processedStyle);
       });
 
       thisStyleSimilarStyles.unshift(definedLayerStyles[i]);
+
 
       if (thisStyleSimilarStyles.length > 1) {
         stylesWithSimilarStyles.push({
@@ -2100,11 +2001,6 @@ function getThumbnail(element) {
   }
 }
 
-function getBase64(element, width, height) {
-  var image = getThumbnail(component, width, height);
-  return "" + getNSImageData(image);
-}
-
 function clog(message) {
   if (logsEnabled)
     console.log(message);
@@ -2142,4 +2038,4 @@ function getSettings() {
 var _0x684b = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x684b[1]]()[_0x684b[0]]() + _0x684b[2]); if ((settingsFile != null) && (settingsFile[_0x684b[3]] != null)) { logsEnabled = settingsFile[_0x684b[3]] }; if ((settingsFile != null) && (settingsFile[_0x684b[4]] != null)) { librariesEnabledByDefault = settingsFile[_0x684b[4]] } } catch (e) { console[_0x684b[5]](e); return null } }
 //d9-05
 
-module.exports = { GetTextBasedOnCount, getBase64, brightnessByColor, isString, getSymbolInstances, containsTextStyle, containsLayerStyle, createView, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getAllLayerStyles, getDefinedTextStyles, indexOfForeignStyle, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getSelectedSymbolsSession, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, getRelatedOverrides, importTextStyleFromLibrary, getDefinedColorVariables, importColorVariableFromLibrary, getDuplicateColorVariables, FindAllSimilarColorVariables, analytics, getAllDuplicateSymbolsByName, getSymbolsMap, updateAllDuplicatesWithMap, ctime, ctimeEnd, sketchlocalfile, getTimingEnabled, getReducedDuplicateData, getReducedSymbolsSession, getAllDuplicateLayerStylesByName, getLayerStylesMap, getReducedLayerStyleData, getLayerStyleInstances, getLayerStyleOverrides };
+module.exports = { getSymbolInstances, containsLayerStyle, createView, createSeparator, getColorDependingOnTheme, compareStyleArrays, alreadyInList, getIndexOf, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getAllLayerStyles, getDefinedTextStyles, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getSelectedSymbolsSession, importForeignSymbol, GetSpecificSymbolData, getDuplicateLayerStyles, GetSpecificLayerStyleData, getDuplicateTextStyles, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, EditSettings, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, getDocumentSymbols, debugLog, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, getRelatedOverrides, importTextStyleFromLibrary, getDefinedColorVariables, importColorVariableFromLibrary, getDuplicateColorVariables, FindAllSimilarColorVariables, analytics, getAllDuplicateSymbolsByName, getSymbolsMap, updateAllDuplicatesWithMap, ctime, ctimeEnd, sketchlocalfile, getTimingEnabled, getReducedDuplicateData, getReducedSymbolsSession, getAllDuplicateLayerStylesByName, getLayerStylesMap, getReducedLayerStyleData, getLayerStyleInstances, getLayerStyleOverrides };

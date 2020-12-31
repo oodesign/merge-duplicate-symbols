@@ -4476,7 +4476,7 @@ module.exports.sendToWebview = function sendToWebview(identifier, evalString) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/a96b500ac9e7efd4d38e63dbe01fdb38.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/7a50c71683330da060e9c8ee3faedb1b.html";
 
 /***/ }),
 
@@ -4487,7 +4487,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/dfe6646e7238ffa17a269244bc955228.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/5b9dca5b970519309b935c62f9a34d96.html";
 
 /***/ }),
 
@@ -4498,7 +4498,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/5e1cfa6486c06d988f11ad79ff23f030.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/f3e074f5fed7f21c576004882d96fd73.html";
 
 /***/ }),
 
@@ -4509,7 +4509,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/1e82f74da5e60e23898cb0b52cba1537.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/2285a874c5222f39f5109f3a3eb4e785.html";
 
 /***/ }),
 
@@ -4520,7 +4520,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/93c4a8228ad349eed0d75c395dd8dda8.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/62ef3bac1d29b3f907087169d8b12f36.html";
 
 /***/ }),
 
@@ -4531,7 +4531,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/92bda81d5890e8b2e051a00e08e9fff1.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/0ff6f8d9c1f854554c9c5548fdc39fd3.html";
 
 /***/ }),
 
@@ -4542,7 +4542,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/23e4437c1f8c5068d141c93bde0f8fcd.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/47cdb1610e2062b8a0d6793161d90411.html";
 
 /***/ }),
 
@@ -4553,7 +4553,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/bd421c965fd44d1bc142209c65496efa.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/9fc15b34bf9387522a40eb07674b617e.html";
 
 /***/ }),
 
@@ -4564,7 +4564,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/d70535b8bf3ff81ef4764434899b3399.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/1009e27cd325be3afe974567bf27ebc8.html";
 
 /***/ }),
 
@@ -4575,7 +4575,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/b90106b0953f1c965c7ca9f83b486743.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/245a828d57475baf89ef3c68532cf4d4.html";
 
 /***/ }),
 
@@ -4586,7 +4586,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/b1ea12b82b599789cba8b1f75d1fb1f5.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/5454186a08c74300c21925c3fc6892c1.html";
 
 /***/ }),
 
@@ -4597,7 +4597,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/bdb1bd4425d22477d840cbe1cb42b5a7.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/0442fd62d67a8a5313d5169b9ed666b4.html";
 
 /***/ }),
 
@@ -4608,7 +4608,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/a51f792c0e98e86cee10f44c61b0d419.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/f3f11743bb33d3bc3aea9ff156d55959.html";
 
 /***/ }),
 
@@ -4909,14 +4909,6 @@ function analytics(action) {
   });
 }
 
-function GetTextBasedOnCount(number) {
-  if (number != 1) {
-    return " styles ";
-  } else {
-    return " style ";
-  }
-}
-
 function shouldEnableContrastMode(color) {
   var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
@@ -4947,107 +4939,8 @@ function shouldEnableContrastMode(color) {
   } else return false;
 }
 
-function brightnessByColor(color) {
-  var color = "" + color,
-      isHEX = color.indexOf("#") == 0,
-      isRGB = color.indexOf("rgb") == 0;
-
-  if (isHEX) {
-    var m = color.substr(1).match(color.length == 7 ? /(\S{2})/g : /(\S{1})/g);
-    if (m) var r = parseInt(m[0], 16),
-        g = parseInt(m[1], 16),
-        b = parseInt(m[2], 16);
-  }
-
-  if (isRGB) {
-    var m = color.match(/(\d+){3}/g);
-    if (m) var r = m[0],
-        g = m[1],
-        b = m[2];
-  }
-
-  if (typeof r != "undefined") return (r * 299 + g * 587 + b * 114) / 1000;
-}
-
 function getAcquiredLicense() {
   return acquiredLicense;
-}
-
-function containsIDOrViceversa(id1, id2) {
-  var contains = false; //console.log("Comparing_ "+id1+" -VS- "+id2);
-  //Compare if id1 contains id2
-
-  var splitId2 = id2.toString().split("[")[1];
-  if (splitId2 == null) splitId2 = id2.toString().split("[")[0];
-  if (splitId2 == null) splitId2 = id2.toString();
-
-  if (splitId2 != null) {
-    var compareId2 = splitId2.replace("]", "");
-
-    if (id1.toString().indexOf(compareId2) > -1) {
-      //console.log("id1 contains id2");
-      contains = true;
-    }
-  } //Compare if id2 contains id1
-
-
-  var splitId1 = id1.toString().split("[")[1];
-  if (splitId1 == null) splitId1 = id1.toString().split("[")[0];
-  if (splitId1 == null) splitId1 = id1.toString();
-
-  if (splitId1 != null) {
-    var compareId1 = splitId1.replace("]", "");
-
-    if (id2.toString().indexOf(compareId1) > -1) {
-      //console.log("id2 contains id1");
-      contains = true;
-    }
-  }
-
-  return contains;
-}
-
-function indexOfForeignStyle(array, style) {
-  var index = -1;
-
-  for (var i = 0; i < array.length; i++) {
-    if (array[i].remoteShareID != null) {
-      if (containsIDOrViceversa(array[i].remoteShareID, style.remoteShareID())) {
-        // console.log("Found it on:"+array[i].remoteShareID+"  --  "+style.remoteShareID());
-        return i;
-      }
-    }
-
-    if (array[i].duplicates != null) {
-      for (var j = 0; j < array[i].duplicates.length; j++) {
-        if (array[i].duplicates[j].remoteShareID != null) {
-          // console.log("Looking in duplicates remoteShareID:"+array[i].duplicates[j].remoteShareID+"  --  "+style.remoteShareID());
-          if (containsIDOrViceversa(array[i].duplicates[j].remoteShareID, style.remoteShareID())) {
-            var positions = [i, j]; // console.log("Looking in duplicates remoteShareID:"+array[i].duplicates[j].remoteShareID+"  --  "+style.remoteShareID());
-
-            return positions;
-          }
-        }
-      }
-    }
-  }
-
-  return index;
-}
-
-function isString(obj) {
-  try {
-    return obj.isKindOfClass(NSString) == 1;
-  } catch (_unused) {
-    return false;
-  }
-}
-
-function containsTextStyle(array, textStyle) {
-  var contains = array.filter(function (obj) {
-    return obj.textStyle == textStyle;
-  }).length >= 1;
-  return contains;
 }
 
 function containsLayerStyle(array, layerStyle) {
@@ -5210,7 +5103,7 @@ function FindSimilarTextStyles(referenceStyle, styles, context, checkSameFont, c
 
         try {
           sameCharacterSpacing = referenceStyle.style.kerning == style.textStyle.style.kerning;
-        } catch (_unused2) {
+        } catch (_unused) {
           clog("Finding similar text styles - Couldn't disclose character spacing");
         } //debugLog("---Character Spacing? "+sameCharacterSpacing + "-  Comparing ["+referenceStyle.style().textStyle().attributes().NSKern+"] with ["+style.textStyle.style().textStyle().attributes().NSKern+"]" );
 
@@ -5312,7 +5205,10 @@ function FindSimilarLayerStyles(referenceStyle, styles, context, checkSameFillCo
         if (checkSameBorderThickness) isSimilar = isSimilar && sameBorderThickness;
         if (checkSameShadowColor) isSimilar = isSimilar && sameShadowColor;
         if (checkSameShadowParams) isSimilar = isSimilar && sameShadowParams;
-        if (isSimilar) similarStyles.push(style);
+
+        if (isSimilar) {
+          similarStyles.push(style);
+        }
       }
     } catch (e) {
       clog("There was an issue finding similar layer styles");
@@ -6839,11 +6735,6 @@ function getThumbnail(element) {
   }
 }
 
-function getBase64(element, width, height) {
-  var image = getThumbnail(component, width, height);
-  return "" + getNSImageData(image);
-}
-
 function clog(message) {
   if (logsEnabled) console.log(message);
 }
@@ -6897,12 +6788,7 @@ function LoadSettings() {
 
 
 module.exports = {
-  GetTextBasedOnCount: GetTextBasedOnCount,
-  getBase64: getBase64,
-  brightnessByColor: brightnessByColor,
-  isString: isString,
   getSymbolInstances: getSymbolInstances,
-  containsTextStyle: containsTextStyle,
   containsLayerStyle: containsLayerStyle,
   createView: createView,
   createSeparator: createSeparator,
@@ -6916,7 +6802,6 @@ module.exports = {
   FindSimilarLayerStyles: FindSimilarLayerStyles,
   getAllLayerStyles: getAllLayerStyles,
   getDefinedTextStyles: getDefinedTextStyles,
-  indexOfForeignStyle: indexOfForeignStyle,
   IsInTrial: IsInTrial,
   ExiGuthrie: ExiGuthrie,
   Guthrie: Guthrie,
@@ -8140,7 +8025,6 @@ var webviewMLSFLIdentifier = 'merge-layerstylesfromlist.webview';
 var webviewMDLSIdentifier = 'merge-duplicatelayerstyles.webview';
 var webviewMSLSIdentifier = 'merge-similarlayerstyles.webview';
 var checkingAlsoLibraries = false;
-var currentSelectedStyles = [];
 
 function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge, webContents) {
   Helpers.clog("-- Starting Merge Layer Styles (" + stylesToMerge.length + "). Style to keep is:" + styleToKeep);
@@ -8197,7 +8081,7 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
       Helpers.ctime("-- Unlinking from library");
       Helpers.clog("------ Checking if symbol to merge is foreign");
 
-      if (stylesToMerge[i].isForeign && stylesToMerge[i].externalLibrary == null) {
+      if (stylesToMerge[i].isForeign) {
         stylesToMerge[i].layerStyle.unlinkFromLibrary();
       }
 
@@ -8305,19 +8189,17 @@ function MergeSimilarLayerStyles(context) {
     Helpers.clog("Execute merge");
     var duplicatesSolved = 0;
     var mergeResults = [0, 0, 0];
+    var totalToMerge = editedStylesWithSimilarStyles.filter(function (ems) {
+      return !ems.isUnchecked && ems.selectedIndex >= 0;
+    }).length;
 
     for (var i = 0; i < editedStylesWithSimilarStyles.length; i++) {
       if (!editedStylesWithSimilarStyles[i].isUnchecked && editedStylesWithSimilarStyles[i].selectedIndex >= 0) {
-        currentSelectedStyles = [];
-
-        for (var j = 0; j < editedStylesWithSimilarStyles[i].similarStyles.length; j++) {
-          currentSelectedStyles.push(stylesWithSimilarStyles[i].similarStyles[j]);
-          mergedStyles++;
-        }
-
-        var results = MergeLayerStyles(context, editedStylesWithSimilarStyles[i].selectedIndex);
-        affectedLayers[0] += results[0];
-        affectedLayers[1] += results[1];
+        var basePercent = duplicatesSolved * 100 / editedStylesWithSimilarStyles.length;
+        var localMergeResults = MergeLayerStyles(stylesWithSimilarStyles[i].similarStyles, editedStylesWithSimilarStyles[i].selectedIndex, basePercent, totalToMerge, webContents);
+        mergeResults[0] += localMergeResults[0];
+        mergeResults[1] += localMergeResults[1];
+        mergeResults[2] += localMergeResults[2];
         duplicatesSolved++;
       }
     }
@@ -8328,8 +8210,10 @@ function MergeSimilarLayerStyles(context) {
       Helpers.clog("No styles were merged");
       UI.message("No styles were merged");
     } else {
-      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-      UI.message("Yo ho! We updated " + affectedLayers[0] + " layers and " + affectedLayers[1] + " overrides.");
+      var replacedStuff = "";
+      if (mergeResults[1] > 0 && mergeResults[2]) replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";else if (mergeResults[1] > 0) replacedStuff = " and replaced " + mergeResults[1] + " instances.";else if (mergeResults[2] > 0) replacedStuff = " and updated " + mergeResults[2] + " overrides.";else replacedStuff = ".";
+      Helpers.clog("Completed merge. Removed " + mergeResults[0] + " layer styles" + replacedStuff);
+      UI.message("Hey ho! You just removed " + mergeResults[0] + " layer styles" + replacedStuff + " Amazing!");
     }
   });
   webContents.on('RecalculateStyles', function (includeAllLibraries, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowXYBlurSpread) {
