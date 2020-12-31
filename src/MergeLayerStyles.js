@@ -11,9 +11,9 @@ const webviewMSLSIdentifier = 'merge-similarlayerstyles.webview'
 var checkingAlsoLibraries = false;
 var currentSelectedStyles = [];
 
-function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, webContents) {
+function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge, webContents) {
 
-  Helpers.clog("-- Starting Merge Layer Styles (" + styleToMerge.duplicates.length + "). Style to keep is:" + styleToKeep);
+  Helpers.clog("-- Starting Merge Layer Styles (" + stylesToMerge.length + "). Style to keep is:" + styleToKeep);
 
   var stylesToRemove = [];
   var styleToApply;
@@ -23,12 +23,12 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
   var idsMap = new Map();
 
   Helpers.clog("---- Processing styles to remove");
-  styleToApply = styleToMerge.duplicates[styleToKeep].layerStyle;
+  styleToApply = stylesToMerge[styleToKeep].layerStyle;
 
-  if (styleToMerge.duplicates[styleToKeep].isForeign) {
-    var alreadyInDoc = (Helpers.document.sharedLayerStyles.filter(ls => ls.id == styleToMerge.duplicates[styleToKeep].layerStyle.id)).length > 0;
+  if (stylesToMerge[styleToKeep].isForeign) {
+    var alreadyInDoc = (Helpers.document.sharedLayerStyles.filter(ls => ls.id == stylesToMerge[styleToKeep].layerStyle.id)).length > 0;
     if (!alreadyInDoc)
-      styleToApply = Helpers.importLayerStyleFromLibrary(styleToMerge.duplicates[styleToKeep]);
+      styleToApply = Helpers.importLayerStyleFromLibrary(stylesToMerge[styleToKeep]);
   }
 
   var tasksToPerform = 0, tasksExecuted = 0;
@@ -39,15 +39,15 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
 
   Helpers.clog("---- Getting all related styles instances and overrides");
 
-  for (var i = 0; i < styleToMerge.duplicates.length; i++) {
+  for (var i = 0; i < stylesToMerge.length; i++) {
     if (i != styleToKeep) {
-      idsMap.set(styleToMerge.duplicates[i].layerStyle.id)
-      stylesToRemove.push(styleToMerge.duplicates[i].layerStyle);
+      idsMap.set(stylesToMerge[i].layerStyle.id)
+      stylesToRemove.push(stylesToMerge[i].layerStyle);
 
-      var instancesOfStyle = Helpers.getLayerStyleInstances(styleToMerge.duplicates[i].layerStyle);
-      var styleOverrides = Helpers.getLayerStyleOverrides(styleToMerge.duplicates[i].layerStyle, idsMap);
+      var instancesOfStyle = Helpers.getLayerStyleInstances(stylesToMerge[i].layerStyle);
+      var styleOverrides = Helpers.getLayerStyleOverrides(stylesToMerge[i].layerStyle, idsMap);
 
-      instOverMap.set(styleToMerge.duplicates[i], {
+      instOverMap.set(stylesToMerge[i], {
         "instancesOfStyle": instancesOfStyle,
         "styleOverrides": styleOverrides
       });
@@ -59,29 +59,29 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
 
   tasksToPerform = instancesToChange + overridesToChange;
 
-  Helpers.ctime("Merging layer style:" + styleToMerge.name);
+  Helpers.ctime("Merging layer style:" + stylesToMerge[styleToKeep].name);
   webContents.executeJavaScript(`ShowMergeProgress()`).catch(console.error);
 
-  for (var i = 0; i < styleToMerge.duplicates.length; i++) {
+  for (var i = 0; i < stylesToMerge.length; i++) {
     if (i != styleToKeep) {
-      if (!styleToMerge.duplicates[i].isForeign)
+      if (!stylesToMerge[i].isForeign)
         stylesRemoved++;
 
       Helpers.ctime("-- Taking instances and overrides");
-      var instancesOfStyle = instOverMap.get(styleToMerge.duplicates[i]).instancesOfStyle;
-      var styleOverrides = instOverMap.get(styleToMerge.duplicates[i]).styleOverrides;
+      var instancesOfStyle = instOverMap.get(stylesToMerge[i]).instancesOfStyle;
+      var styleOverrides = instOverMap.get(stylesToMerge[i]).styleOverrides;
       Helpers.ctimeEnd("-- Taking instances and overrides");
 
 
       Helpers.ctime("-- Unlinking from library");
       Helpers.clog("------ Checking if symbol to merge is foreign");
-      if (styleToMerge.duplicates[i].isForeign && (styleToMerge.duplicates[i].externalLibrary == null)) {
-        styleToMerge.duplicates[i].layerStyle.unlinkFromLibrary();
+      if (stylesToMerge[i].isForeign && (stylesToMerge[i].externalLibrary == null)) {
+        stylesToMerge[i].layerStyle.unlinkFromLibrary();
       }
       Helpers.ctimeEnd("-- Unlinking from library");
 
 
-      var message = "Merging " + styleToMerge.name;
+      var message = "Merging " + stylesToMerge[styleToKeep].name;
 
       Helpers.ctime("-- Updating overrides");
       Helpers.clog("---- Updating overrides (" + styleOverrides.length + ")");
@@ -127,7 +127,7 @@ function MergeLayerStyles(styleToMerge, styleToKeep, basePercent, totalToMerge, 
     }
   }
 
-  Helpers.ctimeEnd("Merging layer style:" + styleToMerge.name);
+  Helpers.ctimeEnd("Merging layer style:" + stylesToMerge[styleToKeep].name);
   Helpers.clog("---- Finalized instance and override replacement.");
 
   var sharedStylesToRemove = Helpers.document.sharedLayerStyles.filter(sharedStyle => isMarkedForRemove(sharedStyle, stylesToRemove));
@@ -210,6 +210,11 @@ export function MergeSimilarLayerStyles(context) {
           currentSelectedStyles.push(stylesWithSimilarStyles[i].similarStyles[j]);
           mergedStyles++;
         }
+
+
+        
+
+
 
         var results = MergeLayerStyles(context, editedStylesWithSimilarStyles[i].selectedIndex);
         affectedLayers[0] += results[0];
@@ -336,7 +341,7 @@ export function MergeDuplicateLayerStyles(context) {
         var mergeobject = mergeSessionMap.get(mergeSession[i].layerStyleWithDuplicates);
         var basePercent = (duplicatesSolved * 100 / editedMergeSession.length);
 
-        var localMergeResults = MergeLayerStyles(mergeobject, mergeSession[i].selectedIndex, basePercent, totalToMerge, webContents);
+        var localMergeResults = MergeLayerStyles(mergeobject.duplicates, mergeSession[i].selectedIndex, basePercent, totalToMerge, webContents);
         mergeResults[0] += localMergeResults[0];
         mergeResults[1] += localMergeResults[1];
         mergeResults[2] += localMergeResults[2];
@@ -436,10 +441,7 @@ export function MergeSelectedLayerStyles(context) {
   webContents.on('ExecuteMerge', (editedGlobalLayerStyles) => {
     Helpers.clog("Executing Merge");
     var selectedIndex = -1;
-    var mergeSession = {
-      "name": "Selected layer styles",
-      "duplicates": []
-    };
+    var stylesToMerge = [];
 
     //Create merge structure
     for (var i = 0; i < allLayerStyles.length; i++) {
@@ -448,15 +450,13 @@ export function MergeSelectedLayerStyles(context) {
 
       if (allLayerStyles[i].isSelected) {
         if (allLayerStyles[i].isChosen) {
-          selectedIndex = mergeSession.duplicates.length;
-          mergeSession.name = allLayerStyles[i].name;
+          selectedIndex = stylesToMerge.length;
         }
-        mergeSession.duplicates.push(allLayerStyles[i]);
-
+        stylesToMerge.push(allLayerStyles[i]);
       }
     }
 
-    var mergeResults = MergeLayerStyles(mergeSession, selectedIndex, 0, 1, webContents);
+    var mergeResults = MergeLayerStyles(stylesToMerge, selectedIndex, 0, 1, webContents);
 
     onShutdown(webviewMLSFLIdentifier);
 
