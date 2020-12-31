@@ -1,6 +1,5 @@
 import BrowserWindow from 'sketch-module-web-view'
 import { getWebview } from 'sketch-module-web-view/remote'
-import { debugLog } from './Helpers';
 var UI = require('sketch/ui')
 const Helpers = require("./Helpers");
 
