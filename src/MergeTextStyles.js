@@ -309,24 +309,15 @@ export function MergeSelectedTextStyles(context) {
   const browserWindow = new BrowserWindow(options);
   const webContents = browserWindow.webContents;
 
-
-  var definedTextStyles;
-  var definedAllTextStyles;
+  var allTextStyles;
   var styleCounter = 0;
 
-  if (!Helpers.getLibrariesEnabled()) {
-    Helpers.clog("Get local styles list");
-    definedTextStyles = Helpers.getDefinedTextStyles(context, false);
-    styleCounter = definedTextStyles.length;
-    checkingAlsoLibraries = false;
-  }
-
-  if (Helpers.getLibrariesEnabled()) {
-    Helpers.clog("Get all (including libraries) styles list");
-    definedAllTextStyles = Helpers.getDefinedTextStyles(context, true);
-    styleCounter = definedAllTextStyles.length;
-    checkingAlsoLibraries = true;
-  }
+  Helpers.clog("Get text styles list. Libraries included:" + Helpers.getLibrariesEnabled());
+  //TODO
+  allTextStyles = Helpers.getAllTextStyles(Helpers.getLibrariesEnabled());
+  styleCounter = allTextStyles.length;
+  checkingAlsoLibraries = Helpers.getLibrariesEnabled();
+  Helpers.clog("allTextStyles:" + allTextStyles.length);
 
   if (styleCounter > 1) {
     browserWindow.loadURL(require('../resources/mergetextstylesfromlist.html'));
@@ -340,41 +331,25 @@ export function MergeSelectedTextStyles(context) {
     onShutdown(webviewMTSFLIdentifier);
   }
 
-
-
   browserWindow.once('ready-to-show', () => {
     browserWindow.show()
   })
 
   webContents.on('did-finish-load', () => {
     Helpers.clog("Webview loaded");
-    if (!Helpers.getLibrariesEnabled())
-      webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedTextStyles)},${Helpers.getLibrariesEnabled()})`).catch(console.error);
-    else
-      webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedAllTextStyles)},${Helpers.getLibrariesEnabled()})`).catch(console.error);
-
+    webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(allTextStyles)},${Helpers.getLibrariesEnabled()})`).catch(console.error);
   })
 
   webContents.on('nativeLog', s => {
     Helpers.clog(s);
   });
 
-  webContents.on('GetLocalStylesList', () => {
-    Helpers.clog("Get local styles list");
-    if (definedTextStyles == null)
-      definedTextStyles = Helpers.getDefinedTextStyles(context, false);
+  webContents.on('GetStylesList', (librariesEnabled) => {
+    Helpers.clog("Get styles list");
+    allTextStyles = Helpers.getAllTextStyles(librariesEnabled);
 
-    checkingAlsoLibraries = false;
-    webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedTextStyles)})`).catch(console.error);
-  });
-
-  webContents.on('GetAllStylesList', () => {
-    Helpers.clog("Get all (including libraries) styles list");
-    if (definedAllTextStyles == null)
-      definedAllTextStyles = Helpers.getDefinedTextStyles(context, true);
-
-    checkingAlsoLibraries = true;
-    webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(definedAllTextStyles)})`).catch(console.error);
+    checkingAlsoLibraries = librariesEnabled;
+    webContents.executeJavaScript(`DrawStyleList(${JSON.stringify(allTextStyles)})`).catch(console.error);
   });
 
   webContents.on('Cancel', () => {
@@ -383,39 +358,39 @@ export function MergeSelectedTextStyles(context) {
 
   webContents.on('ExecuteMerge', (editedGlobalTextStyles) => {
     Helpers.clog("Executing Merge");
-    currentSelectedStyles = [];
     var selectedIndex = -1;
-    var counter = 0;
+    var stylesToMerge = [];
 
-    if (!checkingAlsoLibraries) {
-      for (var i = 0; i < definedTextStyles.length; i++) {
-        definedTextStyles[i].isSelected = editedGlobalTextStyles[i].isSelected;
-        definedTextStyles[i].isChosen = editedGlobalTextStyles[i].isChosen;
-        if (editedGlobalTextStyles[i].isChosen) selectedIndex = counter;
-        if (editedGlobalTextStyles[i].isSelected) {
-          currentSelectedStyles.push(definedTextStyles[i]);
-          counter++;
+    //Create merge structure
+    for (var i = 0; i < allTextStyles.length; i++) {
+      allTextStyles[i].isSelected = editedGlobalTextStyles[i].isSelected;
+      allTextStyles[i].isChosen = editedGlobalTextStyles[i].isChosen;
+
+      if (allTextStyles[i].isSelected) {
+        if (allTextStyles[i].isChosen) {
+          selectedIndex = stylesToMerge.length;
         }
-      }
-    }
-    else {
-      for (var i = 0; i < definedAllTextStyles.length; i++) {
-        definedAllTextStyles[i].isSelected = editedGlobalTextStyles[i].isSelected;
-        definedAllTextStyles[i].isChosen = editedGlobalTextStyles[i].isChosen;
-        if (editedGlobalTextStyles[i].isChosen) selectedIndex = counter;
-        if (editedGlobalTextStyles[i].isSelected) {
-          currentSelectedStyles.push(definedAllTextStyles[i]);
-          counter++;
-        }
+        stylesToMerge.push(allTextStyles[i]);
       }
     }
 
-    var affectedLayers = MergeTextStyles(context, selectedIndex);
-
-    Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-    UI.message("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+    var mergeResults = MergeTextStyles(stylesToMerge, selectedIndex, 0, 1, webContents);
 
     onShutdown(webviewMTSFLIdentifier);
+
+    var replacedStuff = "";
+    if (mergeResults[1] > 0 && mergeResults[2])
+      replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";
+    else if (mergeResults[1] > 0)
+      replacedStuff = " and replaced " + mergeResults[1] + " instances.";
+    else if (mergeResults[2] > 0)
+      replacedStuff = " and updated " + mergeResults[2] + " overrides.";
+    else
+      replacedStuff = ".";
+
+
+    Helpers.clog("Completed merge. Removed " + mergeResults[0] + " text styles" + replacedStuff);
+    UI.message("Hey ho! You just removed " + mergeResults[0] + " text styles" + replacedStuff + " Amazing!");
   });
 };
 

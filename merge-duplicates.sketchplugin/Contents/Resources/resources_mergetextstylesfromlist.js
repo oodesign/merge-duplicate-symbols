@@ -176,6 +176,27 @@ window.DrawStyleList = function (textStyles, includeLibraries) {
   clearWorkzone();
 };
 
+window.ShowMergeProgress = function (progress) {
+  HideLayout();
+  document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
+};
+
+window.UpdateMergeProgress = function (progress, message, message2) {
+  document.getElementById('progressRing').setProgress(progress);
+  document.getElementById('mergeloadingMessage').innerHTML = message;
+  document.getElementById('mergeloadingMessage2').innerHTML = message2;
+};
+
+window.HideLayout = function () {
+  //window.postMessage("nativeLog", "WV - Hide layout");
+  document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
+  document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState fadeOut";
+  document.getElementById('contentList').className = "rowAvailable listOfStyles fadeOut";
+  document.getElementById('btnCancel').className = "notDisplayed";
+  document.getElementById('btnMerge').className = "notDisplayed";
+  document.getElementById('chkLibraries').className = "notDisplayed";
+};
+
 window.onExpanderClicked = function (index) {
   window.postMessage("nativeLog", "WV - Expanding " + index);
   var groupStyleHeader = document.getElementById("groupStyleHeader" + index);

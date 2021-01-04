@@ -1370,40 +1370,59 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
 }
 
 
-
 function getAllTextStyles(includeAllStylesFromExternalLibraries) {
   var allStyles = [];
-  const map = new Map();
+  const idsMap = new Map();
+  const redundantIdsMap = new Map();
 
   document.sharedTextStyles.forEach(function (sharedTextStyle) {
-
     var library = sharedTextStyle.getLibrary();
+    if (!idsMap.has(sharedTextStyle.id)) {
+      var redId1 = sharedTextStyle.style.id;
+      var redId2 = (sharedTextStyle.id.indexOf("[") >= 0) ? sharedTextStyle.id.substring(sharedTextStyle.id.indexOf("[") + 1, sharedTextStyle.id.length - 1) : null;
+      var redundantIn = false;
+      if (redId2 != null)
+        redundantIn = redundantIdsMap.has(redId1) || redundantIdsMap.has(redId2);
+      else
+        redundantIn = redundantIdsMap.has(redId1);
 
-    var textStyleObject = {
-      "textStyle": sharedTextStyle,
-      "name": "" + sharedTextStyle.name,
-      "libraryName": (library != null) ? libraryPrefix + library.name : sketchlocalfile,
-      "library": library,
-      "isForeign": (library != null),
-      "isSelected": false,
-      "isChosen": false,
-      "description": getTextStyleDescription(sharedTextStyle),
-      "thumbnail": getTextThumbnail(sharedTextStyle),
-      "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
-      "duplicates": [],
-      "isSelected": false
+      var textStyleObject = {
+        "textStyle": sharedTextStyle,
+        "name": "" + sharedTextStyle.name,
+        "libraryName": (library != null) ? libraryPrefix + library.name : sketchlocalfile,
+        "library": library,
+        "isForeign": (library != null),
+        "isSelected": false,
+        "isChosen": false,
+        "description": getTextStyleDescription(sharedTextStyle),
+        "thumbnail": getTextThumbnail(sharedTextStyle),
+        "numInstances": 0,
+        "numOverrides": 0,
+        "isSelected": false,
+        "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+        "isHidden": redundantIn
+      }
+
+      allStyles.push(textStyleObject);
+      idsMap.set(sharedTextStyle.style.id, true);
+      redundantIdsMap.set(redId1, textStyleObject);
+      if (redId2 != null) redundantIdsMap.set(redId2, textStyleObject);
     }
-
-    allStyles.push(textStyleObject);
-    map.set(sharedTextStyle.style.id, true);
-
   });
 
   if (includeAllStylesFromExternalLibraries) {
     libraries.forEach(function (lib) {
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
         lib.getDocument().sharedTextStyles.forEach(function (sharedTextStyle) {
-          if (!map.has(sharedTextStyle.style.id)) {
+          if (!idsMap.has(sharedTextStyle.style.id)) {
+            var redId1 = sharedTextStyle.style.id;
+            var redId2 = (sharedTextStyle.id.indexOf("[") >= 0) ? sharedTextStyle.id.substring(sharedTextStyle.id.indexOf("[") + 1, sharedTextStyle.id.length - 1) : null;
+            var redundantIn = false;
+            if (redId2 != null)
+              redundantIn = redundantIdsMap.has(redId1) || redundantIdsMap.has(redId2);
+            else
+              redundantIn = redundantIdsMap.has(redId1)
+
             var textStyleObject = {
               "textStyle": sharedTextStyle,
               "name": "" + sharedTextStyle.name,
@@ -1414,21 +1433,26 @@ function getAllTextStyles(includeAllStylesFromExternalLibraries) {
               "isChosen": false,
               "description": getTextStyleDescription(sharedTextStyle),
               "thumbnail": getTextThumbnail(sharedTextStyle),
-              "thumbnail": "",
+              "numInstances": 0,
+              "numOverrides": 0,
+              "isSelected": false,
               "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
-              "duplicates": [],
-              "isSelected": false
+              "isHidden": redundantIn
             }
             allStyles.push(textStyleObject);
+            idsMap.set(sharedTextStyle.style.id, true);
+            redundantIdsMap.set(redId1, textStyleObject);
+            if (redId2 != null) redundantIdsMap.set(redId2, textStyleObject);
           }
         });
       }
     });
   }
 
-  return allStyles;
+  return allStyles.sort(compareStyleArrays);;
 
 }
+
 
 function getAllColorVariables(includeAllStylesFromExternalLibraries) {
   var allColorVariables = [];
@@ -1929,4 +1953,4 @@ function getSettings() {
 var _0x684b = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x684b[1]]()[_0x684b[0]]() + _0x684b[2]); if ((settingsFile != null) && (settingsFile[_0x684b[3]] != null)) { logsEnabled = settingsFile[_0x684b[3]] }; if ((settingsFile != null) && (settingsFile[_0x684b[4]] != null)) { librariesEnabledByDefault = settingsFile[_0x684b[4]] } } catch (e) { console[_0x684b[5]](e); return null } }
 //d9-05
 
-module.exports = { getSymbolInstances, compareStyleArrays, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getAllLayerStyles, getDefinedTextStyles, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getSelectedSymbolsSession, GetSpecificSymbolData, GetSpecificLayerStyleData, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, importTextStyleFromLibrary, getDefinedColorVariables, importColorVariableFromLibrary, getDuplicateColorVariables, FindAllSimilarColorVariables, analytics, getAllDuplicateSymbolsByName, getSymbolsMap, updateAllDuplicatesWithMap, ctime, ctimeEnd, sketchlocalfile, getTimingEnabled, getReducedDuplicateData, getReducedSymbolsSession, getAllDuplicateLayerStylesByName, getLayerStylesMap, getReducedLayerStyleData, getLayerStyleInstances, getLayerStyleOverrides, getAllDuplicateTextStylesByName, getTextStylesMap, getReducedTextStyleData, getTextStyleInstances, getTextStyleOverrides };
+module.exports = { getSymbolInstances, compareStyleArrays, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getAllLayerStyles, getDefinedTextStyles, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getSelectedSymbolsSession, GetSpecificSymbolData, GetSpecificLayerStyleData, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, importTextStyleFromLibrary, getDefinedColorVariables, importColorVariableFromLibrary, getDuplicateColorVariables, FindAllSimilarColorVariables, analytics, getAllDuplicateSymbolsByName, getSymbolsMap, updateAllDuplicatesWithMap, ctime, ctimeEnd, sketchlocalfile, getTimingEnabled, getReducedDuplicateData, getReducedSymbolsSession, getAllDuplicateLayerStylesByName, getLayerStylesMap, getReducedLayerStyleData, getLayerStyleInstances, getLayerStyleOverrides, getAllTextStyles, getAllDuplicateTextStylesByName, getTextStylesMap, getReducedTextStyleData, getTextStyleInstances, getTextStyleOverrides };
