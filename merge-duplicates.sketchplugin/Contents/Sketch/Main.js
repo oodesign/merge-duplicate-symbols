@@ -4520,7 +4520,7 @@ module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Con
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/62ef3bac1d29b3f907087169d8b12f36.html";
+module.exports = "file://" + String(context.scriptPath).split(".sketchplugin/Contents/Sketch")[0] + ".sketchplugin/Contents/Resources/_webpack_resources/67ec0cfb26ada0c359c09e173b228673.html";
 
 /***/ }),
 
@@ -4966,7 +4966,7 @@ function compareColorVariableArrays(a, b) {
   return 0;
 }
 
-function compareSymbolNames(a, b) {
+function compareByName(a, b) {
   if (a.name < b.name) {
     return -1;
   }
@@ -5256,11 +5256,6 @@ function getSymbolInstances(symbolMaster) {
   return symbolInstances;
 }
 
-function getLayerStyleInstances(layerStyle) {
-  var layerStyleInstances = layerStyle.getAllInstancesLayers();
-  return layerStyleInstances;
-}
-
 function getSymbolOverrides(symbolMaster, idsMap) {
   var symbolOverrides = [];
   var allInstances = sketch.find("SymbolInstance", document);
@@ -5283,11 +5278,16 @@ function getSymbolOverrides(symbolMaster, idsMap) {
   return symbolOverrides;
 }
 
+function getLayerStyleInstances(layerStyle) {
+  var layerStyleInstances = layerStyle.getAllInstancesLayers();
+  return layerStyleInstances;
+}
+
 function getLayerStyleOverrides(layerStyle, idsMap) {
   var styleOverrides = [];
   var allInstances = sketch.find("SymbolInstance", document);
   var reducedInstances = allInstances.filter(function (instance) {
-    return hasLayerStyleOverrides(instance, idsMap);
+    return hasSharedStyleOverrides(instance, idsMap);
   });
   reducedInstances.forEach(function (instance) {
     if (instance.sketchObject.overrides().count() > 0) {
@@ -5305,24 +5305,31 @@ function getLayerStyleOverrides(layerStyle, idsMap) {
   return styleOverrides;
 }
 
-function getRelatedOverrides(context, id, property) {
-  var overrides = NSMutableArray.array();
-  var instances = sketch.find("[type='SymbolInstance']", document);
-  instances.forEach(function (instance) {
-    instance.overrides.forEach(function (override) {
-      if (override.property.localeCompare(property) == 0)
-        /*&& (override.isDefault == 0)*/
-        {
-          if (override.value.localeCompare(id) == 0) {
-            overrides.push({
-              "instance": instance,
-              "override": override
-            });
-          }
-        }
-    });
+function getTextStyleInstances(textStyle) {
+  var textStyleInstances = textStyle.getAllInstancesLayers();
+  return textStyleInstances;
+}
+
+function getTextStyleOverrides(textStyle, idsMap) {
+  var styleOverrides = [];
+  var allInstances = sketch.find("SymbolInstance", document);
+  var reducedInstances = allInstances.filter(function (instance) {
+    return hasSharedStyleOverrides(instance, idsMap);
   });
-  return overrides;
+  reducedInstances.forEach(function (instance) {
+    if (instance.sketchObject.overrides().count() > 0) {
+      var instanceOverrides = instance.overrides.filter(function (ov) {
+        return ov.property == "textStyle" && !ov.isDefault && idsMap.has(ov.value);
+      });
+      instanceOverrides.forEach(function (override) {
+        styleOverrides.push({
+          "instance": instance,
+          "override": override
+        });
+      });
+    }
+  });
+  return styleOverrides;
 }
 
 function countAllSymbols(context, includeAllSymbolsFromExternalLibraries) {
@@ -5455,7 +5462,7 @@ function getAllDuplicateSymbolsByName(context, includeAllSymbolsFromExternalLibr
       if (index > -1) duplicatedSymbols.splice(index, 1);
     }
   });
-  return duplicatedSymbols.sort(compareSymbolNames);
+  return duplicatedSymbols.sort(compareByName);
 }
 
 function getSymbolsMap(context, symbols) {
@@ -5505,7 +5512,7 @@ function getLayerStylesMap(context, layerStyles) {
   });
   var allInstances = sketch.find("SymbolInstance", document);
   var reducedInstances = allInstances.filter(function (instance) {
-    return hasLayerStyleOverrides(instance, idsMap);
+    return hasSharedStyleOverrides(instance, idsMap);
   });
   reducedInstances.forEach(function (instance) {
     if (instance.sketchObject.overrides().count() > 0) {
@@ -5518,6 +5525,39 @@ function getLayerStylesMap(context, layerStyles) {
     }
   });
   return layerStylesMap;
+}
+
+function getTextStylesMap(context, textStyles) {
+  var textStylesMap = new Map();
+  var idsMap = new Map();
+  textStyles.forEach(function (textStyle) {
+    textStyle.duplicates.forEach(function (duplicatedStyle) {
+      var redId1 = duplicatedStyle.textStyle.style.id;
+      var redId2 = duplicatedStyle.textStyle.id.indexOf("[") >= 0 ? duplicatedStyle.textStyle.id.substring(duplicatedStyle.textStyle.id.indexOf("[") + 1, duplicatedStyle.textStyle.id.length - 1) : null;
+      idsMap.set(duplicatedStyle.textStyle.id, duplicatedStyle.textStyle);
+      idsMap.set(redId1, duplicatedStyle.textStyle);
+      if (redId2 != null) idsMap.set(redId2, duplicatedStyle.textStyle);
+      textStylesMap.set(duplicatedStyle.textStyle, {
+        "directInstances": duplicatedStyle.textStyle.getAllInstancesLayers(),
+        "instancesWithOverrides": []
+      });
+    });
+  });
+  var allInstances = sketch.find("SymbolInstance", document);
+  var reducedInstances = allInstances.filter(function (instance) {
+    return hasSharedStyleOverrides(instance, idsMap);
+  });
+  reducedInstances.forEach(function (instance) {
+    if (instance.sketchObject.overrides().count() > 0) {
+      var instanceOverrides = instance.overrides.filter(function (ov) {
+        return ov.property == "textStyle" && !ov.isDefault && idsMap.has(ov.value);
+      });
+      instanceOverrides.forEach(function (override) {
+        textStylesMap.get(idsMap.get(override.value)).instancesWithOverrides.push(instance);
+      });
+    }
+  });
+  return textStylesMap;
 }
 
 function updateAllDuplicatesWithMap(allDuplicates, symbolsMap) {
@@ -5556,15 +5596,15 @@ function FindNestedSymbolOverride(overrides, idsMap, instance) {
   return false;
 }
 
-function hasLayerStyleOverrides(instance, idsMap) {
+function hasSharedStyleOverrides(instance, idsMap) {
   if (instance.sketchObject.overrides() != null && instance.sketchObject.overrides().count() > 0) {
-    return FindNestedLayerStyleOverride(instance.sketchObject.overrides(), idsMap, instance);
+    return FindNestedSharedStyleOverride(instance.sketchObject.overrides(), idsMap, instance);
   }
 
   return false;
 }
 
-function FindNestedLayerStyleOverride(overrides, idsMap, instance, level) {
+function FindNestedSharedStyleOverride(overrides, idsMap, instance, level) {
   for (var key in overrides) {
     var symbolID = overrides[key]["symbolID"];
 
@@ -5572,7 +5612,7 @@ function FindNestedLayerStyleOverride(overrides, idsMap, instance, level) {
       if (overrides[key] instanceof __NSDictionaryM) {
         for (var key2 in overrides[key]) {
           if (overrides[key][key2] instanceof __NSDictionaryM) {
-            if (FindNestedLayerStyleOverride(overrides[key][key2], idsMap, instance, level + 1)) return true;
+            if (FindNestedSharedStyleOverride(overrides[key][key2], idsMap, instance, level + 1)) return true;
           } else {
             if (idsMap.has("" + overrides[key][key2])) {
               return true;
@@ -5597,7 +5637,7 @@ function FindNestedLayerStyleOverride(overrides, idsMap, instance, level) {
       }
     } else {
       try {
-        if (FindNestedLayerStyleOverride(overrides[key], idsMap, instance, level + 1)) return true;
+        if (FindNestedSharedStyleOverride(overrides[key], idsMap, instance, level + 1)) return true;
       } catch (e) {
         Helpers.clog("Error while processing overrides (2).");
         Helpers.clog(idsMap);
@@ -5719,6 +5759,31 @@ function getReducedLayerStyleData(layerStyle) {
   return reducedDuplicate;
 }
 
+function getReducedTextStyleData(textStyle) {
+  var reducedDuplicate = {
+    "name": "" + textStyle.name,
+    "duplicates": []
+  };
+  textStyle.duplicates.forEach(function (duplicate) {
+    if (!duplicate.isHidden) {
+      reducedDuplicate.duplicates.push({
+        "id": "" + duplicate.textStyle.id + " // " + duplicate.textStyle.style.id + " // " + (duplicate.textStyle.id.indexOf("[") >= 0 ? duplicate.textStyle.id.substring(duplicate.textStyle.id.indexOf("[") + 1, duplicate.textStyle.id.length - 1) : "xxx"),
+        "name": "" + duplicate.name,
+        "isForeign": duplicate.isForeign,
+        "description": duplicate.description,
+        "thumbnail": duplicate.thumbnail,
+        "contrastMode": duplicate.contrastMode,
+        "numInstances": duplicate.numInstances,
+        "numOverrides": duplicate.numOverrides,
+        "libraryName": duplicate.libraryName,
+        "isSelected": duplicate.isSelected,
+        "isHidden": duplicate.isHidden
+      });
+    }
+  });
+  return reducedDuplicate;
+}
+
 function getSelectedSymbolsSession(selection) {
   var symbolObjects = [];
   var idsMap = new Map();
@@ -5754,7 +5819,7 @@ function getSelectedSymbolsSession(selection) {
       "isSelected": false
     });
   });
-  return symbolObjects.sort(compareSymbolNames);
+  return symbolObjects.sort(compareByName);
 }
 
 function getReducedSymbolsSession(session) {
@@ -5853,7 +5918,7 @@ function getDuplicateColorVariables(context, includeLibraries) {
 }
 
 function GetSpecificLayerStyleData(layerStyle, layerStylesMap) {
-  ctime("GetSpecificSymbolData");
+  ctime("GetSpecificLayerStyleData");
   var totalInstances = 0;
   var totalOverrides = 0;
   layerStyle.duplicates.forEach(function (duplicate) {
@@ -5867,16 +5932,25 @@ function GetSpecificLayerStyleData(layerStyle, layerStylesMap) {
     totalOverrides += duplicate.numOverrides;
   });
   clog("-- Found " + totalInstances + " instances, " + totalOverrides + " overrides, and created " + layerStyle.duplicates.length + " thumbnails");
-  ctimeEnd("GetSpecificSymbolData");
+  ctimeEnd("GetSpecificLayerStyleData");
 }
 
-function GetSpecificTextStyleData(context, textStyles, index) {
-  clog("Processing text style metadata for: " + textStyles[index].name); // ctime("GetSpecificLayerStyleData");
-
-  for (var i = 0; i < textStyles[index].duplicates.length; i++) {
-    textStyles[index].duplicates[i].thumbnail = getTextThumbnail(textStyles[index].duplicates[i].textStyle);
-  } // ctimeEnd("GetSpecificLayerStyleData");
-
+function GetSpecificTextStyleData(textStyle, textStylesMap) {
+  ctime("GetSpecificTextStyleData");
+  var totalInstances = 0;
+  var totalOverrides = 0;
+  textStyle.duplicates.forEach(function (duplicate) {
+    var textStyleMapItem = textStylesMap.get(duplicate.textStyle);
+    duplicate.thumbnail = getTextThumbnail(duplicate.textStyle);
+    duplicate.styleInstances = textStyleMapItem.directInstances;
+    duplicate.numInstances = textStyleMapItem.directInstances.length;
+    duplicate.styleOverrides = textStyleMapItem.instancesWithOverrides;
+    duplicate.numOverrides = textStyleMapItem.instancesWithOverrides.length;
+    totalInstances += duplicate.numInstances;
+    totalOverrides += duplicate.numOverrides;
+  });
+  clog("-- Found " + totalInstances + " instances, " + totalOverrides + " overrides, and created " + textStyle.duplicates.length + " thumbnails");
+  ctimeEnd("GetSpecificTextStyleData");
 }
 
 function GetSpecificSymbolData(symbol, symbolsMap) {
@@ -6327,50 +6401,71 @@ function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesFromExte
       if (index > -1) duplicatedLayerStyles.splice(index, 1);
     }
   });
-  return duplicatedLayerStyles.sort(compareSymbolNames);
+  return duplicatedLayerStyles.sort(compareByName);
 }
 
-function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) {
-  var allStyles = [];
-  var nameDictionary = {};
-  var map = new Map();
+function getAllDuplicateTextStylesByName(context, includeAllStylesFromExternalLibraries) {
+  var duplicatedTextStyles = [];
+  var namesMap = new Map();
+  var idsMap = new Map();
+  var redundantIdsMap = new Map();
   document.sharedTextStyles.forEach(function (sharedTextStyle) {
-    var library = sharedTextStyle.getLibrary();
-    var textStyleObject = {
-      "textStyle": sharedTextStyle,
-      "name": "" + sharedTextStyle.name,
-      "libraryName": library != null ? libraryPrefix + library.name : sketchlocalfile,
-      "library": library,
-      "isForeign": library != null,
-      "isSelected": false,
-      "isChosen": false,
-      "description": getTextStyleDescription(sharedTextStyle),
-      "thumbnail": "",
-      "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
-      "duplicates": [],
-      ["isSelected"]: false
-    };
+    if (!idsMap.has(sharedTextStyle.id)) {
+      var redId1 = sharedTextStyle.style.id;
+      var redId2 = sharedTextStyle.id.indexOf("[") >= 0 ? sharedTextStyle.id.substring(sharedTextStyle.id.indexOf("[") + 1, sharedTextStyle.id.length - 1) : null;
+      var redundantIn = false;
+      if (redId2 != null) redundantIn = redundantIdsMap.has(redId1) || redundantIdsMap.has(redId2);else redundantIn = redundantIdsMap.has(redId1);
 
-    if (nameDictionary[sharedTextStyle.name] == null) {
-      textStyleObject.duplicates.push({
-        "textStyle": sharedTextStyle,
-        "name": "" + sharedTextStyle.name,
-        "libraryName": library != null ? libraryPrefix + library.name : sketchlocalfile,
-        "library": library,
-        "isForeign": library != null,
-        "isSelected": false,
-        "isChosen": false,
-        "description": getTextStyleDescription(sharedTextStyle),
-        "thumbnail": "",
-        "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
-        "duplicates": null,
-        ["isSelected"]: false
-      });
-      allStyles.push(textStyleObject);
-      map.set(sharedTextStyle.style.id, true);
-      nameDictionary[sharedTextStyle.name] = textStyleObject;
-    } else {
-      nameDictionary[sharedTextStyle.name].duplicates.push(textStyleObject);
+      if (!namesMap.has(sharedTextStyle.name)) {
+        var styleObject = {
+          "name": "" + sharedTextStyle.name,
+          "duplicates": []
+        };
+        styleObject.duplicates.push({
+          "name": "" + sharedTextStyle.name,
+          "textStyle": sharedTextStyle,
+          "libraryName": sharedTextStyle.getLibrary() != null ? libraryPrefix + sharedTextStyle.getLibrary().name : sketchlocalfile,
+          "library": sharedTextStyle.getLibrary() != null ? sharedTextStyle.getLibrary() : null,
+          "isForeign": sharedTextStyle.getLibrary() != null,
+          "isSelected": false,
+          "isChosen": false,
+          "description": getTextStyleDescription(sharedTextStyle),
+          "thumbnail": "",
+          ["isSelected"]: false,
+          "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+          "styleInstances": null,
+          "numInstances": 0,
+          "styleOverrides": null,
+          "numOverrides": 0,
+          "isHidden": redundantIn
+        });
+        duplicatedTextStyles.push(styleObject);
+        idsMap.set(sharedTextStyle.id, styleObject);
+        namesMap.set(sharedTextStyle.name, styleObject);
+      } else {
+        var styleObject = namesMap.get(sharedTextStyle.name);
+        styleObject.duplicates.push({
+          "name": "" + sharedTextStyle.name,
+          "textStyle": sharedTextStyle,
+          "libraryName": sharedTextStyle.getLibrary() != null ? libraryPrefix + sharedTextStyle.getLibrary().name : sketchlocalfile,
+          "library": sharedTextStyle.getLibrary() != null ? sharedTextStyle.getLibrary() : null,
+          "isForeign": sharedTextStyle.getLibrary() != null,
+          "isSelected": false,
+          "isChosen": false,
+          "description": getTextStyleDescription(sharedTextStyle),
+          "thumbnail": "",
+          ["isSelected"]: false,
+          "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+          "styleInstances": null,
+          "numInstances": 0,
+          "styleOverrides": null,
+          "numOverrides": 0,
+          "isHidden": redundantIn
+        });
+      }
+
+      redundantIdsMap.set(redId1, styleObject);
+      if (redId2 != null) redundantIdsMap.set(redId2, styleObject);
     }
   });
 
@@ -6378,26 +6473,20 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
     libraries.forEach(function (lib) {
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
         lib.getDocument().sharedTextStyles.forEach(function (sharedTextStyle) {
-          if (!map.has(sharedTextStyle.style.id)) {
-            var textStyleObject = {
-              "textStyle": sharedTextStyle,
-              "name": "" + sharedTextStyle.name,
-              "libraryName": libraryPrefix + lib.name,
-              "library": lib,
-              "isForeign": true,
-              "isSelected": false,
-              "isChosen": false,
-              "description": getTextStyleDescription(sharedTextStyle),
-              "thumbnail": "",
-              "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
-              "duplicates": [],
-              ["isSelected"]: false
-            };
+          if (!idsMap.has(sharedTextStyle.id)) {
+            var redId1 = sharedTextStyle.style.id;
+            var redId2 = sharedTextStyle.id.indexOf("[") >= 0 ? sharedTextStyle.id.substring(sharedTextStyle.id.indexOf("[") + 1, sharedTextStyle.id.length - 1) : null;
+            var redundantIn = false;
+            if (redId2 != null) redundantIn = redundantIdsMap.has(redId1) || redundantIdsMap.has(redId2);else redundantIn = redundantIdsMap.has(redId1);
 
-            if (nameDictionary[sharedTextStyle.name] == null) {
-              textStyleObject.duplicates.push({
-                "textStyle": sharedTextStyle,
+            if (!namesMap.has(sharedTextStyle.name)) {
+              var styleObject = {
                 "name": "" + sharedTextStyle.name,
+                "duplicates": []
+              };
+              styleObject.duplicates.push({
+                "name": "" + sharedTextStyle.name,
+                "textStyle": sharedTextStyle,
                 "libraryName": libraryPrefix + lib.name,
                 "library": lib,
                 "isForeign": true,
@@ -6405,43 +6494,65 @@ function getDuplicateTextStyles(context, includeAllStylesFromExternalLibraries) 
                 "isChosen": false,
                 "description": getTextStyleDescription(sharedTextStyle),
                 "thumbnail": "",
+                ["isSelected"]: false,
                 "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
-                "duplicates": null,
-                ["isSelected"]: false
+                "styleInstances": null,
+                "numInstances": 0,
+                "styleOverrides": null,
+                "numOverrides": 0,
+                "isHidden": redundantIn
               });
-              allStyles.push(textStyleObject);
-              nameDictionary[sharedTextStyle.name] = textStyleObject;
+              duplicatedTextStyles.push(styleObject);
+              idsMap.set(sharedTextStyle.id, styleObject);
+              namesMap.set(sharedTextStyle.name, styleObject);
             } else {
-              nameDictionary[sharedTextStyle.name].duplicates.push(textStyleObject);
+              var styleObject = namesMap.get(sharedTextStyle.name);
+              styleObject.duplicates.push({
+                "name": "" + sharedTextStyle.name,
+                "textStyle": sharedTextStyle,
+                "libraryName": libraryPrefix + lib.name,
+                "library": lib,
+                "isForeign": true,
+                "isSelected": false,
+                "isChosen": false,
+                "description": getTextStyleDescription(sharedTextStyle),
+                "thumbnail": "",
+                ["isSelected"]: false,
+                "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+                "styleInstances": null,
+                "numInstances": 0,
+                "styleOverrides": null,
+                "numOverrides": 0,
+                "isHidden": redundantIn
+              });
             }
+
+            redundantIdsMap.set(redId1, styleObject);
+            if (redId2 != null) redundantIdsMap.set(redId2, styleObject);
           }
         });
       }
     });
   }
 
-  Object.keys(nameDictionary).forEach(function (key) {
+  namesMap.forEach(function (styleObject, name) {
     var removeElement = false;
-    if (nameDictionary[key].duplicates.length <= 1) removeElement = true;
+    if (styleObject.duplicates.length <= 1) removeElement = true;
 
     if (!removeElement) {
       var allForeign = true;
-      nameDictionary[key].duplicates.forEach(function (duplicate) {
+      styleObject.duplicates.forEach(function (duplicate) {
         if (!duplicate.isForeign) allForeign = false;
       });
-
-      if (allForeign) {
-        removeElement = true;
-      }
+      removeElement = allForeign;
     }
 
     if (removeElement) {
-      var index = allStyles.indexOf(nameDictionary[key]);
-      if (index > -1) allStyles.splice(index, 1);
-      nameDictionary[key] = null;
+      var index = duplicatedTextStyles.indexOf(styleObject);
+      if (index > -1) duplicatedTextStyles.splice(index, 1);
     }
   });
-  return allStyles;
+  return duplicatedTextStyles.sort(compareByName);
 }
 
 function getDefinedLayerStyles(context, includeAllStylesFromExternalLibraries) {
@@ -6583,7 +6694,6 @@ module.exports = {
   getSelectedSymbolsSession: getSelectedSymbolsSession,
   GetSpecificSymbolData: GetSpecificSymbolData,
   GetSpecificLayerStyleData: GetSpecificLayerStyleData,
-  getDuplicateTextStyles: getDuplicateTextStyles,
   GetSpecificTextStyleData: GetSpecificTextStyleData,
   shouldEnableContrastMode: shouldEnableContrastMode,
   countAllSymbols: countAllSymbols,
@@ -6600,7 +6710,6 @@ module.exports = {
   importLayerStyleFromLibrary: importLayerStyleFromLibrary,
   getSymbolOverrides: getSymbolOverrides,
   ["getSymbolInstances"]: getSymbolInstances,
-  getRelatedOverrides: getRelatedOverrides,
   importTextStyleFromLibrary: importTextStyleFromLibrary,
   getDefinedColorVariables: getDefinedColorVariables,
   importColorVariableFromLibrary: importColorVariableFromLibrary,
@@ -6620,7 +6729,12 @@ module.exports = {
   getLayerStylesMap: getLayerStylesMap,
   getReducedLayerStyleData: getReducedLayerStyleData,
   getLayerStyleInstances: getLayerStyleInstances,
-  getLayerStyleOverrides: getLayerStyleOverrides
+  getLayerStyleOverrides: getLayerStyleOverrides,
+  getAllDuplicateTextStylesByName: getAllDuplicateTextStylesByName,
+  getTextStylesMap: getTextStylesMap,
+  getReducedTextStyleData: getReducedTextStyleData,
+  getTextStyleInstances: getTextStyleInstances,
+  getTextStyleOverrides: getTextStyleOverrides
 };
 
 /***/ }),
@@ -8194,66 +8308,135 @@ var webviewMSTSIdentifier = 'merge-similartextstyles.webview';
 var checkingAlsoLibraries = false;
 var currentSelectedStyles = [];
 
-function MergeTextStyles(context, styleToKeepIndex) {
-  var layersChangedCounter = 0;
-  var overridesChangedCounter = 0;
-  var styleToKeep = currentSelectedStyles[styleToKeepIndex];
-  var styleToApply = styleToKeep.textStyle;
+function MergeTextStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge, webContents) {
+  Helpers.clog("-- Starting Merge Layer Styles (" + stylesToMerge.length + "). Style to keep is:" + styleToKeep);
   var stylesToRemove = [];
-  Helpers.clog("Merging styles. Keep '" + styleToKeep.name + "'");
+  var styleToApply;
+  var instancesChanged = 0;
+  var overridesChanged = 0;
+  var stylesRemoved = 0;
+  var idsMap = new Map();
+  Helpers.clog("---- Processing styles to remove");
+  styleToApply = stylesToMerge[styleToKeep].textStyle;
 
-  if (styleToKeep.isForeign) {
-    var existingTs = Helpers.document.sharedTextStyles.filter(function (ts) {
-      return ts.id == styleToKeep.textStyle.id;
-    });
-
-    if (existingTs.length <= 0) {
-      Helpers.clog("Importing style from library " + styleToKeep.libraryName);
-      styleToApply = Helpers.importTextStyleFromLibrary(styleToKeep);
-    } else Helpers.clog("Style not imported (as it's already in document)");
+  if (stylesToMerge[styleToKeep].isForeign) {
+    var alreadyInDoc = Helpers.document.sharedTextStyles.filter(function (ls) {
+      return ls.id == stylesToMerge[styleToKeep].textStyle.id;
+    }).length > 0;
+    if (!alreadyInDoc) styleToApply = Helpers.importTextStyleFromLibrary(stylesToMerge[styleToKeep]);
   }
 
-  for (var i = 0; i < currentSelectedStyles.length; i++) {
-    if (i != styleToKeepIndex) {
-      stylesToRemove.push(currentSelectedStyles[i].textStyle);
-    }
-  }
+  var tasksToPerform = 0,
+      tasksExecuted = 0;
+  var progress = basePercent;
+  var instancesToChange = 0,
+      overridesToChange = 0;
+  var instOverMap = new Map();
+  Helpers.clog("---- Getting all related styles instances and overrides");
 
-  currentSelectedStyles.forEach(function (style) {
-    var instances = style.textStyle.getAllInstancesLayers();
-    Helpers.clog("-- Updating " + instances.length + "instances to " + styleToKeep.name);
-    instances.forEach(function (instance) {
-      instance.sharedStyle = styleToApply;
-      instance.style.syncWithSharedStyle(styleToApply);
-      layersChangedCounter++;
-    });
-    var relatedOverrides = Helpers.getRelatedOverrides(context, style.textStyle.id, "textStyle");
-    Helpers.clog("-- Updating " + relatedOverrides.length + "related overrides to " + styleToKeep.name);
-    relatedOverrides.forEach(function (override) {
-      var instanceLayer = Helpers.document.getLayerWithID(override.instance.id);
-      var instanceOverride = instanceLayer.overrides.filter(function (ov) {
-        return ov.id == override.override.id;
+  for (var i = 0; i < stylesToMerge.length; i++) {
+    if (i != styleToKeep) {
+      idsMap.set(stylesToMerge[i].textStyle.id);
+      stylesToRemove.push(stylesToMerge[i].textStyle);
+      var instancesOfStyle = Helpers.getTextStyleInstances(stylesToMerge[i].textStyle);
+      var styleOverrides = Helpers.getTextStyleOverrides(stylesToMerge[i].textStyle, idsMap);
+      instOverMap.set(stylesToMerge[i], {
+        "instancesOfStyle": instancesOfStyle,
+        "styleOverrides": styleOverrides
       });
-
-      try {
-        Helpers.clog("------ Updating override for " + instanceLayer.name);
-        instanceLayer.setOverrideValue(instanceOverride[0], styleToApply.id.toString());
-        overridesChangedCounter++;
-      } catch (e) {
-        Helpers.clog("---- ERROR: Couldn't update override for " + instanceLayer.name);
-      }
-    });
-  });
-  stylesToRemove.forEach(function (styleToRemove) {
-    var removeAtIndex = -1;
-
-    for (var i = 0; i < Helpers.document.sharedTextStyles.length; i++) {
-      if (Helpers.document.sharedTextStyles[i].id == styleToRemove.id) removeAtIndex = i;
+      instancesToChange += instancesOfStyle.length;
+      overridesToChange += styleOverrides.length;
     }
+  }
 
-    if (removeAtIndex > -1) Helpers.document.sharedTextStyles.splice(removeAtIndex, 1);
+  tasksToPerform = instancesToChange + overridesToChange;
+  Helpers.ctime("Merging text style:" + stylesToMerge[styleToKeep].name);
+  webContents.executeJavaScript("ShowMergeProgress()").catch(console.error);
+
+  for (var i = 0; i < stylesToMerge.length; i++) {
+    if (i != styleToKeep) {
+      if (!stylesToMerge[i].isForeign) stylesRemoved++;
+      Helpers.ctime("-- Taking instances and overrides");
+      var instancesOfStyle = instOverMap.get(stylesToMerge[i]).instancesOfStyle;
+      var styleOverrides = instOverMap.get(stylesToMerge[i]).styleOverrides;
+      Helpers.ctimeEnd("-- Taking instances and overrides");
+      Helpers.ctime("-- Unlinking from library");
+      Helpers.clog("------ Checking if symbol to merge is foreign");
+
+      if (stylesToMerge[i].isForeign) {
+        stylesToMerge[i].textStyle.unlinkFromLibrary();
+      }
+
+      Helpers.ctimeEnd("-- Unlinking from library");
+      var message = "Merging " + stylesToMerge[styleToKeep].name;
+      Helpers.ctime("-- Updating overrides");
+      Helpers.clog("---- Updating overrides (" + styleOverrides.length + ")");
+      styleOverrides.forEach(function (override) {
+        try {
+          Helpers.clog("------ Updating override for " + override.instance.name);
+          override.instance.setOverrideValue(override.override, styleToApply.id.toString());
+          overridesChanged++;
+          tasksExecuted++;
+          progress = Math.floor(basePercent + tasksExecuted * 100 / tasksToPerform / totalToMerge);
+          var message2 = "Updating overrides (" + overridesChanged + " of " + overridesToChange + ")";
+          webContents.executeJavaScript("UpdateMergeProgress(".concat(progress, ", ").concat(JSON.stringify(message), ", ").concat(JSON.stringify(message2), ")")).catch(console.error);
+        } catch (e) {
+          Helpers.clog("---- ERROR: Couldn't update override for " + override.instance.name);
+          Helpers.clog(e);
+        }
+      });
+      Helpers.ctimeEnd("-- Updating overrides");
+      Helpers.ctime("-- Updating instances");
+      Helpers.clog("---- Updating instances (" + instancesOfStyle.length + ")");
+      instancesOfStyle.forEach(function (instance) {
+        try {
+          Helpers.clog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name);
+        } catch (e) {
+          Helpers.clog("------ Updating instance " + instance.name + ". Instance doesn't belong to any specific artboard.");
+        }
+
+        instance.sharedStyle = styleToApply;
+        instance.style.syncWithSharedStyle(styleToApply);
+        tasksExecuted++;
+        instancesChanged++;
+        progress = Math.floor(basePercent + tasksExecuted * 100 / tasksToPerform / totalToMerge);
+        var message2 = "Updating instances (" + instancesChanged + " of " + instancesToChange + ")";
+        webContents.executeJavaScript("UpdateMergeProgress(".concat(progress, ", ").concat(JSON.stringify(message), ", ").concat(JSON.stringify(message2), ")")).catch(console.error);
+      });
+      Helpers.ctimeEnd("-- Updating instances");
+    }
+  }
+
+  Helpers.ctimeEnd("Merging text style:" + stylesToMerge[styleToKeep].name);
+  Helpers.clog("---- Finalized instance and override replacement.");
+  var sharedStylesToRemove = Helpers.document.sharedTextStyles.filter(function (sharedStyle) {
+    return isMarkedForRemove(sharedStyle, stylesToRemove);
   });
-  return [layersChangedCounter, overridesChangedCounter];
+  Helpers.clog("---- Removing discarded text styles (" + sharedStylesToRemove.length + ").");
+  webContents.executeJavaScript("UpdateMergeProgress(".concat(progress, ", ").concat(JSON.stringify(message), ", \"Removing discarded text styles\")")).catch(console.error);
+  Helpers.ctime("Removing discarded styles");
+  sharedStylesToRemove.forEach(function (sharedStyleToRemove) {
+    Helpers.clog("------ Removing " + sharedStyleToRemove.name + " (" + sharedStyleToRemove.id + ") from sharedTextStyles.");
+    sharedStyleToRemove.unlinkFromLibrary();
+    Helpers.clog("-------- Unlinked from library.");
+    var styleIndex = Helpers.document.sharedTextStyles.findIndex(function (sL) {
+      return sL.id == sharedStyleToRemove.id;
+    });
+    Helpers.clog("-------- Located in sharedTextStyles (" + styleIndex + ").");
+    Helpers.document.sharedTextStyles.splice(styleIndex, 1);
+    Helpers.clog("-------- Removed from sharedTextStyles.");
+  });
+  Helpers.ctimeEnd("Removing discarded styles");
+  Helpers.clog("---- Merge completed.");
+  return [stylesRemoved, instancesChanged, overridesChanged];
+}
+
+function isMarkedForRemove(sharedTextStyle, stylesToRemove) {
+  var redId1 = sharedTextStyle.style.id;
+  var redId2 = sharedTextStyle.id.indexOf("[") >= 0 ? sharedTextStyle.id.substring(sharedTextStyle.id.indexOf("[") + 1, sharedTextStyle.id.length - 1) : null;
+  return stylesToRemove.filter(function (str) {
+    return str.id == sharedTextStyle.id || str.id == redId1 || str.id == redId2;
+  }).length > 0;
 }
 
 function MergeDuplicateTextStyles(context) {
@@ -8268,8 +8451,9 @@ function MergeDuplicateTextStyles(context) {
   };
   var browserWindow = new sketch_module_web_view__WEBPACK_IMPORTED_MODULE_0___default.a(options);
   var webContents = browserWindow.webContents;
-  var onlyDuplicatedTextStyles;
+  var onlyDuplicatedTextStyles, textStylesMap;
   var mergeSession = [];
+  var mergeSessionMap = new Map();
   CalculateDuplicates(Helpers.getLibrariesEnabled());
 
   if (onlyDuplicatedTextStyles.length > 0) {
@@ -8281,20 +8465,22 @@ function MergeDuplicateTextStyles(context) {
 
   function CalculateDuplicates(includeLibraries) {
     Helpers.clog("Finding duplicate text styles. Including libraries:" + includeLibraries);
-    onlyDuplicatedTextStyles = Helpers.getDuplicateTextStyles(context, includeLibraries);
+    onlyDuplicatedTextStyles = Helpers.getAllDuplicateTextStylesByName(context, includeLibraries);
+    textStylesMap = Helpers.getTextStylesMap(context, onlyDuplicatedTextStyles);
 
     if (onlyDuplicatedTextStyles.length > 0) {
-      Helpers.GetSpecificTextStyleData(context, onlyDuplicatedTextStyles, 0);
+      Helpers.GetSpecificTextStyleData(onlyDuplicatedTextStyles[0], textStylesMap);
       mergeSession = [];
-
-      for (var i = 0; i < onlyDuplicatedTextStyles.length; i++) {
+      onlyDuplicatedTextStyles.forEach(function (duplicate) {
+        var reducedStyle = Helpers.getReducedTextStyleData(duplicate);
+        mergeSessionMap.set(reducedStyle, duplicate);
         mergeSession.push({
-          "textStyleWithDuplicates": onlyDuplicatedTextStyles[i],
+          "textStyleWithDuplicates": reducedStyle,
           "selectedIndex": -1,
           "isUnchecked": false,
-          "isProcessed": i == 0 ? true : false
+          "isProcessed": mergeSession.length == 0
         });
-      }
+      });
     }
   }
 
@@ -8317,30 +8503,30 @@ function MergeDuplicateTextStyles(context) {
     webContents.executeJavaScript("DrawStylesList(".concat(JSON.stringify(mergeSession), ")")).catch(console.error);
   });
   webContents.on('GetSelectedStyleData', function (index) {
-    Helpers.GetSpecificTextStyleData(context, onlyDuplicatedTextStyles, index);
-    webContents.executeJavaScript("ReDrawAfterGettingData(".concat(JSON.stringify(mergeSession[index].textStyleWithDuplicates), ",").concat(index, ")")).catch(console.error);
+    Helpers.GetSpecificTextStyleData(onlyDuplicatedTextStyles[index], textStylesMap);
+    var stringify = JSON.stringify(Helpers.getReducedTextStyleData(onlyDuplicatedTextStyles[index]));
+    webContents.executeJavaScript("ReDrawAfterGettingData(".concat(stringify, ",").concat(index, ")")).catch(console.error);
   });
   webContents.on('ExecuteMerge', function (editedMergeSession) {
     Helpers.clog("Executing Merge");
     var duplicatesSolved = 0;
-    var mergedStyles = 0;
-    var affectedLayers = [0, 0];
+    var mergeResults = [0, 0, 0];
+    var totalToMerge = editedMergeSession.filter(function (ems) {
+      return !ems.isUnchecked && ems.selectedIndex >= 0;
+    }).length;
 
     for (var i = 0; i < editedMergeSession.length; i++) {
       Helpers.clog("-- Merging " + mergeSession[i].textStyleWithDuplicates.name);
 
       if (!editedMergeSession[i].isUnchecked && editedMergeSession[i].selectedIndex >= 0) {
+        Helpers.clog("-- Merging " + mergeSession[i].textStyleWithDuplicates.name);
         mergeSession[i].selectedIndex = editedMergeSession[i].selectedIndex;
-        currentSelectedStyles = [];
-
-        for (var j = 0; j < mergeSession[i].textStyleWithDuplicates.duplicates.length; j++) {
-          currentSelectedStyles.push(mergeSession[i].textStyleWithDuplicates.duplicates[j]);
-          mergedStyles++;
-        }
-
-        var results = MergeTextStyles(context, editedMergeSession[i].selectedIndex);
-        affectedLayers[0] += results[0];
-        affectedLayers[1] += results[1];
+        var mergeobject = mergeSessionMap.get(mergeSession[i].textStyleWithDuplicates);
+        var basePercent = duplicatesSolved * 100 / editedMergeSession.length;
+        var localMergeResults = MergeTextStyles(mergeobject.duplicates, mergeSession[i].selectedIndex, basePercent, totalToMerge, webContents);
+        mergeResults[0] += localMergeResults[0];
+        mergeResults[1] += localMergeResults[1];
+        mergeResults[2] += localMergeResults[2];
         duplicatesSolved++;
       }
     }
@@ -8351,8 +8537,10 @@ function MergeDuplicateTextStyles(context) {
       Helpers.clog("No styles were merged");
       UI.message("No styles were merged");
     } else {
-      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-      UI.message("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      var replacedStuff = "";
+      if (mergeResults[1] > 0 && mergeResults[2]) replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";else if (mergeResults[1] > 0) replacedStuff = " and replaced " + mergeResults[1] + " instances.";else if (mergeResults[2] > 0) replacedStuff = " and updated " + mergeResults[2] + " overrides.";else replacedStuff = ".";
+      Helpers.clog("Completed merge. Removed " + mergeResults[0] + " text styles" + replacedStuff);
+      UI.message("Hey ho! You just removed " + mergeResults[0] + " text styles" + replacedStuff + " Amazing!");
     }
   });
 }

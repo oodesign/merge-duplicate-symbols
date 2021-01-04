@@ -188,6 +188,27 @@ window.ReDrawAfterGettingData = function (symbolData, index) {
   document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeIn";
 };
 
+window.ShowMergeProgress = function (progress) {
+  HideLayout();
+  document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
+};
+
+window.UpdateMergeProgress = function (progress, message, message2) {
+  document.getElementById('progressRing').setProgress(progress);
+  document.getElementById('mergeloadingMessage').innerHTML = message;
+  document.getElementById('mergeloadingMessage2').innerHTML = message2;
+};
+
+window.HideLayout = function () {
+  //window.postMessage("nativeLog", "WV - Hide layout");
+  document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
+  document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState fadeOut";
+  document.getElementById('contentList').className = "rowAvailable listOfStyles fadeOut";
+  document.getElementById('btnCancel').className = "notDisplayed";
+  document.getElementById('btnMerge').className = "notDisplayed";
+  document.getElementById('chkLibraries').className = "notDisplayed";
+};
+
 window.onStyleClicked = function (index, selectedStyle) {
   window.postMessage("nativeLog", "WV - Style clicked. Updating selection status.");
 
@@ -219,7 +240,7 @@ window.DrawStyleList = function (index) {
     var checked = isSelected ? "checked" : "";
     var checkbox = "<div class=\"colAuto roundCheckbox\">\n      <input type=\"checkbox\" ".concat(checked, " id=\"duplicateItemCheck").concat(i, "\"/>\n      <label></label>\n    </div>");
     var contrastMode = globalMergeSession[index].textStyleWithDuplicates.duplicates[i].contrastMode ? "bgContrastMode" : "";
-    inner += "<div id=\"duplicateItem".concat(i, "\" class=\"thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter ").concat(selected, "\" onclick=\"onStyleClicked(").concat(i, ", ").concat(index, ")\">\n                ").concat(checkbox, "\n                <div class=\"colAvailable verticalLayout thumbnailData\" id=\"duplicateItemThumbnail").concat(i, "\" >\n                  <div class=\"rowAvailable padded ").concat(contrastMode, "\"><div class=\"thumbnail\" style='background-image:url(\"data:image/png;base64,").concat(globalMergeSession[index].textStyleWithDuplicates.duplicates[i].thumbnail, "\")'></div></div>\n                  <div class=\"rowAuto primaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(globalMergeSession[index].textStyleWithDuplicates.duplicates[i].name, " (").concat(globalMergeSession[index].textStyleWithDuplicates.duplicates[i].libraryName, ")</span></div>\n                  <div class=\"rowAuto secondaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(globalMergeSession[index].textStyleWithDuplicates.duplicates[i].description, "</span></div>\n                </div>\n              </div>");
+    inner += "<div id=\"duplicateItem".concat(i, "\" class=\"thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter ").concat(selected, "\" onclick=\"onStyleClicked(").concat(i, ", ").concat(index, ")\">\n                ").concat(checkbox, "\n                <div class=\"colAvailable verticalLayout thumbnailData\" id=\"duplicateItemThumbnail").concat(i, "\" >\n                  <div class=\"rowAvailable padded ").concat(contrastMode, "\"><div class=\"thumbnail\" style='background-image:url(\"data:image/png;base64,").concat(globalMergeSession[index].textStyleWithDuplicates.duplicates[i].thumbnail, "\")'></div></div>\n                  <div class=\"rowAuto primaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(globalMergeSession[index].textStyleWithDuplicates.duplicates[i].name, " (").concat(globalMergeSession[index].textStyleWithDuplicates.duplicates[i].libraryName, ")</span></div>\n                  <div class=\"rowAuto secondaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(globalMergeSession[index].textStyleWithDuplicates.duplicates[i].description, "</span></div>\n                  <div class=\"rowAuto secondaryText displayFlex\"><span class=\"alignHorizontalCenter\">").concat(globalMergeSession[index].textStyleWithDuplicates.duplicates[i].numInstances, " instances - Used in ").concat(globalMergeSession[index].textStyleWithDuplicates.duplicates[i].numOverrides, " overrides</span></div>\n                </div>\n              </div>");
   }
 
   var resultsTitle = document.getElementById("resultsTitle");

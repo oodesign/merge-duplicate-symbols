@@ -234,7 +234,7 @@ export function MergeDuplicateLayerStyles(context) {
 
   webContents.on('GetSelectedStyleData', (index) => {
     Helpers.GetSpecificLayerStyleData(onlyDuplicatedLayerStyles[index], layerStylesMap);
-    var stringify = JSON.stringify(Helpers.getReducedLayerStyleData(onlyDuplicatedLayerStyles[index]))
+    var stringify = JSON.stringify(Helpers.getReducedLayerStyleData(onlyDuplicatedLayerStyles[index]));
     webContents.executeJavaScript(`ReDrawAfterGettingData(${stringify},${index})`).catch(console.error);
   });
 
@@ -243,7 +243,6 @@ export function MergeDuplicateLayerStyles(context) {
 
     var duplicatesSolved = 0;
     var mergeResults = [0, 0, 0];
-
 
     var totalToMerge = editedMergeSession.filter(ems => !ems.isUnchecked && ems.selectedIndex >= 0).length;
 
@@ -474,7 +473,7 @@ export function MergeSimilarLayerStyles(context) {
   webContents.on('RecalculateStyles', (includeAllLibraries, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowXYBlurSpread) => {
     Helpers.clog("RecalculateStyles");
     stylesWithSimilarStyles = Helpers.FindAllSimilarLayerStyles(context, includeAllLibraries, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowXYBlurSpread);
-    
+
     webContents.executeJavaScript(`DrawResultsList(${JSON.stringify(stylesWithSimilarStyles)})`).catch(console.error);
   });
 
