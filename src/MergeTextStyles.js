@@ -77,86 +77,6 @@ function MergeTextStyles(context, styleToKeepIndex) {
   return [layersChangedCounter, overridesChangedCounter];
 }
 
-
-export function MergeSimilarTextStyles(context) {
-
-  Helpers.clog("----- Merge similar text styles -----");
-
-  const options = {
-    identifier: webviewMSTSIdentifier,
-    width: 1200,
-    height: 700,
-    show: false,
-    remembersWindowFrame: true,
-    titleBarStyle: 'hidden'
-  }
-  const browserWindow = new BrowserWindow(options);
-  const webContents = browserWindow.webContents;
-
-  var stylesWithSimilarStyles;
-
-  Helpers.clog("Loading webview");
-  browserWindow.loadURL(require('../resources/mergesimilartextstyles.html'));
-
-
-  browserWindow.once('ready-to-show', () => {
-    browserWindow.show()
-  })
-
-  webContents.on('did-finish-load', () => {
-    Helpers.clog("Webview loaded");
-    webContents.executeJavaScript(`UpdateSettings(${Helpers.getLibrariesEnabled()})`).catch(console.error);
-  })
-
-  webContents.on('nativeLog', s => {
-    Helpers.clog(s);
-  });
-
-  webContents.on('Cancel', () => {
-    onShutdown(webviewMSTSIdentifier);
-  });
-
-  webContents.on('ExecuteMerge', (editedStylesWithSimilarStyles) => {
-    Helpers.clog("Execute merge");
-    var duplicatesSolved = 0;
-    var mergedStyles = 0;
-    var affectedLayers = [0, 0];
-    for (var i = 0; i < editedStylesWithSimilarStyles.length; i++) {
-      if (!editedStylesWithSimilarStyles[i].isUnchecked && editedStylesWithSimilarStyles[i].selectedIndex >= 0) {
-        currentSelectedStyles = [];
-        for (var j = 0; j < editedStylesWithSimilarStyles[i].similarStyles.length; j++) {
-          currentSelectedStyles.push(stylesWithSimilarStyles[i].similarStyles[j]);
-          mergedStyles++;
-        }
-
-        var results = MergeTextStyles(context, editedStylesWithSimilarStyles[i].selectedIndex);
-        affectedLayers[0] += results[0];
-        affectedLayers[1] += results[1];
-
-        duplicatesSolved++;
-      }
-    }
-    onShutdown(webviewMSTSIdentifier);
-
-    if (duplicatesSolved <= 0) {
-      Helpers.clog("No styles were merged");
-      UI.message("No styles were merged");
-    }
-    else {
-      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-      UI.message("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-    }
-
-  });
-
-  webContents.on('RecalculateStyles', (includeAllLibraries, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing) => {
-    Helpers.clog("RecalculateStyles");
-    stylesWithSimilarStyles = Helpers.FindAllSimilarTextStyles(context, includeAllLibraries, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing);
-    webContents.executeJavaScript(`DrawResultsList(${JSON.stringify(stylesWithSimilarStyles)})`).catch(console.error);
-  });
-
-}
-
 export function MergeDuplicateTextStyles(context) {
 
   Helpers.clog("----- Merge duplicate text styles -----");
@@ -397,3 +317,81 @@ export function MergeSelectedTextStyles(context) {
   });
 };
 
+export function MergeSimilarTextStyles(context) {
+
+  Helpers.clog("----- Merge similar text styles -----");
+
+  const options = {
+    identifier: webviewMSTSIdentifier,
+    width: 1200,
+    height: 700,
+    show: false,
+    remembersWindowFrame: true,
+    titleBarStyle: 'hidden'
+  }
+  const browserWindow = new BrowserWindow(options);
+  const webContents = browserWindow.webContents;
+
+  var stylesWithSimilarStyles;
+
+  Helpers.clog("Loading webview");
+  browserWindow.loadURL(require('../resources/mergesimilartextstyles.html'));
+
+
+  browserWindow.once('ready-to-show', () => {
+    browserWindow.show()
+  })
+
+  webContents.on('did-finish-load', () => {
+    Helpers.clog("Webview loaded");
+    webContents.executeJavaScript(`UpdateSettings(${Helpers.getLibrariesEnabled()})`).catch(console.error);
+  })
+
+  webContents.on('nativeLog', s => {
+    Helpers.clog(s);
+  });
+
+  webContents.on('Cancel', () => {
+    onShutdown(webviewMSTSIdentifier);
+  });
+
+  webContents.on('ExecuteMerge', (editedStylesWithSimilarStyles) => {
+    Helpers.clog("Execute merge");
+    var duplicatesSolved = 0;
+    var mergedStyles = 0;
+    var affectedLayers = [0, 0];
+    for (var i = 0; i < editedStylesWithSimilarStyles.length; i++) {
+      if (!editedStylesWithSimilarStyles[i].isUnchecked && editedStylesWithSimilarStyles[i].selectedIndex >= 0) {
+        currentSelectedStyles = [];
+        for (var j = 0; j < editedStylesWithSimilarStyles[i].similarStyles.length; j++) {
+          currentSelectedStyles.push(stylesWithSimilarStyles[i].similarStyles[j]);
+          mergedStyles++;
+        }
+
+        var results = MergeTextStyles(context, editedStylesWithSimilarStyles[i].selectedIndex);
+        affectedLayers[0] += results[0];
+        affectedLayers[1] += results[1];
+
+        duplicatesSolved++;
+      }
+    }
+    onShutdown(webviewMSTSIdentifier);
+
+    if (duplicatesSolved <= 0) {
+      Helpers.clog("No styles were merged");
+      UI.message("No styles were merged");
+    }
+    else {
+      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      UI.message("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+    }
+
+  });
+
+  webContents.on('RecalculateStyles', (includeAllLibraries, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing) => {
+    Helpers.clog("RecalculateStyles");
+    stylesWithSimilarStyles = Helpers.FindAllSimilarTextStyles(context, includeAllLibraries, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing);
+    webContents.executeJavaScript(`DrawResultsList(${JSON.stringify(stylesWithSimilarStyles)})`).catch(console.error);
+  });
+
+}

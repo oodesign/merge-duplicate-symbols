@@ -158,98 +158,6 @@ function isMarkedForRemove(sharedLayerStyle, stylesToRemove) {
   return (stylesToRemove.filter(str => (str.id == sharedLayerStyle.id) || (str.id == redId1) || (str.id == redId2)).length > 0);
 }
 
-
-export function MergeSimilarLayerStyles(context) {
-
-  Helpers.clog("----- Merge similar layer styles -----");
-
-  const options = {
-    identifier: webviewMSLSIdentifier,
-    width: 1200,
-    height: 700,
-    show: false,
-    remembersWindowFrame: true,
-    titleBarStyle: 'hidden'
-  }
-  const browserWindow = new BrowserWindow(options);
-  const webContents = browserWindow.webContents;
-
-  var stylesWithSimilarStyles;
-  Helpers.clog("Loading webview");
-  browserWindow.loadURL(require('../resources/mergesimilarlayerstyles.html'));
-
-
-  browserWindow.once('ready-to-show', () => {
-    browserWindow.show()
-  })
-
-  webContents.on('did-finish-load', () => {
-    Helpers.clog("Webview loaded");
-    webContents.executeJavaScript(`UpdateSettings(${Helpers.getLibrariesEnabled()})`).catch(console.error);
-  })
-
-  webContents.on('nativeLog', s => {
-    Helpers.clog(s);
-  });
-
-  webContents.on('Cancel', () => {
-    onShutdown(webviewMSLSIdentifier);
-  });
-
-  webContents.on('ExecuteMerge', (editedStylesWithSimilarStyles) => {
-    Helpers.clog("Execute merge");
-    var duplicatesSolved = 0;
-    var mergeResults = [0, 0, 0];
-
-    var totalToMerge = editedStylesWithSimilarStyles.filter(ems => !ems.isUnchecked && ems.selectedIndex >= 0).length;
-
-    for (var i = 0; i < editedStylesWithSimilarStyles.length; i++) {
-      if (!editedStylesWithSimilarStyles[i].isUnchecked && editedStylesWithSimilarStyles[i].selectedIndex >= 0) {
-        var basePercent = (duplicatesSolved * 100 / editedStylesWithSimilarStyles.length);
-        var localMergeResults = MergeLayerStyles(stylesWithSimilarStyles[i].similarStyles, editedStylesWithSimilarStyles[i].selectedIndex, basePercent, totalToMerge, webContents);
-
-        mergeResults[0] += localMergeResults[0];
-        mergeResults[1] += localMergeResults[1];
-        mergeResults[2] += localMergeResults[2];
-
-        duplicatesSolved++;
-      }
-    }
-
-    onShutdown(webviewMSLSIdentifier);
-
-    if (duplicatesSolved <= 0) {
-      Helpers.clog("No styles were merged");
-      UI.message("No styles were merged");
-    }
-    else {
-      var replacedStuff = "";
-      if (mergeResults[1] > 0 && mergeResults[2])
-        replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";
-      else if (mergeResults[1] > 0)
-        replacedStuff = " and replaced " + mergeResults[1] + " instances.";
-      else if (mergeResults[2] > 0)
-        replacedStuff = " and updated " + mergeResults[2] + " overrides.";
-      else
-        replacedStuff = ".";
-
-
-      Helpers.clog("Completed merge. Removed " + mergeResults[0] + " layer styles" + replacedStuff);
-
-      UI.message("Hey ho! You just removed " + mergeResults[0] + " layer styles" + replacedStuff + " Amazing!");
-    }
-
-  });
-
-  webContents.on('RecalculateStyles', (includeAllLibraries, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowXYBlurSpread) => {
-    Helpers.clog("RecalculateStyles");
-    stylesWithSimilarStyles = Helpers.FindAllSimilarLayerStyles(context, includeAllLibraries, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowXYBlurSpread);
-    
-    webContents.executeJavaScript(`DrawResultsList(${JSON.stringify(stylesWithSimilarStyles)})`).catch(console.error);
-  });
-
-}
-
 export function MergeDuplicateLayerStyles(context) {
 
   Helpers.clog("----- Merge duplicate layer styles -----");
@@ -480,4 +388,95 @@ export function MergeSelectedLayerStyles(context) {
     UI.message("Hey ho! You just removed " + mergeResults[0] + " layer styles" + replacedStuff + " Amazing!");
   });
 };
+
+export function MergeSimilarLayerStyles(context) {
+
+  Helpers.clog("----- Merge similar layer styles -----");
+
+  const options = {
+    identifier: webviewMSLSIdentifier,
+    width: 1200,
+    height: 700,
+    show: false,
+    remembersWindowFrame: true,
+    titleBarStyle: 'hidden'
+  }
+  const browserWindow = new BrowserWindow(options);
+  const webContents = browserWindow.webContents;
+
+  var stylesWithSimilarStyles;
+  Helpers.clog("Loading webview");
+  browserWindow.loadURL(require('../resources/mergesimilarlayerstyles.html'));
+
+
+  browserWindow.once('ready-to-show', () => {
+    browserWindow.show()
+  })
+
+  webContents.on('did-finish-load', () => {
+    Helpers.clog("Webview loaded");
+    webContents.executeJavaScript(`UpdateSettings(${Helpers.getLibrariesEnabled()})`).catch(console.error);
+  })
+
+  webContents.on('nativeLog', s => {
+    Helpers.clog(s);
+  });
+
+  webContents.on('Cancel', () => {
+    onShutdown(webviewMSLSIdentifier);
+  });
+
+  webContents.on('ExecuteMerge', (editedStylesWithSimilarStyles) => {
+    Helpers.clog("Execute merge");
+    var duplicatesSolved = 0;
+    var mergeResults = [0, 0, 0];
+
+    var totalToMerge = editedStylesWithSimilarStyles.filter(ems => !ems.isUnchecked && ems.selectedIndex >= 0).length;
+
+    for (var i = 0; i < editedStylesWithSimilarStyles.length; i++) {
+      if (!editedStylesWithSimilarStyles[i].isUnchecked && editedStylesWithSimilarStyles[i].selectedIndex >= 0) {
+        var basePercent = (duplicatesSolved * 100 / editedStylesWithSimilarStyles.length);
+        var localMergeResults = MergeLayerStyles(stylesWithSimilarStyles[i].similarStyles, editedStylesWithSimilarStyles[i].selectedIndex, basePercent, totalToMerge, webContents);
+
+        mergeResults[0] += localMergeResults[0];
+        mergeResults[1] += localMergeResults[1];
+        mergeResults[2] += localMergeResults[2];
+
+        duplicatesSolved++;
+      }
+    }
+
+    onShutdown(webviewMSLSIdentifier);
+
+    if (duplicatesSolved <= 0) {
+      Helpers.clog("No styles were merged");
+      UI.message("No styles were merged");
+    }
+    else {
+      var replacedStuff = "";
+      if (mergeResults[1] > 0 && mergeResults[2])
+        replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";
+      else if (mergeResults[1] > 0)
+        replacedStuff = " and replaced " + mergeResults[1] + " instances.";
+      else if (mergeResults[2] > 0)
+        replacedStuff = " and updated " + mergeResults[2] + " overrides.";
+      else
+        replacedStuff = ".";
+
+
+      Helpers.clog("Completed merge. Removed " + mergeResults[0] + " layer styles" + replacedStuff);
+
+      UI.message("Hey ho! You just removed " + mergeResults[0] + " layer styles" + replacedStuff + " Amazing!");
+    }
+
+  });
+
+  webContents.on('RecalculateStyles', (includeAllLibraries, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowXYBlurSpread) => {
+    Helpers.clog("RecalculateStyles");
+    stylesWithSimilarStyles = Helpers.FindAllSimilarLayerStyles(context, includeAllLibraries, checkSameFillColor, checkSameBorderColor, checkSameBorderThickness, checkSameShadowColor, checkSameShadowXYBlurSpread);
+    
+    webContents.executeJavaScript(`DrawResultsList(${JSON.stringify(stylesWithSimilarStyles)})`).catch(console.error);
+  });
+
+}
 
