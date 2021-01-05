@@ -8148,7 +8148,7 @@ function MergeDuplicateLayerStyles(context) {
 
     onShutdown(webviewMDLSIdentifier);
 
-    if (duplicatesSolved <= 0) {
+    if (mergeResults[0] <= 0) {
       Helpers.clog("No styles were merged");
       UI.message("No styles were merged");
     } else {
@@ -8226,10 +8226,16 @@ function MergeSelectedLayerStyles(context) {
 
     var mergeResults = MergeLayerStyles(stylesToMerge, selectedIndex, 0, 1, webContents);
     onShutdown(webviewMLSFLIdentifier);
-    var replacedStuff = "";
-    if (mergeResults[1] > 0 && mergeResults[2]) replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";else if (mergeResults[1] > 0) replacedStuff = " and replaced " + mergeResults[1] + " instances.";else if (mergeResults[2] > 0) replacedStuff = " and updated " + mergeResults[2] + " overrides.";else replacedStuff = ".";
-    Helpers.clog("Completed merge. Removed " + mergeResults[0] + " layer styles" + replacedStuff);
-    UI.message("Hey ho! You just removed " + mergeResults[0] + " layer styles" + replacedStuff + " Amazing!");
+
+    if (mergeResults[0] <= 0) {
+      Helpers.clog("No styles were merged");
+      UI.message("No styles were merged");
+    } else {
+      var replacedStuff = "";
+      if (mergeResults[1] > 0 && mergeResults[2]) replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";else if (mergeResults[1] > 0) replacedStuff = " and replaced " + mergeResults[1] + " instances.";else if (mergeResults[2] > 0) replacedStuff = " and updated " + mergeResults[2] + " overrides.";else replacedStuff = ".";
+      Helpers.clog("Completed merge. Removed " + mergeResults[0] + " layer styles" + replacedStuff);
+      UI.message("Hey ho! You just removed " + mergeResults[0] + " layer styles" + replacedStuff + " Amazing!");
+    }
   });
 }
 ;
@@ -8282,7 +8288,7 @@ function MergeSimilarLayerStyles(context) {
 
     onShutdown(webviewMSLSIdentifier);
 
-    if (duplicatesSolved <= 0) {
+    if (mergeResults[0] <= 0) {
       Helpers.clog("No styles were merged");
       UI.message("No styles were merged");
     } else {
@@ -8555,7 +8561,7 @@ function MergeDuplicateTextStyles(context) {
 
     onShutdown(webviewMDTSIdentifier);
 
-    if (duplicatesSolved <= 0) {
+    if (mergeResults[0] <= 0) {
       Helpers.clog("No styles were merged");
       UI.message("No styles were merged");
     } else {
@@ -8581,8 +8587,7 @@ function MergeSelectedTextStyles(context) {
   var webContents = browserWindow.webContents;
   var allTextStyles;
   var styleCounter = 0;
-  Helpers.clog("Get text styles list. Libraries included:" + Helpers.getLibrariesEnabled()); //TODO
-
+  Helpers.clog("Get text styles list. Libraries included:" + Helpers.getLibrariesEnabled());
   allTextStyles = Helpers.getAllTextStyles(Helpers.getLibrariesEnabled());
   styleCounter = allTextStyles.length;
   checkingAlsoLibraries = Helpers.getLibrariesEnabled();
@@ -8634,10 +8639,16 @@ function MergeSelectedTextStyles(context) {
 
     var mergeResults = MergeTextStyles(stylesToMerge, selectedIndex, 0, 1, webContents);
     onShutdown(webviewMTSFLIdentifier);
-    var replacedStuff = "";
-    if (mergeResults[1] > 0 && mergeResults[2]) replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";else if (mergeResults[1] > 0) replacedStuff = " and replaced " + mergeResults[1] + " instances.";else if (mergeResults[2] > 0) replacedStuff = " and updated " + mergeResults[2] + " overrides.";else replacedStuff = ".";
-    Helpers.clog("Completed merge. Removed " + mergeResults[0] + " text styles" + replacedStuff);
-    UI.message("Hey ho! You just removed " + mergeResults[0] + " text styles" + replacedStuff + " Amazing!");
+
+    if (mergeResults[0] <= 0) {
+      Helpers.clog("No styles were merged");
+      UI.message("No styles were merged");
+    } else {
+      var replacedStuff = "";
+      if (mergeResults[1] > 0 && mergeResults[2]) replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";else if (mergeResults[1] > 0) replacedStuff = " and replaced " + mergeResults[1] + " instances.";else if (mergeResults[2] > 0) replacedStuff = " and updated " + mergeResults[2] + " overrides.";else replacedStuff = ".";
+      Helpers.clog("Completed merge. Removed " + mergeResults[0] + " text styles" + replacedStuff);
+      UI.message("Hey ho! You just removed " + mergeResults[0] + " text styles" + replacedStuff + " Amazing!");
+    }
   });
 }
 ;
@@ -8690,7 +8701,7 @@ function MergeSimilarTextStyles(context) {
 
     onShutdown(webviewMSTSIdentifier);
 
-    if (duplicatesSolved <= 0) {
+    if (mergeResults[0] <= 0) {
       Helpers.clog("No styles were merged");
       UI.message("No styles were merged");
     } else {

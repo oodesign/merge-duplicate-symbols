@@ -263,7 +263,7 @@ export function MergeDuplicateLayerStyles(context) {
     }
 
     onShutdown(webviewMDLSIdentifier);
-    if (duplicatesSolved <= 0) {
+    if (mergeResults[0] <= 0) {
       Helpers.clog("No styles were merged");
       UI.message("No styles were merged");
     }
@@ -372,19 +372,26 @@ export function MergeSelectedLayerStyles(context) {
 
     onShutdown(webviewMLSFLIdentifier);
 
-    var replacedStuff = "";
-    if (mergeResults[1] > 0 && mergeResults[2])
-      replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";
-    else if (mergeResults[1] > 0)
-      replacedStuff = " and replaced " + mergeResults[1] + " instances.";
-    else if (mergeResults[2] > 0)
-      replacedStuff = " and updated " + mergeResults[2] + " overrides.";
-    else
-      replacedStuff = ".";
+    if (mergeResults[0] <= 0) {
+      Helpers.clog("No styles were merged");
+      UI.message("No styles were merged");
+    }
+    else {
+      var replacedStuff = "";
+      if (mergeResults[1] > 0 && mergeResults[2])
+        replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";
+      else if (mergeResults[1] > 0)
+        replacedStuff = " and replaced " + mergeResults[1] + " instances.";
+      else if (mergeResults[2] > 0)
+        replacedStuff = " and updated " + mergeResults[2] + " overrides.";
+      else
+        replacedStuff = ".";
 
 
-    Helpers.clog("Completed merge. Removed " + mergeResults[0] + " layer styles" + replacedStuff);
-    UI.message("Hey ho! You just removed " + mergeResults[0] + " layer styles" + replacedStuff + " Amazing!");
+      Helpers.clog("Completed merge. Removed " + mergeResults[0] + " layer styles" + replacedStuff);
+
+      UI.message("Hey ho! You just removed " + mergeResults[0] + " layer styles" + replacedStuff + " Amazing!");
+    }
   });
 };
 
@@ -447,7 +454,7 @@ export function MergeSimilarLayerStyles(context) {
 
     onShutdown(webviewMSLSIdentifier);
 
-    if (duplicatesSolved <= 0) {
+    if (mergeResults[0] <= 0) {
       Helpers.clog("No styles were merged");
       UI.message("No styles were merged");
     }
