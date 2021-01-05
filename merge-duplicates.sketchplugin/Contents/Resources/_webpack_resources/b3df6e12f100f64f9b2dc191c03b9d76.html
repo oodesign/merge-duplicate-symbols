@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <title>Styler</title>
-  <link rel="stylesheet" href="./main.css">
+  <link rel="stylesheet" href="dab8f98a790251bcd5c38e8acf63f6ed.css";">
 </head>
 
 <body>
@@ -14,7 +14,9 @@
         <div id="filterArea" class="colAuto filterArea verticalLayout">
           <div id="filterHeader" class="rowAuto groupHeader">
             <div class="horizontalLayout">
-              <div class="colAvailable alignVerticalCenter"><span class="filterTitle">Filter by attribute</span><div id="filterCounter" class="notDisplayed"><span id="filtersAppliedNum">2</span></div></div>
+              <div class="colAvailable alignVerticalCenter"><span class="filterTitle">Filter by attribute</span>
+                <div id="filterCounter" class="notDisplayed"><span id="filtersAppliedNum">2</span></div>
+              </div>
               <div class="colAuto expanderIcon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                   <path
@@ -27,33 +29,51 @@
           <div class="rowAvailable scrollable filterAreaPadded">
             <div class="treeContent">
               <div class="roundCheckbox">
-                <input type="checkbox" id="checkSameFillColor" checked />
-                <label class="labelCheck" for="checkSameFillColor">
-                  <div class="padder"><span>Fill color</span></div>
+                <input type="checkbox" id="checkSameFont" checked />
+                <label class="labelCheck" for="checkSameFont">
+                  <div class="padder"><span>Font family</span></div>
                 </label>
               </div>
               <div class="roundCheckbox">
-                <input type="checkbox" id="checkSameBorderColor" checked />
-                <label class="labelCheck" for="checkSameBorderColor">
-                  <div class="padder"><span>Border color</span></div>
+                <input type="checkbox" id="checkSameWeight" checked />
+                <label class="labelCheck" for="checkSameWeight">
+                  <div class="padder"><span>Weight</span></div>
                 </label>
               </div>
               <div class="roundCheckbox">
-                <input type="checkbox" id="checkSameBorderThickness" />
-                <label class="labelCheck" for="checkSameBorderThickness">
-                  <div class="padder"><span>Border thickness</span></div>
+                <input type="checkbox" id="checkSameSize" />
+                <label class="labelCheck" for="checkSameSize">
+                  <div class="padder"><span>Size</span></div>
                 </label>
               </div>
               <div class="roundCheckbox">
-                <input type="checkbox" id="checkSameShadowColor" />
-                <label class="labelCheck" for="checkSameShadowColor">
-                  <div class="padder"><span>Shadow color</span></div>
+                <input type="checkbox" id="checkSameColor" />
+                <label class="labelCheck" for="checkSameColor">
+                  <div class="padder"><span>Color</span></div>
                 </label>
               </div>
               <div class="roundCheckbox">
-                <input type="checkbox" id="checkSameShadowXYBlurSpread" />
-                <label class="labelCheck" for="checkSameShadowXYBlurSpread">
-                  <div class="padder"><span>Shadow X,Y,Blur,Spread</span></div>
+                <input type="checkbox" id="checkSameParagraphSpacing" />
+                <label class="labelCheck" for="checkSameParagraphSpacing">
+                  <div class="padder"><span>Paragraph spacing</span></div>
+                </label>
+              </div>
+              <div class="roundCheckbox">
+                <input type="checkbox" id="checkSameLineHeight" />
+                <label class="labelCheck" for="checkSameLineHeight">
+                  <div class="padder"><span>Line height</span></div>
+                </label>
+              </div>
+              <div class="roundCheckbox">
+                <input type="checkbox" id="checkSameAlignment" />
+                <label class="labelCheck" for="checkSameAlignment">
+                  <div class="padder"><span>Alignment</span></div>
+                </label>
+              </div>
+              <div class="roundCheckbox">
+                <input type="checkbox" id="checkSameCharacterSpacing" />
+                <label class="labelCheck" for="checkSameCharacterSpacing">
+                  <div class="padder"><span>Character spacing</span></div>
                 </label>
               </div>
             </div>
@@ -118,20 +138,20 @@
                 </div>
               </div>
             </div>
-          </div>
-          <div id="progressLayer" class="progressCircle offDownCenter">
-            <div class="verticalLayout alignFullCenter">
-              <div class="mk-spinner-wrap">
-                <div class="mk-spinner-ring"></div>
+            <div id="progressLayer" class="progressCircle offDownCenter">
+              <div class="verticalLayout alignFullCenter">
+                <div class="mk-spinner-wrap">
+                  <div class="mk-spinner-ring"></div>
+                </div>
+                <div id="loadingMessage" class="secondaryText rowAuto"></div>
               </div>
-              <div id="loadingMessage" class="secondaryText rowAuto"></div>
             </div>
-          </div>
-          <div id="progressCircle" class="progressCircle offDownCenter fadeOut">
-            <div class="verticalLayout alignFullCenter">
-              <progress-ring id="progressRing" stroke="3" radius="30" progress="0"></progress-ring>
-              <div id="mergeloadingMessage" class="primaryText rowAuto"></div>
-              <div id="mergeloadingMessage2" class="secondaryText rowAuto"></div>
+            <div id="progressCircle" class="progressCircle offDownCenter fadeOut">
+              <div class="verticalLayout alignFullCenter">
+                <progress-ring id="progressRing" stroke="3" radius="30" progress="0"></progress-ring>
+                <div id="mergeloadingMessage" class="primaryText rowAuto"></div>
+                <div id="mergeloadingMessage2" class="secondaryText rowAuto"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -140,7 +160,7 @@
     <div class="rowAuto bottomBar">
       <div class="horizontalLayout actionsRow">
         <div class="colAvailable">
-          <div id="chkLibraries" class="roundCheckbox">
+          <div id="chkLibraries"class="roundCheckbox">
             <input type="checkbox" id="chkIncludeLibraries" />
             <label for="chkIncludeLibraries">
               <span id="lblIncludeLibraries" class="longLabel">Include all enabled libraries styles</span>
@@ -155,12 +175,11 @@
         </div>
       </div>
     </div>
-    <div class="draggableArea alignFullCenter" data-app-region="drag"><span id="windowTitle">Merge similar layer
+    <div class="draggableArea alignFullCenter" data-app-region="drag"><span id="windowTitle">Merge similar text
         styles</span></div>
   </div>
   <!-- notice the "../" here. It's because webview.js will be compiled in a different folder -->
-  <script src="../resources_mergesimilarlayerstyles.js"></script>
-  <script src="../resources_progressRing.js"></script>
+  <script src="../resources_mergesimilartextstyles.js"></script>
 </body>
 
 </html>

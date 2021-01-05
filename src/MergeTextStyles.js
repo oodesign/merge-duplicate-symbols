@@ -435,23 +435,23 @@ export function MergeSimilarTextStyles(context) {
   webContents.on('ExecuteMerge', (editedStylesWithSimilarStyles) => {
     Helpers.clog("Execute merge");
     var duplicatesSolved = 0;
-    var mergedStyles = 0;
-    var affectedLayers = [0, 0];
+    var mergeResults = [0, 0, 0];
+
+    var totalToMerge = editedStylesWithSimilarStyles.filter(ems => !ems.isUnchecked && ems.selectedIndex >= 0).length;
+
     for (var i = 0; i < editedStylesWithSimilarStyles.length; i++) {
       if (!editedStylesWithSimilarStyles[i].isUnchecked && editedStylesWithSimilarStyles[i].selectedIndex >= 0) {
-        currentSelectedStyles = [];
-        for (var j = 0; j < editedStylesWithSimilarStyles[i].similarStyles.length; j++) {
-          currentSelectedStyles.push(stylesWithSimilarStyles[i].similarStyles[j]);
-          mergedStyles++;
-        }
+        var basePercent = (duplicatesSolved * 100 / editedStylesWithSimilarStyles.length);
+        var localMergeResults = MergeTextStyles(stylesWithSimilarStyles[i].similarStyles, editedStylesWithSimilarStyles[i].selectedIndex, basePercent, totalToMerge, webContents);
 
-        var results = MergeTextStyles(context, editedStylesWithSimilarStyles[i].selectedIndex);
-        affectedLayers[0] += results[0];
-        affectedLayers[1] += results[1];
+        mergeResults[0] += localMergeResults[0];
+        mergeResults[1] += localMergeResults[1];
+        mergeResults[2] += localMergeResults[2];
 
         duplicatesSolved++;
       }
     }
+
     onShutdown(webviewMSTSIdentifier);
 
     if (duplicatesSolved <= 0) {
@@ -459,8 +459,20 @@ export function MergeSimilarTextStyles(context) {
       UI.message("No styles were merged");
     }
     else {
-      Helpers.clog("Updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
-      UI.message("Yo ho! We updated " + affectedLayers[0] + " text layers and " + affectedLayers[1] + " overrides.");
+      var replacedStuff = "";
+      if (mergeResults[1] > 0 && mergeResults[2])
+        replacedStuff = ", replaced " + mergeResults[1] + " instances, and updated " + mergeResults[2] + " overrides.";
+      else if (mergeResults[1] > 0)
+        replacedStuff = " and replaced " + mergeResults[1] + " instances.";
+      else if (mergeResults[2] > 0)
+        replacedStuff = " and updated " + mergeResults[2] + " overrides.";
+      else
+        replacedStuff = ".";
+
+
+      Helpers.clog("Completed merge. Removed " + mergeResults[0] + " text styles" + replacedStuff);
+
+      UI.message("Hey ho! You just removed " + mergeResults[0] + " text styles" + replacedStuff + " Amazing!");
     }
 
   });
