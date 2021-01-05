@@ -25,7 +25,8 @@ function sortOnKeys(dict) {
 const groupBy = key => array =>
   array.reduce((objectsByKeyValue, obj) => {
     const value = obj[key];
-    objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+    refinedValue = (value.indexOf("(Master")>0) ? value.substring(0, value.indexOf("(Master")) : value;
+    objectsByKeyValue[refinedValue] = (objectsByKeyValue[refinedValue] || []).concat(obj);
     return objectsByKeyValue;
   }, {});
 
@@ -44,7 +45,7 @@ window.DrawStyleList = (layerStyles, includeLibraries) => {
   globalLayerStyles = layerStyles;
   includeLibrariesSetting = includeLibraries;
 
-  if(includeLibraries!=null)
+  if (includeLibraries != null)
     document.getElementById('chkIncludeLibraries').checked = includeLibrariesSetting;
 
   const groupByLibraryName = groupBy('libraryName');
@@ -77,6 +78,8 @@ window.DrawStyleList = (layerStyles, includeLibraries) => {
     inner += `<div id="groupStyleList${groupnum}" class="rowAuto expanderContent">`;
 
     for (var i = 0; i < groupOfStyles.length; i++) {
+      var isHidden = groupOfStyles[i].isHidden ? "notDisplayed" : "";
+      
       var checked = groupOfStyles[i].isSelected ? "checked" : "";
 
       var checkbox = `<div class="squareCheckbox">
@@ -85,7 +88,7 @@ window.DrawStyleList = (layerStyles, includeLibraries) => {
         <span>${groupOfStyles[i].name}</span>
       </div>`;
 
-      inner += `<div id="layerStyleItem${stylenum}" onclick="onLayerStyleItemChanged(${stylenum})" class="leftPanelListItem alignVerticalCenter">${checkbox} </div>`
+      inner += `<div id="layerStyleItem${stylenum}" onclick="onLayerStyleItemChanged(${stylenum})" class="leftPanelListItem alignVerticalCenter ${isHidden}">${checkbox} </div>`
       stylenum++;
     }
 
@@ -101,8 +104,28 @@ window.DrawStyleList = (layerStyles, includeLibraries) => {
   clearWorkzone();
 }
 
+window.ShowMergeProgress = (progress) => {
+  HideLayout();
+  document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
+}
+window.UpdateMergeProgress = (progress, message, message2) => {
+  document.getElementById('progressRing').setProgress(progress);
+  document.getElementById('mergeloadingMessage').innerHTML = message;
+  document.getElementById('mergeloadingMessage2').innerHTML = message2;
+}
+
+window.HideLayout = () => {
+  //window.postMessage("nativeLog", "WV - Hide layout");
+  document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
+  document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState fadeOut";
+  document.getElementById('contentList').className = "rowAvailable listOfStyles fadeOut";
+  document.getElementById('btnCancel').className = "notDisplayed";
+  document.getElementById('btnMerge').className = "notDisplayed";
+  document.getElementById('chkLibraries').className = "notDisplayed";
+}
+
 window.onExpanderClicked = (index) => {
-  window.postMessage("nativeLog", "WV - Expanding "+index);
+  window.postMessage("nativeLog", "WV - Expanding " + index);
   var groupStyleHeader = document.getElementById("groupStyleHeader" + index);
   var groupStyleList = document.getElementById("groupStyleList" + index);
   if (groupStyleHeader.className.toString().indexOf("collapsed") >= 0) {
@@ -238,10 +261,7 @@ document.getElementById('btnMerge').addEventListener("click", () => {
 document.getElementById('chkIncludeLibraries').addEventListener("click", () => {
   window.postMessage("nativeLog", "WV - Include libraries check changed");
   var check = document.getElementById('chkIncludeLibraries');
-  if (check.checked)
-    window.postMessage('GetAllStylesList');
-  else
-    window.postMessage('GetLocalStylesList');
+  window.postMessage('GetStylesList', check.checked);
 });
 
 

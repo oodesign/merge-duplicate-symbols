@@ -110,6 +110,27 @@ window.ReDrawAfterGettingData = (symbolData, index) => {
   document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeIn";
 }
 
+window.ShowMergeProgress = (progress) => {
+  HideLayout();
+  document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
+}
+
+window.UpdateMergeProgress = (progress, message, message2) => {
+  document.getElementById('progressRing').setProgress(progress);
+  document.getElementById('mergeloadingMessage').innerHTML = message;
+  document.getElementById('mergeloadingMessage2').innerHTML = message2;
+}
+
+window.HideLayout = () => {
+  //window.postMessage("nativeLog", "WV - Hide layout");
+  document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
+  document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState fadeOut";
+  document.getElementById('contentList').className = "rowAvailable listOfStyles fadeOut";
+  document.getElementById('btnCancel').className = "notDisplayed";
+  document.getElementById('btnMerge').className = "notDisplayed";
+  document.getElementById('chkLibraries').className = "notDisplayed";
+}
+
 window.onStyleClicked = (index, selectedStyle) => {
   window.postMessage("nativeLog", "WV - Style clicked. Updating selection status.");
   for (var i = 0; i < globalMergeSession[selectedStyle].textStyleWithDuplicates.duplicates.length; i++) {
@@ -153,6 +174,7 @@ window.DrawStyleList = (index) => {
                   <div class="rowAvailable padded ${contrastMode}"><div class="thumbnail" style='background-image:url("data:image/png;base64,${globalMergeSession[index].textStyleWithDuplicates.duplicates[i].thumbnail}")'></div></div>
                   <div class="rowAuto primaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].textStyleWithDuplicates.duplicates[i].name} (${globalMergeSession[index].textStyleWithDuplicates.duplicates[i].libraryName})</span></div>
                   <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].textStyleWithDuplicates.duplicates[i].description}</span></div>
+                  <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].textStyleWithDuplicates.duplicates[i].numInstances} instances - Used in ${globalMergeSession[index].textStyleWithDuplicates.duplicates[i].numOverrides} overrides</span></div>
                 </div>
               </div>`;
   }

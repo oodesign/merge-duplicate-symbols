@@ -1,6 +1,6 @@
 import BrowserWindow from 'sketch-module-web-view'
 import { getWebview } from 'sketch-module-web-view/remote'
-import { clog, debugLog } from './Helpers';
+import { clog } from './Helpers';
 const sketch = require('sketch');
 var UI = require('sketch/ui')
 const Helpers = require("./Helpers");
@@ -20,7 +20,7 @@ function MergeColorVariables(context, colorVariableToKeepIndex) {
   var colorVariablesToRemove = [];
   Helpers.clog("Merging color variables. Keep '" + colorVariableToKeep.name + "'");
 
-  if (colorVariableToKeep.foreign) {
+  if (colorVariableToKeep.isForeign) {
     var existingCV = Helpers.document.swatches.filter(function (sw) {
       return sw.id == colorVariableToKeep.colorVariable.id;
     });
@@ -179,7 +179,6 @@ export function MergeDuplicateColorVariables(context) {
     Helpers.clog("Finding duplicate color variables. Including libraries:" + includeLibraries);
     onlyDuplicatedColorVariables = Helpers.getDuplicateColorVariables(context, includeLibraries);
     if (onlyDuplicatedColorVariables.length > 0) {
-      //Helpers.GetSpecificLayerStyleData(context, onlyDuplicatedColorVariables, 0);
       mergeSession = [];
       for (var i = 0; i < onlyDuplicatedColorVariables.length; i++) {
         mergeSession.push({

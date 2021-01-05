@@ -12,7 +12,7 @@ window.DrawStylesList = (mergeSession, includeLibraries) => {
   globalMergeSession = mergeSession;
   includeLibrariesSetting = includeLibraries;
 
-  if(includeLibraries!=null)
+  if (includeLibraries != null)
     document.getElementById('chkIncludeLibraries').checked = includeLibrariesSetting;
 
   if (globalStyleDisplayed >= globalMergeSession.length)
@@ -93,19 +93,44 @@ window.HideProgress = () => {
   document.getElementById('progressLayer').className = "progressCircle offDownCenter fadeOut";
 };
 
-window.ReDrawAfterGettingData = (symbolData, index) => {
+window.ReDrawAfterGettingData = (styleData, index) => {
   window.postMessage("nativeLog", "WV - Redraw after getting style data");
   globalMergeSession[index].isProcessed = true;
   isLoadingStyleData = false;
 
   for (var i = 0; i < globalMergeSession[index].layerStyleWithDuplicates.duplicates.length; i++) {
-    globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].thumbnail = symbolData.duplicates[i].thumbnail;
+    globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].thumbnail = styleData.duplicates[i].thumbnail;
+    globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].styleInstances = styleData.duplicates[i].styleInstances;
+    globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].numInstances = styleData.duplicates[i].numInstances;
+    globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].styleOverrides = styleData.duplicates[i].styleOverrides;
+    globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].numOverrides = styleData.duplicates[i].numOverrides;
   }
 
   window.HideProgress(100);
   DrawStyleList(index);
   document.getElementById('listOfStyles').className = "movingYFadeInitialState workZone movingYFadeIn";
   document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState movingYFadeIn";
+}
+
+window.ShowMergeProgress = (progress) => {
+  HideLayout();
+  document.getElementById('progressCircle').className = "progressCircle offDownCenter fadeIn";
+}
+
+window.UpdateMergeProgress = (progress, message, message2) => {
+  document.getElementById('progressRing').setProgress(progress);
+  document.getElementById('mergeloadingMessage').innerHTML = message;
+  document.getElementById('mergeloadingMessage2').innerHTML = message2;
+}
+
+window.HideLayout = () => {
+  //window.postMessage("nativeLog", "WV - Hide layout");
+  document.getElementById('resultsPanel').className = "colAuto leftPanel collapsed";
+  document.getElementById('workZoneTitle').className = "colAvailable verticalLayout movingYFadeInitialState fadeOut";
+  document.getElementById('contentList').className = "rowAvailable listOfStyles fadeOut";
+  document.getElementById('btnCancel').className = "notDisplayed";
+  document.getElementById('btnMerge').className = "notDisplayed";
+  document.getElementById('chkLibraries').className = "notDisplayed";
 }
 
 window.onStyleClicked = (index, selectedStyle) => {
@@ -131,7 +156,7 @@ window.DrawStyleList = (index) => {
   globalStyleDisplayed = index;
   var inner = "";
   for (var i = 0; i < globalMergeSession[index].layerStyleWithDuplicates.duplicates.length; i++) {
-    window.postMessage("nativeLog", "WV --- Drawing style: "+globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].name);
+    window.postMessage("nativeLog", "WV --- Drawing style: " + globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].name);
 
     var isSelected = (globalMergeSession[index].selectedIndex == i)
     var selected = isSelected ? "selected" : "";
@@ -144,20 +169,23 @@ window.DrawStyleList = (index) => {
 
     var contrastMode = globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].contrastMode ? "bgContrastMode" : "";
 
-    inner += `<div id="duplicateItem${i}" class="thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter ${selected}" onclick="onStyleClicked(${i}, ${index})">
+    if (!globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].isHidden) {
+      inner += `<div id="duplicateItem${i}" class="thumbnailContainer symbolPreview horizontalLayout alignVerticalCenter ${selected}" onclick="onStyleClicked(${i}, ${index})">
                 ${checkbox}
                 <div class="colAvailable verticalLayout thumbnailData" id="duplicateItemThumbnail${i}" >
                   <div class="rowAvailable padded ${contrastMode}"><div class="thumbnail" style='background-image:url("data:image/png;base64,${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].thumbnail}")'></div></div>
                   <div class="rowAuto primaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].name} (${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].libraryName})</span></div>
                   <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].description}</span></div>
+                  <div class="rowAuto secondaryText displayFlex"><span class="alignHorizontalCenter">${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].numInstances} instances - Used in ${globalMergeSession[index].layerStyleWithDuplicates.duplicates[i].numOverrides} overrides</span></div>
                 </div>
               </div>`;
+    }
   }
 
   var resultsTitle = document.getElementById("resultsTitle");
   var resultsDescription = document.getElementById("resultsDescription");
   resultsTitle.innerHTML = globalMergeSession[index].layerStyleWithDuplicates.name;
-  resultsDescription.innerHTML = "There are " + globalMergeSession[index].layerStyleWithDuplicates.duplicates.length + " styles with this name. The style you decide to keep will be applied to all layers & overrides using any of the discarded styles, and the discarded styles will be removed from the local file.";
+  resultsDescription.innerHTML = "There are " + globalMergeSession[index].layerStyleWithDuplicates.duplicates.filter(el => !el.isHidden).length + " styles with this name. The style you decide to keep will be applied to all layers & overrides using any of the discarded styles, and the discarded styles will be removed from the local file.";
 
   var listOfStyles = document.getElementById('listOfStyles');
   listOfStyles.innerHTML = inner;

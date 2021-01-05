@@ -290,7 +290,7 @@ export function MergeDuplicateSymbols(context) {
           "symbolWithDuplicates": reducedSymbol,
           "selectedIndex": -1,
           "isUnchecked": false,
-          "isProcessed": (mergeSession.length == 0) ? true : false
+          "isProcessed": (mergeSession.length == 0)
         });
       });
     }

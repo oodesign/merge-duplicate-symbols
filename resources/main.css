@@ -1576,6 +1576,14 @@ html, body {
   display: none;
 }
 
+.filterArea.hidden {
+  width: 0;
+}
+
+.filterArea.hidden span, .filterArea.hidden .regularIcon, .filterArea.hidden .treeContent, .filterArea.hidden .btnApply, .filterArea.hidden .filterCounter {
+  display: none;
+}
+
 .roundCheckbox {
   position: relative;
   margin-bottom: 7px;
