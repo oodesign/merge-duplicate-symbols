@@ -169,6 +169,14 @@
       "handlers" : {
         "run" : "report_issue"
       }
+    },
+    {
+      "script" : "Help.js",
+      "name" : "I have an issue with my license",
+      "identifier": "report_licensing",
+      "handlers" : {
+        "run" : "report_licensing"
+      }
     }
   ],
   "menu" : {
@@ -209,7 +217,8 @@
         "title": "Help & Feedback ",
         "items": [
           "documentation",
-          "report_issue"
+          "report_issue",
+          "report_licensing"
         ]
       },
       "editsettings"
