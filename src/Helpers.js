@@ -439,15 +439,14 @@ function getSymbolOverrides(symbolMaster, idsMap) {
   var reducedInstances = allInstances.filter(instance => hasSymbolOverrides(instance, idsMap));
 
   reducedInstances.forEach(function (instance) {
-    if (instance.sketchObject.overrides().count() > 0) {
-      var instanceOverrides = instance.overrides.filter(ov => ov.property == "symbolID" && !ov.isDefault && ov.value == symbolMaster.symbolId);
-      instanceOverrides.forEach(override => {
-        symbolOverrides.push({
-          "instance": instance,
-          "override": override
-        });
+
+    var instanceOverrides = instance.overrides.filter(ov => ov.property == "symbolID" && !ov.isDefault && ov.value == symbolMaster.symbolId);
+    instanceOverrides.forEach(override => {
+      symbolOverrides.push({
+        "instance": instance,
+        "override": override
       });
-    }
+    });
   });
 
   return symbolOverrides;
@@ -648,7 +647,6 @@ function getAllDuplicateSymbolsByName(context, includeAllSymbolsFromExternalLibr
 }
 
 function getSymbolsMap(context, symbols) {
-
   var symbolMap = new Map();
   var idsMap = new Map();
   symbols.forEach(function (symbol) {
@@ -665,12 +663,10 @@ function getSymbolsMap(context, symbols) {
   var reducedInstances = allInstances.filter(instance => hasSymbolOverrides(instance, idsMap));
 
   reducedInstances.forEach(function (instance) {
-    if (instance.sketchObject.overrides().count() > 0) {
-      var instanceOverrides = instance.overrides.filter(ov => ov.property == "symbolID" && !ov.isDefault && idsMap.has(ov.value));
-      instanceOverrides.forEach(override => {
-        symbolMap.get(idsMap.get(override.value)).instancesWithOverrides.push(instance);
-      });
-    }
+    var instanceOverrides = instance.overrides.filter(ov => ov.property == "symbolID" && !ov.isDefault && idsMap.has(ov.value));
+    instanceOverrides.forEach(override => {
+      symbolMap.get(idsMap.get(override.value)).instancesWithOverrides.push(instance);
+    });
   });
 
   return symbolMap;
@@ -759,11 +755,26 @@ function updateAllDuplicatesWithMap(allDuplicates, symbolsMap) {
 }
 
 function hasSymbolOverrides(instance, idsMap) {
-  if ((instance.sketchObject.overrides() != null) && (instance.sketchObject.overrides().count() > 0)) {
-    return FindNestedSymbolOverride(instance.sketchObject.overrides(), idsMap, instance);
+  try {
+    if ((instance.sketchObject.overrides() != null) && (instance.sketchObject.overrides().count() > 0)) {
+      return FindNestedSymbolOverride(instance.sketchObject.overrides(), idsMap, instance);
+    }
+
+    return false;
+  } catch (e) {
+    clog("-- Controlled exception : " + e);
+    clog("---- Start processing " + instance.name + " via API");
+    var hasOverride = false;
+    instance.overrides.forEach(override => {
+      if ((override.property == "symbolID") && !override.isDefault && idsMap.has(override.value)) {
+        hasOverride = true;
+      }
+    });
+    clog(hasOverride ? "---- Does have overrides. Added to map response." : "---- Does not have overrides");
+    return hasOverride;
   }
-  return false;
 }
+
 
 function FindNestedSymbolOverride(overrides, idsMap, instance) {
 
