@@ -80,7 +80,7 @@ window.SetOverMode = () => {
   document.getElementById('registerHeader').innerHTML = `All seats are busy 🙈!`;
                                                           
   document.getElementById('registerMessage').innerHTML = `Looks like this license has already been installed on as many devices as it was purchased for. Maybe it's a good time to get another one? <br/><br/>
-                                                          If you think this is a mistake please <a href="mailto:oscar@oodesign.me">contact us</a>.`;
+                                                          If you think this is a mistake please <a href="mailto:licensing@oodesign.me">contact us</a>.`;
 
   document.getElementById('btnStartTrial').className = "btnStartTrial notDisplayed";
   document.getElementById('btnContinueTrial').className = "btnStartTrial notDisplayed";
@@ -90,7 +90,7 @@ window.SetOverMode = () => {
 window.SetOverModeInReg = () => {
  
   // document.getElementById('warningMessage').innerHTML = `Looks like this license has already been installed on as many devices as it was purchased for. Maybe it's a good time to get another one? <br/><br/>
-  //                                                         If you think this is a mistake please <a href="mailto:oscar@oodesign.me">contact us</a>.`;
+  //                                                         If you think this is a mistake please <a href="mailto:licensing@oodesign.me">contact us</a>.`;
   // document.getElementById('warningMessage').className = "rowAuto warningText warningTextVisible";
 
 
