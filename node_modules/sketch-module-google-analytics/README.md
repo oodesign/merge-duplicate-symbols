@@ -55,10 +55,11 @@ The module already sets some for you:
 
 By default, `sketch-module-google-analytics` doesn't return any information whether the call has been successful or not.
 
-You can set the `debug` option to get feedback:
+You can set the `debug` option to get feedback in case your hits are not showing in the Google Analytics dashboard:
 
 ```js
 const result = track("UA-XXXX-Y", "event", {}, { debug: true });
+console.log(result);
 ```
 
 > Important: hits sent with the debug options will not show up in reports. They are for debugging only.

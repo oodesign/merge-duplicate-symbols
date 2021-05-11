@@ -8,11 +8,12 @@ if (!uuid) {
   NSUserDefaults.standardUserDefaults().setObject_forKey(uuid, kUUIDKey)
 }
 
-var variant = MSApplicationMetadata.metadata().variant;
+var sketchVersion = Settings.version.sketch
+var variant = sketchVersion >= 72 ? BCSketchInfo.shared().metadata().variant : MSApplicationMetadata.metadata().variant
 var source =
   "Sketch " +
   (variant == "NONAPPSTORE" ? "" : variant + " ") +
-  Settings.version.sketch;
+  sketchVersion;
 
 function jsonToQueryString(json) {
   return Object.keys(json)

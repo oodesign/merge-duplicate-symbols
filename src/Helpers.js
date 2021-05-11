@@ -6,7 +6,7 @@ var Text = require('sketch/dom').Text;
 var DeltaE = require('delta-e');
 var D3 = require('d3-color');
 var fs = require('@skpm/fs');
-// var track = require("sketch-module-google-analytics");
+var track = require("sketch-module-google-analytics");
 
 var document = sketch.getSelectedDocument();
 var symbols = document.getSymbols();
