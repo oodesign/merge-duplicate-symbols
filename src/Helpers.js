@@ -9,7 +9,7 @@ var fs = require('@skpm/fs');
 var track = require("sketch-module-google-analytics");
 
 var document = sketch.getSelectedDocument();
-var symbols = document.getSymbols();
+var symbols;
 var libraries = dom.getLibraries();
 
 var settingsFile;
@@ -86,7 +86,7 @@ function analytics(action) {
       ea: action, // the event action
     });
   } catch (e) {
-    clog("Couldn't report analytics for '"+action+"'")
+    clog("Couldn't report analytics for '" + action + "'")
   }
 }
 
@@ -507,6 +507,7 @@ function getTextStyleOverrides(textStyle, idsMap) {
 }
 
 function countAllSymbols(context, includeAllSymbolsFromExternalLibraries) {
+  if (!symbols) symbols = document.getSymbols();
   var counter = {
     "symbols": symbols.length,
     "foreignSymbols": 0,
@@ -653,6 +654,7 @@ function getAllDuplicateSymbolsByName(context, includeAllSymbolsFromExternalLibr
 function getSymbolsMap(context, symbols) {
   var symbolMap = new Map();
   var idsMap = new Map();
+  if (!symbols) symbols = document.getSymbols();
   symbols.forEach(function (symbol) {
     symbol.duplicates.forEach(function (duplicatedSymbol) {
       idsMap.set(duplicatedSymbol.symbol.symbolId, duplicatedSymbol.symbol);
