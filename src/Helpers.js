@@ -1678,6 +1678,9 @@ function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesFromExte
 
     var removeElement = false;
     if (styleObject.duplicates.length <= 1) removeElement = true;
+    if(!removeElement && (styleObject.duplicates.filter(dup => !dup.isHidden).length <= 1)) {
+      removeElement = true;
+    }
 
     if (!removeElement) {
       var allForeign = true;
