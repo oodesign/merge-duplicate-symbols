@@ -46,7 +46,7 @@ function MergeColorVariables(context, colorVariableToKeepIndex) {
   colorVariablesToRemove.forEach(function (colorVariableToRemove) {
     var removeAtIndex = -1;
 
-    Helpers.clog("Removing color variable "+colorVariableToRemove.name);
+    Helpers.clog("Removing color variable " + colorVariableToRemove.name);
     for (var i = 0; i < Helpers.document.swatches.length; i++) {
       if (Helpers.document.swatches[i].id == colorVariableToRemove.id) removeAtIndex = i;
     }
@@ -66,25 +66,26 @@ function doUseColorSwatchesInLayers(colorVariable, colorVariablesToRemove) {
   const map = new Map();
 
   allLayers.forEach(layer => {
-    layer.style.fills
-      .concat(layer.style.borders)
-      .filter(item => item.fillType == 'Color')
-      .forEach(item => {
+    if (layer.type != "Slice") {
+      layer.style.fills
+        .concat(layer.style.borders)
+        .filter(item => item.fillType == 'Color')
+        .forEach(item => {
+          colorVariablesToRemove.forEach(cvToRemove => {
+            if (item.color == cvToRemove.color) {
+              item.color = colorVariable.referencingColor;
+              if (!map.has(layer)) map.set(layer, true);
+            }
+          });
+        })
+      // Previous actions don't work for Text Layer colors that are colored using TextColor, so let's fix that:
+      if (layer.style.textColor) {
         colorVariablesToRemove.forEach(cvToRemove => {
-          if (item.color == cvToRemove.color) {
-            item.color = colorVariable.referencingColor;
-            if (!map.has(layer)) map.set(layer, true);
-          }
+          if (layer.style.textColor == cvToRemove.color)
+            layer.style.textColor = colorVariable.referencingColor;
         });
-      })
-    // Previous actions don't work for Text Layer colors that are colored using TextColor, so let's fix that:
-    if (layer.style.textColor) {
-      colorVariablesToRemove.forEach(cvToRemove => {
-        if (layer.style.textColor == cvToRemove.color)
-          layer.style.textColor = colorVariable.referencingColor;
-      });
+      }
     }
-
   });
 
   Helpers.clog("Affected layers " + map.size)

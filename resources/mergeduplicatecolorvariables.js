@@ -45,7 +45,7 @@ window.DrawColorVariablesList = (mergeSession, includeLibraries) => {
   lstDuplicateStyles.innerHTML = inner;
   btnMerge.disabled = (checkedCounter == 0);
 
-  document.getElementById('lblIncludeLibraries').innerHTML = (checkedCounter != 0) ? "Include all enabled libraries layer styles (you may lose the current selection)" : "Include all enabled libraries layer styles";
+  document.getElementById('lblIncludeLibraries').innerHTML = (checkedCounter != 0) ? "Include all enabled libraries color variables (you may lose the current selection)" : "Include all enabled libraries color variables";
 
   DrawStyleList(globalStyleDisplayed);
 }
@@ -157,7 +157,7 @@ window.DrawStyleList = (index) => {
   var resultsTitle = document.getElementById("resultsTitle");
   var resultsDescription = document.getElementById("resultsDescription");
   resultsTitle.innerHTML = globalMergeSession[index].colorVariableWithDuplicates.name;
-  resultsDescription.innerHTML = "There are " + globalMergeSession[index].colorVariableWithDuplicates.duplicates.length + " styles with this name. The style you decide to keep will be applied to all layers & overrides using any of the discarded styles, and the discarded styles will be removed from the local file.";
+  resultsDescription.innerHTML = "There are " + globalMergeSession[index].colorVariableWithDuplicates.duplicates.length + " color variables with this name. The style you decide to keep will be applied to all layers & overrides using any of the discarded styles, and the discarded styles will be removed from the local file.";
 
   var listOfStyles = document.getElementById('listOfStyles');
   listOfStyles.innerHTML = inner;

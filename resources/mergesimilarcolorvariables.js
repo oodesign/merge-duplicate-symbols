@@ -135,7 +135,7 @@ window.DrawStyleList = (index) => {
   var resultsTitle = document.getElementById("resultsTitle");
   var resultsDescription = document.getElementById("resultsDescription");
   resultsTitle.innerHTML = globalStylesWithSimilarStyles[index].referenceStyle.name;
-  resultsDescription.innerHTML = "There are " + globalStylesWithSimilarStyles[index].similarStyles.length + " styles with this same attributes. The style you decide to keep will be applied to all layers & overrides using any of the discarded styles, and the discarded styles will be removed from the local file.";
+  resultsDescription.innerHTML = "There are " + globalStylesWithSimilarStyles[index].similarStyles.length + " color variables with this same attributes. The style you decide to keep will be applied to all layers & overrides using any of the discarded styles, and the discarded styles will be removed from the local file.";
 
 
   document.getElementById('emptyState').className = "emptyState fadeOut";
