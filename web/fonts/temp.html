@@ -1,0 +1,3737 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta content="width=1440, maximum-scale=1.0" name="viewport">
+        <link href="./img/favicon.png" rel="shortcut icon">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js">
+        </script>
+        <script src="https://animaapp.s3.amazonaws.com/launchpad-static/launchpad.js">
+        </script>
+        <style>
+            .anima-component-wrapper a,
+            .anima-screen a {
+                text-decoration     : none;
+            }
+            .anima-flexbox-container a {
+                line-height         : 0;
+            }
+            .anima-full-width-a {
+                width               : 100%;
+            }
+            .anima-full-height-a {
+                height              : 100%;
+            }
+            .anima-screen textarea:focus,
+            .anima-screen input:focus {
+                outline             : none;
+            }
+            .anima-screen *,
+            .anima-component-wrapper * {
+                box-sizing          : border-box;
+            }
+            .anima-screen div {
+                -webkit-text-size-adjust: none;
+            }
+            .anima-container-center-vertical,
+            .anima-container-center-horizontal {
+                pointer-events      : none;
+                display             : flex;
+                flex-direction      : row;
+                padding             : 0;
+                margin              : 0;
+            }
+            .anima-container-center-vertical {
+                align-items         : center;
+                height              : 100%;
+            }
+            .anima-container-center-horizontal {
+                justify-content     : center;
+                width               : 100%;
+            }
+            .anima-container-center-vertical > *,
+            .anima-container-center-horizontal > * {
+                pointer-events      : auto;
+                flex-shrink         : 0;
+            }
+            .anima-component-wrapper,
+            .anima-screen {
+                overflow-wrap       : break-word;
+                word-wrap           : break-word;
+                word-break          : break-all;
+                word-break          : break-word;
+            }
+            .anima-auto-animated div {
+                opacity             : 0;
+                position            : absolute;
+                --anima-z-index     : -1;
+            }
+            .anima-auto-animated .anima-container-center-vertical,
+            .anima-auto-animated .anima-container-center-horizontal {
+                opacity             : 1;
+            }
+            .anima-overlay {
+                position            : absolute;
+                opacity             : 0;
+                display             : none;
+                top                 : 0;
+                width               : 100%;
+                height              : 100%;
+                position            : fixed;
+            }
+            .anima-animate-appear {
+                opacity             : 0;
+                display             : block;
+                animation           : anima-reveal 0.3s ease-in-out 1 normal forwards;
+            }
+            .anima-animate-disappear {
+                opacity             : 1;
+                display             : block;
+                animation           : anima-reveal 0.3s ease-in-out 1 reverse forwards;
+            }
+            .anima-animate-nodelay {
+                animation-delay     : 0s;
+            }
+            @keyframes anima-reveal {
+                from {
+                    opacity             : 0;
+                }
+                to {
+                    opacity             : 1;
+                }
+            }
+            .align-self-flex-start {
+                align-self          : flex-start;
+            }
+            .align-self-flex-end {
+                align-self          : flex-end;
+            }
+            .align-self-flex-center {
+                align-self          : center;
+            }
+            .anima-flexbox-container a {
+                line-height         : 0;
+            }
+            .anima-valign-text-middle {
+                display             : flex;
+                flex-direction      : column;
+                justify-content     : center;
+            }
+            .anima-valign-text-bottom {
+                display             : flex;
+                flex-direction      : column;
+                justify-content     : flex-end;
+            }
+            .anima-component-wrapper,
+            .anima-component-wrapper * {
+                pointer-events      : none;
+            }
+            .anima-component-wrapper a *,
+            .anima-component-wrapper a,
+            .anima-component-wrapper input,
+            .anima-component-wrapper video,
+            .anima-component-wrapper iframe,
+            .anima-listeners-active,
+            .anima-listeners-active * {
+                pointer-events      : auto;
+            }
+            .anima-hidden,
+            .anima-hidden * {
+                visibility          : hidden;
+                pointer-events      : none;
+            }
+            .anima-smart-layers-pointers,
+            .anima-smart-layers-pointers * {
+                pointer-events      : auto;
+                visibility          : visible;
+            }
+            .anima-component-wrapper.anima-not-ready,
+            .anima-component-wrapper.anima-not-ready * {
+                visibility          : hidden !important;
+            }
+            .anima-listeners-active-click,
+            .anima-listeners-active-click * {
+                cursor              : pointer;
+            }
+            @font-face {
+                font-family
+                :
+                 
+                "Gilroy-Bold"
+                ;
+                
+                                            
+                src
+                :
+                 
+                url("")
+                 
+                format("truetype")
+                ;
+            }
+            @font-face {
+                font-family
+                :
+                 
+                "Gilroy-Medium"
+                ;
+                
+                                            
+                src
+                :
+                 
+                url("")
+                 
+                format("truetype")
+                ;
+            }
+            @font-face {
+                font-family
+                :
+                 
+                "SourceSansPro-SemiBold"
+                ;
+                
+                                            
+                src
+                :
+                 
+                url("")
+                 
+                format("truetype")
+                ;
+            }
+            @font-face {
+                font-family
+                :
+                 
+                "Gilroy-SemiBold"
+                ;
+                
+                                            
+                src
+                :
+                 
+                url("")
+                 
+                format("truetype")
+                ;
+            }
+            @font-face {
+                font-family
+                :
+                 
+                "ProximaNova-Regular"
+                ;
+                
+                                            
+                src
+                :
+                 
+                url("")
+                 
+                format("opentype")
+                ;
+            }
+            @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:400");
+            /* ANIMA screen - web */
+            
+            .font-class-1 {
+                color
+                :
+                rgba(255,255,255,1.0)
+                ;
+                
+                  
+                font-family
+                :
+                "SourceSansPro-Regular"
+                ,
+                 
+                Helvetica
+                ,
+                 
+                Arial
+                ,
+                 
+                serif
+                ;
+            }
+            .font-class-2 {
+                font-family         : "Gilroy-Medium", Helvetica, Arial, serif;
+            }
+            .font-class-3 {
+                color               : rgba(0,0,0,1.0);
+                font-family         : "Gilroy-SemiBold", Helvetica, Arial, serif;
+                font-size           : 16.0px;
+                line-height         : 20.0px;
+            }
+            .font-class-4 {
+                font-family         : "Gilroy-Bold", Helvetica, Arial, serif;
+            }
+            .font-class-5 {
+                font-family         : "SourceSansPro-SemiBold", Helvetica, Arial, serif;
+            }
+            .font-class-6 {
+                color               : rgba(255,255,255,1.0);
+                font-family         : "Helvetica", Helvetica, Arial, serif;
+            }
+            .font-class-7 {
+                color               : rgba(255,255,255,1.0);
+                font-family         : "ProximaNova-Regular", Helvetica, Arial, serif;
+                font-size           : 12.0px;
+                line-height         : 15.0px;
+            }
+            .web {
+                background-color    : rgba(255,255,255,1.0);
+                height              : 100vh;
+                margin              : 0px;
+                min-height          : 5059px;
+                min-width           : 1440px;
+                overflow            : hidden;
+                position            : relative;
+                width               : 100%;
+            }
+            .web .all-of-you-using-thi-Bq9Z0c {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 16.0px;
+                height              : auto;
+                left                : 0px;
+                line-height         : 24.0px;
+                opacity             : 0.7;
+                position            : absolute;
+                text-align          : left;
+                top                 : 222px;
+                width               : 420px;
+            }
+            .web .amazon-Ro1fLX {
+                background-color    : rgba(255,255,255,0);
+                height              : 31px;
+                left                : 8px;
+                position            : absolute;
+                top                 : 9px;
+                width               : 102px;
+            }
+            .web .anchor1-KyeGWM {
+                background-color    : rgba(255,255,255,0);
+                height              : 25px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 1563px;
+                width               : 100%;
+            }
+            .web .anchor2-HBxBSK {
+                background-color    : rgba(255,255,255,0);
+                height              : 25px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 2192px;
+                width               : 100%;
+            }
+            .web .anchor3-jRWRKd {
+                background-color    : rgba(255,255,255,0);
+                height              : 25px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 2760px;
+                width               : 100%;
+            }
+            .web .andrew-cook-Hpxs9f {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 44px;
+                line-height         : 14.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 11px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .apple_logo_black-xgzfMv {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-path4@2x.png");
+                background-size     : 100% 100%;
+                height              : 45px;
+                left                : 322px;
+                position            : absolute;
+                top                 : 92px;
+                width               : 38px;
+            }
+            .web .aug-10-2017-DpqNFb {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 15.0px;
+                opacity             : 0.5;
+                position            : absolute;
+                text-align          : left;
+                top                 : 141px;
+                white-space         : nowrap;
+                width               : 230px;
+            }
+            .web .aug-17-2018-X1LpxD {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 15.0px;
+                opacity             : 0.5;
+                position            : absolute;
+                text-align          : left;
+                top                 : 130px;
+                white-space         : nowrap;
+                width               : 230px;
+            }
+            .web .aug-25-2017-z32xry {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 15.0px;
+                opacity             : 0.5;
+                position            : absolute;
+                text-align          : left;
+                top                 : 150px;
+                white-space         : nowrap;
+                width               : 230px;
+            }
+            .web .bg-9j7uJq {
+                background-color    : rgba(255,255,255,1.0);
+                border-color        : rgba(255,153,99,1.0);
+                border-radius       : 3px;
+                border-style        : solid;
+                border-width        : 1px;
+                height              : 53px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 204px;
+            }
+            .web .bg-Vsj4Cc {
+                background-color    : var(--atomic-tangerine);
+                border-radius       : 3px;
+                height              : 53px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 204px;
+            }
+            .web .bg-XhlAtk {
+                background-color    : var(--atomic-tangerine);
+                border-radius       : 3px;
+                height              : 53px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 320px;
+            }
+            .web .bruce-murphy-a9shTN {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 44px;
+                line-height         : 14.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 11px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .content-GQFmi3 {
+                background-color    : rgba(255,255,255,0);
+                height              : 239px;
+                left                : 0px;
+                position            : relative;
+                top                 : 160px;
+                width               : 702px;
+            }
+            .web .cta-4x3G9I {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                height              : 53px;
+                left                : 0px;
+                pointer-events      : auto;
+                position            : absolute;
+                top                 : 186px;
+                transition          : all 0.2s ease-in-out;
+                width               : 204px;
+            }
+            .web .cta-4x3G9I:hover {
+                transform           : scale(1.1);
+            }
+            .web .cta-g4q9ss {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                height              : 32px;
+                pointer-events      : auto;
+                position            : absolute;
+                right               : 0px;
+                top                 : 9px;
+                transition          : all 0.2s ease-in-out;
+                width               : 172px;
+            }
+            .web .cta-g4q9ss:hover {
+                transform           : scale(1.1);
+            }
+            .web .disney_wordmark-AR88hM {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-shape-6@2x.png");
+                background-size     : 100% 100%;
+                height              : 48px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 102px;
+                width               : 116px;
+            }
+            .web .duncan-b-mOiXsY {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 44px;
+                line-height         : 15.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 10px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .features-jh9SBx {
+                background-color    : rgba(255,255,255,0);
+                display             : block;
+                height              : 890px;
+                margin-left         : 0px;
+                margin-right        : -0px;
+                position            : absolute;
+                top                 : 645px;
+                width               : 1171px;
+                opacity             : 0;
+                transform           : translate(0, 25px);
+            }
+            .web .features-jh9SBx.bp1-anima-animate-enter13 {
+                animation           : bp1-anima-animate-enter13-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                opacity             : 0;
+                transform           : translate(0, 25px);
+            }
+            .web .features-l6wW0T {
+                background-color    : rgba(255,255,255,0);
+                height              : 179px;
+                left                : 195px;
+                position            : absolute;
+                top                 : 48px;
+                width               : 710px;
+            }
+            .web .fill-1-mrm0Gx {
+                background-color    : rgba(255,255,255,0);
+                height              : 15px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 15px;
+            }
+            .web .fill-11-8HD0iW {
+                background-color    : rgba(255,255,255,0);
+                height              : 15px;
+                left                : 89px;
+                position            : absolute;
+                top                 : 13px;
+                width               : 8px;
+            }
+            .web .fill-15-3QxjEG {
+                background-color    : rgba(255,255,255,0);
+                height              : 15px;
+                left                : 126px;
+                position            : absolute;
+                top                 : 13px;
+                width               : 15px;
+            }
+            .web .fill-16-oHWAzc {
+                background-color    : rgba(255,255,255,0);
+                height              : 15px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 19px;
+                width               : 15px;
+            }
+            .web .fill-17-mYRxHz {
+                background-color    : rgba(255,255,255,0);
+                height              : 15px;
+                left                : 19px;
+                position            : absolute;
+                top                 : 19px;
+                width               : 15px;
+            }
+            .web .fill-18-M38kcK {
+                background-color    : rgba(255,255,255,0);
+                height              : 15px;
+                left                : 97px;
+                position            : absolute;
+                top                 : 13px;
+                width               : 15px;
+            }
+            .web .fill-19-swYO9h {
+                background-color    : rgba(255,255,255,0);
+                height              : 21px;
+                left                : 69px;
+                position            : absolute;
+                top                 : 7px;
+                width               : 4px;
+            }
+            .web .fill-3-CJhVe3 {
+                background-color    : rgba(255,255,255,0);
+                height              : 15px;
+                left                : 19px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 15px;
+            }
+            .web .fill-4-ltlVhe {
+                background-color    : rgba(255,255,255,0);
+                height              : 22px;
+                left                : 140px;
+                position            : absolute;
+                top                 : 6px;
+                width               : 19px;
+            }
+            .web .fill-6-ty7sIq {
+                background-color    : rgba(255,255,255,0);
+                height              : 21px;
+                left                : 44px;
+                position            : absolute;
+                top                 : 7px;
+                width               : 22px;
+            }
+            .web .fill-7-zJi8ks {
+                background-color    : rgba(255,255,255,0);
+                height              : 15px;
+                left                : 76px;
+                position            : absolute;
+                top                 : 13px;
+                width               : 11px;
+            }
+            .web .fill-9-zrBUIQ {
+                background-color    : rgba(255,255,255,0);
+                height              : 15px;
+                left                : 114px;
+                position            : absolute;
+                top                 : 13px;
+                width               : 10px;
+            }
+            .web .find-duplicate-layer-Q23BSC {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 16.0px;
+                height              : auto;
+                left                : 639px;
+                line-height         : 24.0px;
+                opacity             : 0.7;
+                position            : absolute;
+                text-align          : left;
+                top                 : 85px;
+                width               : 460px;
+            }
+            .web .find-duplicate-text-xzXsXk {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 16.0px;
+                height              : auto;
+                left                : 1px;
+                line-height         : 24.0px;
+                opacity             : 0.7;
+                position            : absolute;
+                text-align          : left;
+                top                 : 93px;
+                width               : 460px;
+            }
+            .web .footer-cta-f9PWUm {
+                background-color    : rgba(255,255,255,0);
+                display             : block;
+                height              : 562px;
+                position            : absolute;
+                top                 : 4425px;
+                width               : 1100px;
+                opacity             : 0;
+                transform           : translate(0, 25px);
+            }
+            .web .footer-cta-f9PWUm.bp1-anima-animate-enter {
+                animation           : bp1-anima-animate-enter-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                opacity             : 0;
+                transform           : translate(0, 25px);
+            }
+            .web .get-merge-duplicates-MTRbJx {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 14.0px;
+                height              : auto;
+                left                : 14px;
+                line-height         : 17.0px;
+                position            : absolute;
+                text-align          : center;
+                top                 : 9px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .get-merge-duplicates-a9Dz9D {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 16.0px;
+                height              : auto;
+                left                : 78px;
+                line-height         : 20.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 19px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .get-merge-duplicates-poaxT3 {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 16.0px;
+                height              : auto;
+                left                : 20px;
+                line-height         : 20.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 19px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .get-rid-of-duplicate-Dx345q {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 21.0px;
+                height              : auto;
+                left                : 0px;
+                line-height         : 32.0px;
+                opacity             : 0.8;
+                position            : absolute;
+                text-align          : left;
+                top                 : 82px;
+                width               : 503px;
+            }
+            .web .gif-N8IE9w {
+                background-color    : rgba(255,255,255,0);
+                height              : 471px;
+                left                : 605px;
+                overflow            : hidden;
+                position            : absolute;
+                top                 : 3px;
+                width               : 496px;
+            }
+            .web .gif-dFqshM {
+                background-color    : rgba(255,255,255,0);
+                height              : 504px;
+                left                : 570px;
+                overflow            : hidden;
+                position            : absolute;
+                top                 : 20px;
+                width               : 531px;
+            }
+            .web .gif-jrLO9J {
+                background-color    : rgba(255,255,255,0);
+                height              : 501px;
+                left                : 0px;
+                overflow            : hidden;
+                position            : absolute;
+                top                 : 15px;
+                width               : 527px;
+            }
+            .web .google_2015_logo-RFXg4J {
+                background-color    : rgba(255,255,255,0);
+                height              : 34px;
+                left                : 165px;
+                position            : absolute;
+                top                 : 2px;
+                width               : 102px;
+            }
+            .web .group-2-j5YsQE {
+                background-color    : rgba(255,255,255,0);
+                height              : 1099px;
+                position            : relative;
+                top                 : -141px;
+                width               : 1100px;
+            }
+            .web .group-26-AlQ6fP {
+                background-color    : rgba(255,255,255,0);
+                height              : 593px;
+                left                : 0px;
+                position            : relative;
+                top                 : 0px;
+                width               : 481px;
+            }
+            .web .group-27-GDyAYk {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 15px;
+                position            : absolute;
+                top                 : 15px;
+                width               : 75px;
+            }
+            .web .group-27-Gi3dK7 {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 15px;
+                position            : absolute;
+                top                 : 15px;
+                width               : 139px;
+            }
+            .web .group-27-IDs2Ny {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 15px;
+                position            : absolute;
+                top                 : 15px;
+                width               : 82px;
+            }
+            .web .group-27-Lodxq2 {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 15px;
+                position            : absolute;
+                top                 : 15px;
+                width               : 83px;
+            }
+            .web .group-27-M8uzlb {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 15px;
+                position            : absolute;
+                top                 : 15px;
+                width               : 118px;
+            }
+            .web .group-27-PxSBL8 {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 15px;
+                position            : absolute;
+                top                 : 15px;
+                width               : 93px;
+            }
+            .web .group-27-Wd4Nig {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 15px;
+                position            : absolute;
+                top                 : 15px;
+                width               : 77px;
+            }
+            .web .group-27-e3O2uh {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 15px;
+                position            : absolute;
+                top                 : 15px;
+                width               : 88px;
+            }
+            .web .group-27-luv1Tl {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 15px;
+                position            : absolute;
+                top                 : 15px;
+                width               : 79px;
+            }
+            .web .group-27-xLLaGX {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 15px;
+                position            : absolute;
+                top                 : 15px;
+                width               : 83px;
+            }
+            .web .group-27-xTM3xg {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 15px;
+                position            : absolute;
+                top                 : 15px;
+                width               : 120px;
+            }
+            .web .group-28-WI8NZZ {
+                background-color    : rgba(255,255,255,0);
+                height              : 132px;
+                margin              : 0;
+                position            : relative;
+                width               : 260px;
+            }
+            .web .group-28-copy-2-3IKsxI {
+                background-color    : rgba(255,255,255,0);
+                height              : 162px;
+                margin              : 20px 0 0 0;
+                position            : relative;
+                width               : 260px;
+            }
+            .web .group-28-copy-3-ACD79R {
+                background-color    : rgba(255,255,255,0);
+                height              : 181px;
+                margin              : 20px 0 0 0;
+                position            : relative;
+                width               : 260px;
+            }
+            .web .group-28-copy-3-EKPumx {
+                background-color    : rgba(255,255,255,0);
+                height              : 211px;
+                margin              : 20px 0 0 0;
+                position            : relative;
+                width               : 260px;
+            }
+            .web .group-28-copy-4-Zffzhx {
+                background-color    : rgba(255,255,255,0);
+                height              : 220px;
+                margin              : 20px 0 0 0;
+                position            : relative;
+                width               : 260px;
+            }
+            .web .group-28-copy-5-60T5xh {
+                background-color    : rgba(255,255,255,0);
+                height              : 172px;
+                margin              : 20px 0 0 0;
+                position            : relative;
+                width               : 260px;
+            }
+            .web .group-28-copy-6-k7yxn6 {
+                background-color    : rgba(255,255,255,0);
+                height              : 161px;
+                margin              : 20px 0 0 0;
+                position            : relative;
+                width               : 260px;
+            }
+            .web .group-28-copy-7-CN4HLt {
+                background-color    : rgba(255,255,255,0);
+                height              : 172px;
+                margin              : 20px 0 0 0;
+                position            : relative;
+                width               : 260px;
+            }
+            .web .group-28-copy-8-bbiOux {
+                background-color    : rgba(255,255,255,0);
+                height              : 172px;
+                margin              : 0;
+                position            : relative;
+                width               : 260px;
+            }
+            .web .group-28-copy-9-aXIGsA {
+                background-color    : rgba(255,255,255,0);
+                height              : 172px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 846px;
+                width               : 260px;
+            }
+            .web .group-28-copy-WQajYP {
+                background-color    : rgba(255,255,255,0);
+                height              : 212px;
+                margin              : 20px 0 0 0;
+                position            : relative;
+                width               : 260px;
+            }
+            .web .group-29-euU8L9 {
+                background-color    : rgba(255,255,255,0);
+                height              : 1018px;
+                left                : 560px;
+                position            : absolute;
+                top                 : 81px;
+                width               : 260px;
+            }
+            .web .group-3-658tzq {
+                background-color    : rgba(255,255,255,0);
+                height              : 28px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 28px;
+            }
+            .web .group-3-E5gjx6 {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-oval-5@2x.png");
+                background-size     : 100% 100%;
+                height              : 30px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 30px;
+            }
+            .web .group-3-fHqXhs {
+                background-color    : rgba(255,255,255,0);
+                height              : 22px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 28px;
+            }
+            .web .group-3-jQaxdw {
+                background-color    : rgba(255,255,255,0);
+                height              : 22px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 28px;
+            }
+            .web .group-3-mPqJ0E {
+                background-color    : rgba(255,255,255,0);
+                height              : 28px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 28px;
+            }
+            .web .group-30-x02agA {
+                background-color    : rgba(255,255,255,0);
+                height              : 977px;
+                left                : 840px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 260px;
+            }
+            .web .group-32-8xgpEy {
+                background-color    : rgba(255,255,255,0);
+                height              : 593px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 230px;
+                width               : 481px;
+            }
+            .web .group-5-StsDyw {
+                background-color    : rgba(255,255,255,0);
+                height              : 179px;
+                left                : 0px;
+                position            : relative;
+                top                 : 0px;
+                width               : 710px;
+            }
+            .web .group-6-M1oMMH {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                height              : 53px;
+                left                : 390px;
+                pointer-events      : auto;
+                position            : absolute;
+                top                 : 270px;
+                transition          : all 0.2s ease-in-out;
+                width               : 320px;
+            }
+            .web .group-6-M1oMMH:hover {
+                transform           : scale(1.1);
+            }
+            .web .group-7-etnQty {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                height              : 24px;
+                left                : 1px;
+                pointer-events      : auto;
+                position            : absolute;
+                top                 : 516px;
+                transition          : all 0.2s ease-in-out;
+                width               : 128px;
+            }
+            .web .group-7-etnQty:hover {
+                transform           : scale(1.1);
+            }
+            .web .hero-WTGkGi {
+                background-color    : rgba(255,255,255,0);
+                display             : block;
+                height              : 558px;
+                position            : absolute;
+                top                 : 50px;
+                width               : 1100px;
+                opacity             : 0;
+                transform           : translate(0, 25px);
+            }
+            .web .hero-WTGkGi.bp1-anima-animate-enter14 {
+                animation           : bp1-anima-animate-enter14-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                opacity             : 0;
+                transform           : translate(0, 25px);
+            }
+            .web .hero-bg-kFBlUT {
+                background-color    : rgba(255,255,255,0);
+                height              : 951px;
+                position            : absolute;
+                top                 : -62px;
+                width               : 1675px;
+            }
+            .web .i-use-show-trackr-eve-Cv5yxK {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 13.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 20.0px;
+                opacity             : 0.8;
+                position            : absolute;
+                text-align          : left;
+                top                 : 65px;
+                white-space         : nowrap;
+                width               : 230px;
+            }
+            .web .i-use-show-trackr-eve-HoLish {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 13.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 20.0px;
+                opacity             : 0.8;
+                position            : absolute;
+                text-align          : left;
+                top                 : 65px;
+                width               : 230px;
+            }
+            .web .i-use-show-trackr-eve-Xf9Kwg {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 13.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 20.0px;
+                opacity             : 0.8;
+                position            : absolute;
+                text-align          : left;
+                top                 : 65px;
+                width               : 230px;
+            }
+            .web .including-or-not-u-gUAP9k {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 39px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 7px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .including-or-not-u-qRFZeF {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 38px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 6px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .including-or-not-u-sACDix {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 38px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 6px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .jan-18-2018-Ko3B8H {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 15px;
+                opacity             : 0.5;
+                position            : absolute;
+                text-align          : left;
+                top                 : 142px;
+                white-space         : nowrap;
+                width               : 230px;
+            }
+            .web .jan-18-2018-MriwbD {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 15px;
+                opacity             : 0.5;
+                position            : absolute;
+                text-align          : left;
+                top                 : 142px;
+                white-space         : nowrap;
+                width               : 230px;
+            }
+            .web .jan-18-2018-NGHaPH {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 15.0px;
+                opacity             : 0.5;
+                position            : absolute;
+                text-align          : left;
+                top                 : 180px;
+                white-space         : nowrap;
+                width               : 230px;
+            }
+            .web .jan-18-2018-vFx1u6 {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 15px;
+                opacity             : 0.5;
+                position            : absolute;
+                text-align          : left;
+                top                 : 142px;
+                white-space         : nowrap;
+                width               : 230px;
+            }
+            .web .jan-28-2018-AywCLb {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 15.0px;
+                opacity             : 0.5;
+                position            : absolute;
+                text-align          : left;
+                top                 : 131px;
+                white-space         : nowrap;
+                width               : 230px;
+            }
+            .web .joseph-matthews-xPbClJ {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 44px;
+                line-height         : 14.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 11px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .julia-w-wC1Z3t {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 44px;
+                line-height         : 15.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 10px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .jun-7-2019-jmChrq {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 15.0px;
+                opacity             : 0.5;
+                position            : absolute;
+                text-align          : left;
+                top                 : 101px;
+                white-space         : nowrap;
+                width               : 230px;
+            }
+            .web .jun-7-2019-nLc26u {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 15.0px;
+                opacity             : 0.5;
+                position            : absolute;
+                text-align          : left;
+                top                 : 181px;
+                white-space         : nowrap;
+                width               : 230px;
+            }
+            .web .keep-your-sketch-fil-rADSjb {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 48.0px;
+                height              : auto;
+                left                : 219px;
+                line-height         : 63.0px;
+                position            : absolute;
+                text-align          : center;
+                top                 : 0px;
+                white-space         : nowrap;
+                width               : 710px;
+            }
+            .web .keep-your-sketch-files-clean-fZSpk0 {
+                background-color    : rgba(255,255,255,0);
+                height              : 890px;
+                left                : 0px;
+                position            : relative;
+                top                 : 0px;
+                width               : 1171px;
+            }
+            .web .keeps-overrides-whe-joguIx {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 38px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 6px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .kelsey-b-JLg60K {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 44px;
+                line-height         : 15.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 10px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .keypoint-0ebtbB {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-oval-11@2x.png");
+                background-size     : 100% 100%;
+                height              : 30px;
+                left                : -1px;
+                position            : relative;
+                top                 : -1px;
+                width               : 30px;
+            }
+            .web .keypoint-R5IIav {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-rectangle-3@2x.png");
+                background-size     : 100% 100%;
+                height              : 22px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 28px;
+            }
+            .web .keypoint-SRBluo {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-rectangle-1@2x.png");
+                background-size     : 100% 100%;
+                height              : 22px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 28px;
+            }
+            .web .keypoint-iD6Qc7 {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-oval-9@2x.png");
+                background-size     : 100% 100%;
+                height              : 30px;
+                left                : -1px;
+                position            : relative;
+                top                 : -1px;
+                width               : 30px;
+            }
+            .web .keypoint-nmPFpi {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-rectangle@2x.png");
+                background-size     : 100% 100%;
+                height              : 22px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 28px;
+            }
+            .web .keypoint-phl7tG {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-oval-2@2x.png");
+                background-size     : 100% 100%;
+                height              : 30px;
+                left                : -1px;
+                position            : absolute;
+                top                 : -1px;
+                width               : 30px;
+            }
+            .web .keypoint-tSYsSi {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-rectangle-2@2x.png");
+                background-size     : 100% 100%;
+                height              : 22px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 28px;
+            }
+            .web .keypoint-wzm345 {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-oval-7@2x.png");
+                background-size     : 100% 100%;
+                height              : 30px;
+                left                : -1px;
+                position            : absolute;
+                top                 : -1px;
+                width               : 30px;
+            }
+            .web .keypoint-xUbPVV {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-oval@2x.png");
+                background-size     : 100% 100%;
+                height              : 30px;
+                left                : -1px;
+                position            : absolute;
+                top                 : -1px;
+                width               : 30px;
+            }
+            .web .keypoint-xe6R2x {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-rectangle-5@2x.png");
+                background-size     : 100% 100%;
+                height              : 22px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 28px;
+            }
+            .web .keypoint-zIYj6A {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-rectangle-4@2x.png");
+                background-size     : 100% 100%;
+                height              : 22px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 28px;
+            }
+            .web .layer-styles-8xaNTg {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                height              : 32px;
+                margin              : 0 0 0 25px;
+                pointer-events      : auto;
+                position            : relative;
+                transition          : all 0.2s ease-in-out;
+                width               : 105px;
+            }
+            .web .layer-styles-8xaNTg:hover {
+                transform           : scale(1.1);
+            }
+            .web .layer-styles-GfkZfl {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 14.0px;
+                height              : auto;
+                left                : 13px;
+                line-height         : 17.0px;
+                position            : absolute;
+                text-align          : center;
+                top                 : 9px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .logo-As5JfF {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-logo@2x.png");
+                background-size     : 100% 100%;
+                height              : 27px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 1px;
+                width               : 29px;
+            }
+            .web .logos-dJhJYH {
+                background-color    : rgba(255,255,255,0);
+                height              : 150px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 443px;
+                width               : 481px;
+            }
+            .web .luis-b-D4i237 {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 44px;
+                line-height         : 15.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 10px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .main-bar-xUQz22 {
+                background-color    : rgba(255,255,255,0);
+                height              : 50px;
+                position            : relative;
+                top                 : 0px;
+                width               : 1100px;
+            }
+            .web .main-bar-xlmNaX {
+                background-color    : rgba(255,255,255,0);
+                height              : 32px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 10px;
+                width               : 512px;
+            }
+            .web .mario-r-6W6KE5 {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 44px;
+                line-height         : 15.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 10px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .merge-duplicate-laye-qjp4mH {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 38px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 3px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .merge-duplicate-symb-HFv5Vh {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 48.0px;
+                height              : auto;
+                left                : 1px;
+                line-height         : 63.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 0px;
+                width               : 430px;
+            }
+            .web .merge-duplicate-symb-gQxXnx {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 38px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 3px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .merge-duplicate-symbols-72SZDu {
+                background-color    : rgba(255,255,255,0);
+                display             : block;
+                height              : 571px;
+                position            : absolute;
+                top                 : 1639px;
+                width               : 1100px;
+                opacity             : 0;
+                transform           : translate(-25px, 0);
+            }
+            .web .merge-duplicate-symbols-72SZDu.bp1-anima-animate-enter12 {
+                animation           : bp1-anima-animate-enter12-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                opacity             : 0;
+                transform           : translate(-25px, 0);
+            }
+            .web .merge-duplicate-text-bNired {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 38px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 3px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .merge-duplicates-LN0lia {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 64.0px;
+                height              : auto;
+                left                : 0px;
+                line-height         : 63.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : -1px;
+                white-space         : nowrap;
+                width               : 702px;
+            }
+            .web .merge-duplicates-wil-LcxZGb {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 16.0px;
+                height              : auto;
+                left                : 1px;
+                line-height         : 24.0px;
+                opacity             : 0.7;
+                position            : absolute;
+                text-align          : left;
+                top                 : 156px;
+                width               : 460px;
+            }
+            .web .merge-layer-styles-VD9XU4 {
+                background-color    : rgba(255,255,255,0);
+                display             : block;
+                height              : 540px;
+                position            : absolute;
+                top                 : 2260px;
+                width               : 1099px;
+                opacity             : 0;
+                transform           : translate(25px, 0);
+            }
+            .web .merge-layer-styles-VD9XU4.bp1-anima-animate-enter9 {
+                animation           : bp1-anima-animate-enter9-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                opacity             : 0;
+                transform           : translate(25px, 0);
+            }
+            .web .merge-layer-styles-dprkJD {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                cursor              : pointer;
+                font-size           : 48.0px;
+                height              : auto;
+                left                : 639px;
+                line-height         : 63.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 0px;
+                white-space         : nowrap;
+                width               : 430px;
+            }
+            .web .merge-selected-layer-xxNfWi {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 38px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 3px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .merge-selected-symbo-TqOGSK {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 38px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 3px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .merge-selected-text-GswVbf {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 38px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 3px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .merge-similar-layer-sFE91P {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 38px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 3px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .merge-similar-text-s-aHFfm2 {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 38px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 3px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .merge-text-styles-7uT9Xi {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 48.0px;
+                height              : auto;
+                left                : 1px;
+                line-height         : 63.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 0px;
+                white-space         : nowrap;
+                width               : 430px;
+            }
+            .web .merge-text-styles-LdNlbP {
+                background-color    : rgba(255,255,255,0);
+                display             : block;
+                height              : 540px;
+                position            : absolute;
+                top                 : 2840px;
+                width               : 1100px;
+                opacity             : 0;
+                transform           : translate(-25px, 0);
+            }
+            .web .merge-text-styles-LdNlbP.bp1-anima-animate-enter5 {
+                animation           : bp1-anima-animate-enter5-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                opacity             : 0;
+                transform           : translate(-25px, 0);
+            }
+            .web .ms-Xop8FN {
+                background-color    : rgba(255,255,255,0);
+                height              : 34px;
+                left                : 322px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 159px;
+            }
+            .web .nam-d-ZxQGI1 {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 44px;
+                line-height         : 15.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 10px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .navigation-umYMIO {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-bg.png");
+                background-size     : 100% 100%;
+                height              : 51px;
+                left                : 0px;
+                position            : fixed;
+                top                 : 0px;
+                width               : 100%;
+            }
+            .web .netflix-JPaWbt {
+                background-color    : rgba(255,255,255,0);
+                height              : 26px;
+                left                : 171px;
+                position            : absolute;
+                top                 : 108px;
+                width               : 94px;
+            }
+            .web .nina-s-BtH0d3 {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 44px;
+                line-height         : 15.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 10px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .oh-thank-you-guys-7nxoXO {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 13.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 20.0px;
+                opacity             : 0.8;
+                position            : absolute;
+                text-align          : left;
+                top                 : 65px;
+                width               : 230px;
+            }
+            .web .oodesign-all-right-PqLqqb {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 470px;
+                line-height         : 15.0px;
+                opacity             : 0.3;
+                position            : absolute;
+                text-align          : center;
+                top                 : 448px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .oval-3-2zOz5Q {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 36px;
+            }
+            .web .oval-3-5bChcM {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 36px;
+            }
+            .web .oval-3-9a19Kh {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 36px;
+            }
+            .web .oval-3-CrIkZ5 {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 36px;
+            }
+            .web .oval-3-IeeyjK {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 36px;
+            }
+            .web .oval-3-PxpkI9 {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 36px;
+            }
+            .web .oval-3-Rv0AZo {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 36px;
+            }
+            .web .oval-3-fGaB5g {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 36px;
+            }
+            .web .oval-3-ft5WTS {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 36px;
+            }
+            .web .oval-3-lNRoWt {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 36px;
+            }
+            .web .oval-3-wAxTXT {
+                background-color    : rgba(255,255,255,0);
+                height              : 36px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 36px;
+            }
+            .web .oval-4chuCZ {
+                background-color    : rgba(255,255,255,0);
+                height              : 12px;
+                left                : 9px;
+                position            : absolute;
+                top                 : 9px;
+                width               : 12px;
+            }
+            .web .oval-UU4Mtx {
+                background-color    : rgba(255,255,255,0);
+                height              : 12px;
+                left                : 9px;
+                position            : absolute;
+                top                 : 9px;
+                width               : 12px;
+            }
+            .web .oval-VLB3la {
+                background-color    : rgba(255,255,255,0);
+                height              : 12px;
+                left                : 9px;
+                position            : absolute;
+                top                 : 9px;
+                width               : 12px;
+            }
+            .web .oval-fjtPXs {
+                background-color    : rgba(255,255,255,0);
+                height              : 12px;
+                left                : 9px;
+                position            : absolute;
+                top                 : 9px;
+                width               : 12px;
+            }
+            .web .oval-j1DmZA {
+                background-color    : rgba(255,255,255,0);
+                height              : 12px;
+                left                : 9px;
+                position            : absolute;
+                top                 : 9px;
+                width               : 12px;
+            }
+            .web .oval-n3OeYP {
+                background-color    : rgba(255,255,255,0);
+                height              : 12px;
+                left                : 9px;
+                position            : absolute;
+                top                 : 9px;
+                width               : 12px;
+            }
+            .web .over-15000-designer-ihfvdX {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 48.0px;
+                height              : auto;
+                left                : 0px;
+                line-height         : 63.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 0px;
+                width               : 460px;
+            }
+            .web .path-2-2kpMBg {
+                background-color    : rgba(255,255,255,0);
+                height              : 9px;
+                left                : 11px;
+                position            : absolute;
+                top                 : 6px;
+                width               : 9px;
+            }
+            .web .path-2-2m5z1o {
+                background-color    : rgba(255,255,255,0);
+                height              : 9px;
+                left                : 11px;
+                position            : absolute;
+                top                 : 6px;
+                width               : 9px;
+            }
+            .web .path-2-6BNQMn {
+                background-color    : rgba(255,255,255,0);
+                height              : 9px;
+                left                : 11px;
+                position            : absolute;
+                top                 : 6px;
+                width               : 9px;
+            }
+            .web .path-2-6DR7tF {
+                background-color    : rgba(255,255,255,0);
+                height              : 9px;
+                left                : 11px;
+                position            : absolute;
+                top                 : 6px;
+                width               : 9px;
+            }
+            .web .path-2-P48VLa {
+                background-color    : rgba(255,255,255,0);
+                height              : 9px;
+                left                : 11px;
+                position            : absolute;
+                top                 : 6px;
+                width               : 9px;
+            }
+            .web .path-2-WUdTmq {
+                background-color    : rgba(255,255,255,0);
+                height              : 9px;
+                left                : 11px;
+                position            : absolute;
+                top                 : 6px;
+                width               : 9px;
+            }
+            .web .path-2-WnlkiM {
+                background-color    : rgba(255,255,255,0);
+                height              : 9px;
+                left                : 11px;
+                position            : absolute;
+                top                 : 6px;
+                width               : 9px;
+            }
+            .web .path-2-r3QxMK {
+                background-color    : rgba(255,255,255,0);
+                height              : 9px;
+                left                : 11px;
+                position            : absolute;
+                top                 : 6px;
+                width               : 9px;
+            }
+            .web .path-WTPQqG {
+                background-color    : rgba(255,255,255,0);
+                height              : 25px;
+                left                : 82px;
+                position            : absolute;
+                top                 : 1px;
+                width               : 4px;
+            }
+            .web .path-Zfx2FP {
+                background-color    : rgba(255,255,255,0);
+                height              : 26px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 25px;
+            }
+            .web .play-0CgR16 {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-rectangle-7@2x.png");
+                background-size     : 100% 100%;
+                height              : 22px;
+                left                : 0px;
+                position            : relative;
+                top                 : 0px;
+                width               : 28px;
+            }
+            .web .play-UWVVu7 {
+                background-color    : rgba(255,255,255,0);
+                background-image    : url("web-rectangle-6@2x.png");
+                background-size     : 100% 100%;
+                height              : 22px;
+                left                : 0px;
+                position            : relative;
+                top                 : 0px;
+                width               : 28px;
+            }
+            .web .read-more-ZGAKMj {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                height              : 24px;
+                left                : 639px;
+                pointer-events      : auto;
+                position            : absolute;
+                top                 : 516px;
+                transition          : all 0.2s ease-in-out;
+                width               : 128px;
+            }
+            .web .read-more-ZGAKMj:hover {
+                transform           : scale(1.1);
+            }
+            .web .read-more-e4orIx {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                height              : 24px;
+                left                : 1px;
+                pointer-events      : auto;
+                position            : absolute;
+                top                 : 547px;
+                transition          : all 0.2s ease-in-out;
+                width               : 128px;
+            }
+            .web .read-more-e4orIx:hover {
+                transform           : scale(1.1);
+            }
+            .web .read-on-medium-FdG8XG {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(84,12,250,1.0);
+                font-size           : 16.0px;
+                height              : auto;
+                left                : 0px;
+                line-height         : 24.0px;
+                position            : absolute;
+                text-align          : center;
+                top                 : 0px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .read-on-medium-bZ2ZxU {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(84,12,250,1.0);
+                font-size           : 16.0px;
+                height              : auto;
+                left                : 0px;
+                line-height         : 24.0px;
+                position            : absolute;
+                text-align          : center;
+                top                 : 0px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .read-on-medium-xPKAYI {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(84,12,250,1.0);
+                font-size           : 16.0px;
+                height              : auto;
+                left                : 0px;
+                line-height         : 24.0px;
+                position            : absolute;
+                text-align          : center;
+                top                 : 0px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .rectangle-2-0cfyxi {
+                background-color    : var(--atomic-tangerine);
+                border-radius       : 4px;
+                height              : 32px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 172px;
+            }
+            .web .rectangle-21-4Qtzd4 {
+                background-color    : var(--white);
+                border-radius       : 10px;
+                height              : 172px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 260px;
+            }
+            .web .rectangle-21-4mV1Tj {
+                background-color    : var(--white);
+                border-radius       : 10px;
+                height              : 161px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 260px;
+            }
+            .web .rectangle-21-826Ydl {
+                background-color    : var(--white);
+                border-radius       : 10px;
+                height              : 132px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 260px;
+            }
+            .web .rectangle-21-B3VnAm {
+                background-color    : var(--white);
+                border-radius       : 10px;
+                height              : 211px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 260px;
+            }
+            .web .rectangle-21-Fetp9c {
+                background-color    : var(--white);
+                border-radius       : 10px;
+                height              : 172px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 260px;
+            }
+            .web .rectangle-21-UyHdWf {
+                background-color    : var(--white);
+                border-radius       : 10px;
+                height              : 172px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 260px;
+            }
+            .web .rectangle-21-aKBwiu {
+                background-color    : var(--white);
+                border-radius       : 10px;
+                height              : 181px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 260px;
+            }
+            .web .rectangle-21-dvE30X {
+                background-color    : var(--white);
+                border-radius       : 10px;
+                height              : 212px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 260px;
+            }
+            .web .rectangle-21-ejM3A8 {
+                background-color    : var(--white);
+                border-radius       : 10px;
+                height              : 162px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 260px;
+            }
+            .web .rectangle-21-maeYug {
+                background-color    : var(--white);
+                border-radius       : 10px;
+                height              : 172px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 260px;
+            }
+            .web .rectangle-21-xtRCxL {
+                background-color    : var(--white);
+                border-radius       : 10px;
+                height              : 220px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 260px;
+            }
+            .web .rectangle-3VtIeP {
+                background-color    : rgba(255,255,255,0);
+                height              : 625px;
+                left                : 30px;
+                overflow            : hidden;
+                position            : absolute;
+                top                 : 222px;
+                width               : 1111px;
+            }
+            .web .rectangle-5-copy-EM0C7A {
+                background-color    : rgba(255,255,255,0);
+                height              : 677px;
+                left                : 1032px;
+                opacity             : 0.9;
+                position            : absolute;
+                top                 : 0px;
+                width               : 670px;
+            }
+            .web .rectangle-5-fuEXZn {
+                background-color    : rgba(255,255,255,0);
+                height              : 640px;
+                left                : 1051px;
+                opacity             : 0.9;
+                position            : absolute;
+                top                 : 20px;
+                width               : 633px;
+            }
+            .web .rectangle-6-t4tRBJ {
+                background-color    : rgba(255,255,255,0);
+                height              : 274px;
+                left                : 63px;
+                opacity             : 0.9;
+                position            : absolute;
+                top                 : 622px;
+                transform           : rotate(45deg);
+                width               : 274px;
+            }
+            .web .rectangle-8-RImxot {
+                background-color    : rgba(255,255,255,0);
+                height              : 8px;
+                left                : 119px;
+                position            : absolute;
+                top                 : 10px;
+                transform           : rotate(-45deg);
+                width               : 8px;
+            }
+            .web .rectangle-8-TaGRR5 {
+                background-color    : rgba(255,255,255,0);
+                height              : 8px;
+                left                : 119px;
+                position            : absolute;
+                top                 : 10px;
+                transform           : rotate(-45deg);
+                width               : 8px;
+            }
+            .web .rectangle-8-zWJxVX {
+                background-color    : rgba(255,255,255,0);
+                height              : 8px;
+                left                : 119px;
+                position            : absolute;
+                top                 : 10px;
+                transform           : rotate(-45deg);
+                width               : 8px;
+            }
+            .web .rectangle-gZoIEh {
+                background-color    : rgba(255,255,255,0);
+                height              : 685px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 205px;
+                width               : 1171px;
+            }
+            .web .replaces-style-on-in-ag4BxA {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 38px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 6px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .replaces-style-on-in-bVbXSm {
+                background-color    : rgba(255,255,255,0);
+                height              : auto;
+                left                : 38px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 6px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .sep-24-2018-QfkrbZ {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 15.0px;
+                opacity             : 0.5;
+                position            : absolute;
+                text-align          : left;
+                top                 : 189px;
+                white-space         : nowrap;
+                width               : 230px;
+            }
+            .web .shape-045x4e {
+                background-color    : rgba(255,255,255,0);
+                height              : 14px;
+                left                : 227px;
+                opacity             : 0.3;
+                position            : absolute;
+                top                 : 26px;
+                width               : 18px;
+            }
+            .web .shape-2CTs8k {
+                background-color    : rgba(255,255,255,0);
+                height              : 25px;
+                left                : 63px;
+                position            : absolute;
+                top                 : 9px;
+                width               : 16px;
+            }
+            .web .shape-93H28N {
+                background-color    : rgba(255,255,255,0);
+                height              : 17px;
+                left                : 27px;
+                position            : absolute;
+                top                 : 9px;
+                width               : 17px;
+            }
+            .web .shape-Lvm8n0 {
+                background-color    : rgba(255,255,255,0);
+                height              : 14px;
+                left                : 227px;
+                opacity             : 0.3;
+                position            : absolute;
+                top                 : 26px;
+                width               : 18px;
+            }
+            .web .shape-O2bL0M {
+                background-color    : rgba(255,255,255,0);
+                height              : 19px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 102px;
+            }
+            .web .shape-RujXij {
+                background-color    : rgba(255,255,255,0);
+                height              : 14px;
+                left                : 227px;
+                opacity             : 0.3;
+                position            : absolute;
+                top                 : 26px;
+                width               : 18px;
+            }
+            .web .shape-mkyctM {
+                background-color    : rgba(255,255,255,0);
+                height              : 17px;
+                left                : 45px;
+                position            : absolute;
+                top                 : 9px;
+                width               : 17px;
+            }
+            .web .shape-pZqj5x {
+                background-color    : rgba(255,255,255,0);
+                height              : 17px;
+                left                : 87px;
+                position            : absolute;
+                top                 : 9px;
+                width               : 15px;
+            }
+            .web .shape-x9oeSj {
+                background-color    : rgba(255,255,255,0);
+                height              : 25px;
+                left                : 0px;
+                position            : absolute;
+                top                 : 1px;
+                width               : 93px;
+            }
+            .web .shape-xxvxxG {
+                background-color    : rgba(255,255,255,0);
+                height              : 12px;
+                left                : 14px;
+                position            : absolute;
+                top                 : 19px;
+                width               : 55px;
+            }
+            .web .show-trackr-is-a-real-9U8jla {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 13.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 20.0px;
+                opacity             : 0.8;
+                position            : absolute;
+                text-align          : left;
+                top                 : 65px;
+                white-space         : nowrap;
+                width               : 230px;
+            }
+            .web .stacked-group-1SUWHd {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                display             : block;
+                height              : 22px;
+                left                : 1px;
+                pointer-events      : auto;
+                position            : absolute;
+                top                 : 293px;
+                transition          : all 0.2s ease-in-out;
+                width               : 404px;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-1SUWHd.bp1-anima-animate-enter4 {
+                animation           : bp1-anima-animate-enter4-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-1SUWHd:hover {
+                transform           : scale(1.1);
+            }
+            .web .stacked-group-2td4Sn {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                display             : block;
+                height              : 22px;
+                left                : 639px;
+                pointer-events      : auto;
+                position            : absolute;
+                top                 : 373px;
+                transition          : all 0.2s ease-in-out;
+                width               : 224px;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-2td4Sn.bp1-anima-animate-enter6 {
+                animation           : bp1-anima-animate-enter6-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-2td4Sn:hover {
+                transform           : scale(1.1);
+            }
+            .web .stacked-group-4LDths {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                display             : block;
+                height              : 22px;
+                left                : 1px;
+                pointer-events      : auto;
+                position            : absolute;
+                top                 : 401px;
+                transition          : all 0.2s ease-in-out;
+                width               : 218px;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-4LDths.bp1-anima-animate-enter10 {
+                animation           : bp1-anima-animate-enter10-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-4LDths:hover {
+                transform           : scale(1.1);
+            }
+            .web .stacked-group-AGsJEg {
+                align-items         : center;
+                background-color    : rgba(255,255,255,0);
+                display             : flex;
+                flex-direction      : row;
+                height              : 32px;
+                justify-content     : flex-start;
+                left                : 57px;
+                position            : absolute;
+                top                 : 0px;
+                width               : auto;
+            }
+            .web .stacked-group-AnmBh5 {
+                background-color    : rgba(255,255,255,0);
+                height              : 28px;
+                left                : 639px;
+                position            : absolute;
+                top                 : 448px;
+                width               : 349px;
+            }
+            .web .stacked-group-CPl2Tx {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                display             : block;
+                height              : 22px;
+                left                : 639px;
+                pointer-events      : auto;
+                position            : absolute;
+                top                 : 293px;
+                transition          : all 0.2s ease-in-out;
+                width               : 411px;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-CPl2Tx.bp1-anima-animate-enter8 {
+                animation           : bp1-anima-animate-enter8-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-CPl2Tx:hover {
+                transform           : scale(1.1);
+            }
+            .web .stacked-group-DRKomf {
+                align-items         : center;
+                background-color    : rgba(255,255,255,0);
+                display             : flex;
+                flex-direction      : column;
+                height              : auto;
+                justify-content     : flex-start;
+                left                : 0px;
+                position            : absolute;
+                top                 : 0px;
+                width               : 260px;
+            }
+            .web .stacked-group-EbzJaK {
+                align-items         : center;
+                background-color    : rgba(255,255,255,0);
+                display             : flex;
+                flex-direction      : column;
+                height              : auto;
+                justify-content     : flex-start;
+                left                : 0px;
+                position            : relative;
+                top                 : 0px;
+                width               : 260px;
+            }
+            .web .stacked-group-ExyhyK {
+                background-color    : rgba(255,255,255,0);
+                height              : 28px;
+                left                : 1px;
+                position            : absolute;
+                top                 : 437px;
+                width               : 370px;
+            }
+            .web .stacked-group-GPNoxd {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                display             : block;
+                height              : 22px;
+                left                : 1px;
+                pointer-events      : auto;
+                position            : absolute;
+                top                 : 360px;
+                transition          : all 0.2s ease-in-out;
+                width               : 388px;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-GPNoxd.bp1-anima-animate-enter11 {
+                animation           : bp1-anima-animate-enter11-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-GPNoxd:hover {
+                transform           : scale(1.1);
+            }
+            .web .stacked-group-GhyO5h {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                display             : block;
+                height              : 22px;
+                left                : 1px;
+                pointer-events      : auto;
+                position            : absolute;
+                top                 : 373px;
+                transition          : all 0.2s ease-in-out;
+                width               : 217px;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-GhyO5h.bp1-anima-animate-enter2 {
+                animation           : bp1-anima-animate-enter2-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-GhyO5h:hover {
+                transform           : scale(1.1);
+            }
+            .web .stacked-group-KRaS96 {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                display             : block;
+                height              : 22px;
+                left                : 1px;
+                pointer-events      : auto;
+                position            : absolute;
+                top                 : 334px;
+                transition          : all 0.2s ease-in-out;
+                width               : 234px;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-KRaS96.bp1-anima-animate-enter3 {
+                animation           : bp1-anima-animate-enter3-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-KRaS96:hover {
+                transform           : scale(1.1);
+            }
+            .web .stacked-group-h52ugs {
+                background-color    : rgba(255,255,255,0);
+                height              : 28px;
+                left                : 1px;
+                position            : absolute;
+                top                 : 479px;
+                width               : 275px;
+            }
+            .web .stacked-group-l8XC8H {
+                background-color    : rgba(255,255,255,0);
+                height              : 30px;
+                left                : 638px;
+                position            : absolute;
+                top                 : 408px;
+                width               : 416px;
+            }
+            .web .stacked-group-m0AxhX {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                display             : block;
+                height              : 22px;
+                left                : 639px;
+                pointer-events      : auto;
+                position            : absolute;
+                top                 : 334px;
+                transition          : all 0.2s ease-in-out;
+                width               : 241px;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-m0AxhX.bp1-anima-animate-enter7 {
+                animation           : bp1-anima-animate-enter7-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                transform-origin    : 0% 50%;
+            }
+            .web .stacked-group-m0AxhX:hover {
+                transform           : scale(1.1);
+            }
+            .web .stacked-group-s1tJrU {
+                background-color    : rgba(255,255,255,0);
+                height              : 28px;
+                left                : 1px;
+                position            : absolute;
+                top                 : 409px;
+                width               : 416px;
+            }
+            .web .stacked-group-w0tX37 {
+                background-color    : rgba(255,255,255,0);
+                height              : 28px;
+                left                : 1px;
+                position            : absolute;
+                top                 : 448px;
+                width               : 349px;
+            }
+            .web .start-merging-t04NLZ {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 48.0px;
+                height              : auto;
+                left                : 0px;
+                line-height         : 63.0px;
+                position            : absolute;
+                text-align          : center;
+                top                 : 0px;
+                white-space         : nowrap;
+                width               : 710px;
+            }
+            .web .support-A7247J {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                height              : 32px;
+                margin              : 0 0 0 25px;
+                pointer-events      : auto;
+                position            : relative;
+                transition          : all 0.2s ease-in-out;
+                width               : 96px;
+            }
+            .web .support-A7247J:hover {
+                transform           : scale(1.1);
+            }
+            .web .support-CY29aM {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 14.0px;
+                height              : auto;
+                left                : 19px;
+                line-height         : 17.0px;
+                position            : absolute;
+                text-align          : center;
+                top                 : 9px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .symbols-5h55Fl {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                height              : 32px;
+                margin              : 0;
+                pointer-events      : auto;
+                position            : relative;
+                transition          : all 0.2s ease-in-out;
+                width               : 83px;
+            }
+            .web .symbols-5h55Fl:hover {
+                transform           : scale(1.1);
+            }
+            .web .symbols-xJABrf {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 14.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 17.0px;
+                position            : absolute;
+                text-align          : center;
+                top                 : 9px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .testimonials-PidrZi {
+                background-color    : rgba(0,0,0,1.0);
+                display             : block;
+                height              : 800px;
+                left                : 0px;
+                overflow            : hidden;
+                position            : absolute;
+                top                 : 3542px;
+                width               : 100%;
+                opacity             : 0;
+                transform           : translate(0, 25px);
+            }
+            .web .testimonials-PidrZi.bp1-anima-animate-enter1 {
+                animation           : bp1-anima-animate-enter1-frames 0.20s ease-in-out 0.00s 1 normal forwards;
+                display             : block;
+                opacity             : 0;
+                transform           : translate(0, 25px);
+            }
+            .web .text-styles-VchLay {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                height              : 32px;
+                margin              : 0 0 0 25px;
+                pointer-events      : auto;
+                position            : relative;
+                transition          : all 0.2s ease-in-out;
+                width               : 96px;
+            }
+            .web .text-styles-VchLay:hover {
+                transform           : scale(1.1);
+            }
+            .web .text-styles-xzajpj {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 14.0px;
+                height              : auto;
+                left                : 11px;
+                line-height         : 17.0px;
+                position            : absolute;
+                text-align          : center;
+                top                 : 9px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .this-has-been-a-life-Ox8gGQ {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 13.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 20.0px;
+                opacity             : 0.8;
+                position            : absolute;
+                text-align          : left;
+                top                 : 64px;
+                width               : 224px;
+            }
+            .web .this-plugin-has-save-njIGYk {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 13.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 20.0px;
+                opacity             : 0.8;
+                position            : absolute;
+                text-align          : left;
+                top                 : 65px;
+                width               : 230px;
+            }
+            .web .time-to-get-rid-of-t-kh0dRp {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 21.0px;
+                height              : auto;
+                left                : 21px;
+                line-height         : 32.0px;
+                opacity             : 0.8;
+                position            : absolute;
+                text-align          : center;
+                top                 : 83px;
+                width               : 668px;
+            }
+            .web .try-it-for-free-xTxseU {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,153,99,1.0);
+                font-size           : 16.0px;
+                height              : auto;
+                left                : 55px;
+                line-height         : 20.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 19px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .try-it-uXm5fk {
+                background-color    : rgba(255,255,255,0);
+                cursor              : pointer;
+                height              : 53px;
+                left                : 219px;
+                pointer-events      : auto;
+                position            : absolute;
+                top                 : 186px;
+                transition          : all 0.2s ease-in-out;
+                width               : 204px;
+            }
+            .web .try-it-uXm5fk:hover {
+                transform           : scale(1.1);
+            }
+            .web .u201c-i-use-show-trackr-ev-2St4JB {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 14.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 20.0px;
+                opacity             : 0.8;
+                position            : absolute;
+                text-align          : left;
+                top                 : 66px;
+                width               : 230px;
+            }
+            .web .u201c-i-use-show-trackr-ev-Y0F3bt {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 13.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 20.0px;
+                opacity             : 0.8;
+                position            : absolute;
+                text-align          : left;
+                top                 : 65px;
+                width               : 230px;
+            }
+            .web .u201c-i-use-show-trackr-ev-dtCO4z {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 14.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 20.0px;
+                opacity             : 0.8;
+                position            : absolute;
+                text-align          : left;
+                top                 : 66px;
+                width               : 230px;
+            }
+            .web .varun-y-xPyZ0S {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 12.0px;
+                height              : auto;
+                left                : 44px;
+                line-height         : 15.0px;
+                position            : absolute;
+                text-align          : left;
+                top                 : 10px;
+                white-space         : nowrap;
+                width               : auto;
+            }
+            .web .you-are-so-awesome-KWpkGE {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(255,255,255,1.0);
+                font-size           : 16.0px;
+                height              : auto;
+                left                : 0px;
+                line-height         : 24.0px;
+                opacity             : 0.7;
+                position            : absolute;
+                text-align          : left;
+                top                 : 328px;
+                white-space         : nowrap;
+                width               : 420px;
+            }
+            .web .you-have-duplicate-pPg8Li {
+                background-color    : rgba(255,255,255,0);
+                color               : rgba(0,0,0,1.0);
+                font-size           : 21.0px;
+                height              : auto;
+                left                : 240px;
+                line-height         : 32.0px;
+                opacity             : 0.8;
+                position            : absolute;
+                text-align          : center;
+                top                 : 83px;
+                width               : 668px;
+            }
+            .web .youu2019ve-just-saved-co-aMvv2v {
+                background-color    : rgba(255,255,255,0);
+                font-size           : 13.0px;
+                height              : auto;
+                left                : 15px;
+                line-height         : 20.0px;
+                opacity             : 0.8;
+                position            : absolute;
+                text-align          : left;
+                top                 : 65px;
+                width               : 230px;
+            }
+            :root {
+                --__159f5700-3bca-43ae-84af-776202e1913a: rgba(255,255,255,1.0);
+                --__67e110c2-2f02-440c-8d6e-588a1ad07864: rgba(84,12,250,1.0);
+                --__ac15cf87-156c-4b2c-9ed9-880522bb04a6: rgba(0,0,0,1.0);
+                --atomic-tangerine  : rgba(255,152,99,1.0);
+                --white             : rgba(255,255,255,0.07999999821186066);
+            }
+            @keyframes bp1-anima-animate-enter-frames {
+                from {
+                    opacity             : 0;
+                    transform           : translate(0, 25px);
+                }
+                to {
+                    opacity             : 1;
+                    transform           : translate(0,0);
+                }
+            }
+            @keyframes bp1-anima-animate-enter1-frames {
+                from {
+                    opacity             : 0;
+                    transform           : translate(0, 25px);
+                }
+                to {
+                    opacity             : 1;
+                    transform           : translate(0,0);
+                }
+            }
+            @keyframes bp1-anima-animate-enter10-frames {
+                from {
+                    transform-origin    : 0% 50%;
+                }
+                to {
+                    
+                }
+            }
+            @keyframes bp1-anima-animate-enter11-frames {
+                from {
+                    transform-origin    : 0% 50%;
+                }
+                to {
+                    
+                }
+            }
+            @keyframes bp1-anima-animate-enter12-frames {
+                from {
+                    opacity             : 0;
+                    transform           : translate(-25px, 0);
+                }
+                to {
+                    opacity             : 1;
+                    transform           : translate(0,0);
+                }
+            }
+            @keyframes bp1-anima-animate-enter13-frames {
+                from {
+                    opacity             : 0;
+                    transform           : translate(0, 25px);
+                }
+                to {
+                    opacity             : 1;
+                    transform           : translate(0,0);
+                }
+            }
+            @keyframes bp1-anima-animate-enter14-frames {
+                from {
+                    opacity             : 0;
+                    transform           : translate(0, 25px);
+                }
+                to {
+                    opacity             : 1;
+                    transform           : translate(0,0);
+                }
+            }
+            @keyframes bp1-anima-animate-enter2-frames {
+                from {
+                    transform-origin    : 0% 50%;
+                }
+                to {
+                    
+                }
+            }
+            @keyframes bp1-anima-animate-enter3-frames {
+                from {
+                    transform-origin    : 0% 50%;
+                }
+                to {
+                    
+                }
+            }
+            @keyframes bp1-anima-animate-enter4-frames {
+                from {
+                    transform-origin    : 0% 50%;
+                }
+                to {
+                    
+                }
+            }
+            @keyframes bp1-anima-animate-enter5-frames {
+                from {
+                    opacity             : 0;
+                    transform           : translate(-25px, 0);
+                }
+                to {
+                    opacity             : 1;
+                    transform           : translate(0,0);
+                }
+            }
+            @keyframes bp1-anima-animate-enter6-frames {
+                from {
+                    transform-origin    : 0% 50%;
+                }
+                to {
+                    
+                }
+            }
+            @keyframes bp1-anima-animate-enter7-frames {
+                from {
+                    transform-origin    : 0% 50%;
+                }
+                to {
+                    
+                }
+            }
+            @keyframes bp1-anima-animate-enter8-frames {
+                from {
+                    transform-origin    : 0% 50%;
+                }
+                to {
+                    
+                }
+            }
+            @keyframes bp1-anima-animate-enter9-frames {
+                from {
+                    opacity             : 0;
+                    transform           : translate(25px, 0);
+                }
+                to {
+                    opacity             : 1;
+                    transform           : translate(0,0);
+                }
+            }
+        </style>
+        <meta content="AnimaApp.com - Design to code, Automated." name="author">
+    </head>
+    <body style="margin: 0;background: rgba(255,255,255,1.0);">
+        <input id="anPageName" name="page" type="hidden" value="web">
+        <div class="web anima-screen">
+            <div class="anima-container-center-horizontal">
+                <div anima-show-on-scroll="" class="footer-cta-f9PWUm bp1-anima-animate-enter">
+                    <div class="oodesign-all-right-PqLqqb font-class-2">
+                        oodesign - All rights reserved
+                    </div>
+                    <a href="https://gum.co/mergeduplicatesymbols" target="_blank">
+                        <div class="group-6-M1oMMH anima-smart-layers-pointers">
+                            <div anima-show-on-scroll="" class="bg-XhlAtk">
+                            </div>
+                            <div class="get-merge-duplicates-a9Dz9D font-class-4">
+                                Get Merge Duplicates
+                            </div>
+                        </div>
+                    </a>
+                    <div class="features-l6wW0T">
+                        <div class="group-5-StsDyw">
+                            <div class="start-merging-t04NLZ font-class-4">
+                                Start merging!
+                            </div>
+                            <div class="time-to-get-rid-of-t-kh0dRp font-class-2">
+                                Time to get rid of those duplicate, inconsistent, and unnecessary symbols, layer styles, and text styles in your design files. Get the plugin and solve it in a breeze!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div anima-show-on-scroll="" class="testimonials-PidrZi bp1-anima-animate-enter1">
+                <div class="anima-container-center-horizontal">
+                    <div class="group-2-j5YsQE">
+                        <div class="group-32-8xgpEy">
+                            <div class="group-26-AlQ6fP">
+                                <div class="over-15000-designer-ihfvdX font-class-4">
+                                    Over 15.000 designers keep their files healthy
+                                </div>
+                                <div class="all-of-you-using-thi-Bq9Z0c font-class-2">
+                                    All of you using this plugin means a lot to us. We really appreciate this, and the help and feedback you've been kindly giving us.
+                                </div>
+                                <div class="you-are-so-awesome-KWpkGE font-class-2">
+                                    You are so awesome! Thanks a lot!
+                                </div>
+                                <div class="logos-dJhJYH">
+                                    <div class="amazon-Ro1fLX">
+                                        <img class="shape-xxvxxG" src="web-shape@2x.png">
+                                        <img class="shape-O2bL0M" src="web-shape-1@2x.png">
+                                    </div>
+                                    <div class="google_2015_logo-RFXg4J">
+                                        <img class="shape-93H28N" src="web-shape-2@2x.png">
+                                        <img class="shape-mkyctM" src="web-shape-3@2x.png">
+                                        <img class="shape-2CTs8k" src="web-shape-4@2x.png">
+                                        <img class="path-WTPQqG" src="web-path@2x.png">
+                                        <img class="shape-pZqj5x" src="web-shape-5@2x.png">
+                                        <img class="path-Zfx2FP" src="web-path-1@2x.png">
+                                    </div>
+                                    <div class="ms-Xop8FN">
+                                        <img class="fill-1-mrm0Gx" src="web-fill-1@2x.png">
+                                        <img class="fill-3-CJhVe3" src="web-fill-3@2x.png">
+                                        <img class="fill-6-ty7sIq" src="web-fill-6@2x.png">
+                                        <img class="fill-19-swYO9h" src="web-fill-19@2x.png">
+                                        <img class="fill-7-zJi8ks" src="web-fill-7@2x.png">
+                                        <img class="fill-11-8HD0iW" src="web-fill-11@2x.png">
+                                        <img class="fill-18-M38kcK" src="web-fill-18@2x.png">
+                                        <img class="fill-9-zrBUIQ" src="web-fill-9@2x.png">
+                                        <img class="fill-15-3QxjEG" src="web-fill-15@2x.png">
+                                        <img class="fill-4-ltlVhe" src="web-fill-4@2x.png">
+                                        <img class="fill-16-oHWAzc" src="web-fill-16@2x.png">
+                                        <img class="fill-17-mYRxHz" src="web-fill-17@2x.png">
+                                    </div>
+                                    <div class="apple_logo_black-xgzfMv">
+                                    </div>
+                                    <div class="disney_wordmark-AR88hM">
+                                    </div>
+                                    <div class="netflix-JPaWbt">
+                                        <img class="shape-x9oeSj" src="web-shape-7@2x.png">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="group-30-x02agA">
+                            <div class="stacked-group-EbzJaK">
+                                <div class="group-28-copy-8-bbiOux">
+                                    <div class="rectangle-21-maeYug">
+                                    </div>
+                                    <div class="group-27-M8uzlb">
+                                        <img class="oval-3-2zOz5Q" src="web-oval-3-2@2x.png">
+                                        <div class="andrew-cook-Hpxs9f font-class-6">
+                                            Andrew Cook
+                                        </div>
+                                    </div>
+                                    <img class="shape-045x4e" src="web-shape-8@2x.png">
+                                    <div class="u201c-i-use-show-trackr-ev-dtCO4z font-class-6">
+                                        &ldquo;I use ShowTrackr every day, and it&rsquo;s awesome! I track all of my TV shows in it. :) &ldquo;
+                                    </div>
+                                    <div class="jan-18-2018-Ko3B8H font-class-7">
+                                        Jan 18, 2018
+                                    </div>
+                                </div>
+                                <div class="group-28-copy-4-Zffzhx">
+                                    <div class="rectangle-21-xtRCxL">
+                                    </div>
+                                    <div class="group-27-IDs2Ny">
+                                        <img class="oval-3-9a19Kh" src="web-oval-3-3@2x.png">
+                                        <div class="julia-w-wC1Z3t font-class-5">
+                                            Julia W
+                                        </div>
+                                    </div>
+                                    <div class="oh-thank-you-guys-7nxoXO font-class-1">
+                                        Oh, thank you guys, I&rsquo;ve been suffering this issue for more than a year. I&rsquo;ve just installed the plugin, it works perfectly! I&rsquo;ve removed a bunch of duplicates, such a stunning thing you made :]
+                                    </div>
+                                    <div class="sep-24-2018-QfkrbZ font-class-1">
+                                        Sep 24, 2018
+                                    </div>
+                                </div>
+                                <div class="group-28-copy-5-60T5xh">
+                                    <div class="rectangle-21-4Qtzd4">
+                                    </div>
+                                    <div class="group-27-PxSBL8">
+                                        <img class="oval-3-Rv0AZo" src="web-oval-3@2x.png">
+                                        <div class="duncan-b-mOiXsY font-class-5">
+                                            Duncan B
+                                        </div>
+                                    </div>
+                                    <div class="i-use-show-trackr-eve-HoLish font-class-1">
+                                        Thank you, thank you, thank you! This has been a huge issue for me in my workflow.
+                                    </div>
+                                    <div class="aug-10-2017-DpqNFb font-class-1">
+                                        Aug 10, 2017
+                                    </div>
+                                </div>
+                                <div class="group-28-copy-6-k7yxn6">
+                                    <div class="rectangle-21-4mV1Tj">
+                                    </div>
+                                    <div class="group-27-e3O2uh">
+                                        <img class="oval-3-ft5WTS" src="web-oval-3-4@2x.png">
+                                        <div class="kelsey-b-JLg60K font-class-5">
+                                            Kelsey B
+                                        </div>
+                                    </div>
+                                    <div class="this-plugin-has-save-njIGYk font-class-1">
+                                        This plugin has saved me so much time and effort! It really helps to keep things nice and tidy, so THANK YOU!
+                                    </div>
+                                    <div class="aug-17-2018-X1LpxD font-class-1">
+                                        Aug 17, 2018
+                                    </div>
+                                </div>
+                                <div class="group-28-copy-7-CN4HLt">
+                                    <div class="rectangle-21-Fetp9c">
+                                    </div>
+                                    <div class="group-27-luv1Tl">
+                                        <img class="oval-3-5bChcM" src="web-oval-3-1@2x.png">
+                                        <div class="nam-d-ZxQGI1 font-class-5">
+                                            Nam D
+                                        </div>
+                                    </div>
+                                    <div class="u201c-i-use-show-trackr-ev-Y0F3bt font-class-1">
+                                        This is a gift from God. Thank you for the plugin
+                                    </div>
+                                    <div class="jan-18-2018-MriwbD font-class-7">
+                                        Jan 18, 2018
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="group-29-euU8L9">
+                            <div class="group-28-copy-9-aXIGsA">
+                                <div class="rectangle-21-UyHdWf">
+                                </div>
+                                <div class="group-27-xTM3xg">
+                                    <img class="oval-3-lNRoWt" src="web-oval-3-5@2x.png">
+                                    <div class="bruce-murphy-a9shTN font-class-6">
+                                        Bruce Murphy
+                                    </div>
+                                </div>
+                                <img class="shape-Lvm8n0" src="web-shape-9@2x.png">
+                                <div class="u201c-i-use-show-trackr-ev-2St4JB font-class-6">
+                                    &ldquo;I use ShowTrackr every day, and it&rsquo;s awesome! I track all of my TV shows in it. :) &ldquo;
+                                </div>
+                                <div class="jan-18-2018-vFx1u6 font-class-7">
+                                    Jan 18, 2018
+                                </div>
+                            </div>
+                            <div class="stacked-group-DRKomf">
+                                <div class="group-28-WI8NZZ">
+                                    <div class="rectangle-21-826Ydl">
+                                    </div>
+                                    <div class="group-27-Gi3dK7">
+                                        <img class="oval-3-IeeyjK" src="web-oval-3-6@2x.png">
+                                        <div class="joseph-matthews-xPbClJ font-class-6">
+                                            Joseph Matthews
+                                        </div>
+                                    </div>
+                                    <img class="shape-RujXij" src="web-shape-10@2x.png">
+                                    <div class="i-use-show-trackr-eve-Cv5yxK font-class-1">
+                                        This has been a lifesaver plugin!
+                                    </div>
+                                    <div class="jun-7-2019-jmChrq font-class-1">
+                                        Jun 7, 2019
+                                    </div>
+                                </div>
+                                <div class="group-28-copy-WQajYP">
+                                    <div class="rectangle-21-dvE30X">
+                                    </div>
+                                    <div class="group-27-Wd4Nig">
+                                        <img class="oval-3-PxpkI9" src="web-oval-3-7@2x.png">
+                                        <div class="nina-s-BtH0d3 font-class-5">
+                                            Nina S
+                                        </div>
+                                    </div>
+                                    <div class="this-has-been-a-life-Ox8gGQ font-class-2">
+                                        Great plugin! Sketch creates duplicates randomly for me, which is very irritating. This plugin saves a lot of time and totally worth the money. :)
+                                    </div>
+                                    <div class="jun-7-2019-nLc26u font-class-1">
+                                        Jun 7, 2019
+                                    </div>
+                                </div>
+                                <div class="group-28-copy-2-3IKsxI">
+                                    <div class="rectangle-21-ejM3A8">
+                                    </div>
+                                    <div class="group-27-GDyAYk">
+                                        <img class="oval-3-CrIkZ5" src="web-oval-3-10@2x.png">
+                                        <div class="luis-b-D4i237 font-class-5">
+                                            Luis B
+                                        </div>
+                                    </div>
+                                    <div class="i-use-show-trackr-eve-Xf9Kwg font-class-1">
+                                        Just found this today! It saved me hours of precious time! Works really well.
+                                    </div>
+                                    <div class="jan-28-2018-AywCLb font-class-1">
+                                        Jan 28, 2018
+                                    </div>
+                                </div>
+                                <div class="group-28-copy-3-ACD79R">
+                                    <div class="rectangle-21-aKBwiu">
+                                    </div>
+                                    <div class="group-27-Lodxq2">
+                                        <img class="oval-3-wAxTXT" src="web-oval-3-8@2x.png">
+                                        <div class="varun-y-xPyZ0S font-class-5">
+                                            Varun Y
+                                        </div>
+                                    </div>
+                                    <div class="youu2019ve-just-saved-co-aMvv2v font-class-1">
+                                        You&rsquo;ve just saved countless hours for me. Sketch kept duplicating symbols for no reason. Kudos!
+                                    </div>
+                                    <div class="aug-25-2017-z32xry font-class-1">
+                                        Aug 25, 2017
+                                    </div>
+                                </div>
+                                <div class="group-28-copy-3-EKPumx">
+                                    <div class="rectangle-21-B3VnAm">
+                                    </div>
+                                    <div class="group-27-xLLaGX">
+                                        <img class="oval-3-fGaB5g" src="web-oval-3-9@2x.png">
+                                        <div class="mario-r-6W6KE5 font-class-5">
+                                            Mario R
+                                        </div>
+                                    </div>
+                                    <div class="show-trackr-is-a-real-9U8jla font-class-1">
+                                        This is awesome!!! Thank you so much!!!!
+                                    </div>
+                                    <div class="jan-18-2018-NGHaPH font-class-1">
+                                        Jan 18, 2018
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="anima-container-center-horizontal">
+                <div anima-show-on-scroll="" class="merge-text-styles-LdNlbP bp1-anima-animate-enter5" id="None">
+                    <div class="gif-dFqshM">
+                        <img height="100%" src="http://media.oodesign.me/MergeTextStyles.gif" width="100%">
+                    </div>
+                    <div class="stacked-group-s1tJrU">
+                        <div class="including-or-not-u-sACDix font-class-3">
+                            Including (or not, up to you) external libraries styles
+                        </div>
+                        <div class="keypoint-xUbPVV">
+                            <img class="oval-n3OeYP" src="web-oval-1@2x.png">
+                        </div>
+                    </div>
+                    <div class="stacked-group-w0tX37">
+                        <div class="replaces-style-on-in-bVbXSm font-class-3">
+                            Replaces style on instances and overrides
+                        </div>
+                        <div class="keypoint-phl7tG">
+                            <img class="oval-4chuCZ" src="web-oval-4@2x.png">
+                        </div>
+                    </div>
+                    <a href="http://bit.ly/mergeduplicatestyles" target="_blank">
+                        <div class="group-7-etnQty anima-smart-layers-pointers">
+                            <div class="read-on-medium-bZ2ZxU font-class-5">
+                                Read on Medium
+                            </div>
+                            <img class="rectangle-8-zWJxVX" src="web-rectangle-8@2x.png">
+                        </div>
+                    </a>
+                    <a href="https://youtu.be/YlgawrWV3xQ" target="_blank">
+                        <div anima-show-on-scroll="" class="stacked-group-GhyO5h bp1-anima-animate-enter2 anima-smart-layers-pointers">
+                            <div class="merge-similar-text-s-aHFfm2 font-class-3">
+                                Merge similar text styles
+                            </div>
+                            <div class="keypoint-nmPFpi">
+                                <img class="path-2-WUdTmq" src="web-path-2@2x.png">
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://youtu.be/z3T-J2vXmbU" target="_blank">
+                        <div anima-show-on-scroll="" class="stacked-group-KRaS96 bp1-anima-animate-enter3 anima-smart-layers-pointers">
+                            <div class="merge-selected-text-GswVbf font-class-3">
+                                Merge selected text styles
+                            </div>
+                            <div class="keypoint-SRBluo">
+                                <img class="path-2-6DR7tF" src="web-path-2-1@2x.png">
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://youtu.be/lyOYceDZh8Y" target="_blank">
+                        <div anima-show-on-scroll="" class="stacked-group-1SUWHd bp1-anima-animate-enter4 anima-smart-layers-pointers">
+                            <div class="merge-duplicate-text-bNired font-class-3">
+                                Merge duplicate text styles (with the same name)
+                            </div>
+                            <div class="keypoint-tSYsSi">
+                                <img class="path-2-WnlkiM" src="web-path-2-2@2x.png">
+                            </div>
+                        </div>
+                    </a>
+                    <div class="find-duplicate-text-xzXsXk font-class-2">
+                        Find duplicate text styles and decide which one is the good one. Merge Duplicates will remove the discarded ones and assign the good style to all instances and overrides.
+                        <br>
+                        <br>
+                        Find also similar styles and blend them together. Choose which attributes should be used to compare styles, and if you have a match&hellip; merge it!
+                    </div>
+                    <div class="merge-text-styles-7uT9Xi font-class-4">
+                        Merge Text Styles
+                    </div>
+                </div>
+            </div>
+            <div class="anima-container-center-horizontal">
+                <div anima-show-on-scroll="" class="merge-layer-styles-VD9XU4 bp1-anima-animate-enter9" id="None">
+                    <div class="gif-jrLO9J">
+                        <img height="100%" src="http://media.oodesign.me/MergeLayerStyles.gif" width="100%">
+                    </div>
+                    <div class="stacked-group-l8XC8H">
+                        <div class="including-or-not-u-gUAP9k font-class-3">
+                            Including (or not, up to you) external libraries styles
+                        </div>
+                        <div class="group-3-E5gjx6">
+                            <img class="oval-UU4Mtx" src="web-oval-6@2x.png">
+                        </div>
+                    </div>
+                    <div class="stacked-group-AnmBh5">
+                        <div class="replaces-style-on-in-ag4BxA font-class-3">
+                            Replaces style on instances and overrides
+                        </div>
+                        <div class="keypoint-wzm345">
+                            <img class="oval-fjtPXs" src="web-oval-8@2x.png">
+                        </div>
+                    </div>
+                    <a href="http://bit.ly/mergeduplicatestyles" target="_blank">
+                        <div class="read-more-ZGAKMj anima-smart-layers-pointers">
+                            <div class="read-on-medium-FdG8XG font-class-5">
+                                Read on Medium
+                            </div>
+                            <img class="rectangle-8-RImxot" src="web-rectangle-8-1@2x.png">
+                        </div>
+                    </a>
+                    <a href="https://youtu.be/MR6jc8S90vk" target="_blank">
+                        <div anima-show-on-scroll="" class="stacked-group-2td4Sn bp1-anima-animate-enter6 anima-smart-layers-pointers">
+                            <div class="merge-similar-layer-sFE91P font-class-3">
+                                Merge similar layer styles
+                            </div>
+                            <div class="keypoint-R5IIav">
+                                <img class="path-2-r3QxMK" src="web-path-2-3@2x.png">
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://youtu.be/7XofApSc6sU" target="_blank">
+                        <div anima-show-on-scroll="" class="stacked-group-m0AxhX bp1-anima-animate-enter7 anima-smart-layers-pointers">
+                            <div class="merge-selected-layer-xxNfWi font-class-3">
+                                Merge selected layer styles
+                            </div>
+                            <div class="keypoint-zIYj6A">
+                                <img class="path-2-6BNQMn" src="web-path-2-4@2x.png">
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://youtu.be/JbOXRJ6A3Ow" target="_blank">
+                        <div anima-show-on-scroll="" class="stacked-group-CPl2Tx bp1-anima-animate-enter8 anima-smart-layers-pointers">
+                            <div class="merge-duplicate-laye-qjp4mH font-class-3">
+                                Merge duplicate layer styles (with the same name)
+                            </div>
+                            <div class="keypoint-xe6R2x">
+                                <img class="path-2-2m5z1o" src="web-path-2-5@2x.png">
+                            </div>
+                        </div>
+                    </a>
+                    <div class="find-duplicate-layer-Q23BSC font-class-2">
+                        Find duplicate layer styles and decide which one is the good one. Merge Duplicates will remove the discarded ones and assign the good style to all instances and overrides.
+                        <br>
+                        <br>
+                        Find also similar styles and blend them together. Choose which attributes should be used to compare styles, and if you have a match&hellip; merge it!
+                    </div>
+                    <a href="https://vimeo.com/5164733" target="_blank">
+                        <div class="merge-layer-styles-dprkJD font-class-4">
+                            Merge Layer Styles
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="anima-container-center-horizontal">
+                <div anima-show-on-scroll="" class="merge-duplicate-symbols-72SZDu bp1-anima-animate-enter12" id="None">
+                    <div class="gif-N8IE9w">
+                        <img height="100%" src="http://media.oodesign.me/MergeSymbols.gif" width="100%">
+                    </div>
+                    <a href="http://bit.ly/mergesymbolsinsketch" target="_blank">
+                        <div class="read-more-e4orIx anima-smart-layers-pointers">
+                            <div class="read-on-medium-xPKAYI font-class-5">
+                                Read on Medium
+                            </div>
+                            <img class="rectangle-8-TaGRR5" src="web-rectangle-8-2@2x.png">
+                        </div>
+                    </a>
+                    <div class="stacked-group-ExyhyK">
+                        <div class="including-or-not-u-qRFZeF font-class-3">
+                            Including (or not, up to you) external libraries
+                        </div>
+                        <div class="group-3-658tzq">
+                            <div class="keypoint-iD6Qc7">
+                                <img class="oval-j1DmZA" src="web-oval-10@2x.png">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stacked-group-h52ugs">
+                        <div class="keeps-overrides-whe-joguIx font-class-3">
+                            Keeps overrides (when possible)
+                        </div>
+                        <div class="group-3-mPqJ0E">
+                            <div class="keypoint-0ebtbB">
+                                <img class="oval-VLB3la" src="web-oval-12@2x.png">
+                            </div>
+                        </div>
+                    </div>
+                    <a href="https://youtu.be/63JcOyidF7w" target="_blank">
+                        <div anima-show-on-scroll="" class="stacked-group-4LDths bp1-anima-animate-enter10 anima-smart-layers-pointers">
+                            <div class="merge-selected-symbo-TqOGSK font-class-3">
+                                Merge selected symbols
+                            </div>
+                            <div class="group-3-fHqXhs">
+                                <div class="play-UWVVu7">
+                                    <img class="path-2-2kpMBg" src="web-path-2-6@2x.png">
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://youtu.be/TY-nAs_FKLk" target="_blank">
+                        <div anima-show-on-scroll="" class="stacked-group-GPNoxd bp1-anima-animate-enter11 anima-smart-layers-pointers">
+                            <div class="merge-duplicate-symb-gQxXnx font-class-3">
+                                Merge duplicate symbols (with the same name)
+                            </div>
+                            <div class="group-3-jQaxdw">
+                                <div class="play-0CgR16">
+                                    <img class="path-2-P48VLa" src="web-path-2-7@2x.png">
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="merge-duplicates-wil-LcxZGb font-class-2">
+                        Merge Duplicates will find automatically duplicate symbols and ask you what to do with them. Choose the one you want to keep and hit Merge.
+                        <br>
+                        <br>
+                        The other symbols will be removed, and all of their instances will be replaced by the one you chose to keep, keeping overrides whenever it is possible.
+                    </div>
+                    <div class="merge-duplicate-symb-HFv5Vh font-class-4">
+                        Merge Duplicate Symbols
+                    </div>
+                </div>
+            </div>
+            <div class="anima-container-center-horizontal">
+                <div anima-show-on-scroll="" class="features-jh9SBx bp1-anima-animate-enter13">
+                    <div class="keep-your-sketch-files-clean-fZSpk0">
+                        <div class="keep-your-sketch-fil-rADSjb font-class-4">
+                            Keep your Sketch files clean
+                        </div>
+                        <div class="you-have-duplicate-pPg8Li font-class-2">
+                            You have duplicate, inconsistent, and unnecessary symbols, layer styles, and text styles in your design, and you know it
+                        </div>
+                        <img class="rectangle-gZoIEh" src="web-rectangle-9.png">
+                        <div class="rectangle-3VtIeP">
+                            <iframe allowfullscreen="allowfullscreen" height="100%" mozallowfullscreen="mozallowfullscreen" msallowfullscreen="msallowfullscreen" oallowfullscreen="oallowfullscreen" src="https://player.vimeo.com/video/394637295" style="border: 0; pointer-events: auto;" webkitallowfullscreen="webkitallowfullscreen" width="100%">
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="anima-container-center-horizontal">
+                <div class="hero-bg-kFBlUT">
+                    <img class="rectangle-6-t4tRBJ" src="web-rectangle-6-1@2x.png">
+                    <img class="rectangle-5-copy-EM0C7A" src="web-rectangle-5-copy.png">
+                    <img class="rectangle-5-fuEXZn" src="web-rectangle-5-1.png">
+                </div>
+            </div>
+            <div class="anima-container-center-horizontal">
+                <div anima-show-on-scroll="" class="hero-WTGkGi bp1-anima-animate-enter14">
+                    <div class="content-GQFmi3">
+                        <a href="https://gum.co/mergeduplicatesymbols" target="_blank">
+                            <div class="cta-4x3G9I anima-smart-layers-pointers">
+                                <div class="bg-Vsj4Cc">
+                                </div>
+                                <div class="get-merge-duplicates-poaxT3 font-class-4">
+                                    Get Merge Duplicates
+                                </div>
+                            </div>
+                        </a>
+                        <a href="https://github.com/oodesign/merge-duplicate-symbols" target="_blank">
+                            <div class="try-it-uXm5fk anima-smart-layers-pointers">
+                                <div class="bg-9j7uJq">
+                                </div>
+                                <div class="try-it-for-free-xTxseU font-class-4">
+                                    Try it for free
+                                </div>
+                            </div>
+                        </a>
+                        <div class="merge-duplicates-LN0lia font-class-4">
+                            Merge Duplicates
+                        </div>
+                        <div class="get-rid-of-duplicate-Dx345q font-class-2">
+                            Get rid of duplicate and inconsistent symbols and styles in a breeze.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation-umYMIO">
+                <div class="anima-container-center-horizontal">
+                    <div class="main-bar-xUQz22">
+                        <a href="https://gum.co/mergeduplicatesymbols" target="_blank">
+                            <div class="cta-g4q9ss anima-smart-layers-pointers">
+                                <div class="rectangle-2-0cfyxi">
+                                </div>
+                                <div class="get-merge-duplicates-MTRbJx font-class-4">
+                                    Get Merge Duplicates
+                                </div>
+                            </div>
+                        </a>
+                        <div class="main-bar-xlmNaX">
+                            <div class="logo-As5JfF">
+                            </div>
+                            <div class="stacked-group-AGsJEg">
+                                <a href="#anchor1">
+                                    <div class="symbols-5h55Fl anima-smart-layers-pointers">
+                                        <div class="symbols-xJABrf font-class-2">
+                                            Symbols
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="#anchor2">
+                                    <div class="layer-styles-8xaNTg anima-smart-layers-pointers">
+                                        <div class="layer-styles-GfkZfl font-class-2">
+                                            Layer styles
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="#anchor3">
+                                    <div class="text-styles-VchLay anima-smart-layers-pointers">
+                                        <div class="text-styles-xzajpj font-class-2">
+                                            Text styles
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="https://github.com/oodesign/merge-duplicate-symbols/issues" target="_blank">
+                                    <div class="support-A7247J anima-smart-layers-pointers">
+                                        <div class="support-CY29aM font-class-2">
+                                            Support
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="anchor1-KyeGWM" id="anchor1">
+            </div>
+            <div class="anchor2-HBxBSK" id="anchor2">
+            </div>
+            <div class="anchor3-jRWRKd" id="anchor3">
+            </div>
+        </div>
+        <script src="https://gumroad.com/js/gumroad.js">
+        </script>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-143977399-1">
+        </script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+            
+            gtag('config', 'UA-143977399-1');
+        </script>
+        <script>
+            function AnimaShowOnScroll() {
+                this.toShow = [];
+                this.nextEventY = undefined;
+            }
+            
+            AnimaShowOnScroll.prototype.show = function(e) {
+                e.style.display = "";
+            };
+            
+            AnimaShowOnScroll.prototype.hide = function(e) {
+                e.style.display = "none";
+            };
+            
+            AnimaShowOnScroll.prototype.getTop = function(e) {
+                if (e.animaTop != undefined && e.animaTop != 0) {
+                    return e.animaTop;
+                }
+                var top = 0;
+                var iter = e;
+                do {
+                    top += iter.offsetTop || 0;
+                    iter = iter.offsetParent;
+                } while (iter);
+                e.animaTop = top;
+                return top;
+            };
+            
+            AnimaShowOnScroll.prototype.onScroll = function() {
+                var screenBottom = window.pageYOffset + window.innerHeight;
+                if (this.nextEventY == undefined || this.nextEventY > screenBottom) {
+                    return;
+                }
+                this.nextEventY = undefined;
+                for (var i = 0; i < this.toShow.length; i++) {
+                    var e = this.toShow[i];
+                    var top = this.getTop(e);
+                    if (top < screenBottom) {
+                        this.show(e);
+                        this.toShow.shift();
+                        i--;
+                    } else {
+                        this.nextEventY = top;
+                        break;
+                    }
+                }
+            };
+            
+            AnimaShowOnScroll.prototype.resetScrolling = function() {
+                // Clear state
+                var screenBottom = window.pageYOffset + window.innerHeight;
+                for (var i = 0; i < this.toShow.length; i++) {
+                    var e = this.toShow[i];
+                    this.show(e);
+                }
+                this.toShow = [];
+                this.nextEventY == undefined;
+            
+                // Collect items
+                var itemsToShowOnScroll = Array.prototype.slice.call(document.getElementsByTagName("*"));
+                itemsToShowOnScroll = itemsToShowOnScroll.filter(function(e) {
+                    return e.getAttribute("anima-show-on-scroll") != undefined
+                });
+                var getTop = this.getTop;
+                itemsToShowOnScroll.sort(function(a, b) {
+                    return getTop(a) - getTop(b);
+                });
+                for (var i = 0; i < itemsToShowOnScroll.length; i++) {
+                    var e = itemsToShowOnScroll[i];
+                    var top = this.getTop(e);
+                    if (top < screenBottom) {
+                        continue;
+                    }
+                    this.toShow.push(e);
+                    this.hide(e);
+                    this.nextEventY = this.nextEventY != undefined ? this.nextEventY : top;
+                }
+            };
+            
+            AnimaShowOnScroll.prototype.handleEvent = function(e) {
+                switch (e.type) {
+                    case "scroll":
+                        this.onScroll();
+                        break;
+                    case "resize":
+                        this.resetScrolling();
+                        break;
+                }
+            };
+            
+            AnimaShowOnScroll.prototype.init = function() {
+                this.resetScrolling();
+                window.addEventListener("scroll", this);
+                window.addEventListener("resize", this);
+            };
+            
+            // After anima-src
+            setTimeout(function() {
+                var animaShowOnScroll = new AnimaShowOnScroll();
+                animaShowOnScroll.init();
+            }, 250);
+        </script>
+        <!-- V c10c1d4 Thu Aug 20 09:25:23 UTC 2020 -->
+    </body>
+</html>
