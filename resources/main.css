@@ -60,6 +60,7 @@
   -ms-flex: 1 1;
   flex: 1 1;
   position: relative;
+  overflow: hidden;
 }
 
 .rowAuto {
@@ -171,7 +172,8 @@ html {
   cursor: default;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   padding: 0;
@@ -179,20 +181,24 @@ html, body {
 }
 
 @media (prefers-color-scheme: light) {
-  html, body {
+  html,
+  body {
     background-color: #F9F9F9;
     color: #212124;
   }
 }
 
 @media (prefers-color-scheme: dark) {
-  html, body {
+  html,
+  body {
     background-color: #212124;
     color: #ffffff;
   }
 }
 
-*, *:before, *:after {
+*,
+*:before,
+*:after {
   -webkit-box-sizing: inherit;
           box-sizing: inherit;
   margin: 0;
@@ -210,6 +216,9 @@ html, body {
 }
 
 .leftPanelArea {
+  width: 260px;
+  max-width: 50vw;
+  resize: horizontal;
   overflow: hidden;
   padding: 46px 0 30px 0;
 }
@@ -346,6 +355,10 @@ html, body {
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 13px;
   font-size: 30px;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 @media (prefers-color-scheme: light) {
@@ -550,7 +563,6 @@ html, body {
 }
 
 .leftPanel {
-  width: 260px;
   -webkit-transition: all 0.2s ease-out;
   transition: all 0.2s ease-out;
 }
@@ -646,7 +658,8 @@ html, body {
   fill: #FF8E78;
 }
 
-.emptyState .primaryText, .emptyState .secondaryText {
+.emptyState .primaryText,
+.emptyState .secondaryText {
   width: 280px;
   margin: 20px 0 0 0;
   text-align: center;
@@ -1376,13 +1389,17 @@ html, body {
 }
 
 @media (prefers-color-scheme: light) {
-  .listItem:hover .listItemBg, .listItem:hover .listItemFoot, .listItem:hover .listItemHead {
+  .listItem:hover .listItemBg,
+  .listItem:hover .listItemFoot,
+  .listItem:hover .listItemHead {
     background-color: #F0F0F0;
   }
 }
 
 @media (prefers-color-scheme: dark) {
-  .listItem:hover .listItemBg, .listItem:hover .listItemFoot, .listItem:hover .listItemHead {
+  .listItem:hover .listItemBg,
+  .listItem:hover .listItemFoot,
+  .listItem:hover .listItemHead {
     background-color: #28282D;
   }
 }
@@ -1572,7 +1589,11 @@ html, body {
   width: 50px;
 }
 
-.filterArea.collapsed span, .filterArea.collapsed .regularIcon, .filterArea.collapsed .treeContent, .filterArea.collapsed .btnApply, .filterArea.collapsed .filterCounter {
+.filterArea.collapsed span,
+.filterArea.collapsed .regularIcon,
+.filterArea.collapsed .treeContent,
+.filterArea.collapsed .btnApply,
+.filterArea.collapsed .filterCounter {
   display: none;
 }
 
@@ -1580,7 +1601,11 @@ html, body {
   width: 0;
 }
 
-.filterArea.hidden span, .filterArea.hidden .regularIcon, .filterArea.hidden .treeContent, .filterArea.hidden .btnApply, .filterArea.hidden .filterCounter {
+.filterArea.hidden span,
+.filterArea.hidden .regularIcon,
+.filterArea.hidden .treeContent,
+.filterArea.hidden .btnApply,
+.filterArea.hidden .filterCounter {
   display: none;
 }
 
@@ -1790,12 +1815,37 @@ html, body {
 
 .squareCheckbox {
   position: relative;
+  width: 100%;
 }
 
 .squareCheckbox .padder {
   width: 160px;
   height: 100%;
   background-color: transparent;
+}
+
+.squareCheckbox .text {
+  position: absolute;
+  top: 0;
+  left: 25px;
+  width: 90%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+}
+
+@media (prefers-color-scheme: light) {
+  .squareCheckbox .text {
+    color: #212124;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .squareCheckbox .text {
+    color: #ffffff;
+  }
 }
 
 .squareCheckbox label {
@@ -3214,7 +3264,8 @@ div::-webkit-scrollbar-thumb {
   }
 }
 
-input, textarea {
+input,
+textarea {
   -webkit-user-select: auto;
   -moz-user-select: auto;
    -ms-user-select: auto;
@@ -3332,7 +3383,7 @@ input, textarea {
   opacity: 1;
 }
 
-input[type=text] {
+input[type="text"] {
   padding: 8px 12px;
   width: 305px;
   height: 34px;
@@ -3346,26 +3397,26 @@ input[type=text] {
 }
 
 @media (prefers-color-scheme: light) {
-  input[type=text] {
+  input[type="text"] {
     color: #212124;
   }
 }
 
 @media (prefers-color-scheme: dark) {
-  input[type=text] {
+  input[type="text"] {
     color: #ffffff;
   }
 }
 
 @media (prefers-color-scheme: light) {
-  input[type=text] {
+  input[type="text"] {
     background-color: #FFFFFF;
     border: 1px solid #A9A9A9;
   }
 }
 
 @media (prefers-color-scheme: dark) {
-  input[type=text] {
+  input[type="text"] {
     background-color: #28282A;
     border: 1px solid #6A6A6A;
   }
@@ -3464,11 +3515,10 @@ a {
 
 .leftPanelListItem span {
   left: 25px;
-  width: 200px;
+  width: 100%;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  position: absolute;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 13px;
 }
@@ -3675,8 +3725,8 @@ a {
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
   border-radius: 32px;
 }
 
@@ -3688,18 +3738,18 @@ a {
   left: 2px;
   bottom: 2px;
   background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
   border-radius: 50%;
 }
 
 input:checked + .slider {
-  background-color: #38D256;
+  background-color: #38d256;
 }
 
 input:focus + .slider {
-  -webkit-box-shadow: 0 0 1px #38D256;
-          box-shadow: 0 0 1px #38D256;
+  -webkit-box-shadow: 0 0 1px #38d256;
+          box-shadow: 0 0 1px #38d256;
 }
 
 input:checked + .slider:before {
@@ -3732,8 +3782,8 @@ input:checked + .slider:before {
   height: 8px;
   border-radius: 4px;
   outline: none;
-  -webkit-transition: all .1s ease-in-out;
-  transition: all .1s ease-in-out;
+  -webkit-transition: all 0.1s ease-in-out;
+  transition: all 0.1s ease-in-out;
 }
 
 @media (prefers-color-scheme: light) {
@@ -3768,8 +3818,8 @@ input:checked + .slider:before {
   border-radius: 50%;
   background: #FF8E78;
   cursor: pointer;
-  -webkit-transition: all .1s ease-in-out;
-  transition: all .1s ease-in-out;
+  -webkit-transition: all 0.1s ease-in-out;
+  transition: all 0.1s ease-in-out;
 }
 
 .sliderContainer .inputSlider::-webkit-slider-thumb:hover {

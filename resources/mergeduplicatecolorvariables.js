@@ -35,7 +35,7 @@ window.DrawColorVariablesList = (mergeSession, includeLibraries) => {
     var checkbox = `<div class="squareCheckbox">
       <input type="checkbox" ${checked} id="duplicatedStyleCheck${i}" ${handler}/>
       <label ${labelFor}></label>
-      <span>${mergeSession[i].colorVariableWithDuplicates.name}</span>
+      <div class="text">${mergeSession[i].colorVariableWithDuplicates.name}</div>
     </div>`;
 
     inner += `<div id="duplicatedStyle${i}" onclick="onSelectedStyleChanged(${i})" class="leftPanelListItem alignVerticalCenter ${selected}">${checkbox} </div>`

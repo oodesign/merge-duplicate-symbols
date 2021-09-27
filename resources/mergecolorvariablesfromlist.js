@@ -82,7 +82,7 @@ window.DrawColorVariableList = (colorVariables, includeLibraries) => {
       var checkbox = `<div class="squareCheckbox">
         <input type="checkbox" ${checked} id="chkColorVariableItem${variableNum}"/>
         <label></label>
-        <span>${groupOfColorVariables[i].name}</span>
+        <div class="text">${groupOfColorVariables[i].name}</div>
       </div>`;
 
       inner += `<div id="colorVariableItem${variableNum}" onclick="onColorVariableItemChanged(${variableNum})" class="leftPanelListItem alignVerticalCenter">${checkbox} </div>`

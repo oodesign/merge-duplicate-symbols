@@ -37,7 +37,7 @@ window.DrawResultsList = (stylesWithSimilarStyles) => {
       var checkbox = `<div class="squareCheckbox">
       <input type="checkbox" ${checked} id="resultStyleCheck${i}" ${handler}/>
       <label ${labelFor}></label>
-      <span>${globalStylesWithSimilarStyles[i].referenceStyle.name}</span>
+      <div class="text">${globalStylesWithSimilarStyles[i].referenceStyle.name}</div>
     </div>`;
 
       inner += `<div id="resultStyle${i}" onclick="onSelectedStyleChanged(${i})" class="leftPanelListItem alignVerticalCenter ${selected}">${checkbox} </div>`

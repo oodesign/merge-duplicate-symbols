@@ -84,7 +84,7 @@ window.DrawStyleList = (textStyles, includeLibraries) => {
       var checkbox = `<div class="squareCheckbox">
         <input type="checkbox" ${checked} id="chkTextStyleItem${stylenum}"/>
         <label></label>
-        <span>${groupOfStyles[i].name}</span>
+        <div class="text">${groupOfStyles[i].name}</div>
       </div>`;
 
       inner += `<div id="textStyleItem${stylenum}" onclick="onTextStyleItemChanged(${stylenum})" class="leftPanelListItem alignVerticalCenter">${checkbox} </div>`

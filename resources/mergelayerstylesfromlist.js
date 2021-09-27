@@ -85,7 +85,7 @@ window.DrawStyleList = (layerStyles, includeLibraries) => {
       var checkbox = `<div class="squareCheckbox">
         <input type="checkbox" ${checked} id="chkLayerStyleItem${stylenum}"/>
         <label></label>
-        <span>${groupOfStyles[i].name}</span>
+        <div class="text">${groupOfStyles[i].name}</div>
       </div>`;
 
       inner += `<div id="layerStyleItem${stylenum}" onclick="onLayerStyleItemChanged(${stylenum})" class="leftPanelListItem alignVerticalCenter ${isHidden}">${checkbox} </div>`

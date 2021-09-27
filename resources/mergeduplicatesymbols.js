@@ -70,7 +70,7 @@ window.DrawDuplicateSymbols = (mergeSession, displayIndex) => {
       var checkbox = `<div class="squareCheckbox">
       <input type="checkbox" ${checked} id="duplicatedSymbolCheck${i}" ${handler}/>
       <label ${labelFor}></label>
-      <span>${mergeSession[i].symbolWithDuplicates.name}</span>
+      <div class="text">${mergeSession[i].symbolWithDuplicates.name}</div>
     </div>`;
 
       inner += `<div id="duplicatedSymbol${i}" onclick="onSelectedSymbolChanged(${i})" class="leftPanelListItem alignVerticalCenter ${selected}">${checkbox} </div>`
