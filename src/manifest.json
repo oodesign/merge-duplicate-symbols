@@ -206,7 +206,7 @@
         ]
       },
       {
-        "title": "Color Variables (Beta) ",
+        "title": "Color Variables",
         "items": [
           "mergeduplicatecolorvariables",
           "mergeselectedcolorvariables",
