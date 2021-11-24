@@ -11,7 +11,7 @@ var checkingAlsoLibraries = false;
 
 function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge, webContents) {
 
-  Helpers.clog("-- Starting Merge Layer Styles (" + stylesToMerge.length + "). Style to keep is:" + styleToKeep);
+  Helpers.dlog("-- Starting Merge Layer Styles (" + stylesToMerge.length + "). Style to keep is:" + styleToKeep);
 
   var stylesToRemove = [];
   var styleToApply;
@@ -20,14 +20,26 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
   var stylesRemoved = 0;
   var idsMap = new Map();
 
-  Helpers.clog("---- Processing styles to remove");
+  Helpers.dlog("---- Processing styles to remove");
   styleToApply = stylesToMerge[styleToKeep].layerStyle;
 
+  Helpers.dlog("---- styleToApply(1):");
+  Helpers.dlog(styleToApply);
+
   if (stylesToMerge[styleToKeep].isForeign) {
+    Helpers.dlog("---- styleToApply is foreign");
     var alreadyInDoc = (Helpers.document.sharedLayerStyles.filter(ls => ls.id == stylesToMerge[styleToKeep].layerStyle.id)).length > 0;
-    if (!alreadyInDoc)
+    if (!alreadyInDoc) {
+      Helpers.dlog("---- styleToApply is foreign. Importing it from library");
       styleToApply = Helpers.importLayerStyleFromLibrary(stylesToMerge[styleToKeep]);
+    }
+    else
+      Helpers.dlog("---- styleToApply is foreign, and it was already in doc");
   }
+
+
+  Helpers.dlog("---- styleToApply)(2):");
+  Helpers.dlog(styleToApply);
 
   var tasksToPerform = 0, tasksExecuted = 0;
   var progress = basePercent;
@@ -35,7 +47,7 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
   var instOverMap = new Map();
 
 
-  Helpers.clog("---- Getting all related styles instances and overrides");
+  Helpers.dlog("---- Getting all related styles instances and overrides");
 
   for (var i = 0; i < stylesToMerge.length; i++) {
     if (i != styleToKeep) {
@@ -72,7 +84,7 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
 
 
       Helpers.ctime("-- Unlinking from library");
-      Helpers.clog("------ Checking if symbol to merge is foreign");
+      Helpers.dlog("------ Checking if symbol to merge is foreign");
       if (stylesToMerge[i].isForeign) {
         stylesToMerge[i].layerStyle.unlinkFromLibrary();
       }
@@ -82,10 +94,10 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
       var message = "Merging " + stylesToMerge[styleToKeep].name;
 
       Helpers.ctime("-- Updating overrides");
-      Helpers.clog("---- Updating overrides (" + styleOverrides.length + ")");
+      Helpers.dlog("---- Updating overrides (" + styleOverrides.length + ")");
       styleOverrides.forEach(function (override) {
         try {
-          Helpers.clog("------ Updating override for " + override.instance.name);
+          Helpers.dlog("------ Updating override for " + override.instance.name);
           override.instance.setOverrideValue(override.override, styleToApply.id.toString());
           overridesChanged++;
           tasksExecuted++;
@@ -93,21 +105,21 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
           var message2 = "Updating overrides (" + overridesChanged + " of " + overridesToChange + ")";
           webContents.executeJavaScript(`UpdateMergeProgress(${progress}, ${JSON.stringify(message)}, ${JSON.stringify(message2)})`).catch(console.error);
         } catch (e) {
-          Helpers.clog("---- ERROR: Couldn't update override for " + override.instance.name);
-          Helpers.clog(e);
+          Helpers.dlog("---- ERROR: Couldn't update override for " + override.instance.name);
+          Helpers.dlog(e);
         }
       });
       Helpers.ctimeEnd("-- Updating overrides");
 
 
       Helpers.ctime("-- Updating instances");
-      Helpers.clog("---- Updating instances (" + instancesOfStyle.length + ")");
+      Helpers.dlog("---- Updating instances (" + instancesOfStyle.length + ")");
       instancesOfStyle.forEach(function (instance) {
         try {
-          Helpers.clog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name);
+          Helpers.dlog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name);
         }
         catch (e) {
-          Helpers.clog("------ Updating instance " + instance.name + ". Instance doesn't belong to any specific artboard.");
+          Helpers.dlog("------ Updating instance " + instance.name + ". Instance doesn't belong to any specific artboard.");
         }
 
         instance.sharedStyle = styleToApply;
@@ -126,27 +138,27 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
   }
 
   Helpers.ctimeEnd("Merging layer style:" + stylesToMerge[styleToKeep].name);
-  Helpers.clog("---- Finalized instance and override replacement.");
+  Helpers.dlog("---- Finalized instance and override replacement.");
 
   var sharedStylesToRemove = Helpers.document.sharedLayerStyles.filter(sharedStyle => isMarkedForRemove(sharedStyle, stylesToRemove));
 
-  Helpers.clog("---- Removing discarded layer styles (" + sharedStylesToRemove.length + ").");
+  Helpers.dlog("---- Removing discarded layer styles (" + sharedStylesToRemove.length + ").");
   webContents.executeJavaScript(`UpdateMergeProgress(${progress}, ${JSON.stringify(message)}, "Removing discarded layer styles")`).catch(console.error);
 
 
   Helpers.ctime("Removing discarded styles");
   sharedStylesToRemove.forEach(sharedStyleToRemove => {
-    Helpers.clog("------ Removing " + sharedStyleToRemove.name + " (" + sharedStyleToRemove.id + ") from sharedLayerStyles.");
+    Helpers.dlog("------ Removing " + sharedStyleToRemove.name + " (" + sharedStyleToRemove.id + ") from sharedLayerStyles.");
     sharedStyleToRemove.unlinkFromLibrary();
-    Helpers.clog("-------- Unlinked from library.");
+    Helpers.dlog("-------- Unlinked from library.");
     var styleIndex = Helpers.document.sharedLayerStyles.findIndex(sL => sL.id == sharedStyleToRemove.id);
-    Helpers.clog("-------- Located in sharedLayerStyles (" + styleIndex + ").");
+    Helpers.dlog("-------- Located in sharedLayerStyles (" + styleIndex + ").");
     Helpers.document.sharedLayerStyles.splice(styleIndex, 1);
-    Helpers.clog("-------- Removed from sharedLayerStyles.");
+    Helpers.dlog("-------- Removed from sharedLayerStyles.");
   });
   Helpers.ctimeEnd("Removing discarded styles");
 
-  Helpers.clog("---- Merge completed.");
+  Helpers.dlog("---- Merge completed.");
 
   return [stylesRemoved, instancesChanged, overridesChanged];
 
@@ -190,8 +202,10 @@ export function MergeDuplicateLayerStyles(context) {
   function CalculateDuplicates(includeLibraries) {
     Helpers.clog("Finding duplicate layer styles. Including libraries:" + includeLibraries);
     onlyDuplicatedLayerStyles = Helpers.getAllDuplicateLayerStylesByName(context, includeLibraries);
+    console.log(onlyDuplicatedLayerStyles);
 
     layerStylesMap = Helpers.getLayerStylesMap(context, onlyDuplicatedLayerStyles);
+    console.log(layerStylesMap);
 
     if (onlyDuplicatedLayerStyles.length > 0) {
       Helpers.GetSpecificLayerStyleData(onlyDuplicatedLayerStyles[0], layerStylesMap);
@@ -206,6 +220,7 @@ export function MergeDuplicateLayerStyles(context) {
           "isProcessed": (mergeSession.length == 0)
         });
       });
+      console.log(mergeSession);
     }
   }
 
