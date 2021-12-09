@@ -225,7 +225,8 @@ window.onLayerStyleItemChanged = function (index) {
 
   for (var i = 0; i < globalLayerStyles.length; i++) {
     globalLayerStyles[i].isChosen = false;
-  }
+  } //window.postMessage("GetSpecificLayerStyleInfo", realIndex);
+
 
   DrawSelectedStylesList();
 };

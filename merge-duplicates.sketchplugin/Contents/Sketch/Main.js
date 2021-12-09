@@ -5311,6 +5311,11 @@ function getSymbolOverrides(symbolMaster, idsMap) {
 
 function getLayerStyleInstances(layerStyle) {
   var layerStyleInstances = layerStyle.getAllInstancesLayers();
+
+  if (layerStyle.localStyle != null) {
+    layerStyleInstances = layerStyleInstances.concat(layerStyle.localStyle.layerStyle.getAllInstances());
+  }
+
   return layerStyleInstances;
 }
 
@@ -5323,7 +5328,10 @@ function getLayerStyleOverrides(layerStyle, idsMap) {
   reducedInstances.forEach(function (instance) {
     if (instance.sketchObject.overrides().count() > 0) {
       var instanceOverrides = instance.overrides.filter(function (ov) {
-        return ov.property == "layerStyle" && !ov.isDefault && idsMap.has(ov.value);
+        var redId0 = "" + ov.value;
+        var redId1 = ov.value.indexOf("[") >= 0 ? ov.value.substring(0, ov.value.indexOf("[")) : redId0;
+        var redId2 = ov.value.indexOf("[") >= 0 ? ov.value.substring(ov.value.indexOf("[") + 1, ov.value.length - 1) : null;
+        return ov.property == "layerStyle" && !ov.isDefault && (idsMap.has(redId1) || idsMap.has(redId2));
       });
       instanceOverrides.forEach(function (override) {
         styleOverrides.push({
@@ -5564,6 +5572,72 @@ function getLayerStylesMap(context, layerStyles) {
   return layerStylesMap;
 }
 
+function getSimpleLayerStylesMap(context, layerStyles) {
+  var layerStylesMap = new Map();
+  var idsMap = new Map();
+  layerStyles.forEach(function (layerStyle) {
+    var redId0 = "" + layerStyle.layerStyle.id;
+    var redId1 = layerStyle.layerStyle.id.indexOf("[") >= 0 ? layerStyle.layerStyle.id.substring(0, layerStyle.layerStyle.id.indexOf("[")) : redId0;
+    var redId2 = layerStyle.layerStyle.id.indexOf("[") >= 0 ? layerStyle.layerStyle.id.substring(layerStyle.layerStyle.id.indexOf("[") + 1, layerStyle.layerStyle.id.length - 1) : null;
+    idsMap.set(redId1, layerStyle);
+    idsMap.set(redId2, layerStyle); // if (layerStyle.name == "Tints/Active") {
+    //   console.log("------> " + layerStyle.name + ": " + layerStyle.layerStyle.id);
+    //   console.log(layerStyle);
+    // }
+
+    if (redId1 == "C1D31ED0-6A67-4CFB-B0A1-ECB2A4E53B71" || redId2 == "C1D31ED0-6A67-4CFB-B0A1-ECB2A4E53B71") {
+      console.log("----> We found it in getSimpleLayerStylesMap"); // console.log(layerStyle.localStyle);
+      // console.log(layerStyle.localStyle.layerStyle);
+      // console.log(layerStyle.localStyle.layerStyle.getAllInstances());
+      // console.log(layerStyle.localStyle.layerStyle.getAllInstancesLayers());
+    }
+
+    layerStylesMap.set(layerStyle, {
+      "directInstances": layerStyle.layerStyle.getAllInstancesLayers(),
+      "localStyleDirectInstances": layerStyle.localStyle != null ? layerStyle.localStyle.layerStyle.getAllInstancesLayers() : [],
+      "instancesWithOverrides": []
+    });
+  });
+  var allInstances = sketch.find("SymbolInstance", document);
+  var reducedInstances = allInstances.filter(function (instance) {
+    return hasSharedStyleOverrides(instance, idsMap);
+  });
+  console.log("----> We found it in getSimpleLayerStylesMap");
+  reducedInstances.forEach(function (instance) {
+    var instanceOverrides = instance.overrides.filter(function (ov) {
+      var redId0 = "" + ov.value;
+      var redId1 = ov.value.indexOf("[") >= 0 ? ov.value.substring(0, ov.value.indexOf("[")) : redId0;
+      var redId2 = ov.value.indexOf("[") >= 0 ? ov.value.substring(ov.value.indexOf("[") + 1, ov.value.length - 1) : null;
+      return ov.property == "layerStyle" && !ov.isDefault && (idsMap.has(redId1) || idsMap.has(redId2));
+    });
+
+    if (instance.name == "Artboard") {
+      console.log("Artboard instanceOverrides:");
+      console.log(instance.overrides);
+    }
+
+    instanceOverrides.forEach(function (ov) {
+      //Check also redid1 and redid2
+      var redId0 = "" + ov.value;
+      var redId1 = ov.value.indexOf("[") >= 0 ? ov.value.substring(0, ov.value.indexOf("[")) : redId0;
+      var redId2 = ov.value.indexOf("[") >= 0 ? ov.value.substring(ov.value.indexOf("[") + 1, ov.value.length - 1) : null;
+      if (idsMap.has(redId1)) layerStylesMap.get(idsMap.get(redId1)).instancesWithOverrides.push({
+        "instance": instance,
+        "override": ov
+      });else if (idsMap.has(redId2)) layerStylesMap.get(idsMap.get(redId2)).instancesWithOverrides.push({
+        "instance": instance,
+        "override": ov
+      });
+    });
+
+    if (instance.name == "Artboard") {
+      console.log("Artboard is in reducedInstances. instanceOverrides is:");
+      console.log(instanceOverrides);
+    }
+  });
+  return layerStylesMap;
+}
+
 function getTextStylesMap(context, textStyles) {
   var textStylesMap = new Map();
   var idsMap = new Map();
@@ -5648,23 +5722,45 @@ function FindNestedSymbolOverride(overrides, idsMap, instance) {
 
 function hasSharedStyleOverrides(instance, idsMap) {
   if (instance.sketchObject.overrides() != null && instance.sketchObject.overrides().count() > 0) {
-    return FindNestedSharedStyleOverride(instance.sketchObject.overrides(), idsMap, instance);
+    return FindNestedSharedStyleOverride(instance.sketchObject.overrides(), idsMap, instance, 0);
   }
 
   return false;
 }
 
 function FindNestedSharedStyleOverride(overrides, idsMap, instance, level) {
+  var logger = instance.id == "9AE90AAA-72D1-415B-AD19-CF0424099063";
+  if (logger) console.log("Instance overrides:");
+  if (logger) console.log(overrides);
+
+  if (logger) {// idsMap.forEach((value, key) => {
+    //   console.log("-- idsMap:" + key + " // " + value);
+    // });
+  }
+
   for (var key in overrides) {
     var symbolID = overrides[key]["symbolID"];
 
     if (symbolID == null) {
+      if (logger) console.log("-- Not a symbol override");
+
       if (overrides[key] instanceof __NSDictionaryM) {
+        if (logger) console.log("---- Is _NSDictionaryM");
+
         for (var key2 in overrides[key]) {
           if (overrides[key][key2] instanceof __NSDictionaryM) {
+            if (logger) console.log("------ Child is _NSDictionaryM, so investigating children");
             if (FindNestedSharedStyleOverride(overrides[key][key2], idsMap, instance, level + 1)) return true;
           } else {
-            if (idsMap.has("" + overrides[key][key2])) {
+            var redId0 = "" + overrides[key][key2];
+            var redId1 = "" + (redId0.indexOf("[") >= 0) ? redId0.substring(0, redId0.indexOf("[")) : redId0;
+            var redId2 = "" + (redId0.indexOf("[") >= 0) ? redId0.substring(redId0.indexOf("[") + 1, redId0.length - 1) : null;
+            if (logger) console.log("------ Child is _NSDictionaryM");
+            if (logger) console.log("------ Override is (redid1)): " + redId1);
+            if (logger) console.log("------ Override is (redid2): " + redId2);
+            if (logger) console.log("------ idsMap does have it(1)? " + (idsMap.has(redId1) || idsMap.has(redId2)));
+
+            if (idsMap.has(redId1) || idsMap.has(redId2)) {
               return true;
             }
 
@@ -5672,8 +5768,18 @@ function FindNestedSharedStyleOverride(overrides, idsMap, instance, level) {
           }
         }
       } else {
+        if (logger) console.log("---- Is NOOOOT _NSDictionaryM");
+
         try {
-          if (idsMap.has("" + overrides[key])) {
+          var redId0 = "" + overrides[key];
+          var redId1 = "" + (redId0.indexOf("[") >= 0) ? redId0.substring(0, redId0.indexOf("[")) : redId0;
+          var redId2 = "" + (redId0.indexOf("[") >= 0) ? redId0.substring(redId0.indexOf("[") + 1, redId0.length - 1) : null;
+          if (logger) console.log("---- Override is (redid0)): " + redId0);
+          if (logger) console.log("---- Override is (redid1)): " + redId1);
+          if (logger) console.log("---- Override is (redid2): " + redId2);
+          if (logger) console.log("---- idsMap does have it(2)? " + (idsMap.has(redId1) || idsMap.has(redId2)));
+
+          if (idsMap.has(redId1) || idsMap.has(redId2)) {
             return true;
           }
 
@@ -6131,13 +6237,14 @@ function getColorVariableThumbnail(colorVariable) {
 function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
   var allStyles = [];
   var idsMap = new Map();
+  var idsPlusLibraryMap = new Map();
 
   if (includeAllStylesFromExternalLibraries) {
     libraries.forEach(function (lib) {
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
         lib.getDocument().sharedLayerStyles.forEach(function (sharedLayerStyle) {
           if (sharedLayerStyle.getLibrary() == null) {
-            var id1 = sharedLayerStyle.id;
+            var id1 = sharedLayerStyle.id.indexOf("[") >= 0 ? sharedLayerStyle.id.substring(0, sharedLayerStyle.id.indexOf("[")) : sharedLayerStyle.id;
             var id2 = sharedLayerStyle.id.indexOf("[") >= 0 ? sharedLayerStyle.id.substring(sharedLayerStyle.id.indexOf("[") + 1, sharedLayerStyle.id.length - 1) : null;
             var layerStyleObject = {
               "layerStyle": sharedLayerStyle,
@@ -6158,6 +6265,8 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
               "styleId": id1 + " - " + id2,
               "localStyle": null
             };
+            if (sharedLayerStyle.name == "Tints/Active") console.log("🟠 Tints/Active ids are:" + id1 + " - " + id2);
+            if (sharedLayerStyle.name == "Tints/Active") console.log("--> Added it to layerStyles");
             allStyles.push(layerStyleObject);
             idsMap.set(id1 + "---" + lib.id, layerStyleObject);
             if (id2) idsMap.set(id2 + "---" + lib.id, layerStyleObject);
@@ -6168,27 +6277,24 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
   }
 
   document.sharedLayerStyles.forEach(function (sharedLayerStyle) {
-    var id1 = sharedLayerStyle.id;
+    var id1 = sharedLayerStyle.id.indexOf("[") >= 0 ? sharedLayerStyle.id.substring(0, sharedLayerStyle.id.indexOf("[")) : sharedLayerStyle.id;
     var id2 = sharedLayerStyle.id.indexOf("[") >= 0 ? sharedLayerStyle.id.substring(sharedLayerStyle.id.indexOf("[") + 1, sharedLayerStyle.id.length - 1) : null;
     var id1Comparison = id1 + (sharedLayerStyle.getLibrary() != null ? "---" + sharedLayerStyle.getLibrary().id : "");
-    var id2Comparison = id2 + (sharedLayerStyle.getLibrary() != null ? "---" + sharedLayerStyle.getLibrary().id : "");
-
-    if (sharedLayerStyle.name.includes("Ultraviolet/500")) {
-      console.log(sharedLayerStyle.name + ": " + sharedLayerStyle.id);
-      console.log(sharedLayerStyle.sketchObject.isForeign());
-
-      if (!idsMap.has(id1Comparison) && !idsMap.has(id2Comparison)) {
-        console.log("-- Adding it to list");
-      } else {
-        if (idsMap.get(id2Comparison)) {
-          console.log("-- Hit id2Comparison");
-        }
-
-        if (idsMap.get(id1Comparison)) {
-          console.log("-- Hit id1Comparison");
-        }
-      }
-    }
+    var id2Comparison = id2 + (sharedLayerStyle.getLibrary() != null ? "---" + sharedLayerStyle.getLibrary().id : ""); // if (sharedLayerStyle.name.includes("Ultraviolet/500")) {
+    //   console.log(sharedLayerStyle.name + ": " + sharedLayerStyle.id);
+    //   console.log(sharedLayerStyle.sketchObject.isForeign());
+    //   if (!idsMap.has(id1Comparison) && !idsMap.has(id2Comparison)) {
+    //     console.log("-- Adding it to list");
+    //   }
+    //   else {
+    //     if (idsMap.get(id2Comparison)) {
+    //       console.log("-- Hit id2Comparison");
+    //     }
+    //     if (idsMap.get(id1Comparison)) {
+    //       console.log("-- Hit id1Comparison");
+    //     }
+    //   }
+    // }
 
     var layerStyleObject = {
       "layerStyle": sharedLayerStyle,
@@ -6209,21 +6315,27 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
       "styleId": id1 + " - " + id2,
       "localStyle": null
     };
+    if (sharedLayerStyle.name == "Tints/Active") console.log("🔵 Tints/Active ids are:" + id1 + " - " + id2);
 
     if (!idsMap.has(id1Comparison) && !idsMap.has(id2Comparison)) {
       allStyles.push(layerStyleObject);
       idsMap.set(id1Comparison, layerStyleObject);
       if (id2) idsMap.set(id2Comparison, layerStyleObject);
+      if (sharedLayerStyle.name == "Tints/Active") console.log("--> Added it to layerStyles");
     } else {
       if (idsMap.get(id2Comparison)) {
+        if (sharedLayerStyle.name == "Tints/Active") console.log("--> Didn't add it. Matches id2comparison");
         idsMap.get(id2Comparison).localStyle = layerStyleObject;
         idsMap.get(id2Comparison).addedBy += "👻";
       }
 
       if (idsMap.get(id1Comparison)) {
+        if (sharedLayerStyle.name == "Tints/Active") console.log("--> Didn't add it. Matches id1comparison");
         idsMap.get(id1Comparison).localStyle = layerStyleObject;
         idsMap.get(id1Comparison).addedBy += "👻";
       }
+
+      if (sharedLayerStyle.name == "Tints/Active") console.log("--> End comparisons if");
     }
   }); //console.log(allStyles.sort(compareStyleArrays))
 
@@ -6846,11 +6958,13 @@ module.exports = {
   getLayerStyleOverrides: getLayerStyleOverrides,
   getAllTextStyles: getAllTextStyles,
   getAllDuplicateTextStylesByName: getAllDuplicateTextStylesByName,
+  getSimpleLayerStylesMap: getSimpleLayerStylesMap,
   dlog: dlog,
   getTextStylesMap: getTextStylesMap,
   getReducedTextStyleData: getReducedTextStyleData,
   getTextStyleInstances: getTextStyleInstances,
-  getTextStyleOverrides: getTextStyleOverrides
+  getTextStyleOverrides: getTextStyleOverrides,
+  sketch: sketch
 };
 
 /***/ }),
@@ -8036,14 +8150,14 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
 
   if (stylesToMerge[styleToKeep].isForeign) {
     Helpers.dlog("---- styleToApply is foreign");
-    var alreadyInDoc = Helpers.document.sharedLayerStyles.filter(function (ls) {
-      return ls.id == stylesToMerge[styleToKeep].layerStyle.id;
-    }).length > 0;
 
-    if (!alreadyInDoc) {
-      Helpers.dlog("---- styleToApply is foreign. Importing it from library");
+    if (stylesToMerge[styleToKeep].localStyle) {
+      Helpers.dlog("---- styleToApply takes localStyle");
+      styleToApply = stylesToMerge[styleToKeep].localStyle.layerStyle;
+    } else {
+      Helpers.dlog("---- styleToApply is imported from library");
       styleToApply = Helpers.importLayerStyleFromLibrary(stylesToMerge[styleToKeep]);
-    } else Helpers.dlog("---- styleToApply is foreign, and it was already in doc");
+    }
   }
 
   Helpers.dlog("---- styleToApply)(2):");
@@ -8055,19 +8169,24 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
       overridesToChange = 0;
   var instOverMap = new Map();
   Helpers.dlog("---- Getting all related styles instances and overrides");
+  var layerStylesMap = Helpers.getSimpleLayerStylesMap(context, stylesToMerge);
+  layerStylesMap.forEach(function (value, key) {
+    console.log(key.name + " has " + value.directInstances.length + " direct instances, " + value.localStyleDirectInstances.length + " local style instances, and " + value.instancesWithOverrides.length + " overrides. ");
+    instancesToChange += value.directInstances.length + value.localStyleDirectInstances.length;
+    overridesChanged += value.instancesWithOverrides.length;
+  });
 
   for (var i = 0; i < stylesToMerge.length; i++) {
     if (i != styleToKeep) {
-      idsMap.set(stylesToMerge[i].layerStyle.id);
-      stylesToRemove.push(stylesToMerge[i].layerStyle);
-      var instancesOfStyle = Helpers.getLayerStyleInstances(stylesToMerge[i].layerStyle);
-      var styleOverrides = Helpers.getLayerStyleOverrides(stylesToMerge[i].layerStyle, idsMap);
-      instOverMap.set(stylesToMerge[i], {
-        "instancesOfStyle": instancesOfStyle,
-        "styleOverrides": styleOverrides
-      });
-      instancesToChange += instancesOfStyle.length;
-      overridesToChange += styleOverrides.length;
+      // idsMap.set(stylesToMerge[i].layerStyle.id)
+      stylesToRemove.push(stylesToMerge[i].layerStyle); // var instancesOfStyle = Helpers.getLayerStyleInstances(stylesToMerge[i].layerStyle);
+      // var styleOverrides = Helpers.getLayerStyleOverrides(stylesToMerge[i].layerStyle, idsMap);
+      // instOverMap.set(stylesToMerge[i], {
+      //   "instancesOfStyle": instancesOfStyle,
+      //   "styleOverrides": styleOverrides
+      // });
+      // instancesToChange += instancesOfStyle.length;
+      // overridesToChange += styleOverrides.length;
     }
   }
 
@@ -8079,14 +8198,14 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
     if (i != styleToKeep) {
       if (!stylesToMerge[i].isForeign) stylesRemoved++;
       Helpers.ctime("-- Taking instances and overrides");
-      var instancesOfStyle = instOverMap.get(stylesToMerge[i]).instancesOfStyle;
-      var styleOverrides = instOverMap.get(stylesToMerge[i]).styleOverrides;
+      var instancesOfStyle = layerStylesMap.get(stylesToMerge[i]).directInstances.concat(layerStylesMap.get(stylesToMerge[i]).localStyleDirectInstances);
+      var styleOverrides = layerStylesMap.get(stylesToMerge[i]).instancesWithOverrides;
       Helpers.ctimeEnd("-- Taking instances and overrides");
       Helpers.ctime("-- Unlinking from library");
       Helpers.dlog("------ Checking if symbol to merge is foreign");
 
-      if (stylesToMerge[i].isForeign) {
-        stylesToMerge[i].layerStyle.unlinkFromLibrary();
+      if (stylesToMerge[i].isForeign) {// Uncomment
+        // stylesToMerge[i].layerStyle.unlinkFromLibrary();
       }
 
       Helpers.ctimeEnd("-- Unlinking from library");
@@ -8095,8 +8214,9 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
       Helpers.dlog("---- Updating overrides (" + styleOverrides.length + ")");
       styleOverrides.forEach(function (override) {
         try {
-          Helpers.dlog("------ Updating override for " + override.instance.name);
-          override.instance.setOverrideValue(override.override, styleToApply.id.toString());
+          Helpers.dlog("------ Updating override for " + override.instance.name); // Uncomment
+          // override.instance.setOverrideValue(override.override, styleToApply.id.toString());
+
           overridesChanged++;
           tasksExecuted++;
           progress = Math.floor(basePercent + tasksExecuted * 100 / tasksToPerform / totalToMerge);
@@ -8109,16 +8229,20 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
       });
       Helpers.ctimeEnd("-- Updating overrides");
       Helpers.ctime("-- Updating instances");
-      Helpers.dlog("---- Updating instances (" + instancesOfStyle.length + ")");
+      Helpers.dlog("---- Updating instances (" + instancesOfStyle.length + ") to styleToApply:" + styleToApply.name);
       instancesOfStyle.forEach(function (instance) {
-        try {
-          Helpers.dlog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name);
-        } catch (e) {
-          Helpers.dlog("------ Updating instance " + instance.name + ". Instance doesn't belong to any specific artboard.");
-        }
+        Helpers.dlog(instance);
+        var isInDocument = Helpers.sketch.find('[id=instance.id]').length > 0;
 
-        instance.sharedStyle = styleToApply;
-        instance.style.syncWithSharedStyle(styleToApply);
+        try {
+          Helpers.dlog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name + ". isInDocument: " + isInDocument);
+        } catch (e) {
+          Helpers.dlog("------ Updating instance " + instance.name + ". Instance doesn't belong to any specific artboard." + ". isInDocument: " + isInDocument);
+        } // Uncomment
+        // instance.sharedStyle = styleToApply;
+        // instance.style.syncWithSharedStyle(styleToApply);
+
+
         tasksExecuted++;
         instancesChanged++;
         progress = Math.floor(basePercent + tasksExecuted * 100 / tasksToPerform / totalToMerge);
@@ -8138,8 +8262,9 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
   webContents.executeJavaScript("UpdateMergeProgress(".concat(progress, ", ").concat(JSON.stringify(message), ", \"Removing discarded layer styles\")")).catch(console.error);
   Helpers.ctime("Removing discarded styles");
   sharedStylesToRemove.forEach(function (sharedStyleToRemove) {
-    Helpers.dlog("------ Removing " + sharedStyleToRemove.name + " (" + sharedStyleToRemove.id + ") from sharedLayerStyles.");
-    sharedStyleToRemove.unlinkFromLibrary();
+    Helpers.dlog("------ Removing " + sharedStyleToRemove.name + " (" + sharedStyleToRemove.id + ") from sharedLayerStyles."); // Uncomment
+    // sharedStyleToRemove.unlinkFromLibrary();
+
     Helpers.dlog("-------- Unlinked from library.");
     var styleIndex = Helpers.document.sharedLayerStyles.findIndex(function (sL) {
       return sL.id == sharedStyleToRemove.id;
@@ -8269,6 +8394,7 @@ function MergeDuplicateLayerStyles(context) {
 }
 ;
 function MergeSelectedLayerStyles(context) {
+  var layerStylesMap;
   Helpers.clog("----- Merge selected text styles -----");
   var options = {
     identifier: webviewMLSFLIdentifier,
@@ -8287,6 +8413,22 @@ function MergeSelectedLayerStyles(context) {
   styleCounter = allLayerStyles.length;
   checkingAlsoLibraries = Helpers.getLibrariesEnabled();
   Helpers.clog("allLayerStyles:" + allLayerStyles.length);
+  console.log("Pre layerStylesMap");
+  layerStylesMap = Helpers.getSimpleLayerStylesMap(context, allLayerStyles);
+  console.log("Post layerStylesMap");
+  var counter = 0;
+  layerStylesMap.forEach(function (value, key) {
+    if (key.name == "Tints/Active") {
+      console.log(key.name + " has " + value.directInstances.length + " direct instances, " + value.localStyleDirectInstances.length + " local style instances, and " + value.instancesWithOverrides.length + " overrides. "); // console.log("value.directInstances");
+      // console.log(value.directInstances);
+      // console.log("value.localStyleDirectInstances");
+      // console.log(value.localStyleDirectInstances);
+      // console.log("value.instancesWithOverrides");
+      // console.log(value.instancesWithOverrides);
+
+      counter++;
+    }
+  });
 
   if (styleCounter > 1) {
     browserWindow.loadURL(__webpack_require__(/*! ../resources/mergelayerstylesfromlist.html */ "./resources/mergelayerstylesfromlist.html"));
@@ -8304,6 +8446,9 @@ function MergeSelectedLayerStyles(context) {
   });
   webContents.on('nativeLog', function (s) {
     Helpers.clog(s);
+  });
+  webContents.on('GetSpecificLayerStyleInfo', function (index) {// Helpers.GetSpecificLayerStyleData(allLayerStyles[0], layerStylesMap);
+    //webContents.executeJavaScript(`PopulateSpecificLayerStyle(${JSON.stringify(allLayerStyles)})`).catch(console.error);
   });
   webContents.on('GetStylesList', function (librariesEnabled) {
     Helpers.clog("Get styles list");

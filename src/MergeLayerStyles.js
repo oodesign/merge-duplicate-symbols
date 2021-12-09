@@ -28,13 +28,15 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
 
   if (stylesToMerge[styleToKeep].isForeign) {
     Helpers.dlog("---- styleToApply is foreign");
-    var alreadyInDoc = (Helpers.document.sharedLayerStyles.filter(ls => ls.id == stylesToMerge[styleToKeep].layerStyle.id)).length > 0;
-    if (!alreadyInDoc) {
-      Helpers.dlog("---- styleToApply is foreign. Importing it from library");
+
+    if (stylesToMerge[styleToKeep].localStyle) {
+      Helpers.dlog("---- styleToApply takes localStyle");
+      styleToApply = stylesToMerge[styleToKeep].localStyle.layerStyle;
+    }
+    else {
+      Helpers.dlog("---- styleToApply is imported from library");
       styleToApply = Helpers.importLayerStyleFromLibrary(stylesToMerge[styleToKeep]);
     }
-    else
-      Helpers.dlog("---- styleToApply is foreign, and it was already in doc");
   }
 
 
@@ -49,21 +51,30 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
 
   Helpers.dlog("---- Getting all related styles instances and overrides");
 
+
+  var layerStylesMap = Helpers.getSimpleLayerStylesMap(context, stylesToMerge);
+  layerStylesMap.forEach((value, key) => {
+    console.log(key.name + " has " + value.directInstances.length + " direct instances, " + value.localStyleDirectInstances.length + " local style instances, and " + value.instancesWithOverrides.length + " overrides. ");
+    instancesToChange += value.directInstances.length + value.localStyleDirectInstances.length;
+    overridesChanged += value.instancesWithOverrides.length;
+  });
+
+
   for (var i = 0; i < stylesToMerge.length; i++) {
     if (i != styleToKeep) {
-      idsMap.set(stylesToMerge[i].layerStyle.id)
+      // idsMap.set(stylesToMerge[i].layerStyle.id)
       stylesToRemove.push(stylesToMerge[i].layerStyle);
 
-      var instancesOfStyle = Helpers.getLayerStyleInstances(stylesToMerge[i].layerStyle);
-      var styleOverrides = Helpers.getLayerStyleOverrides(stylesToMerge[i].layerStyle, idsMap);
+      // var instancesOfStyle = Helpers.getLayerStyleInstances(stylesToMerge[i].layerStyle);
+      // var styleOverrides = Helpers.getLayerStyleOverrides(stylesToMerge[i].layerStyle, idsMap);
 
-      instOverMap.set(stylesToMerge[i], {
-        "instancesOfStyle": instancesOfStyle,
-        "styleOverrides": styleOverrides
-      });
+      // instOverMap.set(stylesToMerge[i], {
+      //   "instancesOfStyle": instancesOfStyle,
+      //   "styleOverrides": styleOverrides
+      // });
 
-      instancesToChange += instancesOfStyle.length;
-      overridesToChange += styleOverrides.length;
+      // instancesToChange += instancesOfStyle.length;
+      // overridesToChange += styleOverrides.length;
     }
   }
 
@@ -78,15 +89,16 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
         stylesRemoved++;
 
       Helpers.ctime("-- Taking instances and overrides");
-      var instancesOfStyle = instOverMap.get(stylesToMerge[i]).instancesOfStyle;
-      var styleOverrides = instOverMap.get(stylesToMerge[i]).styleOverrides;
+      var instancesOfStyle = layerStylesMap.get(stylesToMerge[i]).directInstances.concat(layerStylesMap.get(stylesToMerge[i]).localStyleDirectInstances);
+      var styleOverrides = layerStylesMap.get(stylesToMerge[i]).instancesWithOverrides;
       Helpers.ctimeEnd("-- Taking instances and overrides");
 
 
       Helpers.ctime("-- Unlinking from library");
       Helpers.dlog("------ Checking if symbol to merge is foreign");
       if (stylesToMerge[i].isForeign) {
-        stylesToMerge[i].layerStyle.unlinkFromLibrary();
+        // Uncomment
+        // stylesToMerge[i].layerStyle.unlinkFromLibrary();
       }
       Helpers.ctimeEnd("-- Unlinking from library");
 
@@ -98,7 +110,8 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
       styleOverrides.forEach(function (override) {
         try {
           Helpers.dlog("------ Updating override for " + override.instance.name);
-          override.instance.setOverrideValue(override.override, styleToApply.id.toString());
+          // Uncomment
+          // override.instance.setOverrideValue(override.override, styleToApply.id.toString());
           overridesChanged++;
           tasksExecuted++;
           progress = Math.floor(basePercent + ((tasksExecuted * 100 / tasksToPerform) / totalToMerge));
@@ -113,17 +126,22 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
 
 
       Helpers.ctime("-- Updating instances");
-      Helpers.dlog("---- Updating instances (" + instancesOfStyle.length + ")");
+      Helpers.dlog("---- Updating instances (" + instancesOfStyle.length + ") to styleToApply:" + styleToApply.name);
       instancesOfStyle.forEach(function (instance) {
+
+        Helpers.dlog(instance);
+        var isInDocument = (Helpers.sketch.find('[id=instance.id]').length > 0);
+
         try {
-          Helpers.dlog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name);
+          Helpers.dlog("------ Updating instance " + instance.name + ", in artboard " + instance.getParentArtboard().name + ". isInDocument: " + isInDocument);
         }
         catch (e) {
-          Helpers.dlog("------ Updating instance " + instance.name + ". Instance doesn't belong to any specific artboard.");
+          Helpers.dlog("------ Updating instance " + instance.name + ". Instance doesn't belong to any specific artboard." + ". isInDocument: " + isInDocument);
         }
 
-        instance.sharedStyle = styleToApply;
-        instance.style.syncWithSharedStyle(styleToApply);
+        // Uncomment
+        // instance.sharedStyle = styleToApply;
+        // instance.style.syncWithSharedStyle(styleToApply);
 
         tasksExecuted++;
         instancesChanged++;
@@ -149,7 +167,8 @@ function MergeLayerStyles(stylesToMerge, styleToKeep, basePercent, totalToMerge,
   Helpers.ctime("Removing discarded styles");
   sharedStylesToRemove.forEach(sharedStyleToRemove => {
     Helpers.dlog("------ Removing " + sharedStyleToRemove.name + " (" + sharedStyleToRemove.id + ") from sharedLayerStyles.");
-    sharedStyleToRemove.unlinkFromLibrary();
+    // Uncomment
+    // sharedStyleToRemove.unlinkFromLibrary();
     Helpers.dlog("-------- Unlinked from library.");
     var styleIndex = Helpers.document.sharedLayerStyles.findIndex(sL => sL.id == sharedStyleToRemove.id);
     Helpers.dlog("-------- Located in sharedLayerStyles (" + styleIndex + ").");
@@ -304,6 +323,8 @@ export function MergeDuplicateLayerStyles(context) {
 
 export function MergeSelectedLayerStyles(context) {
 
+  var layerStylesMap;
+
   Helpers.clog("----- Merge selected text styles -----");
 
   const options = {
@@ -325,6 +346,25 @@ export function MergeSelectedLayerStyles(context) {
   styleCounter = allLayerStyles.length;
   checkingAlsoLibraries = Helpers.getLibrariesEnabled();
   Helpers.clog("allLayerStyles:" + allLayerStyles.length);
+
+
+  console.log("Pre layerStylesMap");
+  layerStylesMap = Helpers.getSimpleLayerStylesMap(context, allLayerStyles);
+  console.log("Post layerStylesMap");
+
+  var counter = 0;
+  layerStylesMap.forEach((value, key) => {
+    if (key.name == "Tints/Active") {
+      console.log(key.name + " has " + value.directInstances.length + " direct instances, " + value.localStyleDirectInstances.length + " local style instances, and " + value.instancesWithOverrides.length + " overrides. ");
+      // console.log("value.directInstances");
+      // console.log(value.directInstances);
+      // console.log("value.localStyleDirectInstances");
+      // console.log(value.localStyleDirectInstances);
+      // console.log("value.instancesWithOverrides");
+      // console.log(value.instancesWithOverrides);
+      counter++;
+    }
+  });
 
   if (styleCounter > 1) {
     browserWindow.loadURL(require('../resources/mergelayerstylesfromlist.html'));
@@ -351,6 +391,12 @@ export function MergeSelectedLayerStyles(context) {
   webContents.on('nativeLog', s => {
     Helpers.clog(s);
   });
+
+  webContents.on('GetSpecificLayerStyleInfo', (index) => {
+    // Helpers.GetSpecificLayerStyleData(allLayerStyles[0], layerStylesMap);
+    //webContents.executeJavaScript(`PopulateSpecificLayerStyle(${JSON.stringify(allLayerStyles)})`).catch(console.error);
+  });
+
 
   webContents.on('GetStylesList', (librariesEnabled) => {
     Helpers.clog("Get styles list");

@@ -152,6 +152,8 @@ window.onLayerStyleItemChanged = (index) => {
     globalLayerStyles[i].isChosen = false;
   }
 
+  //window.postMessage("GetSpecificLayerStyleInfo", realIndex);
+
   DrawSelectedStylesList();
 }
 

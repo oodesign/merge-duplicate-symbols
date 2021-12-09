@@ -461,6 +461,9 @@ function getSymbolOverrides(symbolMaster, idsMap) {
 
 function getLayerStyleInstances(layerStyle) {
   var layerStyleInstances = layerStyle.getAllInstancesLayers();
+  if (layerStyle.localStyle != null) {
+    layerStyleInstances = layerStyleInstances.concat(layerStyle.localStyle.layerStyle.getAllInstances());
+  }
   return layerStyleInstances;
 }
 
@@ -471,7 +474,15 @@ function getLayerStyleOverrides(layerStyle, idsMap) {
 
   reducedInstances.forEach(function (instance) {
     if (instance.sketchObject.overrides().count() > 0) {
-      var instanceOverrides = instance.overrides.filter(ov => ov.property == "layerStyle" && !ov.isDefault && idsMap.has(ov.value));
+      var instanceOverrides = instance.overrides.filter(ov => {
+
+        var redId0 = "" + ov.value;
+        var redId1 = (ov.value.indexOf("[") >= 0) ? ov.value.substring(0, ov.value.indexOf("[")) : redId0;
+        var redId2 = (ov.value.indexOf("[") >= 0) ? ov.value.substring(ov.value.indexOf("[") + 1, ov.value.length - 1) : null;
+
+        return (ov.property == "layerStyle" && !ov.isDefault && (idsMap.has(redId1) || idsMap.has(redId2)))
+      });
+
       instanceOverrides.forEach(override => {
         styleOverrides.push({
           "instance": instance,
@@ -688,6 +699,7 @@ function getLayerStylesMap(context, layerStyles) {
   layerStyles.forEach(function (layerStyle) {
     console.log(layerStyle.name + " has " + layerStyle.duplicates.length + " duplicates")
     layerStyle.duplicates.forEach(function (duplicatedStyle) {
+
       var redId1 = duplicatedStyle.layerStyle.style.id;
       var redId2 = (duplicatedStyle.layerStyle.id.indexOf("[") >= 0) ? duplicatedStyle.layerStyle.id.substring(duplicatedStyle.layerStyle.id.indexOf("[") + 1, duplicatedStyle.layerStyle.id.length - 1) : null;
       console.log("-- Scanning style " + duplicatedStyle.name + ". redId1: " + redId1 + ". redId2: " + redId2);
@@ -715,6 +727,79 @@ function getLayerStylesMap(context, layerStyles) {
       instanceOverrides.forEach(override => {
         layerStylesMap.get(idsMap.get(override.value)).instancesWithOverrides.push(instance);
       });
+    }
+  });
+
+  return layerStylesMap;
+}
+
+
+function getSimpleLayerStylesMap(context, layerStyles) {
+  var layerStylesMap = new Map();
+  var idsMap = new Map();
+  layerStyles.forEach(function (layerStyle) {
+    var redId0 = "" + layerStyle.layerStyle.id;
+    var redId1 = (layerStyle.layerStyle.id.indexOf("[") >= 0) ? layerStyle.layerStyle.id.substring(0, layerStyle.layerStyle.id.indexOf("[")) : redId0;
+    var redId2 = (layerStyle.layerStyle.id.indexOf("[") >= 0) ? layerStyle.layerStyle.id.substring(layerStyle.layerStyle.id.indexOf("[") + 1, layerStyle.layerStyle.id.length - 1) : null;
+
+    idsMap.set(redId1, layerStyle);
+    idsMap.set(redId2, layerStyle);
+
+    // if (layerStyle.name == "Tints/Active") {
+    //   console.log("------> " + layerStyle.name + ": " + layerStyle.layerStyle.id);
+    //   console.log(layerStyle);
+    // }
+
+    if ((redId1 == "C1D31ED0-6A67-4CFB-B0A1-ECB2A4E53B71") || (redId2 == "C1D31ED0-6A67-4CFB-B0A1-ECB2A4E53B71")) {
+      console.log("----> We found it in getSimpleLayerStylesMap");
+      // console.log(layerStyle.localStyle);
+      // console.log(layerStyle.localStyle.layerStyle);
+      // console.log(layerStyle.localStyle.layerStyle.getAllInstances());
+      // console.log(layerStyle.localStyle.layerStyle.getAllInstancesLayers());
+    }
+
+    layerStylesMap.set(layerStyle, {
+      "directInstances": layerStyle.layerStyle.getAllInstancesLayers(),
+      "localStyleDirectInstances": (layerStyle.localStyle != null) ? layerStyle.localStyle.layerStyle.getAllInstancesLayers() : [],
+      "instancesWithOverrides": [],
+    });
+  });
+
+  var allInstances = sketch.find("SymbolInstance", document);
+  var reducedInstances = allInstances.filter(instance => hasSharedStyleOverrides(instance, idsMap));
+
+
+  console.log("----> We found it in getSimpleLayerStylesMap");
+
+  reducedInstances.forEach(function (instance) {
+    var instanceOverrides = instance.overrides.filter(ov => {
+
+      var redId0 = "" + ov.value;
+      var redId1 = (ov.value.indexOf("[") >= 0) ? ov.value.substring(0, ov.value.indexOf("[")) : redId0;
+      var redId2 = (ov.value.indexOf("[") >= 0) ? ov.value.substring(ov.value.indexOf("[") + 1, ov.value.length - 1) : null;
+
+      return (ov.property == "layerStyle" && !ov.isDefault && (idsMap.has(redId1) || idsMap.has(redId2)))
+    });
+
+    if (instance.name == "Artboard") {
+      console.log("Artboard instanceOverrides:")
+      console.log(instance.overrides)
+    }
+    instanceOverrides.forEach(ov => {
+      //Check also redid1 and redid2
+
+
+      var redId0 = "" + ov.value;
+      var redId1 = (ov.value.indexOf("[") >= 0) ? ov.value.substring(0, ov.value.indexOf("[")) : redId0;
+      var redId2 = (ov.value.indexOf("[") >= 0) ? ov.value.substring(ov.value.indexOf("[") + 1, ov.value.length - 1) : null;
+
+      if (idsMap.has(redId1)) layerStylesMap.get(idsMap.get(redId1)).instancesWithOverrides.push({ "instance": instance, "override": ov });
+      else if (idsMap.has(redId2)) layerStylesMap.get(idsMap.get(redId2)).instancesWithOverrides.push({ "instance": instance, "override": ov });
+    });
+
+    if (instance.name == "Artboard") {
+      console.log("Artboard is in reducedInstances. instanceOverrides is:");
+      console.log(instanceOverrides);
     }
   });
 
@@ -808,28 +893,59 @@ function FindNestedSymbolOverride(overrides, idsMap, instance) {
 
 function hasSharedStyleOverrides(instance, idsMap) {
   if ((instance.sketchObject.overrides() != null) && (instance.sketchObject.overrides().count() > 0)) {
-    return FindNestedSharedStyleOverride(instance.sketchObject.overrides(), idsMap, instance);
+    return FindNestedSharedStyleOverride(instance.sketchObject.overrides(), idsMap, instance, 0);
   }
   return false;
 }
 
 function FindNestedSharedStyleOverride(overrides, idsMap, instance, level) {
+  var logger = (instance.id == "9AE90AAA-72D1-415B-AD19-CF0424099063");
+  if (logger) console.log("Instance overrides:")
+  if (logger) console.log(overrides)
+
+  if (logger) {
+    // idsMap.forEach((value, key) => {
+    //   console.log("-- idsMap:" + key + " // " + value);
+    // });
+  }
+
   for (var key in overrides) {
     var symbolID = overrides[key]["symbolID"];
     if (symbolID == null) {
+      if (logger) console.log("-- Not a symbol override")
       if (overrides[key] instanceof __NSDictionaryM) {
+        if (logger) console.log("---- Is _NSDictionaryM")
         for (var key2 in overrides[key]) {
           if (overrides[key][key2] instanceof __NSDictionaryM) {
+            if (logger) console.log("------ Child is _NSDictionaryM, so investigating children")
             if (FindNestedSharedStyleOverride(overrides[key][key2], idsMap, instance, level + 1)) return true;
           }
           else {
-            if (idsMap.has("" + overrides[key][key2])) { return true; };
+
+            var redId0 = "" + overrides[key][key2];
+            var redId1 = "" + (redId0.indexOf("[") >= 0) ? redId0.substring(0, redId0.indexOf("[")) : redId0;
+            var redId2 = "" + (redId0.indexOf("[") >= 0) ? redId0.substring(redId0.indexOf("[") + 1, redId0.length - 1) : null;
+
+            if (logger) console.log("------ Child is _NSDictionaryM")
+            if (logger) console.log("------ Override is (redid1)): " + redId1)
+            if (logger) console.log("------ Override is (redid2): " + redId2)
+            if (logger) console.log("------ idsMap does have it(1)? " + (idsMap.has(redId1) || idsMap.has(redId2)))
+            if ((idsMap.has(redId1) || idsMap.has(redId2))) { return true; };
           }
         }
       }
       else {
+        if (logger) console.log("---- Is NOOOOT _NSDictionaryM")
         try {
-          if (idsMap.has("" + overrides[key])) { return true; };
+          var redId0 = "" + overrides[key];
+          var redId1 = "" + (redId0.indexOf("[") >= 0) ? redId0.substring(0, redId0.indexOf("[")) : redId0;
+          var redId2 = "" + (redId0.indexOf("[") >= 0) ? redId0.substring(redId0.indexOf("[") + 1, redId0.length - 1) : null;
+
+          if (logger) console.log("---- Override is (redid0)): " + redId0)
+          if (logger) console.log("---- Override is (redid1)): " + redId1)
+          if (logger) console.log("---- Override is (redid2): " + redId2)
+          if (logger) console.log("---- idsMap does have it(2)? " + (idsMap.has(redId1) || idsMap.has(redId2)))
+          if ((idsMap.has(redId1) || idsMap.has(redId2))) { return true; };
         } catch (e) {
           Helpers.clog("Error while processing overrides (1).");
           Helpers.clog(idsMap);
@@ -1318,13 +1434,14 @@ function getColorVariableThumbnail(colorVariable) {
 function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
   var allStyles = [];
   const idsMap = new Map();
+  const idsPlusLibraryMap = new Map();
 
   if (includeAllStylesFromExternalLibraries) {
     libraries.forEach(function (lib) {
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
         lib.getDocument().sharedLayerStyles.forEach(function (sharedLayerStyle) {
           if (sharedLayerStyle.getLibrary() == null) {
-            var id1 = sharedLayerStyle.id;
+            var id1 = (sharedLayerStyle.id.indexOf("[") >= 0) ? sharedLayerStyle.id.substring(0, sharedLayerStyle.id.indexOf("[")) : sharedLayerStyle.id;
             var id2 = (sharedLayerStyle.id.indexOf("[") >= 0) ? sharedLayerStyle.id.substring(sharedLayerStyle.id.indexOf("[") + 1, sharedLayerStyle.id.length - 1) : null;
 
             var layerStyleObject = {
@@ -1347,6 +1464,9 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
               "localStyle": null
             }
 
+            if (sharedLayerStyle.name == "Tints/Active") console.log("🟠 Tints/Active ids are:" + id1 + " - " + id2)
+
+            if (sharedLayerStyle.name == "Tints/Active") console.log("--> Added it to layerStyles");
             allStyles.push(layerStyleObject);
             idsMap.set(id1 + "---" + lib.id, layerStyleObject);
             if (id2) idsMap.set(id2 + "---" + lib.id, layerStyleObject);
@@ -1357,29 +1477,29 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
   }
 
   document.sharedLayerStyles.forEach(function (sharedLayerStyle) {
-    var id1 = sharedLayerStyle.id;
+    var id1 = (sharedLayerStyle.id.indexOf("[") >= 0) ? sharedLayerStyle.id.substring(0, sharedLayerStyle.id.indexOf("[")) : sharedLayerStyle.id;
     var id2 = (sharedLayerStyle.id.indexOf("[") >= 0) ? sharedLayerStyle.id.substring(sharedLayerStyle.id.indexOf("[") + 1, sharedLayerStyle.id.length - 1) : null;
 
 
     var id1Comparison = id1 + ((sharedLayerStyle.getLibrary() != null) ? "---" + sharedLayerStyle.getLibrary().id : "");
     var id2Comparison = id2 + ((sharedLayerStyle.getLibrary() != null) ? "---" + sharedLayerStyle.getLibrary().id : "");
 
-    if (sharedLayerStyle.name.includes("Ultraviolet/500")) {
-      console.log(sharedLayerStyle.name + ": " + sharedLayerStyle.id);
-      console.log(sharedLayerStyle.sketchObject.isForeign());
+    // if (sharedLayerStyle.name.includes("Ultraviolet/500")) {
+    //   console.log(sharedLayerStyle.name + ": " + sharedLayerStyle.id);
+    //   console.log(sharedLayerStyle.sketchObject.isForeign());
 
-      if (!idsMap.has(id1Comparison) && !idsMap.has(id2Comparison)) {
-        console.log("-- Adding it to list");
-      }
-      else {
-        if (idsMap.get(id2Comparison)) {
-          console.log("-- Hit id2Comparison");
-        }
-        if (idsMap.get(id1Comparison)) {
-          console.log("-- Hit id1Comparison");
-        }
-      }
-    }
+    //   if (!idsMap.has(id1Comparison) && !idsMap.has(id2Comparison)) {
+    //     console.log("-- Adding it to list");
+    //   }
+    //   else {
+    //     if (idsMap.get(id2Comparison)) {
+    //       console.log("-- Hit id2Comparison");
+    //     }
+    //     if (idsMap.get(id1Comparison)) {
+    //       console.log("-- Hit id1Comparison");
+    //     }
+    //   }
+    // }
 
     var layerStyleObject = {
       "layerStyle": sharedLayerStyle,
@@ -1401,21 +1521,27 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
       "localStyle": null
     }
 
+    if (sharedLayerStyle.name == "Tints/Active") console.log("🔵 Tints/Active ids are:" + id1 + " - " + id2)
 
     if (!idsMap.has(id1Comparison) && !idsMap.has(id2Comparison)) {
       allStyles.push(layerStyleObject);
       idsMap.set(id1Comparison, layerStyleObject);
       if (id2) idsMap.set(id2Comparison, layerStyleObject);
+      if (sharedLayerStyle.name == "Tints/Active") console.log("--> Added it to layerStyles");
     }
     else {
       if (idsMap.get(id2Comparison)) {
+        if (sharedLayerStyle.name == "Tints/Active") console.log("--> Didn't add it. Matches id2comparison");
         idsMap.get(id2Comparison).localStyle = layerStyleObject;
         idsMap.get(id2Comparison).addedBy += "👻";
       }
       if (idsMap.get(id1Comparison)) {
+        if (sharedLayerStyle.name == "Tints/Active") console.log("--> Didn't add it. Matches id1comparison");
         idsMap.get(id1Comparison).localStyle = layerStyleObject;
         idsMap.get(id1Comparison).addedBy += "👻";
       }
+
+      if (sharedLayerStyle.name == "Tints/Active") console.log("--> End comparisons if");
     }
   });
 
@@ -2015,4 +2141,4 @@ function getSettings() {
 var _0x684b = ["\x70\x61\x74\x68", "\x6D\x61\x69\x6E\x50\x6C\x75\x67\x69\x6E\x73\x46\x6F\x6C\x64\x65\x72\x55\x52\x4C", "\x2F\x6D\x65\x72\x67\x65\x2E\x6A\x73\x6F\x6E", "\x6C\x6F\x67\x73", "\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x45\x6E\x61\x62\x6C\x65\x64\x42\x79\x44\x65\x66\x61\x75\x6C\x74", "\x6C\x6F\x67"]; function LoadSettings() { try { settingsFile = readFromFile(MSPluginManager[_0x684b[1]]()[_0x684b[0]]() + _0x684b[2]); if ((settingsFile != null) && (settingsFile[_0x684b[3]] != null)) { logsEnabled = settingsFile[_0x684b[3]] }; if ((settingsFile != null) && (settingsFile[_0x684b[4]] != null)) { librariesEnabledByDefault = settingsFile[_0x684b[4]] } } catch (e) { console[_0x684b[5]](e); return null } }
 //d9-05
 
-module.exports = { getSymbolInstances, compareStyleArrays, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getAllLayerStyles, getDefinedTextStyles, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getSelectedSymbolsSession, GetSpecificSymbolData, GetSpecificLayerStyleData, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, importTextStyleFromLibrary, getDefinedColorVariables, importColorVariableFromLibrary, getDuplicateColorVariables, FindAllSimilarColorVariables, analytics, getAllDuplicateSymbolsByName, getSymbolsMap, updateAllDuplicatesWithMap, ctime, ctimeEnd, sketchlocalfile, getTimingEnabled, getReducedDuplicateData, getReducedSymbolsSession, getAllDuplicateLayerStylesByName, getLayerStylesMap, getReducedLayerStyleData, getLayerStyleInstances, getLayerStyleOverrides, getAllTextStyles, getAllDuplicateTextStylesByName, dlog, getTextStylesMap, getReducedTextStyleData, getTextStyleInstances, getTextStyleOverrides };
+module.exports = { getSymbolInstances, compareStyleArrays, FindAllSimilarTextStyles, FindSimilarTextStyles, FindAllSimilarLayerStyles, FindSimilarLayerStyles, getAllLayerStyles, getDefinedTextStyles, IsInTrial, ExiGuthrie, Guthrie, valStatus, writeTextToFile, commands, getSelectedSymbolsSession, GetSpecificSymbolData, GetSpecificLayerStyleData, GetSpecificTextStyleData, shouldEnableContrastMode, countAllSymbols, writeTextToFile, readFromFile, LoadSettings, clog, getLogsEnabled, getSettings, getLibrariesEnabled, getAcquiredLicense, document, importSymbolFromLibrary, importLayerStyleFromLibrary, getSymbolOverrides, getSymbolInstances, importTextStyleFromLibrary, getDefinedColorVariables, importColorVariableFromLibrary, getDuplicateColorVariables, FindAllSimilarColorVariables, analytics, getAllDuplicateSymbolsByName, getSymbolsMap, updateAllDuplicatesWithMap, ctime, ctimeEnd, sketchlocalfile, getTimingEnabled, getReducedDuplicateData, getReducedSymbolsSession, getAllDuplicateLayerStylesByName, getLayerStylesMap, getReducedLayerStyleData, getLayerStyleInstances, getLayerStyleOverrides, getAllTextStyles, getAllDuplicateTextStylesByName, getSimpleLayerStylesMap, dlog, getTextStylesMap, getReducedTextStyleData, getTextStyleInstances, getTextStyleOverrides, sketch };
