@@ -66,25 +66,29 @@ function doUseColorSwatchesInLayers(colorVariable, colorVariablesToRemove) {
   const map = new Map();
 
   allLayers.forEach(layer => {
-    if (layer.type != "Slice") {
-      layer.style.fills
-        .concat(layer.style.borders)
-        .filter(item => item.fillType == 'Color')
-        .forEach(item => {
+    try{
+      if ((layer.type != "Slice") && (layer.type != "HotSpot")) {
+        layer.style.fills
+          .concat(layer.style.borders)
+          .filter(item => item.fillType == 'Color')
+          .forEach(item => {
+            colorVariablesToRemove.forEach(cvToRemove => {
+              if (item.color == cvToRemove.color) {
+                item.color = colorVariable.referencingColor;
+                if (!map.has(layer)) map.set(layer, true);
+              }
+            });
+          })
+        // Previous actions don't work for Text Layer colors that are colored using TextColor, so let's fix that:
+        if (layer.style.textColor) {
           colorVariablesToRemove.forEach(cvToRemove => {
-            if (item.color == cvToRemove.color) {
-              item.color = colorVariable.referencingColor;
-              if (!map.has(layer)) map.set(layer, true);
-            }
+            if (layer.style.textColor == cvToRemove.color)
+              layer.style.textColor = colorVariable.referencingColor;
           });
-        })
-      // Previous actions don't work for Text Layer colors that are colored using TextColor, so let's fix that:
-      if (layer.style.textColor) {
-        colorVariablesToRemove.forEach(cvToRemove => {
-          if (layer.style.textColor == cvToRemove.color)
-            layer.style.textColor = colorVariable.referencingColor;
-        });
+        }
       }
+    }catch (e){
+      console.log("Accessing style for layer '"+layer.name+"' ("+layer.type+") failed, and couldn't be checked.");
     }
   });
 

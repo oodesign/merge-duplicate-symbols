@@ -7297,23 +7297,27 @@ function doUseColorSwatchesInLayers(colorVariable, colorVariablesToRemove) {
 
   var map = new Map();
   allLayers.forEach(function (layer) {
-    if (layer.type != "Slice") {
-      layer.style.fills.concat(layer.style.borders).filter(function (item) {
-        return item.fillType == 'Color';
-      }).forEach(function (item) {
-        colorVariablesToRemove.forEach(function (cvToRemove) {
-          if (item.color == cvToRemove.color) {
-            item.color = colorVariable.referencingColor;
-            if (!map.has(layer)) map.set(layer, true);
-          }
-        });
-      }); // Previous actions don't work for Text Layer colors that are colored using TextColor, so let's fix that:
+    try {
+      if (layer.type != "Slice" && layer.type != "HotSpot") {
+        layer.style.fills.concat(layer.style.borders).filter(function (item) {
+          return item.fillType == 'Color';
+        }).forEach(function (item) {
+          colorVariablesToRemove.forEach(function (cvToRemove) {
+            if (item.color == cvToRemove.color) {
+              item.color = colorVariable.referencingColor;
+              if (!map.has(layer)) map.set(layer, true);
+            }
+          });
+        }); // Previous actions don't work for Text Layer colors that are colored using TextColor, so let's fix that:
 
-      if (layer.style.textColor) {
-        colorVariablesToRemove.forEach(function (cvToRemove) {
-          if (layer.style.textColor == cvToRemove.color) layer.style.textColor = colorVariable.referencingColor;
-        });
+        if (layer.style.textColor) {
+          colorVariablesToRemove.forEach(function (cvToRemove) {
+            if (layer.style.textColor == cvToRemove.color) layer.style.textColor = colorVariable.referencingColor;
+          });
+        }
       }
+    } catch (e) {
+      console.log("Accessing style for layer '" + layer.name + "' (" + layer.type + ") failed, and couldn't be checked.");
     }
   });
   Helpers.clog("Affected layers " + map.size);
