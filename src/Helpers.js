@@ -1276,7 +1276,6 @@ function getOvalThumbnail(sharedStyle) {
 
 
 function getTextThumbnail(sharedStyle) {
-  console.log(sharedStyle.style)
   var text = new Text({
     text: 'The quick brown fox',
     frame: new sketch.Rectangle(0, 0, 600, 100),
