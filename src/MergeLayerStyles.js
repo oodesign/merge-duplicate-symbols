@@ -202,10 +202,10 @@ export function MergeDuplicateLayerStyles(context) {
   function CalculateDuplicates(includeLibraries) {
     Helpers.clog("Finding duplicate layer styles. Including libraries:" + includeLibraries);
     onlyDuplicatedLayerStyles = Helpers.getAllDuplicateLayerStylesByName(context, includeLibraries);
-    console.log(onlyDuplicatedLayerStyles);
+    Helpers.dlog(onlyDuplicatedLayerStyles);
 
     layerStylesMap = Helpers.getLayerStylesMap(context, onlyDuplicatedLayerStyles);
-    console.log(layerStylesMap);
+    Helpers.dlog(layerStylesMap);
 
     if (onlyDuplicatedLayerStyles.length > 0) {
       Helpers.GetSpecificLayerStyleData(onlyDuplicatedLayerStyles[0], layerStylesMap);
@@ -220,7 +220,7 @@ export function MergeDuplicateLayerStyles(context) {
           "isProcessed": (mergeSession.length == 0)
         });
       });
-      console.log(mergeSession);
+      Helpers.dlog(mergeSession);
     }
   }
 

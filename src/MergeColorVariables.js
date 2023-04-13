@@ -88,7 +88,7 @@ function doUseColorSwatchesInLayers(colorVariable, colorVariablesToRemove) {
         }
       }
     }catch (e){
-      console.log("Accessing style for layer '"+layer.name+"' ("+layer.type+") failed, and couldn't be checked.");
+      Helpers.clog("Accessing style for layer '"+layer.name+"' ("+layer.type+") failed, and couldn't be checked.");
     }
   });
 

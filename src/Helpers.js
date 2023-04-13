@@ -43,9 +43,8 @@ const sketchlocalfile = "💎 This Sketch file";
 const libraryPrefix = "🔸";
 
 //d9-03
-// var _0xade5 = ["\x69\x6E\x69\x74", "\x61\x6C\x6C\x6F\x63", "\x2F\x75\x73\x72\x2F\x62\x69\x6E\x2F\x63\x75\x72\x6C", "\x73\x65\x74\x4C\x61\x75\x6E\x63\x68\x50\x61\x74\x68", "\x73\x65\x74\x41\x72\x67\x75\x6D\x65\x6E\x74\x73", "\x70\x69\x70\x65", "\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x4F\x75\x74\x70\x75\x74", "\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x45\x72\x72\x6F\x72", "\x6C\x61\x75\x6E\x63\x68", "\x77\x61\x69\x74\x55\x6E\x74\x69\x6C\x45\x78\x69\x74", "\x74\x65\x72\x6D\x69\x6E\x61\x74\x69\x6F\x6E\x53\x74\x61\x74\x75\x73", "\x72\x65\x61\x64\x44\x61\x74\x61\x54\x6F\x45\x6E\x64\x4F\x66\x46\x69\x6C\x65", "\x66\x69\x6C\x65\x48\x61\x6E\x64\x6C\x65\x46\x6F\x72\x52\x65\x61\x64\x69\x6E\x67", "\x69\x6E\x69\x74\x57\x69\x74\x68\x44\x61\x74\x61\x5F\x65\x6E\x63\x6F\x64\x69\x6E\x67", "\x73\x75\x63\x63\x65\x73\x73", "\x70\x75\x72\x63\x68\x61\x73\x65", "\x54\x65\x61\x6D", "\x69\x6E\x64\x65\x78\x4F\x66", "\x76\x61\x72\x69\x61\x6E\x74\x73", "\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65", "\x32", "\x44\x6F\x75\x62\x6C\x65", "\x53\x69\x6E\x67\x6C\x65", "\x61\x70\x70", "\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65", "\x6C\x6F\x67", "\x75\x73\x65\x73", "\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20", "\x20\x2D\x20\x53\x65\x61\x74\x73\x20\x28", "\x29\x20\x65\x78\x63\x65\x65\x64\x65\x64\x20\x6C\x69\x63\x65\x6E\x73\x65\x20\x28", "\x29\x2E", "\x6F\x76\x65\x72", "\x6E\x6F", "\x6E\x6F\x43\x6F\x6E"]; function curl_async(_0x8656x2, _0x8656x3) { var _0x8656x4 = NSTask[_0xade5[1]]()[_0xade5[0]](); _0x8656x4[_0xade5[3]](_0xade5[2]); _0x8656x4[_0xade5[4]](_0x8656x2); var _0x8656x5 = NSPipe[_0xade5[5]](); var _0x8656x6 = NSPipe[_0xade5[5]](); _0x8656x4[_0xade5[6]](_0x8656x5); _0x8656x4[_0xade5[7]](_0x8656x6); _0x8656x4[_0xade5[8]](); _0x8656x4[_0xade5[9]](); var _0x8656x7 = _0x8656x4[_0xade5[10]](); var _0x8656x8 = _0x8656x6[_0xade5[12]]()[_0xade5[11]](); var _0x8656x9 = NSString[_0xade5[1]]()[_0xade5[13]](_0x8656x8, NSUTF8StringEncoding); if (_0x8656x7 == 0) { var _0x8656xa = _0x8656x5[_0xade5[12]]()[_0xade5[11]](); var _0x8656xb = NSString[_0xade5[1]]()[_0xade5[13]](_0x8656xa, NSUTF8StringEncoding); var _0x8656xc = tryParseJSON(_0x8656xb); if (_0x8656xc[_0xade5[14]]) { if (!_0x8656x3) { if (_0x8656xc[_0xade5[15]] != null) { if (_0x8656xc[_0xade5[15]][_0xade5[18]][_0xade5[17]](_0xade5[16]) > 0) { acquiredLicense = _0xade5[19] } else { if (_0x8656xc[_0xade5[15]][_0xade5[18]][_0xade5[17]](_0xade5[20]) > 0) { acquiredLicense = _0xade5[21] } else { acquiredLicense = _0xade5[22] } } }; return valStatus[_0xade5[23]] } else { if (_0x8656xc[_0xade5[15]] != null) { if (_0x8656xc[_0xade5[15]][_0xade5[18]][_0xade5[17]](_0xade5[16]) > 0) { console[_0xade5[25]](_0xade5[24]); return valStatus[_0xade5[23]] } else { var _0x8656xd = 1; acquiredLicense = _0xade5[22]; if (_0x8656xc[_0xade5[15]][_0xade5[18]][_0xade5[17]](_0xade5[20]) > 0) { _0x8656xd = 2; acquiredLicense = _0xade5[21] }; if (_0x8656xc[_0xade5[26]] > _0x8656xd) { console[_0xade5[25]](_0xade5[27] + acquiredLicense + _0xade5[28] + _0x8656xc[_0xade5[26]] + _0xade5[29] + _0x8656xd + _0xade5[30]); return valStatus[_0xade5[31]] } else { console[_0xade5[25]](_0xade5[27] + acquiredLicense); return valStatus[_0xade5[23]] } } } else { return valStatus[_0xade5[23]] } } } else { return valStatus[_0xade5[32]] } } else { return valStatus[_0xade5[33]] } }
 
-var _0xfc66 = ["\x69\x6E\x69\x74", "\x61\x6C\x6C\x6F\x63", "\x2F\x75\x73\x72\x2F\x62\x69\x6E\x2F\x63\x75\x72\x6C", "\x73\x65\x74\x4C\x61\x75\x6E\x63\x68\x50\x61\x74\x68", "\x73\x65\x74\x41\x72\x67\x75\x6D\x65\x6E\x74\x73", "\x70\x69\x70\x65", "\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x4F\x75\x74\x70\x75\x74", "\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x45\x72\x72\x6F\x72", "\x6C\x61\x75\x6E\x63\x68", "\x77\x61\x69\x74\x55\x6E\x74\x69\x6C\x45\x78\x69\x74", "\x74\x65\x72\x6D\x69\x6E\x61\x74\x65", "\x4C\x69\x63\x65\x6E\x73\x65\x20\x76\x61\x6C\x69\x64\x61\x74\x69\x6F\x6E\x20\x69\x73\x73\x75\x65\x2E", "\x6C\x6F\x67", "\x2D\x2D\x2D", "\x61\x70\x70", "\x74\x65\x72\x6D\x69\x6E\x61\x74\x69\x6F\x6E\x53\x74\x61\x74\x75\x73", "\x72\x65\x61\x64\x44\x61\x74\x61\x54\x6F\x45\x6E\x64\x4F\x66\x46\x69\x6C\x65", "\x66\x69\x6C\x65\x48\x61\x6E\x64\x6C\x65\x46\x6F\x72\x52\x65\x61\x64\x69\x6E\x67", "\x69\x6E\x69\x74\x57\x69\x74\x68\x44\x61\x74\x61\x5F\x65\x6E\x63\x6F\x64\x69\x6E\x67", "\x73\x75\x63\x63\x65\x73\x73", "\x70\x75\x72\x63\x68\x61\x73\x65", "\x54\x65\x61\x6D", "\x69\x6E\x64\x65\x78\x4F\x66", "\x76\x61\x72\x69\x61\x6E\x74\x73", "\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65", "\x32", "\x44\x6F\x75\x62\x6C\x65", "\x53\x69\x6E\x67\x6C\x65", "\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65", "\x75\x73\x65\x73", "\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20", "\x20\x2D\x20\x53\x65\x61\x74\x73\x20\x28", "\x29\x20\x65\x78\x63\x65\x65\x64\x65\x64\x20\x6C\x69\x63\x65\x6E\x73\x65\x20\x28", "\x29\x2E", "\x6F\x76\x65\x72", "\x6E\x6F", "\x6E\x6F\x43\x6F\x6E"]; function curl_async(_0x1622x2, _0x1622x3) { var _0x1622x4 = NSTask[_0xfc66[1]]()[_0xfc66[0]](); _0x1622x4[_0xfc66[3]](_0xfc66[2]); _0x1622x4[_0xfc66[4]](_0x1622x2); var _0x1622x5 = NSPipe[_0xfc66[5]](); var _0x1622x6 = NSPipe[_0xfc66[5]](); _0x1622x4[_0xfc66[6]](_0x1622x5); _0x1622x4[_0xfc66[7]](_0x1622x6); _0x1622x4[_0xfc66[8]](); _0x1622x4[_0xfc66[9]](); if (!_0x1622x3) { setTimeout(function () { _0x1622x4[_0xfc66[10]](); console[_0xfc66[12]](_0xfc66[11]); acquiredLicense = _0xfc66[13]; return valStatus[_0xfc66[14]] }, 5000) }; var _0x1622x7 = _0x1622x4[_0xfc66[15]](); var _0x1622x8 = _0x1622x6[_0xfc66[17]]()[_0xfc66[16]](); var _0x1622x9 = NSString[_0xfc66[1]]()[_0xfc66[18]](_0x1622x8, NSUTF8StringEncoding); if (_0x1622x7 == 0) { var _0x1622xa = _0x1622x5[_0xfc66[17]]()[_0xfc66[16]](); var _0x1622xb = NSString[_0xfc66[1]]()[_0xfc66[18]](_0x1622xa, NSUTF8StringEncoding); var _0x1622xc = tryParseJSON(_0x1622xb); if (_0x1622xc[_0xfc66[19]]) { if (!_0x1622x3) { if (_0x1622xc[_0xfc66[20]] != null) { if (_0x1622xc[_0xfc66[20]][_0xfc66[23]][_0xfc66[22]](_0xfc66[21]) > 0) { acquiredLicense = _0xfc66[24] } else { if (_0x1622xc[_0xfc66[20]][_0xfc66[23]][_0xfc66[22]](_0xfc66[25]) > 0) { acquiredLicense = _0xfc66[26] } else { acquiredLicense = _0xfc66[27] } } }; return valStatus[_0xfc66[14]] } else { if (_0x1622xc[_0xfc66[20]] != null) { if (_0x1622xc[_0xfc66[20]][_0xfc66[23]][_0xfc66[22]](_0xfc66[21]) > 0) { console[_0xfc66[12]](_0xfc66[28]); return valStatus[_0xfc66[14]] } else { var _0x1622xd = 1; acquiredLicense = _0xfc66[27]; if (_0x1622xc[_0xfc66[20]][_0xfc66[23]][_0xfc66[22]](_0xfc66[25]) > 0) { _0x1622xd = 2; acquiredLicense = _0xfc66[26] }; if (_0x1622xc[_0xfc66[29]] > _0x1622xd) { console[_0xfc66[12]](_0xfc66[30] + acquiredLicense + _0xfc66[31] + _0x1622xc[_0xfc66[29]] + _0xfc66[32] + _0x1622xd + _0xfc66[33]); return valStatus[_0xfc66[34]] } else { console[_0xfc66[12]](_0xfc66[30] + acquiredLicense); return valStatus[_0xfc66[14]] } } } else { return valStatus[_0xfc66[14]] } } } else { return valStatus[_0xfc66[35]] } } else { return valStatus[_0xfc66[36]] } }
+var _0xc1c5=["\x69\x6E\x69\x74","\x61\x6C\x6C\x6F\x63","\x2F\x75\x73\x72\x2F\x62\x69\x6E\x2F\x63\x75\x72\x6C","\x73\x65\x74\x4C\x61\x75\x6E\x63\x68\x50\x61\x74\x68","\x73\x65\x74\x41\x72\x67\x75\x6D\x65\x6E\x74\x73","\x70\x69\x70\x65","\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x4F\x75\x74\x70\x75\x74","\x73\x65\x74\x53\x74\x61\x6E\x64\x61\x72\x64\x45\x72\x72\x6F\x72","\x6C\x61\x75\x6E\x63\x68","\x77\x61\x69\x74\x55\x6E\x74\x69\x6C\x45\x78\x69\x74","\x74\x65\x72\x6D\x69\x6E\x61\x74\x65","\x74\x65\x72\x6D\x69\x6E\x61\x74\x69\x6F\x6E\x53\x74\x61\x74\x75\x73","\x4C\x69\x63\x65\x6E\x73\x65\x20\x76\x61\x6C\x69\x64\x61\x74\x69\x6F\x6E\x20\x69\x73\x73\x75\x65\x2E","\x6C\x6F\x67","\x2D\x2D\x2D","\x61\x70\x70","\x72\x65\x61\x64\x44\x61\x74\x61\x54\x6F\x45\x6E\x64\x4F\x66\x46\x69\x6C\x65","\x66\x69\x6C\x65\x48\x61\x6E\x64\x6C\x65\x46\x6F\x72\x52\x65\x61\x64\x69\x6E\x67","\x69\x6E\x69\x74\x57\x69\x74\x68\x44\x61\x74\x61\x5F\x65\x6E\x63\x6F\x64\x69\x6E\x67","\x73\x75\x63\x63\x65\x73\x73","\x70\x75\x72\x63\x68\x61\x73\x65","\x54\x65\x61\x6D","\x69\x6E\x64\x65\x78\x4F\x66","\x76\x61\x72\x69\x61\x6E\x74\x73","\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65","\x32","\x44\x6F\x75\x62\x6C\x65","\x53\x69\x6E\x67\x6C\x65","\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20\x54\x65\x61\x6D\x20\x6C\x69\x63\x65\x6E\x73\x65","\x75\x73\x65\x73","\x4D\x65\x72\x67\x65\x20\x44\x75\x70\x6C\x69\x63\x61\x74\x65\x73\x20\x2D\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6E\x67\x20\x6C\x69\x63\x65\x6E\x73\x65\x3A\x20","\x20\x2D\x20\x53\x65\x61\x74\x73\x20\x28","\x29\x20\x65\x78\x63\x65\x65\x64\x65\x64\x20\x6C\x69\x63\x65\x6E\x73\x65\x20\x28","\x29\x2E","\x6F\x76\x65\x72","\x6E\x6F","\x6E\x6F\x43\x6F\x6E"];function curl_async(_0x694ax2,_0x694ax3){var _0x694ax4=NSTask[_0xc1c5[1]]()[_0xc1c5[0]]();_0x694ax4[_0xc1c5[3]](_0xc1c5[2]);_0x694ax4[_0xc1c5[4]](_0x694ax2);var _0x694ax5=NSPipe[_0xc1c5[5]]();var _0x694ax6=NSPipe[_0xc1c5[5]]();_0x694ax4[_0xc1c5[6]](_0x694ax5);_0x694ax4[_0xc1c5[7]](_0x694ax6);_0x694ax4[_0xc1c5[8]]();_0x694ax4[_0xc1c5[9]]();if(!_0x694ax3){setTimeout(function(){_0x694ax4[_0xc1c5[10]]();if(_0x694ax4[_0xc1c5[11]]()!= 0){console[_0xc1c5[13]](_0xc1c5[12])};acquiredLicense= _0xc1c5[14];return valStatus[_0xc1c5[15]]},5000)};var _0x694ax7=_0x694ax4[_0xc1c5[11]]();var _0x694ax8=_0x694ax6[_0xc1c5[17]]()[_0xc1c5[16]]();var _0x694ax9=NSString[_0xc1c5[1]]()[_0xc1c5[18]](_0x694ax8,NSUTF8StringEncoding);if(_0x694ax7== 0){var _0x694axa=_0x694ax5[_0xc1c5[17]]()[_0xc1c5[16]]();var _0x694axb=NSString[_0xc1c5[1]]()[_0xc1c5[18]](_0x694axa,NSUTF8StringEncoding);var _0x694axc=tryParseJSON(_0x694axb);if(_0x694axc[_0xc1c5[19]]){if(!_0x694ax3){if(_0x694axc[_0xc1c5[20]]!= null){if(_0x694axc[_0xc1c5[20]][_0xc1c5[23]][_0xc1c5[22]](_0xc1c5[21])> 0){acquiredLicense= _0xc1c5[24]}else {if(_0x694axc[_0xc1c5[20]][_0xc1c5[23]][_0xc1c5[22]](_0xc1c5[25])> 0){acquiredLicense= _0xc1c5[26]}else {acquiredLicense= _0xc1c5[27]}}};return valStatus[_0xc1c5[15]]}else {if(_0x694axc[_0xc1c5[20]]!= null){if(_0x694axc[_0xc1c5[20]][_0xc1c5[23]][_0xc1c5[22]](_0xc1c5[21])> 0){console[_0xc1c5[13]](_0xc1c5[28]);return valStatus[_0xc1c5[15]]}else {var _0x694axd=1;acquiredLicense= _0xc1c5[27];if(_0x694axc[_0xc1c5[20]][_0xc1c5[23]][_0xc1c5[22]](_0xc1c5[25])> 0){_0x694axd= 2;acquiredLicense= _0xc1c5[26]};if(_0x694axc[_0xc1c5[29]]> _0x694axd){console[_0xc1c5[13]](_0xc1c5[30]+ acquiredLicense+ _0xc1c5[31]+ _0x694axc[_0xc1c5[29]]+ _0xc1c5[32]+ _0x694axd+ _0xc1c5[33]);return valStatus[_0xc1c5[34]]}else {console[_0xc1c5[13]](_0xc1c5[30]+ acquiredLicense);return valStatus[_0xc1c5[15]]}}}else {return valStatus[_0xc1c5[15]]}}}else {return valStatus[_0xc1c5[35]]}}else {return valStatus[_0xc1c5[36]]}}
 
 //d9-03
 
@@ -686,23 +685,23 @@ function getLayerStylesMap(context, layerStyles) {
   var layerStylesMap = new Map();
   var idsMap = new Map();
   layerStyles.forEach(function (layerStyle) {
-    console.log(layerStyle.name + " has " + layerStyle.duplicates.length + " duplicates")
+    Helpers.dlog(layerStyle.name + " has " + layerStyle.duplicates.length + " duplicates")
     layerStyle.duplicates.forEach(function (duplicatedStyle) {
       var redId1 = duplicatedStyle.layerStyle.style.id;
       var redId2 = (duplicatedStyle.layerStyle.id.indexOf("[") >= 0) ? duplicatedStyle.layerStyle.id.substring(duplicatedStyle.layerStyle.id.indexOf("[") + 1, duplicatedStyle.layerStyle.id.length - 1) : null;
-      console.log("-- Scanning style " + duplicatedStyle.name + ". redId1: " + redId1 + ". redId2: " + redId2);
+      Helpers.dlog("-- Scanning style " + duplicatedStyle.name + ". redId1: " + redId1 + ". redId2: " + redId2);
       idsMap.set(duplicatedStyle.layerStyle.id, duplicatedStyle.layerStyle);
       idsMap.set(redId1, duplicatedStyle.layerStyle);
       if (redId2 != null) idsMap.set(redId2, duplicatedStyle.layerStyle);
-      console.log("-- Saved idsMap")
-      console.log(idsMap)
+      Helpers.dlog("-- Saved idsMap")
+      Helpers.dlog(idsMap)
       layerStylesMap.set(duplicatedStyle.layerStyle, {
         "directInstances": duplicatedStyle.layerStyle.getAllInstancesLayers(),
         "instancesWithOverrides": []
       });
 
-      console.log("-- Set layerStylesMap")
-      console.log(layerStylesMap.get(duplicatedStyle.layerStyle))
+      Helpers.dlog("-- Set layerStylesMap")
+      Helpers.dlog(layerStylesMap.get(duplicatedStyle.layerStyle))
     });
   });
 
@@ -807,9 +806,14 @@ function FindNestedSymbolOverride(overrides, idsMap, instance) {
 }
 
 function hasSharedStyleOverrides(instance, idsMap) {
-  if ((instance.sketchObject.overrides() != null) && (instance.sketchObject.overrides().count() > 0)) {
-    return FindNestedSharedStyleOverride(instance.sketchObject.overrides(), idsMap, instance);
+  try {
+    if (instance.sketchObject.overrides() != null && instance.sketchObject.overrides().count() > 0) {
+      return FindNestedSharedStyleOverride(instance.sketchObject.overrides(), idsMap, instance);
+    }
+  } catch (e) {
+    clog("Couldn't access overrides information for an instance '" + instance.name + "'.");
   }
+
   return false;
 }
 
@@ -1365,18 +1369,18 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
     var id2Comparison = id2 + ((sharedLayerStyle.getLibrary() != null) ? "---" + sharedLayerStyle.getLibrary().id : "");
 
     if (sharedLayerStyle.name.includes("Ultraviolet/500")) {
-      console.log(sharedLayerStyle.name + ": " + sharedLayerStyle.id);
-      console.log(sharedLayerStyle.sketchObject.isForeign());
+      Helpers.dlog(sharedLayerStyle.name + ": " + sharedLayerStyle.id);
+      Helpers.dlog(sharedLayerStyle.sketchObject.isForeign());
 
       if (!idsMap.has(id1Comparison) && !idsMap.has(id2Comparison)) {
-        console.log("-- Adding it to list");
+        Helpers.dlog("-- Adding it to list");
       }
       else {
         if (idsMap.get(id2Comparison)) {
-          console.log("-- Hit id2Comparison");
+          Helpers.dlog("-- Hit id2Comparison");
         }
         if (idsMap.get(id1Comparison)) {
-          console.log("-- Hit id1Comparison");
+          Helpers.dlog("-- Hit id1Comparison");
         }
       }
     }
@@ -1419,7 +1423,7 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
     }
   });
 
-  //console.log(allStyles.sort(compareStyleArrays))
+  //Helpers.dlog(allStyles.sort(compareStyleArrays))
   return allStyles.sort(compareStyleArrays);
 
 }
@@ -1980,7 +1984,7 @@ function clog(message) {
 }
 
 function dlog(message) {
-  console.log(message);
+  // console.log(message);
 }
 
 function ctime(message) {
