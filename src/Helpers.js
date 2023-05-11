@@ -687,23 +687,23 @@ function getLayerStylesMap(context, layerStyles) {
   var layerStylesMap = new Map();
   var idsMap = new Map();
   layerStyles.forEach(function (layerStyle) {
-    Helpers.dlog(layerStyle.name + " has " + layerStyle.duplicates.length + " duplicates")
+    dlog(layerStyle.name + " has " + layerStyle.duplicates.length + " duplicates")
     layerStyle.duplicates.forEach(function (duplicatedStyle) {
       var redId1 = duplicatedStyle.layerStyle.style.id;
       var redId2 = (duplicatedStyle.layerStyle.id.indexOf("[") >= 0) ? duplicatedStyle.layerStyle.id.substring(duplicatedStyle.layerStyle.id.indexOf("[") + 1, duplicatedStyle.layerStyle.id.length - 1) : null;
-      Helpers.dlog("-- Scanning style " + duplicatedStyle.name + ". redId1: " + redId1 + ". redId2: " + redId2);
+      dlog("-- Scanning style " + duplicatedStyle.name + ". redId1: " + redId1 + ". redId2: " + redId2);
       idsMap.set(duplicatedStyle.layerStyle.id, duplicatedStyle.layerStyle);
       idsMap.set(redId1, duplicatedStyle.layerStyle);
       if (redId2 != null) idsMap.set(redId2, duplicatedStyle.layerStyle);
-      Helpers.dlog("-- Saved idsMap")
-      Helpers.dlog(idsMap)
+      dlog("-- Saved idsMap")
+      dlog(idsMap)
       layerStylesMap.set(duplicatedStyle.layerStyle, {
         "directInstances": duplicatedStyle.layerStyle.getAllInstancesLayers(),
         "instancesWithOverrides": []
       });
 
-      Helpers.dlog("-- Set layerStylesMap")
-      Helpers.dlog(layerStylesMap.get(duplicatedStyle.layerStyle))
+      dlog("-- Set layerStylesMap")
+      dlog(layerStylesMap.get(duplicatedStyle.layerStyle))
     });
   });
 
@@ -837,10 +837,10 @@ function FindNestedSharedStyleOverride(overrides, idsMap, instance, level) {
         try {
           if (idsMap.has("" + overrides[key])) { return true; };
         } catch (e) {
-          Helpers.clog("Error while processing overrides (1).");
-          Helpers.clog(idsMap);
-          Helpers.clog(overrides[key]);
-          Helpers.clog(e);
+          clog("Error while processing overrides (1).");
+          clog(idsMap);
+          clog(overrides[key]);
+          clog(e);
         }
       }
     }
@@ -848,10 +848,10 @@ function FindNestedSharedStyleOverride(overrides, idsMap, instance, level) {
       try {
         if (FindNestedSharedStyleOverride(overrides[key], idsMap, instance, level + 1)) return true;
       } catch (e) {
-        Helpers.clog("Error while processing overrides (2).");
-        Helpers.clog(idsMap);
-        Helpers.clog(overrides[key]);
-        Helpers.clog(e);
+        clog("Error while processing overrides (2).");
+        clog(idsMap);
+        clog(overrides[key]);
+        clog(e);
       }
     }
   }
@@ -1371,18 +1371,18 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
     var id2Comparison = id2 + ((sharedLayerStyle.getLibrary() != null) ? "---" + sharedLayerStyle.getLibrary().id : "");
 
     if (sharedLayerStyle.name.includes("Ultraviolet/500")) {
-      Helpers.dlog(sharedLayerStyle.name + ": " + sharedLayerStyle.id);
-      Helpers.dlog(sharedLayerStyle.sketchObject.isForeign());
+      dlog(sharedLayerStyle.name + ": " + sharedLayerStyle.id);
+      dlog(sharedLayerStyle.sketchObject.isForeign());
 
       if (!idsMap.has(id1Comparison) && !idsMap.has(id2Comparison)) {
-        Helpers.dlog("-- Adding it to list");
+        dlog("-- Adding it to list");
       }
       else {
         if (idsMap.get(id2Comparison)) {
-          Helpers.dlog("-- Hit id2Comparison");
+          dlog("-- Hit id2Comparison");
         }
         if (idsMap.get(id1Comparison)) {
-          Helpers.dlog("-- Hit id1Comparison");
+          dlog("-- Hit id1Comparison");
         }
       }
     }
@@ -1425,7 +1425,7 @@ function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
     }
   });
 
-  //Helpers.dlog(allStyles.sort(compareStyleArrays))
+  //dlog(allStyles.sort(compareStyleArrays))
   return allStyles.sort(compareStyleArrays);
 
 }
