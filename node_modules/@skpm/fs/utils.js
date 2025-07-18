@@ -30,51 +30,51 @@ module.exports.parseStat = function parseStat(result) {
     birthtime: new Date(
       Number(result.NSFileCreationDate.timeIntervalSince1970()) * 1000 + 0.5
     ),
-    isBlockDevice: function() {
+    isBlockDevice: function () {
       return result.NSFileType === NSFileTypeBlockSpecial;
     },
-    isCharacterDevice: function() {
+    isCharacterDevice: function () {
       return result.NSFileType === NSFileTypeCharacterSpecial;
     },
-    isDirectory: function() {
+    isDirectory: function () {
       return result.NSFileType === NSFileTypeDirectory;
     },
-    isFIFO: function() {
+    isFIFO: function () {
       return false;
     },
-    isFile: function() {
+    isFile: function () {
       return result.NSFileType === NSFileTypeRegular;
     },
-    isSocket: function() {
+    isSocket: function () {
       return result.NSFileType === NSFileTypeSocket;
     },
-    isSymbolicLink: function() {
+    isSymbolicLink: function () {
       return result.NSFileType === NSFileTypeSymbolicLink;
-    }
+    },
   };
 };
 
 var ERRORS = {
   EPERM: {
     message: "operation not permitted",
-    errno: -1
+    errno: -1,
   },
   ENOENT: {
     message: "no such file or directory",
-    errno: -2
+    errno: -2,
   },
   EACCES: {
     message: "permission denied",
-    errno: -13
+    errno: -13,
   },
   ENOTDIR: {
     message: "not a directory",
-    errno: -20
+    errno: -20,
   },
   EISDIR: {
     message: "illegal operation on a directory",
-    errno: -21
-  }
+    errno: -21,
+  },
 };
 
 function fsError(code, options) {
@@ -87,7 +87,7 @@ function fsError(code, options) {
       (options.path ? " '" + options.path + "'" : "")
   );
 
-  Object.keys(options).forEach(function(k) {
+  Object.keys(options).forEach(function (k) {
     error[k] = options[k];
   });
 
@@ -110,27 +110,27 @@ module.exports.fsErrorForPath = function fsErrorForPath(
   if (!doesExist) {
     return fsError("ENOENT", {
       path: path,
-      syscall: syscall || "open"
+      syscall: syscall || "open",
     });
   }
   var isReadable = fileManager.isReadableFileAtPath(path);
   if (!isReadable) {
     return fsError("EACCES", {
       path: path,
-      syscall: syscall || "open"
+      syscall: syscall || "open",
     });
   }
   if (typeof shouldBeDir !== "undefined") {
-    var isDirectory = module.exports.lstatSync(path).isDirectory();
+    var isDirectory = require("./index").lstatSync(path).isDirectory();
     if (isDirectory && !shouldBeDir) {
       return fsError("EISDIR", {
         path: path,
-        syscall: syscall || "read"
+        syscall: syscall || "read",
       });
     } else if (!isDirectory && shouldBeDir) {
       return fsError("ENOTDIR", {
         path: path,
-        syscall: syscall || "read"
+        syscall: syscall || "read",
       });
     }
   }
@@ -149,7 +149,7 @@ module.exports.encodingFromOptions = function encodingFromOptions(
 };
 
 module.exports.NOT_IMPLEMENTED = function NOT_IMPLEMENTED(name) {
-  return function() {
+  return function () {
     throw new Error(
       "fs." +
         name +

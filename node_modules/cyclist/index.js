@@ -1,11 +1,6 @@
-var twoify = function (n) {
-  if (n && !(n & (n - 1))) return n
-  var p = 1
-  while (p < n) p <<= 1
-  return p
-}
+/* eslint-disable no-var */
 
-var Cyclist = function (size) {
+function Cyclist (size) {
   if (!(this instanceof Cyclist)) return new Cyclist(size)
   size = twoify(size)
   this.mask = size - 1
@@ -31,3 +26,10 @@ Cyclist.prototype.del = function (index) {
 }
 
 module.exports = Cyclist
+
+function twoify (n) {
+  if (n && !(n & (n - 1))) return n
+  var p = 1
+  while (p < n) p <<= 1
+  return p
+}

@@ -44,16 +44,16 @@ describe('DES-CBC', function() {
 
     vectors.forEach(function(vec, i) {
       it('should encrypt vector ' + i, function() {
-        var key = new Buffer(vec.key, 'hex');
-        var iv = new Buffer(vec.iv, 'hex');
-        var input = new Buffer(vec.input, 'hex');
+        var key = Buffer.from(vec.key, 'hex');
+        var iv = Buffer.from(vec.iv, 'hex');
+        var input = Buffer.from(vec.input, 'hex');
 
         var enc = CBC.create({
           type: 'encrypt',
           key: key,
           iv: iv
         });
-        var out = new Buffer(enc.update(input).concat(enc.final()));
+        var out = Buffer.from(enc.update(input).concat(enc.final()));
 
         var cipher = crypto.createCipheriv('des-cbc', key, iv);
         var expected = Buffer.concat([ cipher.update(input), cipher.final() ]);
@@ -65,7 +65,7 @@ describe('DES-CBC', function() {
           key: key,
           iv: iv
         });
-        assert.deepEqual(new Buffer(dec.update(out).concat(dec.final())),
+        assert.deepEqual(Buffer.from(dec.update(out).concat(dec.final())),
                          input);
       });
     });

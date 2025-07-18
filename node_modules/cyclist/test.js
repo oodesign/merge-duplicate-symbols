@@ -1,37 +1,37 @@
-var tape = require('tape')
-var cyclist = require('./')
+const test = require('brittle')
+const cyclist = require('./')
 
-tape('basic put and get', function (t) {
-  var list = cyclist(2)
+test('basic put and get', function (t) {
+  const list = cyclist(2)
   list.put(0, 'hello')
   list.put(1, 'world')
-  t.same(list.get(0), 'hello')
-  t.same(list.get(1), 'world')
+  t.is(list.get(0), 'hello')
+  t.is(list.get(1), 'world')
   t.end()
 })
 
-tape('overflow put and get', function (t) {
-  var list = cyclist(2)
+test('overflow put and get', function (t) {
+  const list = cyclist(2)
   list.put(0, 'hello')
   list.put(1, 'world')
   list.put(2, 'verden')
-  t.same(list.get(0), 'verden')
-  t.same(list.get(1), 'world')
-  t.same(list.get(2), 'verden')
+  t.is(list.get(0), 'verden')
+  t.is(list.get(1), 'world')
+  t.is(list.get(2), 'verden')
   t.end()
 })
 
-tape('del', function (t) {
-  var list = cyclist(2)
+test('del', function (t) {
+  const list = cyclist(2)
   list.put(0, 'hello')
-  t.same(list.get(0), 'hello')
+  t.is(list.get(0), 'hello')
   list.del(0)
   t.ok(!list.get(0))
   t.end()
 })
 
-tape('multiple of two', function (t) {
-  var list = cyclist(3)
-  t.same(list.size, 4)
+test('multiple of two', function (t) {
+  const list = cyclist(3)
+  t.is(list.size, 4)
   t.end()
 })

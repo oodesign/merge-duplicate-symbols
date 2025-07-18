@@ -42,18 +42,18 @@ describe('DES-EDE-CBC', function() {
       }
     ];
 
-    vectors.forEach(function(vec, i) {
+     vectors.forEach(function(vec, i) {
       it('should encrypt vector ' + i, function() {
-        var key = new Buffer(vec.key, 'hex');
-        var iv = new Buffer(vec.iv, 'hex');
-        var input = new Buffer(vec.input, 'hex');
+        var key = Buffer.from(vec.key, 'hex');
+        var iv = Buffer.from(vec.iv, 'hex');
+        var input = Buffer.from(vec.input, 'hex');
 
         var enc = CBC.create({
           type: 'encrypt',
           key: key,
           iv: iv
         });
-        var out = new Buffer(enc.update(input).concat(enc.final()));
+        var out = Buffer.from(enc.update(input).concat(enc.final()));
 
         var cipher = crypto.createCipheriv('des-ede3-cbc', key, iv);
         var expected = Buffer.concat([ cipher.update(input), cipher.final() ]);
@@ -65,8 +65,41 @@ describe('DES-EDE-CBC', function() {
           key: key,
           iv: iv
         });
-        assert.deepEqual(new Buffer(dec.update(out).concat(dec.final())),
+        assert.deepEqual(Buffer.from(dec.update(out).concat(dec.final())),
                          input);
+      });
+    });
+    vectors.forEach(function(vec, i) {
+      it('should decrypt without unpadding vector ' + i, function() {
+        var key = Buffer.from(vec.key, 'hex');
+        var iv = Buffer.from(vec.iv, 'hex');
+        var input = Buffer.from(vec.input, 'hex');
+
+        var enc = CBC.create({
+          type: 'encrypt',
+          key: key,
+          iv: iv,
+        });
+
+        var out = Buffer.from(enc.update(input).concat(enc.final()));
+
+        var cipher = crypto.createCipheriv('des-ede3-cbc', key, iv);
+        var expected = Buffer.concat([ cipher.update(input), cipher.final() ]);
+
+        assert.deepEqual(out, expected);
+
+        var dec = CBC.create({
+          type: 'decrypt',
+          key: key,
+          iv: iv,
+          padding: false
+        });
+
+        var decipher = crypto.createDecipheriv('des-ede3-cbc', key, iv);
+        decipher.setAutoPadding(false);
+        expected = Buffer.concat([ decipher.update(out), decipher.final() ]);
+        assert.deepEqual(Buffer.from(dec.update(out).concat(dec.final())),
+                         Buffer.from(expected));
       });
     });
   });

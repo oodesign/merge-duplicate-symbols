@@ -12,12 +12,12 @@ module.exports.constants = {
   F_OK: 0,
   R_OK: 4,
   W_OK: 2,
-  X_OK: 1
+  X_OK: 1,
 };
 
 module.exports.access = NOT_IMPLEMENTED("access");
 
-module.exports.accessSync = function(path, mode) {
+module.exports.accessSync = function (path, mode) {
   mode = mode | 0;
   var fileManager = NSFileManager.defaultManager();
 
@@ -64,7 +64,7 @@ module.exports.accessSync = function(path, mode) {
 
 module.exports.appendFile = NOT_IMPLEMENTED("appendFile");
 
-module.exports.appendFileSync = function(file, data, options) {
+module.exports.appendFileSync = function (file, data, options) {
   if (!module.exports.existsSync(file)) {
     return module.exports.writeFileSync(file, data, options);
   }
@@ -84,12 +84,12 @@ module.exports.appendFileSync = function(file, data, options) {
 
 module.exports.chmod = NOT_IMPLEMENTED("chmod");
 
-module.exports.chmodSync = function(path, mode) {
+module.exports.chmodSync = function (path, mode) {
   var err = MOPointer.alloc().init();
   var fileManager = NSFileManager.defaultManager();
   fileManager.setAttributes_ofItemAtPath_error(
     {
-      NSFilePosixPermissions: mode
+      NSFilePosixPermissions: mode,
     },
     path,
     err
@@ -108,7 +108,7 @@ module.exports.closeSync = NOT_IMPLEMENTED("closeSync");
 
 module.exports.copyFile = NOT_IMPLEMENTED("copyFile");
 
-module.exports.copyFileSync = function(path, dest, flags) {
+module.exports.copyFileSync = function (path, dest, flags) {
   var err = MOPointer.alloc().init();
   var fileManager = NSFileManager.defaultManager();
   fileManager.copyItemAtPath_toPath_error(path, dest, err);
@@ -123,7 +123,7 @@ module.exports.createWriteStream = NOT_IMPLEMENTED("createWriteStream");
 
 module.exports.exists = NOT_IMPLEMENTED("exists");
 
-module.exports.existsSync = function(path) {
+module.exports.existsSync = function (path) {
   var fileManager = NSFileManager.defaultManager();
   return Boolean(Number(fileManager.fileExistsAtPath(path)));
 };
@@ -150,7 +150,7 @@ module.exports.lchownSync = NOT_IMPLEMENTED("lchownSync");
 
 module.exports.link = NOT_IMPLEMENTED("link");
 
-module.exports.linkSync = function(existingPath, newPath) {
+module.exports.linkSync = function (existingPath, newPath) {
   var err = MOPointer.alloc().init();
   var fileManager = NSFileManager.defaultManager();
   fileManager.linkItemAtPath_toPath_error(existingPath, newPath, err);
@@ -162,7 +162,7 @@ module.exports.linkSync = function(existingPath, newPath) {
 
 module.exports.lstat = NOT_IMPLEMENTED("lstat");
 
-module.exports.lstatSync = function(path) {
+module.exports.lstatSync = function (path) {
   var err = MOPointer.alloc().init();
   var fileManager = NSFileManager.defaultManager();
   var result = fileManager.attributesOfItemAtPath_error(path, err);
@@ -176,7 +176,7 @@ module.exports.lstatSync = function(path) {
 
 module.exports.mkdir = NOT_IMPLEMENTED("mkdir");
 
-module.exports.mkdirSync = function(path, options) {
+module.exports.mkdirSync = function (path, options) {
   var mode = 0o777;
   var recursive = false;
   if (options && options.mode) {
@@ -194,7 +194,7 @@ module.exports.mkdirSync = function(path, options) {
     path,
     recursive,
     {
-      NSFilePosixPermissions: mode
+      NSFilePosixPermissions: mode,
     },
     err
   );
@@ -206,7 +206,7 @@ module.exports.mkdirSync = function(path, options) {
 
 module.exports.mkdtemp = NOT_IMPLEMENTED("mkdtemp");
 
-module.exports.mkdtempSync = function(path) {
+module.exports.mkdtempSync = function (path) {
   function makeid() {
     var text = "";
     var possible =
@@ -229,7 +229,7 @@ module.exports.read = NOT_IMPLEMENTED("read");
 
 module.exports.readdir = NOT_IMPLEMENTED("readdir");
 
-module.exports.readdirSync = function(path, options) {
+module.exports.readdirSync = function (path, options) {
   var encoding = encodingFromOptions(options, "utf8");
   var fileManager = NSFileManager.defaultManager();
   var paths = fileManager.subpathsAtPath(path);
@@ -243,7 +243,7 @@ module.exports.readdirSync = function(path, options) {
 
 module.exports.readFile = NOT_IMPLEMENTED("readFile");
 
-module.exports.readFileSync = function(path, options) {
+module.exports.readFileSync = function (path, options) {
   var encoding = encodingFromOptions(options, "buffer");
   var fileManager = NSFileManager.defaultManager();
   var data = fileManager.contentsAtPath(path);
@@ -264,7 +264,7 @@ module.exports.readFileSync = function(path, options) {
 
 module.exports.readlink = NOT_IMPLEMENTED("readlink");
 
-module.exports.readlinkSync = function(path) {
+module.exports.readlinkSync = function (path) {
   var err = MOPointer.alloc().init();
   var fileManager = NSFileManager.defaultManager();
   var result = fileManager.destinationOfSymbolicLinkAtPath_error(path, err);
@@ -281,15 +281,17 @@ module.exports.readSync = NOT_IMPLEMENTED("readSync");
 module.exports.realpath = NOT_IMPLEMENTED("realpath");
 module.exports.realpath.native = NOT_IMPLEMENTED("realpath.native");
 
-module.exports.realpathSync = function(path) {
-  return String(NSString.stringWithString(path).stringByResolvingSymlinksInPath());
+module.exports.realpathSync = function (path) {
+  return String(
+    NSString.stringWithString(path).stringByResolvingSymlinksInPath()
+  );
 };
 
 module.exports.realpathSync.native = NOT_IMPLEMENTED("realpathSync.native");
 
 module.exports.rename = NOT_IMPLEMENTED("rename");
 
-module.exports.renameSync = function(oldPath, newPath) {
+module.exports.renameSync = function (oldPath, newPath) {
   var err = MOPointer.alloc().init();
   var fileManager = NSFileManager.defaultManager();
   fileManager.moveItemAtPath_toPath_error(oldPath, newPath, err);
@@ -322,14 +324,14 @@ module.exports.renameSync = function(oldPath, newPath) {
 
 module.exports.rmdir = NOT_IMPLEMENTED("rmdir");
 
-module.exports.rmdirSync = function(path) {
+module.exports.rmdirSync = function (path) {
   var err = MOPointer.alloc().init();
   var fileManager = NSFileManager.defaultManager();
   var isDirectory = module.exports.lstatSync(path).isDirectory();
   if (!isDirectory) {
     throw fsError("ENOTDIR", {
       path: path,
-      syscall: "rmdir"
+      syscall: "rmdir",
     });
   }
   fileManager.removeItemAtPath_error(path, err);
@@ -347,13 +349,13 @@ module.exports.stat = NOT_IMPLEMENTED("stat");
 // > link, then it returns information about the link itself, not the file
 // > that it refers to.
 // http://man7.org/linux/man-pages/man2/lstat.2.html
-module.exports.statSync = function(path) {
+module.exports.statSync = function (path) {
   return module.exports.lstatSync(module.exports.realpathSync(path));
 };
 
 module.exports.symlink = NOT_IMPLEMENTED("symlink");
 
-module.exports.symlinkSync = function(target, path) {
+module.exports.symlinkSync = function (target, path) {
   var err = MOPointer.alloc().init();
   var fileManager = NSFileManager.defaultManager();
   var result = fileManager.createSymbolicLinkAtPath_withDestinationPath_error(
@@ -369,7 +371,7 @@ module.exports.symlinkSync = function(target, path) {
 
 module.exports.truncate = NOT_IMPLEMENTED("truncate");
 
-module.exports.truncateSync = function(path, len) {
+module.exports.truncateSync = function (path, len) {
   var hFile = NSFileHandle.fileHandleForUpdatingAtPath(sFilePath);
   hFile.truncateFileAtOffset(len || 0);
   hFile.closeFile();
@@ -377,14 +379,14 @@ module.exports.truncateSync = function(path, len) {
 
 module.exports.unlink = NOT_IMPLEMENTED("unlink");
 
-module.exports.unlinkSync = function(path) {
+module.exports.unlinkSync = function (path) {
   var err = MOPointer.alloc().init();
   var fileManager = NSFileManager.defaultManager();
   var isDirectory = module.exports.lstatSync(path).isDirectory();
   if (isDirectory) {
     throw fsError("EPERM", {
       path: path,
-      syscall: "unlink"
+      syscall: "unlink",
     });
   }
   var result = fileManager.removeItemAtPath_error(path, err);
@@ -398,12 +400,12 @@ module.exports.unwatchFile = NOT_IMPLEMENTED("unwatchFile");
 
 module.exports.utimes = NOT_IMPLEMENTED("utimes");
 
-module.exports.utimesSync = function(path, aTime, mTime) {
+module.exports.utimesSync = function (path, aTime, mTime) {
   var err = MOPointer.alloc().init();
   var fileManager = NSFileManager.defaultManager();
   var result = fileManager.setAttributes_ofItemAtPath_error(
     {
-      NSFileModificationDate: aTime
+      NSFileModificationDate: aTime,
     },
     path,
     err
@@ -421,7 +423,7 @@ module.exports.write = NOT_IMPLEMENTED("write");
 
 module.exports.writeFile = NOT_IMPLEMENTED("writeFile");
 
-module.exports.writeFileSync = function(path, data, options) {
+module.exports.writeFileSync = function (path, data, options) {
   var encoding = encodingFromOptions(options, "utf8");
 
   var nsdata = Buffer.from(

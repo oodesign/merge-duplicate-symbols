@@ -13,6 +13,19 @@ template<typename T> class FunctionCallbackInfo;
 template<typename T> class PropertyCallbackInfo;
 template<typename T> class Global;
 
+#if defined(V8_MAJOR_VERSION) && (V8_MAJOR_VERSION > 12 ||                     \
+  (V8_MAJOR_VERSION == 12 && defined(V8_MINOR_VERSION) && V8_MINOR_VERSION > 4))
+namespace Intercepted {
+  constexpr v8::Intercepted No() { return v8::Intercepted::kNo; }
+  constexpr v8::Intercepted Yes() { return v8::Intercepted::kYes; }
+};
+#else
+namespace Intercepted {
+  inline void No() {}
+  inline void Yes() {}
+};
+#endif
+
 typedef void(*FunctionCallback)(const FunctionCallbackInfo<v8::Value>&);
 typedef void(*GetterCallback)
     (v8::Local<v8::String>, const PropertyCallbackInfo<v8::Value>&);
@@ -20,6 +33,17 @@ typedef void(*SetterCallback)(
     v8::Local<v8::String>,
     v8::Local<v8::Value>,
     const PropertyCallbackInfo<void>&);
+
+#if defined(V8_MAJOR_VERSION) && (V8_MAJOR_VERSION > 12 ||                     \
+  (V8_MAJOR_VERSION == 12 && defined(V8_MINOR_VERSION) && V8_MINOR_VERSION > 4))
+typedef v8::Intercepted(*PropertyGetterCallback)(
+    v8::Local<v8::String>,
+    const PropertyCallbackInfo<v8::Value>&);
+typedef v8::Intercepted(*PropertySetterCallback)(
+    v8::Local<v8::String>,
+    v8::Local<v8::Value>,
+    const PropertyCallbackInfo<void>&);
+#else
 typedef void(*PropertyGetterCallback)(
     v8::Local<v8::String>,
     const PropertyCallbackInfo<v8::Value>&);
@@ -27,8 +51,33 @@ typedef void(*PropertySetterCallback)(
     v8::Local<v8::String>,
     v8::Local<v8::Value>,
     const PropertyCallbackInfo<v8::Value>&);
+#endif
 typedef void(*PropertyEnumeratorCallback)
     (const PropertyCallbackInfo<v8::Array>&);
+#if defined(V8_MAJOR_VERSION) && (V8_MAJOR_VERSION > 12 ||                     \
+  (V8_MAJOR_VERSION == 12 && defined(V8_MINOR_VERSION) && V8_MINOR_VERSION > 4))
+typedef v8::Intercepted(*PropertyDeleterCallback)(
+    v8::Local<v8::String>,
+    const PropertyCallbackInfo<v8::Boolean>&);
+typedef v8::Intercepted(*PropertyQueryCallback)(
+    v8::Local<v8::String>,
+    const PropertyCallbackInfo<v8::Integer>&);
+typedef v8::Intercepted(*IndexGetterCallback)(
+    uint32_t,
+    const PropertyCallbackInfo<v8::Value>&);
+typedef v8::Intercepted(*IndexSetterCallback)(
+    uint32_t,
+    v8::Local<v8::Value>,
+    const PropertyCallbackInfo<void>&);
+typedef v8::Intercepted(*IndexEnumeratorCallback)
+    (const PropertyCallbackInfo<v8::Array>&);
+typedef v8::Intercepted(*IndexDeleterCallback)(
+    uint32_t,
+    const PropertyCallbackInfo<v8::Boolean>&);
+typedef v8::Intercepted(*IndexQueryCallback)(
+    uint32_t,
+    const PropertyCallbackInfo<v8::Integer>&);
+#else
 typedef void(*PropertyDeleterCallback)(
     v8::Local<v8::String>,
     const PropertyCallbackInfo<v8::Boolean>&);
@@ -50,9 +99,13 @@ typedef void(*IndexDeleterCallback)(
 typedef void(*IndexQueryCallback)(
     uint32_t,
     const PropertyCallbackInfo<v8::Integer>&);
-
+#endif
 namespace imp {
+#if (NODE_MODULE_VERSION < NODE_16_0_MODULE_VERSION)
 typedef v8::Local<v8::AccessorSignature> Sig;
+#else
+typedef v8::Local<v8::Data> Sig;
+#endif
 
 static const int kDataIndex =                    0;
 

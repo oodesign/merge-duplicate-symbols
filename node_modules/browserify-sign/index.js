@@ -1,7 +1,9 @@
-var crypto = require('crypto')
+'use strict';
 
-exports.createSign = crypto.createSign
-exports.Sign = crypto.Sign
+var crypto = require('crypto');
 
-exports.createVerify = crypto.createVerify
-exports.Verify = crypto.Verify
+exports.createSign = crypto.createSign;
+exports.Sign = crypto.Sign;
+
+exports.createVerify = crypto.createVerify;
+exports.Verify = crypto.Verify;
