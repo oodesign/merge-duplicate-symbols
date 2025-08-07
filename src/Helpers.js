@@ -6,7 +6,7 @@ var DeltaE = require('delta-e');
 var D3 = require('d3-color');
 var fs = require('@skpm/fs');
 
-var document = sketch.getSelectedDocument();
+export var document = sketch.getSelectedDocument();
 var symbols;
 var libraries = dom.getLibraries();
 
