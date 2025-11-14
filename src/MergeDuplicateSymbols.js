@@ -105,7 +105,27 @@ function MergeSymbols(symbolToMerge, symbolToKeep, basePercent, totalToMerge, we
         catch (e) {
           Helpers.clog("------ Updating instance " + instance.name + ". Instance doesn't belong to any specific artboard.");
         }
+
+        var scale = 1.0;
+        var instanceFrame = instance.frame;
+        try {
+          scale = instance.sketchObject.scale();
+        } catch (e) {
+          Helpers.clog("Failed to obtain instance scaling factor");
+        }
+
         instance.master = symbolToApply;
+
+        if (scale != 1.0) {
+          try {
+            instance.sketchObject.scale = scale;
+            instance.frame = instanceFrame;
+          } catch (e) {
+            Helpers.clog("Failed to apply instance scaling factor");
+          }
+        }
+
+
 
         tasksExecuted++;
         instancesChanged++;
