@@ -7,7 +7,6 @@ const sketch = require('sketch')
 
 const Helpers = require("./Helpers");
 import BrowserWindow from 'sketch-module-web-view';
-import { getWebview } from 'sketch-module-web-view/remote';
 import UI from 'sketch/ui'
 const webviewRegIdentifier = 'merge-duplicates.webviewReg';
 
@@ -156,6 +155,8 @@ export function showRegistration(context) {
 
   var regWindow = new BrowserWindow(options)
 
+  Helpers.enableDirectClose(regWindow);
+
   const webContentsReg = regWindow.webContents;
 
   //d9-02
@@ -179,8 +180,5 @@ export function showRegistration(context) {
 
 
 export function onShutdown(webviewID) {
-  const existingWebview = getWebview(webviewID)
-  if (existingWebview) {
-    existingWebview.close()
-  }
+  Helpers.closeWebview(webviewID)
 }
