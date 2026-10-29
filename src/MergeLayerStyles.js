@@ -1,5 +1,4 @@
 import BrowserWindow from 'sketch-module-web-view'
-import { getWebview } from 'sketch-module-web-view/remote'
 var UI = require('sketch/ui')
 const Helpers = require("./Helpers");
 
@@ -183,6 +182,7 @@ export function MergeDuplicateLayerStyles(context) {
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(options);
+  Helpers.enableDirectClose(browserWindow);
   const webContents = browserWindow.webContents;
 
   var onlyDuplicatedLayerStyles, layerStylesMap;
@@ -315,6 +315,7 @@ export function MergeSelectedLayerStyles(context) {
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(options);
+  Helpers.enableDirectClose(browserWindow);
   const webContents = browserWindow.webContents;
 
   var allLayerStyles;
@@ -423,6 +424,7 @@ export function MergeSimilarLayerStyles(context) {
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(options);
+  Helpers.enableDirectClose(browserWindow);
   const webContents = browserWindow.webContents;
 
   var stylesWithSimilarStyles;

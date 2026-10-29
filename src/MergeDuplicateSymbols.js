@@ -1,5 +1,4 @@
 import BrowserWindow from 'sketch-module-web-view'
-import { getWebview } from 'sketch-module-web-view/remote'
 var UI = require('sketch/ui')
 var Helpers = require("./Helpers");
 
@@ -167,6 +166,7 @@ export function MergeSelectedSymbols(context) {
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(options);
+  Helpers.enableDirectClose(browserWindow);
   const webContents = browserWindow.webContents;
   var mssmergeSession = [];
 
@@ -267,6 +267,7 @@ export function MergeDuplicateSymbols(context) {
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(options);
+  Helpers.enableDirectClose(browserWindow);
   const webContents = browserWindow.webContents;
 
   var mergeSession = [];
@@ -402,8 +403,5 @@ export function MergeDuplicateSymbols(context) {
 };
 
 export function onShutdown(webviewID) {
-  const existingWebview = getWebview(webviewID)
-  if (existingWebview) {
-    existingWebview.close()
-  }
+  Helpers.closeWebview(webviewID)
 }

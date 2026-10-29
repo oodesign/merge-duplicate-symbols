@@ -1,5 +1,4 @@
 import BrowserWindow from 'sketch-module-web-view'
-import { getWebview } from 'sketch-module-web-view/remote'
 import { clog } from './Helpers';
 const sketch = require('sketch');
 var UI = require('sketch/ui')
@@ -166,6 +165,7 @@ export function MergeDuplicateColorVariables(context) {
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(options);
+  Helpers.enableDirectClose(browserWindow);
   const webContents = browserWindow.webContents;
 
   var onlyDuplicatedColorVariables;
@@ -279,6 +279,7 @@ export function MergeSelectedColorVariables(context) {
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(options);
+  Helpers.enableDirectClose(browserWindow);
   const webContents = browserWindow.webContents;
 
 
@@ -405,6 +406,7 @@ export function MergeSimilarColorVariables(context) {
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(options);
+  Helpers.enableDirectClose(browserWindow);
   const webContents = browserWindow.webContents;
 
   var colorVariablesWithSimilarColorVariables;

@@ -38,7 +38,7 @@
     "d3-color": "^1.4.0",
     "delta-e": "0.0.7",
     "sketch-module-google-analytics": "^0.2.1",
-    "sketch-module-web-view": "^3.0.1"
+    "sketch-module-web-view": "^3.5.3"
   },
   "author": "oodesign <oscar@oodesign.me>"
 }
