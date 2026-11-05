@@ -147,63 +147,65 @@ export function compareByName(a, b) {
 export function FindSimilarTextStyles(referenceStyle, styles, context, checkSameFont, checkSameWeight, checkSameSize, checkSameColor, checkSameParagraphSpacing, checkSameLineHeight, checkSameAlignment, checkSameCharacterSpacing) {
 
   var similarStyles = [];
+  var referenceProps = getTextStyleProperties(referenceStyle);
 
   styles.forEach(function (style) {
     try {
       if (referenceStyle != style.textStyle) {
+        var styleProps = getTextStyleProperties(style.textStyle);
 
         var sameFont = false;
         try {
-          sameFont = referenceStyle.style.fontFamily == style.textStyle.style.fontFamily;
+          sameFont = referenceProps.fontFamily == styleProps.fontFamily;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose font");
         }
 
         var sameWeight = false;
         try {
-          sameWeight = referenceStyle.style.fontWeight == style.textStyle.style.fontWeight;
+          sameWeight = referenceProps.fontWeight == styleProps.fontWeight;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose weight");
         }
 
         var sameSize = false;
         try {
-          sameSize = referenceStyle.style.fontSize == style.textStyle.style.fontSize;
+          sameSize = referenceProps.fontSize == styleProps.fontSize;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose size");
         }
 
         var sameColor = false;
         try {
-          sameColor = referenceStyle.style.textColor == style.textStyle.style.textColor;
+          sameColor = referenceProps.textColor == styleProps.textColor;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose color");
         }
 
         var sameParagraphSpacing = false;
         try {
-          sameParagraphSpacing = referenceStyle.style.paragraphSpacing == style.textStyle.style.paragraphSpacing;
+          sameParagraphSpacing = referenceProps.paragraphSpacing == styleProps.paragraphSpacing;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose paragraph spacing");
         }
 
         var sameLineHeight = false;
         try {
-          sameLineHeight = referenceStyle.style.lineHeight == style.textStyle.style.lineHeight;
+          sameLineHeight = referenceProps.lineHeight == styleProps.lineHeight;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose line height");
         }
 
         var sameAlignment = false;
         try {
-          sameAlignment = referenceStyle.style.alignment == style.textStyle.style.alignment;
+          sameAlignment = referenceProps.alignment == styleProps.alignment;
         } catch (e) {
           clog("Finding similar text styles - Couldn't disclose alignment");
         }
 
         var sameCharacterSpacing = false;
         try {
-          sameCharacterSpacing = referenceStyle.style.kerning == style.textStyle.style.kerning;
+          sameCharacterSpacing = referenceProps.kerning == styleProps.kerning;
         } catch {
           clog("Finding similar text styles - Couldn't disclose character spacing");
         }
@@ -1235,8 +1237,82 @@ export function GetSpecificSymbolData(symbol, symbolsMap) {
   ctimeEnd("GetSpecificSymbolData");
 }
 
+// --- Reading text style properties --------------------------------------------
+// Since Sketch 2026, the JS API reads text properties (fontFamily, fontSize,
+// textColor, alignment...) through the Text layer that owns the style. A shared
+// text style's own `style` has no Text layer, so all of them come back as
+// undefined. To read them, we apply the style to a temporary Text layer, read
+// the values there, and remove the layer. Results are cached per style for the
+// current command run (cleared by clearTextStylePropertiesCache).
+
+var textStylePropertiesCache = new Map();
+
+export function clearTextStylePropertiesCache() {
+  textStylePropertiesCache = new Map();
+}
+
+export function getTextStyleProperties(sharedTextStyle) {
+  var cacheKey = "" + sharedTextStyle.id;
+  if (textStylePropertiesCache.has(cacheKey)) return textStylePropertiesCache.get(cacheKey);
+
+  var properties = {
+    fontFamily: undefined,
+    fontSize: undefined,
+    fontWeight: undefined,
+    alignment: undefined,
+    textColor: undefined,
+    lineHeight: null,
+    paragraphSpacing: null,
+    kerning: null
+  };
+
+  var tempText = null;
+  try {
+    tempText = new Text({
+      text: 'The quick brown fox',
+      frame: new sketch.Rectangle(0, 0, 600, 100),
+      style: sharedTextStyle.style,
+      parent: document.selectedPage
+    });
+    var layerStyle = tempText.style;
+    properties = {
+      fontFamily: layerStyle.fontFamily,
+      fontSize: layerStyle.fontSize,
+      fontWeight: layerStyle.fontWeight,
+      alignment: layerStyle.alignment,
+      textColor: layerStyle.textColor,
+      lineHeight: layerStyle.lineHeight,
+      paragraphSpacing: layerStyle.paragraphSpacing,
+      kerning: layerStyle.kerning
+    };
+  } catch (e) {
+    console.log("Merge Duplicates: couldn't read properties of text style '" + sharedTextStyle.name + "': " + e);
+  } finally {
+    if (tempText) {
+      try { tempText.remove(); } catch (e) { }
+    }
+  }
+
+  textStylePropertiesCache.set(cacheKey, properties);
+  return properties;
+}
+
+export function getTextStyleContrastMode(sharedTextStyle) {
+  try {
+    var color = getTextStyleProperties(sharedTextStyle).textColor;
+    if (typeof color != "string" || color.length < 7) return false;
+    return shouldEnableContrastMode(color.substring(1, 7));
+  } catch (e) {
+    return false;
+  }
+}
+
 export function getTextStyleDescription(sharedTextStyle) {
-  return sharedTextStyle.style.fontFamily + " " + sharedTextStyle.style.fontSize + "pt" + " - " + sharedTextStyle.style.alignment;
+  var props = getTextStyleProperties(sharedTextStyle);
+  var fontFamily = (props.fontFamily != null) ? props.fontFamily : "Unknown font";
+  var fontSize = (props.fontSize != null) ? props.fontSize + "pt" : "?pt";
+  var alignment = (props.alignment != null) ? props.alignment : "?";
+  return fontFamily + " " + fontSize + " - " + alignment;
 }
 
 export function getLayerStyleDescription(sharedStyle) {
@@ -1444,6 +1520,7 @@ export function getAllLayerStyles(includeAllStylesFromExternalLibraries) {
 
 
 export function getAllTextStyles(includeAllStylesFromExternalLibraries) {
+  clearTextStylePropertiesCache();
   var allStyles = [];
   const idsMap = new Map();
   const redundantIdsMap = new Map();
@@ -1478,7 +1555,7 @@ export function getAllTextStyles(includeAllStylesFromExternalLibraries) {
         "numInstances": 0,
         "numOverrides": 0,
         "isSelected": false,
-        "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+        "contrastMode": getTextStyleContrastMode(sharedTextStyle),
         "isHidden": redundantIn
       }
 
@@ -1527,7 +1604,7 @@ export function getAllTextStyles(includeAllStylesFromExternalLibraries) {
               "numInstances": 0,
               "numOverrides": 0,
               "isSelected": false,
-              "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+              "contrastMode": getTextStyleContrastMode(sharedTextStyle),
               "isHidden": redundantIn
             }
             allStyles.push(textStyleObject);
@@ -1778,6 +1855,7 @@ export function getAllDuplicateLayerStylesByName(context, includeAllLayerStylesF
 
 
 export function getAllDuplicateTextStylesByName(context, includeAllStylesFromExternalLibraries) {
+  clearTextStylePropertiesCache();
   var duplicatedTextStyles = [];
   const namesMap = new Map();
   const idsMap = new Map();
@@ -1816,7 +1894,7 @@ export function getAllDuplicateTextStylesByName(context, includeAllStylesFromExt
           "description": getTextStyleDescription(sharedTextStyle),
           "thumbnail": "",
           "isSelected": false,
-          "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+          "contrastMode": getTextStyleContrastMode(sharedTextStyle),
           "styleInstances": null,
           "numInstances": 0,
           "styleOverrides": null,
@@ -1841,7 +1919,7 @@ export function getAllDuplicateTextStylesByName(context, includeAllStylesFromExt
           "description": getTextStyleDescription(sharedTextStyle),
           "thumbnail": "",
           "isSelected": false,
-          "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+          "contrastMode": getTextStyleContrastMode(sharedTextStyle),
           "styleInstances": null,
           "numInstances": 0,
           "styleOverrides": null,
@@ -1897,7 +1975,7 @@ export function getAllDuplicateTextStylesByName(context, includeAllStylesFromExt
                 "description": getTextStyleDescription(sharedTextStyle),
                 "thumbnail": "",
                 "isSelected": false,
-                "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+                "contrastMode": getTextStyleContrastMode(sharedTextStyle),
                 "styleInstances": null,
                 "numInstances": 0,
                 "styleOverrides": null,
@@ -1922,7 +2000,7 @@ export function getAllDuplicateTextStylesByName(context, includeAllStylesFromExt
                 "description": getTextStyleDescription(sharedTextStyle),
                 "thumbnail": "",
                 "isSelected": false,
-                "contrastMode": shouldEnableContrastMode(sharedTextStyle.style.textColor.substring(1, 7)),
+                "contrastMode": getTextStyleContrastMode(sharedTextStyle),
                 "styleInstances": null,
                 "numInstances": 0,
                 "styleOverrides": null,
