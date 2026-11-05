@@ -2160,6 +2160,11 @@ export function traceTextStyleProps(step, sharedTextStyle) {
       traceError(step + " (" + probe[0] + ")", e);
     }
   });
+  try {
+    console.log("[MD trace " + step + "]     >> via temporary text layer = " + JSON.stringify(getTextStyleProperties(sharedTextStyle)));
+  } catch (e) {
+    traceError(step + " (via temporary text layer)", e);
+  }
 }
 
 // --- Window closing ---------------------------------------------------------
