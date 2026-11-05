@@ -236,8 +236,11 @@ export function FindAllSimilarTextStyles(context, includeAllStylesFromExternalLi
   var stylesWithSimilarStyles = [];
   var stylesAlreadyProcessed = [];
 
+  trace("9.0", "FindAllSimilarTextStyles - start. Include libraries: " + includeAllStylesFromExternalLibraries + ". Checks: font " + checkSameFont + ", weight " + checkSameWeight + ", size " + checkSameSize + ", color " + checkSameColor + ", paragraph " + checkSameParagraphSpacing + ", line height " + checkSameLineHeight + ", alignment " + checkSameAlignment + ", spacing " + checkSameCharacterSpacing);
   var definedTextStyles = getDefinedTextStyles(context, includeAllStylesFromExternalLibraries);
+  trace("9.1", "Text styles to compare: " + definedTextStyles.length);
   for (var i = 0; i < definedTextStyles.length; i++) {
+    trace("9.2." + (i + 1), "Comparing '" + definedTextStyles[i].name + "' (" + definedTextStyles[i].libraryName + ")");
     clog("Finding similar styles to '" + definedTextStyles[i].name + "'");
     if (definedTextStyles[i].libraryName.localeCompare(sketchlocalfile) == 0) {
 
@@ -263,6 +266,7 @@ export function FindAllSimilarTextStyles(context, includeAllStylesFromExternalLi
     }
   }
 
+  trace("9.3", "FindAllSimilarTextStyles - done. Groups found: " + stylesWithSimilarStyles.length);
   return stylesWithSimilarStyles;
 }
 
@@ -473,14 +477,18 @@ export function getLayerStyleOverrides(layerStyle, idsMap) {
 }
 
 export function getTextStyleInstances(textStyle) {
+  trace("11.0", "getTextStyleInstances for '" + textStyle.name + "'");
   var textStyleInstances = textStyle.getAllInstancesLayers();
+  trace("11.1", "Instances: " + textStyleInstances.length);
   return textStyleInstances;
 }
 
 export function getTextStyleOverrides(textStyle, idsMap) {
   var styleOverrides = [];
+  trace("11.2", "getTextStyleOverrides for '" + textStyle.name + "'. Finding symbol instances");
   var allInstances = sketch.find("SymbolInstance", document);
   var reducedInstances = allInstances.filter(instance => hasSharedStyleOverrides(instance, idsMap));
+  trace("11.3", "Instances with style overrides: " + reducedInstances.length);
 
   reducedInstances.forEach(function (instance) {
     if (instance.sketchObject.overrides().count() > 0) {
@@ -494,6 +502,7 @@ export function getTextStyleOverrides(textStyle, idsMap) {
     }
   });
 
+  trace("11.4", "Overrides found: " + styleOverrides.length);
   return styleOverrides;
 }
 
@@ -713,8 +722,10 @@ export function getTextStylesMap(context, textStyles) {
 
   var textStylesMap = new Map();
   var idsMap = new Map();
+  trace("7.0", "getTextStylesMap - start. Names with duplicates: " + textStyles.length);
   textStyles.forEach(function (textStyle) {
     textStyle.duplicates.forEach(function (duplicatedStyle) {
+      trace("7.1", "Getting instances of '" + duplicatedStyle.name + "' (" + duplicatedStyle.libraryName + ")");
 
       var redId1 = duplicatedStyle.textStyle.style.id;
       var redId2 = (duplicatedStyle.textStyle.id.indexOf("[") >= 0) ? duplicatedStyle.textStyle.id.substring(duplicatedStyle.textStyle.id.indexOf("[") + 1, duplicatedStyle.textStyle.id.length - 1) : null;
@@ -730,8 +741,11 @@ export function getTextStylesMap(context, textStyles) {
     });
   });
 
+  trace("7.2", "Finding all symbol instances in document");
   var allInstances = sketch.find("SymbolInstance", document);
+  trace("7.3", "Symbol instances: " + allInstances.length + ". Filtering those with style overrides");
   var reducedInstances = allInstances.filter(instance => hasSharedStyleOverrides(instance, idsMap));
+  trace("7.4", "Instances with style overrides: " + reducedInstances.length);
 
   reducedInstances.forEach(function (instance) {
     if (instance.sketchObject.overrides().count() > 0) {
@@ -742,6 +756,7 @@ export function getTextStylesMap(context, textStyles) {
     }
   });
 
+  trace("7.5", "getTextStylesMap - done");
   return textStylesMap;
 }
 
@@ -1179,9 +1194,13 @@ export function GetSpecificTextStyleData(textStyle, textStylesMap) {
   ctime("GetSpecificTextStyleData");
   var totalInstances = 0;
   var totalOverrides = 0;
+  trace("8.0", "GetSpecificTextStyleData - start for '" + textStyle.name + "' (" + textStyle.duplicates.length + " duplicates)");
   textStyle.duplicates.forEach(duplicate => {
+    trace("8.1", "Duplicate '" + duplicate.name + "' (" + duplicate.libraryName + "): reading map item");
     var textStyleMapItem = textStylesMap.get(duplicate.textStyle);
+    trace("8.2", "Map item found: " + (textStyleMapItem != null) + ". Creating thumbnail");
     duplicate.thumbnail = getTextThumbnail(duplicate.textStyle);
+    trace("8.3", "Thumbnail created. Counting instances and overrides");
     duplicate.styleInstances = textStyleMapItem.directInstances;
     duplicate.numInstances = textStyleMapItem.directInstances.length;
     duplicate.styleOverrides = textStyleMapItem.instancesWithOverrides;
@@ -1193,6 +1212,7 @@ export function GetSpecificTextStyleData(textStyle, textStylesMap) {
   });
 
   clog("-- Found " + totalInstances + " instances, " + totalOverrides + " overrides, and created " + textStyle.duplicates.length + " thumbnails");
+  trace("8.4", "GetSpecificTextStyleData - done");
   ctimeEnd("GetSpecificTextStyleData");
 }
 
@@ -1269,19 +1289,24 @@ export function getOvalThumbnail(sharedStyle) {
 
 
 export function getTextThumbnail(sharedStyle) {
+  trace("10.0", "getTextThumbnail - creating temporary text layer for '" + sharedStyle.name + "' on page '" + (document.selectedPage ? document.selectedPage.name : document.selectedPage) + "'");
   var text = new Text({
     text: 'The quick brown fox',
     frame: new sketch.Rectangle(0, 0, 600, 100),
     style: sharedStyle.style,
     parent: document.selectedPage
   })
+  trace("10.1", "Temporary text layer created. Exporting PNG");
   try {
     const options = { scales: '5', formats: 'png', output: false };
     var buffer = sketch.export(text, options);
+    trace("10.2", "Exported. Converting to base64");
     var image64 = buffer.toString('base64');
     text.remove();
+    trace("10.3", "getTextThumbnail - done");
     return image64;
   } catch (e) {
+    traceError("10.x (export failed, thumbnail left empty)", e);
     text.remove();
     return "";
   }
@@ -1423,7 +1448,13 @@ export function getAllTextStyles(includeAllStylesFromExternalLibraries) {
   const idsMap = new Map();
   const redundantIdsMap = new Map();
 
+  trace("6.0", "getAllTextStyles - start. Include libraries: " + includeAllStylesFromExternalLibraries);
+  trace("6.1", "Local document text styles: " + document.sharedTextStyles.length);
+  var traceIndex = 0;
   document.sharedTextStyles.forEach(function (sharedTextStyle) {
+    traceIndex++;
+    trace("6.2." + traceIndex, "Local text style '" + sharedTextStyle.name + "'");
+    traceTextStyleProps("6.2." + traceIndex, sharedTextStyle);
     var library = sharedTextStyle.getLibrary();
     if (!idsMap.has(sharedTextStyle.id)) {
       var redId1 = sharedTextStyle.style.id;
@@ -1458,10 +1489,22 @@ export function getAllTextStyles(includeAllStylesFromExternalLibraries) {
     }
   });
 
+  trace("6.3", "Local text styles done");
   if (includeAllStylesFromExternalLibraries) {
+    trace("6.4", "Libraries found: " + libraries.length);
+    var traceLibIndex = 0;
     libraries.forEach(function (lib) {
+      traceLibIndex++;
+      trace("6.4." + traceLibIndex, "Library '" + (lib ? lib.name : lib) + "' enabled: " + (lib ? lib.enabled : "-"));
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        trace("6.4." + traceLibIndex + ".0", "Calling lib.getDocument()");
+        var traceLibDoc = lib.getDocument();
+        trace("6.4." + traceLibIndex + ".1", "Library document: " + (traceLibDoc ? "ok, text styles: " + traceLibDoc.sharedTextStyles.length : traceLibDoc));
+        var traceLibStyleIndex = 0;
         lib.getDocument().sharedTextStyles.forEach(function (sharedTextStyle) {
+          traceLibStyleIndex++;
+          trace("6.4." + traceLibIndex + ".2." + traceLibStyleIndex, "Library text style '" + sharedTextStyle.name + "'");
+          traceTextStyleProps("6.4." + traceLibIndex + ".2." + traceLibStyleIndex, sharedTextStyle);
           if (!idsMap.has(sharedTextStyle.style.id)) {
             var redId1 = sharedTextStyle.style.id;
             var redId2 = (sharedTextStyle.id.indexOf("[") >= 0) ? sharedTextStyle.id.substring(sharedTextStyle.id.indexOf("[") + 1, sharedTextStyle.id.length - 1) : null;
@@ -1497,6 +1540,7 @@ export function getAllTextStyles(includeAllStylesFromExternalLibraries) {
     });
   }
 
+  trace("6.5", "getAllTextStyles - done. Styles: " + allStyles.length);
   return allStyles.sort(compareStyleArrays);;
 
 }
@@ -1738,7 +1782,13 @@ export function getAllDuplicateTextStylesByName(context, includeAllStylesFromExt
   const namesMap = new Map();
   const idsMap = new Map();
   const redundantIdsMap = new Map();
+  trace("5.0", "getAllDuplicateTextStylesByName - start. Include libraries: " + includeAllStylesFromExternalLibraries);
+  trace("5.1", "Local document text styles: " + document.sharedTextStyles.length);
+  var traceIndex = 0;
   document.sharedTextStyles.forEach(function (sharedTextStyle) {
+    traceIndex++;
+    trace("5.2." + traceIndex, "Local text style '" + sharedTextStyle.name + "'");
+    traceTextStyleProps("5.2." + traceIndex, sharedTextStyle);
 
     if (!idsMap.has(sharedTextStyle.id)) {
       var redId1 = sharedTextStyle.style.id;
@@ -1805,10 +1855,22 @@ export function getAllDuplicateTextStylesByName(context, includeAllStylesFromExt
     }
   });
 
+  trace("5.3", "Local text styles done");
   if (includeAllStylesFromExternalLibraries) {
+    trace("5.4", "Libraries found: " + libraries.length);
+    var traceLibIndex = 0;
     libraries.forEach(function (lib) {
+      traceLibIndex++;
+      trace("5.4." + traceLibIndex, "Library '" + (lib ? lib.name : lib) + "' enabled: " + (lib ? lib.enabled : "-"));
       if (lib && lib.id && lib.enabled && context.document.documentData() && context.document.documentData().objectID().toString().localeCompare(lib.id) != 0) {
+        trace("5.4." + traceLibIndex + ".0", "Calling lib.getDocument()");
+        var traceLibDoc = lib.getDocument();
+        trace("5.4." + traceLibIndex + ".1", "Library document: " + (traceLibDoc ? "ok, text styles: " + traceLibDoc.sharedTextStyles.length : traceLibDoc));
+        var traceLibStyleIndex = 0;
         lib.getDocument().sharedTextStyles.forEach(function (sharedTextStyle) {
+          traceLibStyleIndex++;
+          trace("5.4." + traceLibIndex + ".2." + traceLibStyleIndex, "Library text style '" + sharedTextStyle.name + "'");
+          traceTextStyleProps("5.4." + traceLibIndex + ".2." + traceLibStyleIndex, sharedTextStyle);
           if (!idsMap.has(sharedTextStyle.id)) {
             var redId1 = sharedTextStyle.style.id;
             var redId2 = (sharedTextStyle.id.indexOf("[") >= 0) ? sharedTextStyle.id.substring(sharedTextStyle.id.indexOf("[") + 1, sharedTextStyle.id.length - 1) : null;
@@ -1878,6 +1940,7 @@ export function getAllDuplicateTextStylesByName(context, includeAllStylesFromExt
   }
 
 
+  trace("5.5", "All styles read. Filtering names with duplicates");
   namesMap.forEach(function (styleObject, name) {
 
     var removeElement = false;
@@ -1898,6 +1961,7 @@ export function getAllDuplicateTextStylesByName(context, includeAllStylesFromExt
 
   });
 
+  trace("5.6", "getAllDuplicateTextStylesByName - done. Names with duplicates: " + duplicatedTextStyles.length);
   return duplicatedTextStyles.sort(compareByName);
 
 }
@@ -1970,6 +2034,54 @@ export function getThumbnail(element) {
 export function clog(message) {
   if (logsEnabled)
     console.log(message);
+}
+
+// --- TRACE LOGS (debug/text-styles-trace) ----------------------------------
+// Always printed, even with logs disabled in Settings. Every line starts with
+// "[MD trace", so you can filter with:  npx skpm log -f | grep "MD trace"
+// The last step printed before an error is where execution broke.
+export function trace(step, message) {
+  console.log("[MD trace " + step + "] " + ((message != null) ? message : ""));
+}
+
+export function traceError(step, e) {
+  var nativeInfo = "";
+  try {
+    if (e && e.nativeException) nativeInfo = " | nativeException: " + e.nativeException;
+  } catch (ignore) { }
+  console.log("[MD trace " + step + "] !!! ERROR: " + e + nativeInfo);
+  try {
+    if (e && e.stack) console.log("[MD trace " + step + "] !!! STACK: " + e.stack);
+  } catch (ignore) { }
+}
+
+// Reads every text style property the plugin uses, one by one, so the log
+// shows exactly which property (if any) throws or comes back empty.
+export function traceTextStyleProps(step, sharedTextStyle) {
+  var probes = [
+    ["name", () => "" + sharedTextStyle.name],
+    ["id", () => "" + sharedTextStyle.id],
+    ["style.id", () => "" + sharedTextStyle.style.id],
+    ["getLibrary()", () => { var l = sharedTextStyle.getLibrary(); return (l != null) ? "library '" + l.name + "'" : "local (null)"; }],
+    ["style.fontFamily", () => sharedTextStyle.style.fontFamily],
+    ["style.fontSize", () => sharedTextStyle.style.fontSize],
+    ["style.fontWeight", () => sharedTextStyle.style.fontWeight],
+    ["style.alignment", () => sharedTextStyle.style.alignment],
+    ["style.textColor", () => { var c = sharedTextStyle.style.textColor; return "(" + (typeof c) + ") " + c; }],
+    ["style.lineHeight", () => sharedTextStyle.style.lineHeight],
+    ["style.paragraphSpacing", () => sharedTextStyle.style.paragraphSpacing],
+    ["style.kerning", () => sharedTextStyle.style.kerning],
+    ["style.textUnderline", () => sharedTextStyle.style.textUnderline],
+    ["style.textStrikethrough", () => sharedTextStyle.style.textStrikethrough],
+    ["style.textTransform", () => sharedTextStyle.style.textTransform],
+  ];
+  probes.forEach(function (probe) {
+    try {
+      console.log("[MD trace " + step + "]     . " + probe[0] + " = " + probe[1]());
+    } catch (e) {
+      traceError(step + " (" + probe[0] + ")", e);
+    }
+  });
 }
 
 // --- Window closing ---------------------------------------------------------
