@@ -1972,6 +1972,59 @@ export function clog(message) {
     console.log(message);
 }
 
+// --- Window closing ---------------------------------------------------------
+// On Sketch 2026 / macOS 26, BrowserWindow.close() from sketch-module-web-view
+// goes through performClose: -> windowShouldClose:, and that check can refuse
+// to close the panel. Result: Cancel/Close buttons and the red traffic-light
+// button do nothing. These helpers close the NSPanel directly instead, which
+// skips windowShouldClose: but still fires windowWillClose:, so the library's
+// own 'closed' cleanup runs. Leftovers are removed by hand as a fallback, so a
+// stale panel is never reused the next time the command runs.
+
+export function closeWebview(webviewID) {
+  var threadDictionary = NSThread.mainThread().threadDictionary();
+  var panel = threadDictionary[webviewID];
+  if (!panel) return;
+
+  try {
+    panel.orderOut(null);
+    panel.close();
+  } catch (e) {
+    console.log("Merge Duplicates: could not close window " + webviewID + ": " + e);
+  }
+
+  // Fallback cleanup, only needed if the library's 'closed' handler didn't run
+  try {
+    var observerKey = webviewID + '.themeObserver';
+    var observer = threadDictionary[observerKey];
+    if (observer) {
+      NSApplication.sharedApplication().removeObserver_forKeyPath(observer, 'effectiveAppearance');
+      threadDictionary.removeObjectForKey(observerKey);
+    }
+    if (threadDictionary[webviewID]) {
+      threadDictionary.removeObjectForKey(webviewID);
+    }
+  } catch (e) {
+    console.log("Merge Duplicates: cleanup after closing " + webviewID + " failed: " + e);
+  }
+}
+
+// Make the red traffic-light button close the window directly as well.
+// Call right after `new BrowserWindow(options)`.
+export function enableDirectClose(browserWindow) {
+  try {
+    var panel = browserWindow._panel;
+    if (!panel) return;
+    var closeButton = panel.standardWindowButton(NSWindowCloseButton);
+    if (closeButton) {
+      closeButton.setTarget(panel);
+      closeButton.setAction(NSSelectorFromString('close'));
+    }
+  } catch (e) {
+    console.log("Merge Duplicates: could not rewire close button: " + e);
+  }
+}
+
 export function dlog(message) {
   // console.log(message);
 }

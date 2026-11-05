@@ -1,5 +1,4 @@
 import BrowserWindow from 'sketch-module-web-view'
-import { getWebview } from 'sketch-module-web-view/remote'
 const Helpers = require("./Helpers");
 const webviewEsIdentifier = 'merge-duplicates.webviewSettings';
 
@@ -15,6 +14,7 @@ export function EditSettings(context) {
     titleBarStyle: 'hidden'
   }
   const browserWindow = new BrowserWindow(optionss);
+  Helpers.enableDirectClose(browserWindow);
   const webContents = browserWindow.webContents;
 
 
@@ -45,8 +45,5 @@ export function EditSettings(context) {
 }
 
 export function onShutdown(webviewID) {
-  const existingWebview = getWebview(webviewID)
-  if (existingWebview) {
-    existingWebview.close()
-  }
+  Helpers.closeWebview(webviewID)
 }
